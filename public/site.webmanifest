@@ -1,0 +1,10 @@
+{
+  "name": "Meridian Interface Design Studio",
+  "short_name": "Meridian",
+  "description": "Custom web design, mobile apps & enterprise data dashboards",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary"
+}
