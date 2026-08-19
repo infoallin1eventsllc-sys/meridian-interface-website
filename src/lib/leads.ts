@@ -12,8 +12,14 @@ import { Appointment } from '../types';
 
 const APPOINTMENTS_KEY = 'meridian_appointments';
 
+// Default: the Meridian marketing-system intake webhook (a public endpoint — safe
+// to ship in the client bundle; it accepts leads, it does not expose any secret).
+// Override with VITE_LEAD_ENDPOINT to point at a different backend.
+const DEFAULT_LEAD_ENDPOINT =
+  'https://glzodwhyavexpuusbqjy.supabase.co/functions/v1/intake';
+
 const LEAD_ENDPOINT: string =
-  (import.meta.env.VITE_LEAD_ENDPOINT as string | undefined)?.trim() || '';
+  (import.meta.env.VITE_LEAD_ENDPOINT as string | undefined)?.trim() || DEFAULT_LEAD_ENDPOINT;
 
 export interface SubmitResult {
   /** The stored appointment (persisted locally regardless of backend availability). */
