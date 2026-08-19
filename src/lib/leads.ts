@@ -12,8 +12,14 @@ import { Appointment } from '../types';
 
 const APPOINTMENTS_KEY = 'meridian_appointments';
 
+// Default: the Meridian marketing-system intake webhook (a public endpoint — safe
+// to ship in the client bundle; it accepts leads, it does not expose any secret).
+// Override with VITE_LEAD_ENDPOINT to point at a different backend.
+const DEFAULT_LEAD_ENDPOINT =
+  'https://glzodwhyavexpuusbqjy.supabase.co/functions/v1/intake';
+
 const LEAD_ENDPOINT: string =
-  (import.meta.env.VITE_LEAD_ENDPOINT as string | undefined)?.trim() || '';
+  (import.meta.env.VITE_LEAD_ENDPOINT as string | undefined)?.trim() || DEFAULT_LEAD_ENDPOINT;
 
 export interface SubmitResult {
   /** The stored appointment (persisted locally regardless of backend availability). */
@@ -61,23 +67,27 @@ export async function submitAppointment(appointment: Appointment): Promise<Submi
     return { appointment, delivered: false };
   }
 
-  try {
-    const res = await fetch(LEAD_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'appointment', payload: appointment }),
-    });
-    if (!res.ok) {
-      return { appointment, delivered: false, error: `Endpoint responded ${res.status}` };
+  const body = JSON.stringify({ type: 'appointment', payload: appointment });
+
+  // Try twice: a booking is high-value, so a single transient network blip
+  // shouldn't cost the studio the lead. (The local copy is the ultimate backstop.)
+  let lastError = 'Network error';
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      });
+      if (res.ok) return { appointment, delivered: true };
+      lastError = `Endpoint responded ${res.status}`;
+      if (res.status < 500) break; // 4xx won't succeed on retry
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : 'Network error';
     }
-    return { appointment, delivered: true };
-  } catch (err) {
-    return {
-      appointment,
-      delivered: false,
-      error: err instanceof Error ? err.message : 'Network error',
-    };
+    if (attempt === 0) await new Promise((r) => setTimeout(r, 600));
   }
+  return { appointment, delivered: false, error: lastError };
 }
 
 /** Generate a fresh appointment id (APT-XXXX). */

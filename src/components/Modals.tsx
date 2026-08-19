@@ -115,6 +115,7 @@ export const Modals: React.FC<ModalsProps> = ({
                       Required Design Service
                     </label>
                     <select
+                      aria-label="Required design service"
                       value={modalService}
                       onChange={(e) => setModalService(e.target.value as ServiceCategory)}
                       className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-slate-900"
@@ -135,6 +136,7 @@ export const Modals: React.FC<ModalsProps> = ({
                       <input
                         type="date"
                         required
+                        aria-label="Preferred date"
                         value={modalDate}
                         onChange={(e) => setModalDate(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
@@ -145,6 +147,7 @@ export const Modals: React.FC<ModalsProps> = ({
                         Time Slot
                       </label>
                       <select
+                        aria-label="Time slot"
                         value={modalTime}
                         onChange={(e) => setModalTime(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
@@ -163,6 +166,8 @@ export const Modals: React.FC<ModalsProps> = ({
                     <input
                       type="text"
                       required
+                      autoComplete="name"
+                      aria-label="Full name"
                       placeholder="e.g. Alex Hayes"
                       value={modalName}
                       onChange={(e) => setModalName(e.target.value)}
@@ -178,6 +183,8 @@ export const Modals: React.FC<ModalsProps> = ({
                       <input
                         type="email"
                         required
+                        autoComplete="email"
+                        aria-label="Email address"
                         placeholder="alex@company.com"
                         value={modalEmail}
                         onChange={(e) => setModalEmail(e.target.value)}
@@ -190,6 +197,8 @@ export const Modals: React.FC<ModalsProps> = ({
                       </label>
                       <input
                         type="tel"
+                        autoComplete="tel"
+                        aria-label="Phone number"
                         placeholder="+1 (555) 000-0000"
                         value={modalPhone}
                         onChange={(e) => setModalPhone(e.target.value)}

@@ -8,6 +8,13 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) => {
+  // Only surface the internal owner portal when it can actually be unlocked —
+  // i.e. a passcode is configured (prod) or we're in local dev. Otherwise the
+  // link leads to a gate no one can pass, and needlessly advertises an internal
+  // tool. Real access control still belongs server-side (see OwnerInvoiceView).
+  const ownerPortalEnabled =
+    import.meta.env.DEV || !!(import.meta.env.VITE_OWNER_PASSCODE || '').trim();
+
   return (
     <footer className="bg-slate-900 text-white pt-12 pb-24 md:pb-12 px-4 md:px-12 border-t border-slate-800">
       <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
@@ -63,13 +70,15 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) 
             <span className="font-body text-xs text-slate-400">
               © 2026 Meridian Interface. All rights reserved.
             </span>
-            <button
-              onClick={() => onTabChange('owner_invoice')}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-slate-200 transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">lock</span>
-              Studio login
-            </button>
+            {ownerPortalEnabled && (
+              <button
+                onClick={() => onTabChange('owner_invoice')}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">lock</span>
+                Studio login
+              </button>
+            )}
           </div>
         </div>
       </div>
