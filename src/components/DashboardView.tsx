@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Appointment } from '../types';
 import { INITIAL_APPOINTMENTS } from '../data/mockData';
+import { getAppointments } from '../lib/leads';
 import { InvoiceReceiptModal } from './InvoiceReceiptModal';
 
 interface DashboardViewProps {
@@ -15,23 +16,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
   const [docTarget, setDocTarget] = useState<{ appointment: Appointment; mode: 'invoice' | 'receipt' } | null>(null);
 
   useEffect(() => {
-    // Load from localStorage combined with mock initial data
+    // Read through the same seam every booking is written to (src/lib/leads.ts),
+    // so there is one definition of "the client's appointments" rather than two
+    // that can drift apart.
     try {
-      const stored = localStorage.getItem('meridian_appointments');
-      if (stored) {
-        const parsed: Appointment[] = JSON.parse(stored);
-        // combine avoiding duplicates
-        const combined = [...parsed];
-        INITIAL_APPOINTMENTS.forEach(init => {
-          if (!combined.some(a => a.id === init.id)) {
-            combined.push(init);
-          }
-        });
-        setAppointments(combined);
-      } else {
-        setAppointments(INITIAL_APPOINTMENTS);
-      }
-    } catch (err) {
+      const booked = getAppointments();
+      const combined = [...booked];
+      INITIAL_APPOINTMENTS.forEach((init) => {
+        if (!combined.some((a) => a.id === init.id)) combined.push(init);
+      });
+      setAppointments(combined);
+    } catch {
       setAppointments(INITIAL_APPOINTMENTS);
     }
   }, []);

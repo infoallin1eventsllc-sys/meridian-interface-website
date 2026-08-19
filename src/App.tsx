@@ -31,10 +31,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Bumped whenever a booking is made. The appointments portal keys off this so
+  // a booking made *from* that page shows up immediately — without it the list
+  // only reads storage on mount, and a client who just booked sees a stale list
+  // and reasonably concludes the booking failed.
+  const [bookingVersion, setBookingVersion] = useState(0);
+
   const handleAppointmentCreated = (_appointment: Appointment) => {
-    // Hook point for post-booking side effects (analytics, a toast, etc.).
-    // Intentionally does NOT log the appointment — it carries personal data
+    // Deliberately does not log the appointment: it carries personal data
     // (name, email, phone) that must not be written to the browser console.
+    setBookingVersion((v) => v + 1);
   };
 
   return (
@@ -81,7 +87,10 @@ export default function App() {
         )}
 
         {currentTab === 'appointments' && (
-          <DashboardView onOpenBookModal={() => setIsBookModalOpen(true)} />
+          <DashboardView
+            key={bookingVersion}
+            onOpenBookModal={() => setIsBookModalOpen(true)}
+          />
         )}
 
         {currentTab === 'owner_invoice' && (
