@@ -31,8 +31,10 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAppointmentCreated = (appointment: Appointment) => {
-    console.log('New appointment created:', appointment);
+  const handleAppointmentCreated = (_appointment: Appointment) => {
+    // Hook point for post-booking side effects (analytics, a toast, etc.).
+    // Intentionally does NOT log the appointment — it carries personal data
+    // (name, email, phone) that must not be written to the browser console.
   };
 
   return (

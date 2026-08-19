@@ -232,6 +232,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     <input
                       type="date"
                       required
+                      aria-label="Consultation date"
                       value={preferredDate}
                       onChange={(e) => setPreferredDate(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
@@ -243,6 +244,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       Preferred Time Slot
                     </label>
                     <select
+                      aria-label="Preferred time slot"
                       value={preferredTimeSlot}
                       onChange={(e) => setPreferredTimeSlot(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
@@ -272,6 +274,8 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     <input
                       type="text"
                       required
+                      autoComplete="name"
+                      aria-label="Full name"
                       placeholder="e.g. Sarah Jenkins"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
@@ -286,6 +290,8 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     <input
                       type="email"
                       required
+                      autoComplete="email"
+                      aria-label="Email address"
                       placeholder="sarah@company.com"
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
@@ -299,6 +305,8 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     </label>
                     <input
                       type="tel"
+                      autoComplete="tel"
+                      aria-label="Phone number"
                       placeholder="+1 (555) 000-0000"
                       value={clientPhone}
                       onChange={(e) => setClientPhone(e.target.value)}
@@ -312,6 +320,8 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     </label>
                     <input
                       type="text"
+                      autoComplete="organization"
+                      aria-label="Company or brand name"
                       placeholder="e.g. Horizon Labs"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
@@ -326,6 +336,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                   </label>
                   <textarea
                     rows={3}
+                    aria-label="Project goals, description, or references"
                     placeholder="Tell us briefly about your web design, app interface, dashboard, or logo requirements..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
