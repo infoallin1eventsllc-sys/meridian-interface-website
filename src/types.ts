@@ -9,6 +9,22 @@ export interface InvoiceLineItem {
   quantity: number;
   rate: number;
   amount: number;
+  /**
+   * What the client actually receives for this line, one deliverable per entry.
+   *
+   * The pricing catalogue already itemises every package, but adding one to an
+   * invoice used to flatten that list into a single run-on sentence — so a
+   * client looking at an $8,500 line saw a wall of words rather than the four
+   * things they were buying. Keeping the array intact means the invoice can
+   * show the breakdown, and the studio can edit it per client.
+   */
+  deliverables?: string[];
+  /**
+   * Optional scope boundary. What a client assumes is included, and isn't, is
+   * where fixed-price work goes wrong; saying it on the invoice is cheaper than
+   * arguing about it later.
+   */
+  excluded?: string[];
 }
 
 export interface OwnerInvoice {

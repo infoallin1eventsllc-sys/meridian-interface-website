@@ -154,7 +154,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const handleAddBundleToInvoice = (bundle: BundledPackage) => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      description: `${bundle.name} (${bundle.priceRange}) — ${bundle.features.join(' • ')}`,
+      // The package name is the line; its features become the itemised
+      // breakdown rather than being flattened into the description.
+      description: bundle.name,
+      deliverables: [...bundle.features],
       category: 'Web Design',
       quantity: 1,
       rate: bundle.defaultPrice,
@@ -175,7 +178,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      description: `${title} — ${desc}`,
+      description: title,
+      deliverables: splitDeliverables(desc),
       category: 'Logo Design',
       quantity: 1,
       rate,
@@ -192,7 +196,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const handleAddWebScopeToInvoice = (scope: WebPricingScope) => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      description: `${scope.scopeTitle} (Boutique Studio Rate) — ${scope.deliverables}`,
+      description: scope.scopeTitle,
+      deliverables: splitDeliverables(scope.deliverables),
       category: 'Web Design',
       quantity: 1,
       rate: scope.boutiqueAvg,
@@ -209,7 +214,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const handleAddPreset = (preset: typeof INDUSTRY_PRICING_PRESETS[0]) => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      description: `${preset.title} — ${preset.description}`,
+      description: preset.title,
+      deliverables: splitDeliverables(preset.description),
       category: preset.category as any,
       quantity: 1,
       rate: preset.rate,
@@ -221,6 +227,47 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     } else {
       setLineItems([...lineItems, newItem]);
     }
+  };
+
+  /**
+   * Turn a prose deliverables blurb into discrete items.
+   *
+   * The catalogue stores some scopes as one sentence ("Responsive landing page,
+   * lead capture, mobile optimization, basic SEO.") and others as a real array.
+   * Splitting on commas and bullets gets the prose ones onto the same footing so
+   * every line on an invoice itemises the same way. Each item is capitalised and
+   * stripped of its trailing period, because it is being presented as a list
+   * entry rather than a clause.
+   */
+  const splitDeliverables = (text: string): string[] =>
+    text
+      .split(/[•;]|,(?![^(]*\))/)
+      .map((part) => part.replace(/\.$/, '').trim())
+      .filter((part) => part.length > 1)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1));
+
+  const handleUpdateDeliverable = (itemId: string, index: number, value: string) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId
+        ? { ...item, deliverables: (item.deliverables ?? []).map((d, i) => (i === index ? value : d)) }
+        : item
+    ));
+  };
+
+  const handleAddDeliverable = (itemId: string) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId
+        ? { ...item, deliverables: [...(item.deliverables ?? []), ''] }
+        : item
+    ));
+  };
+
+  const handleRemoveDeliverable = (itemId: string, index: number) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId
+        ? { ...item, deliverables: (item.deliverables ?? []).filter((_, i) => i !== index) }
+        : item
+    ));
   };
 
   const handleAddCustomLine = () => {
@@ -1019,7 +1066,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {lineItems.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50">
+                    <React.Fragment key={item.id}>
+                      <tr className="hover:bg-slate-50">
                         <td className="p-3">
                           <select
                             value={item.category}
@@ -1074,6 +1122,58 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           </button>
                         </td>
                       </tr>
+
+                      {/* What the client gets for this line. Editable per
+                          invoice, because the catalogue wording is a starting
+                          point and every client's scope differs slightly. */}
+                      <tr className="bg-slate-50/60">
+                        <td />
+                        <td colSpan={5} className="px-3 pb-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              What the client receives
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleAddDeliverable(item.id)}
+                              className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
+                            >
+                              + Add deliverable
+                            </button>
+                          </div>
+
+                          {(item.deliverables ?? []).length === 0 && (
+                            <p className="mt-1 text-[11px] text-slate-400">
+                              Nothing itemised yet. A client reading a four-figure line
+                              should be able to see what it buys.
+                            </p>
+                          )}
+
+                          <div className="mt-1.5 space-y-1.5">
+                            {(item.deliverables ?? []).map((d, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <span className="h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+                                <input
+                                  type="text"
+                                  value={d}
+                                  placeholder="e.g. Up to 7 custom-designed pages, built mobile-first"
+                                  onChange={(e) => handleUpdateDeliverable(item.id, i, e.target.value)}
+                                  className="flex-1 p-1.5 bg-white border border-slate-200 rounded text-[11px] text-slate-800 outline-none focus:border-slate-400"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveDeliverable(item.id, i)}
+                                  className="p-1 text-slate-400 hover:text-red-600 rounded"
+                                  aria-label="Remove deliverable"
+                                >
+                                  <span className="material-symbols-outlined text-sm">close</span>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    </React.Fragment>
                     ))}
                   </tbody>
                 </table>
@@ -1357,12 +1457,43 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-200">
                     {showPrintModal.lineItems && showPrintModal.lineItems.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50">
-                        <td className="p-3 font-bold text-slate-800">{item.category}</td>
-                        <td className="p-3 font-medium text-slate-900">{item.description}</td>
+                      <tr key={idx} className="align-top hover:bg-slate-50">
+                        <td className="p-3 font-bold text-slate-800 whitespace-nowrap">{item.category}</td>
+                        <td className="p-3 text-slate-900">
+                          <div className="font-bold">{item.description}</div>
+
+                          {/* The itemised breakdown. A client looking at a
+                              four-figure line should be able to see the things
+                              they are buying, not infer them from a sentence. */}
+                          {item.deliverables && item.deliverables.length > 0 && (
+                            <ul className="mt-2 space-y-1">
+                              {item.deliverables.filter(Boolean).map((d, i) => (
+                                <li key={i} className="flex gap-2 text-[11px] leading-relaxed text-slate-600">
+                                  <span className="mt-[5px] h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+                                  <span>{d}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+
+                          {item.excluded && item.excluded.filter(Boolean).length > 0 && (
+                            <div className="mt-2 pt-2 border-t border-slate-100">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                Not included
+                              </span>
+                              <ul className="mt-1 space-y-0.5">
+                                {item.excluded.filter(Boolean).map((d, i) => (
+                                  <li key={i} className="text-[11px] leading-relaxed text-slate-500">
+                                    {d}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </td>
                         <td className="p-3 text-center font-mono font-bold text-slate-800">{item.quantity}</td>
-                        <td className="p-3 text-right font-mono text-slate-800">${item.rate.toLocaleString()}</td>
-                        <td className="p-3 text-right font-mono font-bold text-slate-950">${item.amount.toLocaleString()}</td>
+                        <td className="p-3 text-right font-mono text-slate-800 whitespace-nowrap">${item.rate.toLocaleString()}</td>
+                        <td className="p-3 text-right font-mono font-bold text-slate-950 whitespace-nowrap">${item.amount.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
