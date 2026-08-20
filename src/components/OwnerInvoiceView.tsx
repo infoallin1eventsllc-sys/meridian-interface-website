@@ -50,6 +50,18 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState<OwnerInvoice | null>(null);
 
+  // Escape always closes the preview. The close button is reachable again, but
+  // a modal should never have exactly one exit that depends on the layout being
+  // right.
+  useEffect(() => {
+    if (!showPrintModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowPrintModal(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showPrintModal]);
+
   // New/Editing Invoice Form State
   const [formClientName, setFormClientName] = useState('');
   const [formClientCompany, setFormClientCompany] = useState('');
@@ -61,6 +73,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [formNotes, setFormNotes] = useState('INTERNAL OWNER RECORD — Custom project invoice with industry benchmark rates.');
   const [formDiscount, setFormDiscount] = useState<number>(0);
   const [formTax, setFormTax] = useState<number>(0);
+  // Why the form reports its own errors: see the `noValidate` note on <form>.
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [lineItems, setLineItems] = useState<InvoiceLineItem[]>([
     {
@@ -287,6 +301,17 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setLineItems([...lineItems, newItem]);
   };
 
+  /**
+   * Keep a typed number inside its range instead of letting the browser refuse
+   * the whole form over it. An empty field reads as NaN mid-edit, which must
+   * not become NaN in the total — it reads as the low end of the range.
+   */
+  const clamp = (value: unknown, low: number, high: number): number => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return low;
+    return Math.min(high, Math.max(low, n));
+  };
+
   const handleUpdateLineItem = (id: string, field: keyof InvoiceLineItem, value: any) => {
     setLineItems(lineItems.map(item => {
       if (item.id === id) {
@@ -306,14 +331,54 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setLineItems(lineItems.filter(item => item.id !== id));
   };
 
+  /**
+   * The next free invoice number.
+   *
+   * This used to be `invoices.length + 1`, which is only correct while nothing
+   * is ever deleted. Delete INV-OWN-2026-002 out of three invoices and the next
+   * new invoice is numbered 003 again — and because saving upserts by id, it
+   * overwrites the existing 003 instead of filing alongside it. Silently, with
+   * the directory showing one row where two should be.
+   *
+   * Counting from the highest number actually in use fixes that; the loop after
+   * it is a belt-and-braces guard for ids that arrived from another device.
+   */
+  const nextInvoiceId = (): string => {
+    const prefix = `INV-OWN-${new Date().getFullYear()}-`;
+    const highest = invoices.reduce((max, inv) => {
+      if (typeof inv.id !== 'string' || !inv.id.startsWith(prefix)) return max;
+      const n = Number(inv.id.slice(prefix.length));
+      return Number.isFinite(n) && n > max ? n : max;
+    }, 0);
+
+    let next = highest + 1;
+    const taken = new Set(invoices.map(i => i.id));
+    while (taken.has(`${prefix}${String(next).padStart(3, '0')}`)) next += 1;
+    return `${prefix}${String(next).padStart(3, '0')}`;
+  };
+
   const handleSaveInvoice = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // The form is noValidate, so every rejection has to be made here — and has
+    // to be shown. A Save button that does nothing is the bug being fixed.
     if (lineItems.length === 0) {
-      alert('Please add at least one line item to the invoice.');
+      setSaveError('Add at least one line item before saving this invoice.');
       return;
     }
+    const unpriced = lineItems.find(item => !Number.isFinite(Number(item.rate)) || Number(item.rate) < 0);
+    if (unpriced) {
+      setSaveError(`"${unpriced.description || 'A line item'}" needs a rate of $0 or more.`);
+      return;
+    }
+    const unnamed = lineItems.find(item => !item.description.trim());
+    if (unnamed) {
+      setSaveError('Every line item needs a description — that is what the client reads.');
+      return;
+    }
+    setSaveError(null);
 
-    const invoiceId = activeInvoice ? activeInvoice.id : `INV-OWN-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
+    const invoiceId = activeInvoice ? activeInvoice.id : nextInvoiceId();
 
     const newInvoice: OwnerInvoice = {
       id: invoiceId,
@@ -353,6 +418,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   };
 
   const handleEditInvoice = (inv: OwnerInvoice) => {
+    setSaveError(null);
     setActiveInvoice(inv);
     setFormClientName(inv.clientName);
     setFormClientCompany(inv.clientCompany);
@@ -377,6 +443,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   };
 
   const handleStartNewInvoice = () => {
+    setSaveError(null);
     setActiveInvoice(null);
     setFormClientName('');
     setFormClientCompany('Meridian Digital Design Studio LLC');
@@ -917,7 +984,23 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             </button>
           </div>
 
-          <form onSubmit={handleSaveInvoice} className="space-y-6">
+          {/*
+            noValidate is deliberate. These inputs previously carried HTML
+            step constraints — the tax percentage inherited the default
+            step of 1, and the line rate used step="50". A browser refuses to
+            submit a form containing a step mismatch, and it reports that with
+            a native tooltip on the offending field, which on a long invoice
+            is usually scrolled out of sight. The visible result was a Save
+            button that did nothing at all: type 8.25 for Texas sales tax,
+            watch the Grand Total update correctly, click Save, and nothing
+            happens. Nothing in the console, no message, no invoice.
+
+            The steps are fixed below, but the silent-refusal mechanism is the
+            real defect, so it is switched off entirely. handleSaveInvoice
+            validates instead, and every rejection it makes is rendered next
+            to the button that was pressed.
+          */}
+          <form onSubmit={handleSaveInvoice} className="space-y-6" noValidate>
             {/* Recipient / Client Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
               <div>
@@ -1099,18 +1182,23 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           <input
                             type="number"
                             min="1"
+                            step="1"
                             value={item.quantity}
-                            onChange={(e) => handleUpdateLineItem(item.id, 'quantity', Number(e.target.value))}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'quantity', clamp(e.target.value, 1, 9999))}
                             className="w-16 p-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-center text-slate-900 outline-none"
                           />
                         </td>
                         <td className="p-3 text-right">
+                          {/* step="any", not step="50". A quoted rate is a
+                              typed figure, not a dial — $2,875 is an ordinary
+                              number for a custom scope and used to be rejected
+                              as a step mismatch. */}
                           <input
                             type="number"
-                            step="50"
+                            step="any"
                             min="0"
                             value={item.rate}
-                            onChange={(e) => handleUpdateLineItem(item.id, 'rate', Number(e.target.value))}
+                            onChange={(e) => handleUpdateLineItem(item.id, 'rate', clamp(e.target.value, 0, 10_000_000))}
                             className="w-24 p-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-right text-slate-900 outline-none"
                           />
                         </td>
@@ -1212,20 +1300,24 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     type="number"
                     min="0"
                     max="100"
+                    step="any"
                     value={formDiscount}
-                    onChange={(e) => setFormDiscount(Number(e.target.value))}
+                    onChange={(e) => setFormDiscount(clamp(e.target.value, 0, 100))}
                     className="w-20 p-1 bg-white border border-slate-300 rounded text-right font-mono font-bold text-slate-900"
                   />
                 </div>
 
                 <div className="flex justify-between items-center text-slate-600 font-semibold">
                   <span>Sales / Service Tax (%):</span>
+                  {/* step="any" because real tax rates have cents in them —
+                      8.25 in Texas, 7.375 in parts of New York. */}
                   <input
                     type="number"
                     min="0"
                     max="30"
+                    step="any"
                     value={formTax}
-                    onChange={(e) => setFormTax(Number(e.target.value))}
+                    onChange={(e) => setFormTax(clamp(e.target.value, 0, 30))}
                     className="w-20 p-1 bg-white border border-slate-300 rounded text-right font-mono font-bold text-slate-900"
                   />
                 </div>
@@ -1237,10 +1329,20 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               </div>
             </div>
 
+            {saveError && (
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800"
+              >
+                <span className="material-symbols-outlined text-base" aria-hidden="true">error</span>
+                <span>{saveError}</span>
+              </div>
+            )}
+
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
               <button
                 type="button"
-                onClick={() => setIsCreatingNew(false)}
+                onClick={() => { setSaveError(null); setIsCreatingNew(false); }}
                 className="px-5 py-3 bg-slate-200 text-slate-800 font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-300"
               >
                 Cancel
@@ -1366,10 +1468,26 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         )}
       </section>
 
-      {/* Printable Invoice Modal */}
+      {/*
+        Printable Invoice Modal.
+
+        The overlay scrolls and the card is centred horizontally only. That is
+        deliberate. This used to be one element carrying both
+        `flex items-center` and `overflow-y-auto`, and those two do not
+        co-operate: once the invoice grows taller than the window, centring
+        pushes the top of the card above the scroll container's origin, where no
+        amount of scrolling can reach it. Measured on a full invoice, scrollTop
+        was already 0 and the card started at -596px.
+
+        Everything in that lost strip is the action bar — Print / Save PDF and
+        Close. So a long invoice opened its own preview and then trapped the
+        owner inside it: unable to print the thing they had just made, unable to
+        dismiss it. The more itemised the invoice, the worse it got — which is
+        the direction this whole portal has been moving.
+      */}
       {showPrintModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-3xl w-full p-6 md:p-10 border border-slate-300 shadow-2xl relative my-8">
+        <div className="fixed inset-0 z-[100] overflow-y-auto p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-3xl w-full mx-auto my-8 p-6 md:p-10 border border-slate-300 shadow-2xl relative">
             {/* Action Bar */}
             <div className="flex justify-between items-center border-b border-slate-200 pb-4 mb-6 print:hidden">
               <div className="flex items-center gap-2">
@@ -1388,9 +1506,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 </button>
                 <button
                   onClick={() => setShowPrintModal(null)}
+                  aria-label="Close invoice preview"
+                  title="Close invoice preview"
                   className="p-2 text-slate-500 hover:text-slate-900"
                 >
-                  <span className="material-symbols-outlined text-2xl">close</span>
+                  <span className="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
                 </button>
               </div>
             </div>

@@ -53,8 +53,25 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/*
+   No `both` fill-mode here, and that is load-bearing rather than a tidy-up.
+
+   `meridian-fade-in` ends on `transform: translateY(0)`. With the fill mode set
+   to `both`, that transform stuck to the element permanently — and an element
+   with any transform other than `none` becomes the containing block for every
+   `position: fixed` descendant. Each page container carries this class, so
+   every overlay on the site was being positioned against the scrollable page
+   body instead of the window.
+
+   The visible result was worst in the owner portal: open the printable invoice
+   on a long invoice and the action bar — Print / Save PDF and Close — sat
+   above the top of the scroll area, unreachable, with scrollTop already at 0.
+
+   Dropping the fill mode changes nothing about how the animation looks. It has
+   no delay, and its end state (opacity 1, no transform) is identical to the
+   element's resting state, so there is nothing to hold. */
 .animate-fadeIn {
-  animation: meridian-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: meridian-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
