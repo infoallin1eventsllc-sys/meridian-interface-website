@@ -3,6 +3,7 @@ import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO, HOTLINK_IMAGES } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
+import { ImageWithFallback } from './ImageWithFallback';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -128,13 +129,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
             >
               <div>
                 <div className="h-48 relative overflow-hidden bg-slate-900">
-                  <img
+                  <ImageWithFallback
                     src={service.image}
                     alt={service.title}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                    }}
+                    icon={service.icon}
+                    label={service.categoryName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                   />
                 </div>
@@ -216,13 +215,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
             >
               <div className="aspect-video relative overflow-hidden bg-slate-900">
-                <img
+                <ImageWithFallback
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                  }}
+                  icon="palette"
+                  label={item.categoryLabel}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
                 <div className="absolute top-3 left-3 bg-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold text-white uppercase tracking-wider">
