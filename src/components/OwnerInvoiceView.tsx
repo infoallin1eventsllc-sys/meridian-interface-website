@@ -11,18 +11,32 @@ import {
   WebPricingScope
 } from '../data/mockData';
 import { OwnerPhotoControl } from './OwnerPhotoControl';
+import {
+  backendConfigured,
+  deleteInvoice as deleteInvoiceRemote,
+  isSignedIn,
+  listInvoices,
+  login as ownerLogin,
+  saveInvoice as saveInvoiceRemote,
+  signOut,
+} from '../lib/ownerStore';
 
 interface OwnerInvoiceViewProps {
   onTabChange?: (tab: any) => void;
 }
 
 export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
-  // Owner Authentication Gate State
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
-    return localStorage.getItem('meridian_owner_unlocked') === 'true';
-  });
+  // Owner Authentication Gate State.
+  // The session is a short-lived signed token from the `owner` edge function,
+  // held in sessionStorage — it dies with the tab and carries no secret.
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(() => isSignedIn());
   const [pinInput, setPinInput] = useState('');
-  const [pinError, setPinError] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
+  // null = still asking the server whether a passcode is configured.
+  const [passcodeConfigured, setPasscodeConfigured] = useState<boolean | null>(null);
+  // True when the server could not be reached and we are on local copies.
+  const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
   const [portalTab, setPortalTab] = useState<'invoices' | 'photos'>('invoices');
@@ -67,55 +81,50 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     }
   ]);
 
-  // Load stored owner invoices
+  // Ask the server whether a passcode exists, so the gate can show the right
+  // screen instead of a form that might be impossible to satisfy.
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('meridian_owner_invoices');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setInvoices(parsed);
-      } else {
-        setInvoices(INITIAL_OWNER_INVOICES);
-        localStorage.setItem('meridian_owner_invoices', JSON.stringify(INITIAL_OWNER_INVOICES));
-      }
-    } catch (err) {
-      setInvoices(INITIAL_OWNER_INVOICES);
-    }
+    let cancelled = false;
+    backendConfigured().then((ok) => {
+      if (!cancelled) setPasscodeConfigured(ok);
+    });
+    return () => { cancelled = true; };
   }, []);
 
-  // Soft client-side gate ONLY. Any value shipped in the bundle is publicly readable, so
-  // this is not real authentication — it just keeps internal tooling out of casual view.
-  // Real access control must be enforced server-side once the backend is connected.
-  // In production the passcode must be supplied via VITE_OWNER_PASSCODE; a convenience
-  // default ('meridian') is available in local dev only.
-  const OWNER_PASSCODE = (import.meta.env.VITE_OWNER_PASSCODE || '').trim();
-  const DEV_PASSCODE = import.meta.env.DEV ? 'meridian' : '';
+  // Invoices come from the server once unlocked. Nothing is fetched before
+  // that — the list is not public data.
+  useEffect(() => {
+    if (!isUnlocked) return;
+    let cancelled = false;
+    listInvoices().then(({ invoices: remote, offline: isOffline }) => {
+      if (cancelled) return;
+      setOffline(isOffline);
+      setInvoices(remote.length ? remote : INITIAL_OWNER_INVOICES);
+    });
+    return () => { cancelled = true; };
+  }, [isUnlocked]);
 
-  // With neither set — a production build and no VITE_OWNER_PASSCODE — there is
-  // no value that can ever satisfy handlePinSubmit. Showing a passcode form in
-  // that state means typing into a box that always answers "Incorrect", with
-  // nothing to indicate why. Detect it and explain the fix instead.
-  const passcodeConfigured = OWNER_PASSCODE !== '' || DEV_PASSCODE !== '';
-
-  const handlePinSubmit = (e: React.FormEvent) => {
+  // The passcode is compared on the server, against a secret the browser never
+  // receives. Nothing here can reveal it, and repeated guesses are throttled.
+  const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const entered = pinInput.trim();
-    const isValid =
-      (OWNER_PASSCODE !== '' && entered === OWNER_PASSCODE) ||
-      (DEV_PASSCODE !== '' && entered === DEV_PASSCODE);
-
-    if (isValid) {
+    if (checking) return;
+    setChecking(true);
+    setPinError(null);
+    const result = await ownerLogin(pinInput.trim());
+    setChecking(false);
+    if (result.ok) {
       setIsUnlocked(true);
-      localStorage.setItem('meridian_owner_unlocked', 'true');
-      setPinError(false);
+      setPinInput('');
     } else {
-      setPinError(true);
+      setPinError(result.message);
     }
   };
 
   const handleLockPortal = () => {
+    signOut();
     setIsUnlocked(false);
-    localStorage.removeItem('meridian_owner_unlocked');
+    setInvoices([]);
   };
 
   // Calculations
@@ -281,11 +290,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     }
 
     setInvoices(updatedList);
-    try {
-      localStorage.setItem('meridian_owner_invoices', JSON.stringify(updatedList));
-    } catch (err) {
-      console.error(err);
-    }
+    // Optimistic: the list updates immediately, then the server confirms. If it
+    // cannot be reached the seam keeps a local copy and says so, rather than
+    // pretending the invoice was filed.
+    void saveInvoiceRemote(newInvoice).then(({ offline: isOffline }) => setOffline(isOffline));
 
     setIsCreatingNew(false);
     setActiveInvoice(null);
@@ -312,11 +320,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     if (confirm(`Delete owner invoice #${id}? This action cannot be undone.`)) {
       const updated = invoices.filter(i => i.id !== id);
       setInvoices(updated);
-      try {
-        localStorage.setItem('meridian_owner_invoices', JSON.stringify(updated));
-      } catch (err) {
-        console.error(err);
-      }
+      void deleteInvoiceRemote(id).then(({ offline: isOffline }) => setOffline(isOffline));
     }
   };
 
@@ -354,7 +358,19 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   };
 
   // No passcode exists in this build, so the gate cannot be opened. Say so.
-  if (!isUnlocked && !passcodeConfigured) {
+  // Still asking the server. Showing either gate now would flash the wrong one.
+  if (!isUnlocked && passcodeConfigured === null) {
+    return (
+      <main className="pt-28 pb-20 px-4 max-w-md mx-auto min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 mx-auto rounded-full border-2 border-slate-200 border-t-slate-900 animate-spin" />
+          <p className="font-body text-sm text-slate-500">Checking the portal…</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!isUnlocked && passcodeConfigured === false) {
     return (
       <main className="pt-28 pb-20 px-4 max-w-lg mx-auto min-h-screen flex items-center justify-center animate-fadeIn">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 md:p-8 w-full space-y-5">
@@ -378,34 +394,33 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           </p>
 
           <ol className="space-y-2.5 text-sm text-slate-700 list-decimal list-inside marker:text-slate-400 marker:font-bold">
-            <li>Open your hosting project&rsquo;s environment variables.</li>
+            <li>Open the Supabase project &rarr; Edge Functions &rarr; Secrets.</li>
             <li>
               Add{' '}
               <code className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[12px] text-slate-900">
-                VITE_OWNER_PASSCODE
+                OWNER_PASSCODE
               </code>{' '}
               and set it to a passcode only you know.
             </li>
-            <li>Redeploy. This screen becomes the passcode prompt.</li>
+            <li>Reload this page. This screen becomes the passcode prompt.</li>
           </ol>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-1.5">
-            <p className="text-[12px] font-bold text-amber-900 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">info</span>
-              What this passcode does and does not do
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5">
+            <p className="text-[12px] font-bold text-slate-800 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm">shield</span>
+              Set it as a Supabase secret, not a site variable
             </p>
-            <p className="text-[12px] text-amber-900/90 leading-relaxed">
-              It keeps the portal out of casual view. It is <strong>not</strong> real
-              security: it is checked in the browser, and invoices are stored in this
-              browser&rsquo;s local storage. Anyone using this device, or reading the
-              site&rsquo;s code, can reach the data. Treat it as a privacy screen until
-              billing moves to the server.
+            <p className="text-[12px] text-slate-600 leading-relaxed">
+              Anything named <code className="font-mono">VITE_&hellip;</code> is compiled
+              into the pages this site serves, so a passcode set there is readable by
+              anyone who opens the site&rsquo;s source. A Supabase secret stays on the
+              server. The passcode is checked there and never sent to a browser.
             </p>
           </div>
 
           <p className="text-[11px] text-slate-400 leading-relaxed pt-1 border-t border-slate-100">
-            Running the site locally? The portal opens with the passcode{' '}
-            <code className="font-mono">meridian</code> in development builds.
+            Invoices are stored in the Meridian database, not in this browser, so
+            they survive a cleared cache and follow you between devices.
           </p>
         </div>
       </main>
@@ -444,31 +459,34 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 value={pinInput}
                 onChange={(e) => {
                   setPinInput(e.target.value);
-                  setPinError(false);
+                  setPinError(null);
                 }}
+                disabled={checking}
                 className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-sm font-mono font-bold text-slate-900 outline-none transition-colors ${
                   pinError ? 'border-red-500 bg-red-50' : 'border-slate-300 focus:border-slate-900'
                 }`}
                 autoFocus
               />
               {pinError && (
-                <p className="text-[11px] text-red-600 font-bold mt-1">
-                  Incorrect passcode.
+                <p className="text-[11px] text-red-600 font-bold mt-1" role="alert">
+                  {pinError}
                 </p>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"
+              disabled={checking || !pinInput.trim()}
+              className="w-full py-3 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-base">key</span>
-              Authenticate Owner Access
+              {checking ? 'Checking\u2026' : 'Authenticate Owner Access'}
             </button>
           </form>
 
           <p className="text-[11px] text-slate-400 leading-relaxed pt-2 border-t border-slate-100">
-            Internal studio tool. Access is limited to Meridian Interface staff.
+            Checked on the server, and rate limited. The passcode is never sent to
+            or stored in this browser.
           </p>
         </div>
       </main>
@@ -513,6 +531,20 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           </button>
         </div>
       </section>
+
+      {offline && (
+        <div
+          role="status"
+          className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+        >
+          <span className="material-symbols-outlined text-amber-600 text-lg shrink-0">cloud_off</span>
+          <div className="text-[12px] leading-relaxed text-amber-900">
+            <strong className="font-bold">Working offline.</strong> The Meridian
+            database could not be reached, so changes are being kept in this browser
+            only. They will be filed the next time you sign in with a connection.
+          </div>
+        </div>
+      )}
 
       {/* Portal area tabs */}
       <div className="mb-8 flex flex-wrap gap-2">
