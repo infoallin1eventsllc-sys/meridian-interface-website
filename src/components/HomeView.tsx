@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO, HOTLINK_IMAGES } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
+import { HeroBackdrop } from './HeroBackdrop';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -41,16 +42,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <main className="pt-16 pb-24 md:pb-16 animate-fadeIn bg-slate-50">
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
-        {/* Background image — full-bleed scene; owner-swappable via Photo Control */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-95 pointer-events-none"
-          style={{ backgroundImage: `url('${resolveImage('hero', HOTLINK_IMAGES.globalEarthBg)}')` }}
-        />
-        {/* Legibility scrim — dark on the left where the copy sits, clearing to reveal the scene */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0f172a] via-[#0f172a]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0f172a]/70 via-transparent to-[#0f172a]/25 pointer-events-none" />
+        {/* Full-bleed scene in slow orbit — photograph still owner-swappable via
+            Photo Control; the motion layer never depends on what it shows. */}
+        <HeroBackdrop imageUrl={resolveImage('hero', HOTLINK_IMAGES.globalEarthBg)} />
 
-        <div className="relative z-10 max-w-[1200px] mx-auto w-full space-y-7">
+        <div className="hero-stagger relative z-10 max-w-[1200px] mx-auto w-full space-y-7">
           {/* Eyebrow — thin rule + label, no chips or pulsing dots */}
           <div className="inline-flex items-center gap-3 text-blue-400">
             <span className="h-px w-8 bg-blue-500" />
