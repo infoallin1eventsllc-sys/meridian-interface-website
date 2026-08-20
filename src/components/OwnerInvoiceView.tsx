@@ -91,6 +91,12 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const OWNER_PASSCODE = (import.meta.env.VITE_OWNER_PASSCODE || '').trim();
   const DEV_PASSCODE = import.meta.env.DEV ? 'meridian' : '';
 
+  // With neither set — a production build and no VITE_OWNER_PASSCODE — there is
+  // no value that can ever satisfy handlePinSubmit. Showing a passcode form in
+  // that state means typing into a box that always answers "Incorrect", with
+  // nothing to indicate why. Detect it and explain the fix instead.
+  const passcodeConfigured = OWNER_PASSCODE !== '' || DEV_PASSCODE !== '';
+
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const entered = pinInput.trim();
@@ -346,6 +352,65 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     ]);
     setIsCreatingNew(true);
   };
+
+  // No passcode exists in this build, so the gate cannot be opened. Say so.
+  if (!isUnlocked && !passcodeConfigured) {
+    return (
+      <main className="pt-28 pb-20 px-4 max-w-lg mx-auto min-h-screen flex items-center justify-center animate-fadeIn">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 md:p-8 w-full space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-2xl">key_off</span>
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Internal Portal
+              </div>
+              <h1 className="font-display font-black text-xl text-slate-900 pt-1">
+                Set a passcode to open this
+              </h1>
+            </div>
+          </div>
+
+          <p className="font-body text-sm text-slate-600 leading-relaxed">
+            The Internal Invoice &amp; Pricing Manager is installed and ready. It just
+            has no passcode yet, so there is nothing to unlock it with.
+          </p>
+
+          <ol className="space-y-2.5 text-sm text-slate-700 list-decimal list-inside marker:text-slate-400 marker:font-bold">
+            <li>Open your hosting project&rsquo;s environment variables.</li>
+            <li>
+              Add{' '}
+              <code className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[12px] text-slate-900">
+                VITE_OWNER_PASSCODE
+              </code>{' '}
+              and set it to a passcode only you know.
+            </li>
+            <li>Redeploy. This screen becomes the passcode prompt.</li>
+          </ol>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-1.5">
+            <p className="text-[12px] font-bold text-amber-900 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm">info</span>
+              What this passcode does and does not do
+            </p>
+            <p className="text-[12px] text-amber-900/90 leading-relaxed">
+              It keeps the portal out of casual view. It is <strong>not</strong> real
+              security: it is checked in the browser, and invoices are stored in this
+              browser&rsquo;s local storage. Anyone using this device, or reading the
+              site&rsquo;s code, can reach the data. Treat it as a privacy screen until
+              billing moves to the server.
+            </p>
+          </div>
+
+          <p className="text-[11px] text-slate-400 leading-relaxed pt-1 border-t border-slate-100">
+            Running the site locally? The portal opens with the passcode{' '}
+            <code className="font-mono">meridian</code> in development builds.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   // Locked Gate View
   if (!isUnlocked) {
