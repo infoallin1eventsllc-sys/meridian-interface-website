@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
+import { ImageWithFallback } from './ImageWithFallback';
 
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
@@ -70,13 +71,11 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           >
             <div>
               <div className="aspect-[16/10] relative overflow-hidden bg-slate-900">
-                <img
+                <ImageWithFallback
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                  }}
+                  icon="palette"
+                  label={item.categoryLabel}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
                 <div className="absolute top-3 left-3 bg-slate-900 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
@@ -141,13 +140,11 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
               </h2>
 
               <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
-                <img
+                <ImageWithFallback
                   src={resolveImage(activeItem.id, activeItem.image)}
                   alt={activeItem.title}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                  }}
+                  icon="palette"
+                  label={activeItem.categoryLabel}
                   className="w-full h-full object-cover"
                 />
               </div>

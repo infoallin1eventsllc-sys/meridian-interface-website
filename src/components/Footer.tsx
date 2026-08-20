@@ -8,12 +8,12 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) => {
-  // Only surface the internal owner portal when it can actually be unlocked —
-  // i.e. a passcode is configured (prod) or we're in local dev. Otherwise the
-  // link leads to a gate no one can pass, and needlessly advertises an internal
-  // tool. Real access control still belongs server-side (see OwnerInvoiceView).
-  const ownerPortalEnabled =
-    import.meta.env.DEV || !!(import.meta.env.VITE_OWNER_PASSCODE || '').trim();
+  // The studio login is always reachable. An earlier version hid it whenever no
+  // passcode was configured, on the theory that a gate nobody can pass should
+  // not be advertised — but the effect was that the owner shipped the site and
+  // silently lost the door to his own invoicing tool. The portal now explains
+  // how to configure itself instead of vanishing, so being unconfigured is a
+  // visible, fixable state rather than a missing feature.
 
   return (
     <footer className="bg-slate-900 text-white pt-12 pb-24 md:pb-12 px-4 md:px-12 border-t border-slate-800">
@@ -70,15 +70,13 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) 
             <span className="font-body text-xs text-slate-400">
               © 2026 Meridian Interface. All rights reserved.
             </span>
-            {ownerPortalEnabled && (
-              <button
+            <button
                 onClick={() => onTabChange('owner_invoice')}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-slate-200 transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">lock</span>
                 Studio login
               </button>
-            )}
           </div>
         </div>
       </div>

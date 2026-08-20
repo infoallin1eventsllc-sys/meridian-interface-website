@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
+import { ImageWithFallback } from './ImageWithFallback';
 
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
@@ -105,13 +106,11 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         </div>
 
         <div className="lg:col-span-5 h-72 lg:h-full min-h-[320px] relative rounded-xl overflow-hidden bg-slate-900 shadow-md">
-          <img
+          <ImageWithFallback
             src={currentService.image}
             alt={currentService.title}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-            }}
+            icon={currentService.icon}
+            label={currentService.categoryName}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />

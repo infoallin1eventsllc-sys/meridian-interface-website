@@ -63,6 +63,39 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Hero
+
+   The movement now lives in the footage, not in CSS — see HeroBackdrop. What
+   stays here is the entrance: the copy arrives in sequence rather than all at
+   once, so the hero resolves as one orchestrated moment.
+   --------------------------------------------------------------------------- */
+
+.hero-video {
+  /* The clip is graded to sit under the scrims; a hard edge at the video's
+     bounds would give away that it is a rectangle rather than the scene. */
+  will-change: transform;
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-stagger > * {
+  animation: hero-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.hero-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-stagger > *:nth-child(2) { animation-delay: 0.15s; }
+.hero-stagger > *:nth-child(3) { animation-delay: 0.25s; }
+.hero-stagger > *:nth-child(4) { animation-delay: 0.35s; }
+.hero-stagger > *:nth-child(5) { animation-delay: 0.45s; }
+.hero-stagger > *:nth-child(6) { animation-delay: 0.55s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stagger > * { animation: none; }
+}
+
 .font-display {
   font-family: 'Hanken Grotesk', 'Inter', system-ui, sans-serif;
 }

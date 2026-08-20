@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO, HOTLINK_IMAGES } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
+import { HeroBackdrop } from './HeroBackdrop';
+import { ImageWithFallback } from './ImageWithFallback';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -41,16 +43,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <main className="pt-16 pb-24 md:pb-16 animate-fadeIn bg-slate-50">
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
-        {/* Background image — full-bleed scene; owner-swappable via Photo Control */}
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-95 pointer-events-none"
-          style={{ backgroundImage: `url('${resolveImage('hero', HOTLINK_IMAGES.globalEarthBg)}')` }}
-        />
-        {/* Legibility scrim — dark on the left where the copy sits, clearing to reveal the scene */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0f172a] via-[#0f172a]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[#0f172a]/70 via-transparent to-[#0f172a]/25 pointer-events-none" />
+        {/* Full-bleed scene in slow orbit — photograph still owner-swappable via
+            Photo Control; the motion layer never depends on what it shows. */}
+        <HeroBackdrop imageUrl={resolveImage('hero', HOTLINK_IMAGES.globalEarthBg)} />
 
-        <div className="relative z-10 max-w-[1200px] mx-auto w-full space-y-7">
+        <div className="hero-stagger relative z-10 max-w-[1200px] mx-auto w-full space-y-7">
           {/* Eyebrow — thin rule + label, no chips or pulsing dots */}
           <div className="inline-flex items-center gap-3 text-blue-400">
             <span className="h-px w-8 bg-blue-500" />
@@ -132,13 +129,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
             >
               <div>
                 <div className="h-48 relative overflow-hidden bg-slate-900">
-                  <img
+                  <ImageWithFallback
                     src={service.image}
                     alt={service.title}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                    }}
+                    icon={service.icon}
+                    label={service.categoryName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                   />
                 </div>
@@ -220,13 +215,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
             >
               <div className="aspect-video relative overflow-hidden bg-slate-900">
-                <img
+                <ImageWithFallback
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop';
-                  }}
+                  icon="palette"
+                  label={item.categoryLabel}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
                 <div className="absolute top-3 left-3 bg-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold text-white uppercase tracking-wider">
@@ -300,9 +293,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <option value="logo_brand">Logo & Brand Identity</option>
                   <option value="full_package">Full Studio Package (Web+App+Dashboards+Logo)</option>
                 </select>
-                <span className="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-xl">
-                  expand_more
-                </span>
+                {/* Inline SVG rather than a Material Symbol. The self-hosted
+                    subset font's cmap omits j, q, x and z, so the ligature
+                    "e(x)pand_more" can never form and the browser painted the
+                    literal word across the field. A drawn chevron cannot fail
+                    that way. */}
+                <svg
+                  className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"
+                  viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 7.5 10 12.5 15 7.5" />
+                </svg>
               </div>
             </div>
 
