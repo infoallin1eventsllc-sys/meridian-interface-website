@@ -293,9 +293,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <option value="logo_brand">Logo & Brand Identity</option>
                   <option value="full_package">Full Studio Package (Web+App+Dashboards+Logo)</option>
                 </select>
-                <span className="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-xl">
-                  expand_more
-                </span>
+                {/* Inline SVG rather than a Material Symbol. The self-hosted
+                    subset font's cmap omits j, q, x and z, so the ligature
+                    "e(x)pand_more" can never form and the browser painted the
+                    literal word across the field. A drawn chevron cannot fail
+                    that way. */}
+                <svg
+                  className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"
+                  viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 7.5 10 12.5 15 7.5" />
+                </svg>
               </div>
             </div>
 
