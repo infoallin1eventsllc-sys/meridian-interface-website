@@ -179,7 +179,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       description: title,
-      deliverables: splitDeliverables(desc),
+      deliverables:
+        (isFullPackage ? tier.fullBrandDeliverables : tier.basicLogoDeliverables) ??
+        splitDeliverables(desc),
       category: 'Logo Design',
       quantity: 1,
       rate,
@@ -197,7 +199,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       description: scope.scopeTitle,
-      deliverables: splitDeliverables(scope.deliverables),
+      // Prefer the client-facing wording; fall back to splitting studio prose.
+      deliverables: scope.plainDeliverables ?? splitDeliverables(scope.deliverables),
       category: 'Web Design',
       quantity: 1,
       rate: scope.boutiqueAvg,
@@ -215,7 +218,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       description: preset.title,
-      deliverables: splitDeliverables(preset.description),
+      deliverables:
+        (preset as { plainDeliverables?: string[] }).plainDeliverables ??
+        splitDeliverables(preset.description),
       category: preset.category as any,
       quantity: 1,
       rate: preset.rate,
