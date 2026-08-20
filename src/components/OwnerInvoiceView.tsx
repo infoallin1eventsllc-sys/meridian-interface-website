@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { OwnerInvoice, InvoiceLineItem } from '../types';
+import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
+
 import {
   INITIAL_OWNER_INVOICES,
   INDUSTRY_PRICING_PRESETS,
@@ -39,7 +41,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'photos'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'answers' | 'photos'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -669,6 +671,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       <div className="mb-8 flex flex-wrap gap-2">
         {([
           { id: 'invoices', label: 'Invoices & Pricing', icon: 'receipt_long' },
+          { id: 'answers', label: 'Client Answers', icon: 'quick_reference_all' },
           { id: 'photos', label: 'Photo Control', icon: 'photo_camera' }
         ] as const).map((t) => (
           <button
@@ -688,6 +691,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       </div>
 
       {portalTab === 'photos' && <OwnerPhotoControl />}
+
+      {portalTab === 'answers' && <ClientExplainers />}
 
       {portalTab === 'invoices' && (
       <>
@@ -1226,13 +1231,21 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                               What the client receives
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => handleAddDeliverable(item.id)}
-                              className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
-                            >
-                              + Add deliverable
-                            </button>
+                            <div className="flex items-center gap-3">
+                              {/* The long-form answer for this exact line, one
+                                  click from where the question gets asked. */}
+                              <CopyExplainerButton
+                                description={item.description}
+                                rate={item.rate}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleAddDeliverable(item.id)}
+                                className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
+                              >
+                                + Add deliverable
+                              </button>
+                            </div>
                           </div>
 
                           {(item.deliverables ?? []).length === 0 && (
