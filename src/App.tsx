@@ -10,6 +10,7 @@ import { ConnectView } from './components/ConnectView';
 import { DashboardView } from './components/DashboardView';
 import { OwnerInvoiceView } from './components/OwnerInvoiceView';
 import { Modals } from './components/Modals';
+import { MotionProvider } from './components/MotionProvider';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
@@ -44,6 +45,7 @@ export default function App() {
   };
 
   return (
+    <MotionProvider>
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-body selection:bg-slate-200">
       {/* Fixed Header */}
       <Header
@@ -119,5 +121,6 @@ export default function App() {
         onAppointmentCreated={handleAppointmentCreated}
       />
     </div>
+    </MotionProvider>
   );
 }

@@ -4,7 +4,7 @@ Marketing site and client booking portal for **Meridian Interface** — a digita
 development studio (custom web design, mobile app interfaces, analytics & CRM dashboards, and
 brand identity systems).
 
-Built with React 19 + Vite 6 + Tailwind CSS v4. Deployed on Vercel; backed by Supabase.
+Built with React 19 + Vite 6 + Tailwind CSS v4 + Motion. Deployed on Vercel; backed by Supabase.
 
 ## Run locally
 
@@ -38,6 +38,8 @@ src/
 ├── lib/
 │   ├── leads.ts               # Booking/inquiry seam → the CRM intake webhook
 │   ├── ownerStore.ts          # Owner portal seam → the `owner` edge function
+│   ├── attribution.ts         # Where a lead came from (UTM + referrer)
+│   ├── motion.ts              # The studio's motion vocabulary — use this, not Motion directly
 │   └── imageStore.ts          # Owner image overrides (Photo Control)
 └── components/
     ├── HeroBackdrop.tsx       # Homepage video loop + graceful still fallback
@@ -124,6 +126,33 @@ nothing except sit readable in the bundle, and should be removed.
 
 Every `VITE_`-prefixed variable is inlined into the public client bundle. Never put a real
 secret behind one.
+
+## Motion
+
+Animation goes through [`src/lib/motion.ts`](src/lib/motion.ts), never straight from the
+library. It defines the only easing and transitions the site uses, so a change there changes the
+whole feel rather than one component.
+
+```tsx
+import { useMeridianMotion, m } from '../lib/motion';
+
+const anim = useMeridianMotion();
+<m.div variants={anim.stagger()} {...anim.reveal}>
+  <m.div variants={anim.rise}>…</m.div>
+</m.div>
+```
+
+Two rules, both of which cost real bytes or real accessibility if broken:
+
+- **Import `m`, never `motion`.** `m` is the feature-light component; the features are supplied
+  at runtime by `MotionProvider`. The provider runs in `strict` mode, so reaching for the full
+  `motion` import throws rather than silently doubling the bundle.
+- **Use named imports, never `import * as`.** A namespace import defeats tree-shaking. Measured
+  on this site: the namespace form cost 194kB raw, the named form 78kB.
+
+`useMeridianMotion()` returns the same shapes with movement stripped when the visitor has asked
+their system for reduced motion — opacity still resolves, so nothing is left invisible, but
+nothing travels.
 
 ## Image licensing
 

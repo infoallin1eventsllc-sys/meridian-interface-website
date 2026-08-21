@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
 import { ImageWithFallback } from './ImageWithFallback';
+import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
@@ -15,6 +16,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
   const [selectedServiceId, setSelectedServiceId] = useState<ServiceCategory>('web_design');
 
   const currentService = SERVICES.find(s => s.id === selectedServiceId) || SERVICES[0];
+  const m = useMeridianMotion();
 
   return (
     <main className="pt-24 pb-24 md:pb-16 px-4 md:px-12 max-w-[1440px] mx-auto animate-fadeIn bg-slate-50 min-h-screen">
@@ -133,22 +135,33 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/*
+          The one place motion earns its keep on this page: these four steps are
+          an actual sequence, so revealing them in order says something true
+          about the process. Elsewhere a stagger would just be decoration.
+          `m` strips the movement entirely when the visitor has asked their
+          system for reduced motion — see src/lib/motion.ts.
+        */}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={m.stagger(0.1)}
+          {...m.reveal}
+        >
           {[
             { step: '01', title: 'Appointment Booking', icon: 'calendar_today', desc: 'Schedule a 1-on-1 discovery session to share your goals, brand reference, and features.' },
             { step: '02', title: 'Design & Wireframing', icon: 'draw', desc: 'We craft high-fidelity Figma designs, logo vector concepts, or app UX flows for your review.' },
             { step: '03', title: 'Development & Build', icon: 'code', desc: 'Our engineers transform designs into clean, responsive web code or cross-platform mobile apps.' },
             { step: '04', title: 'Launch & Handover', icon: 'rocket_launch', desc: 'We deploy your website, submit your mobile app to stores, and deliver vector logo master files.' }
           ].map((item, index) => (
-            <div key={index} className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 relative shadow-xs">
+            <motion.div key={index} variants={m.rise} className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 relative shadow-xs">
               <div className="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
                 <span className="material-symbols-outlined">{item.icon}</span>
               </div>
               <h3 className="font-display font-bold text-base text-slate-900">{item.title}</h3>
               <p className="font-body text-xs text-slate-600 leading-relaxed">{item.desc}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </main>
   );
