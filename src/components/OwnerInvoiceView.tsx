@@ -721,6 +721,32 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         ))}
       </div>
 
+      {/*
+        A silent empty catalogue is the worst outcome here: the pricing tabs
+        render with nothing in them and look like there is nothing to sell.
+        This says what actually happened. The usual cause is a browser that
+        blocks storage — private mode, or a strict privacy setting — which
+        stops the session token being kept, so the pricing request is never
+        authorised.
+      */}
+      {catalogueFailed && (
+        <div
+          role="alert"
+          className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+        >
+          <span className="material-symbols-outlined text-amber-600 text-lg shrink-0" aria-hidden="true">
+            price_change
+          </span>
+          <div className="text-[12px] leading-relaxed text-amber-900">
+            <strong className="font-bold">Pricing didn't load.</strong> The catalogue lives on the
+            server and is fetched after sign-in, so the pricing tabs will be empty until it
+            arrives. This usually means the browser is blocking site storage — private browsing, or
+            a strict privacy setting — which stops the session being kept. Invoices you have
+            already saved are unaffected. Try a normal window, or sign in again.
+          </div>
+        </div>
+      )}
+
       {portalTab === 'photos' && <OwnerPhotoControl />}
 
       {portalTab === 'answers' && <ClientExplainers prices={cat.explainer_prices} />}
