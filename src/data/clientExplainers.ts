@@ -494,6 +494,61 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     ],
   },
 
+  {
+    id: 'exp_tech_stack',
+    title: 'Business Tech Stack — Chosen & Connected',
+    category: 'Packages',
+    price: '$7,500',
+    matches: ['tech stack', 'business tech stack', 'systems & integration', 'integration'],
+    summary:
+      'The set of tools your business runs on, picked for how you actually work and connected so information moves between them by itself.',
+    short:
+      'A tech stack just means the tools your business runs on and how they talk to each other. Most businesses end up with four or five that do not, so the same customer detail gets typed in three times. We map how you actually work, choose tools that fit, and wire them together so a booking becomes a calendar entry, an invoice and a follow-up without anyone re-keying it.',
+    included: [
+      {
+        what: 'A map of how work moves through your business today',
+        why:
+          'Done before anything is bought. Buying tools first is how businesses end up paying for three things that overlap and none that fit.',
+      },
+      {
+        what: 'Tools chosen to fit how you work',
+        why:
+          'The alternative is bending your process around whatever the software expects, which is where the daily friction comes from.',
+      },
+      {
+        what: 'The connections between them built and tested',
+        why:
+          'A booking becomes a calendar entry, an invoice, and a follow-up on its own. This is the part that gives you hours back, and the part most people skip.',
+      },
+      {
+        what: 'One dashboard for the numbers you check daily',
+        why:
+          'Instead of opening four systems and adding things up by hand.',
+      },
+      {
+        what: 'The whole setup written down',
+        why:
+          'So the next person you hire can run it, and you are not the only one who knows how it fits together.',
+      },
+    ],
+    outcome:
+      'The same information stops being typed in three places, the things that used to get missed stop getting missed, and you own the setup rather than renting it — no per-user fee that climbs every time you hire.',
+    excluded: [
+      'The monthly subscription fees for the tools themselves — those stay yours, and we will tell you what they cost before you commit',
+      'Migrating years of historical data out of an old system, quoted once we have seen it',
+      'Ongoing administration of the tools after handover',
+      'Custom software where no existing tool fits — that is a web app build, quoted separately',
+    ],
+    timeline:
+      'Typically 3 to 8 weeks depending on how many tools have to talk to each other. The mapping stage at the start is what keeps the rest short.',
+    needFromYou: [
+      'Time from whoever actually does the work day to day, not just whoever owns the business',
+      'A list of what you currently pay for monthly, even the things you forgot you signed up for',
+      'Access to the accounts once we have agreed what stays',
+      'One person who can decide, so the build does not stall waiting on an answer',
+    ],
+  },
+
   /* ------------------------------------------------------ ongoing work ---- */
   {
     id: 'exp_hourly',

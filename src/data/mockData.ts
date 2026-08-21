@@ -71,6 +71,24 @@ export const SERVICES: ServiceDetail[] = [
     image: HOTLINK_IMAGES.dashboardDesign
   },
   {
+    id: 'tech_stack',
+    title: 'Your Business Tech Stack, Chosen and Connected',
+    categoryName: 'Systems & Integration',
+    priceRange: '$4,500 - $15,000',
+    duration: '3 - 8 Weeks',
+    icon: 'account_tree',
+    summary: 'The set of tools your business runs on — website, bookings, payments, CRM, email — picked for how you actually work and wired together so information moves by itself.',
+    description: 'A "tech stack" just means the tools your business runs on and how they talk to each other. Most small businesses end up with four or five that do not, so the same customer detail gets typed in three times and something always gets missed. We map how you actually work, choose tools that fit that, and connect them so a booking becomes a calendar entry, an invoice, and a follow-up without anyone re-keying it. You own the setup — no monthly fee that grows every time you hire.',
+    features: [
+      'A map of how work moves through your business today, before anything is bought',
+      'Tools chosen to fit that — not the other way round',
+      'Website, bookings, payments, CRM and email connected so nothing is typed twice',
+      'One dashboard for the numbers you check daily',
+      'Written down, so the next person you hire can follow it'
+    ],
+    image: HOTLINK_IMAGES.dashboardDesign
+  },
+  {
     id: 'logo_brand',
     title: 'Logo Design & Visual Identity',
     categoryName: 'Branding & Graphics',
@@ -111,6 +129,13 @@ export const SERVICES: ServiceDetail[] = [
 // Concept / sample work — capability demonstrations, not delivered client engagements.
 // `client` holds the target sector, not a real customer name. Replace with real case
 // studies (and add measurable outcomes) once they are available.
+/**
+ * The tech stack service is written differently on purpose.
+ *
+ * "Tech stack" is our phrase, not the client's. Nobody wakes up wanting one —
+ * they want to stop re-typing the same booking into three places. So the copy
+ * leads with the day it fixes and lets the term arrive afterwards, defined.
+ */
 export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p7',
@@ -524,6 +549,21 @@ export const INDUSTRY_PRICING_PRESETS = [
       'Ready-made graphics for your social media profiles and posts',
       'Your colours and fonts chosen and documented',
       'A written guide, so anyone you hire later keeps everything consistent'
+    ]
+  },
+  {
+    id: 'preset_tech_stack',
+    category: 'Web Design' as const,
+    title: 'Business Tech Stack — Chosen & Connected',
+    rate: 7500,
+    range: '$4,500 – $15,000',
+    description: 'Process mapping, tool selection, and integration across website, bookings, payments, CRM and email.',
+    plainDeliverables: [
+      'We map how work actually moves through your business before anything is bought',
+      'Tools chosen to fit how you work, rather than making you work their way',
+      'Your website, bookings, payments and email connected so nothing is typed twice',
+      'One dashboard for the numbers you check every day',
+      'The whole setup written down, so whoever you hire next can follow it'
     ]
   },
   {
