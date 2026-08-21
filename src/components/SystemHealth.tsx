@@ -263,9 +263,9 @@ export const SystemHealth: React.FC = () => {
               <thead>
                 <tr className="bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="text-left p-3">Job</th>
-                  <th className="text-left p-3">Runs</th>
+                  <th className="text-left p-3">Schedule</th>
                   <th className="text-left p-3">Last run</th>
-                  <th className="text-left p-3">Last 24h</th>
+                  <th className="text-left p-3">Runs (24h)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
