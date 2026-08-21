@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { OwnerInvoice, InvoiceLineItem } from '../types';
 import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
 import { CampaignLinks } from './CampaignLinks';
+import { SystemHealth } from './SystemHealth';
 import {
   fetchCatalogue,
   EMPTY_CATALOGUE,
@@ -42,7 +43,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'answers' | 'links' | 'photos'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'answers' | 'links' | 'health' | 'photos'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -703,6 +704,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           // rendered width against the font size rather than trusting the name.
           { id: 'answers', label: 'Client Answers', icon: 'contact_support' },
           { id: 'links', label: 'Campaign Links', icon: 'link' },
+          { id: 'health', label: 'System Health', icon: 'monitor_heart' },
           { id: 'photos', label: 'Photo Control', icon: 'photo_camera' }
         ] as const).map((t) => (
           <button
@@ -752,6 +754,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       {portalTab === 'answers' && <ClientExplainers prices={cat.explainer_prices} />}
 
       {portalTab === 'links' && <CampaignLinks />}
+
+      {portalTab === 'health' && <SystemHealth />}
 
       {portalTab === 'invoices' && (
       <>
