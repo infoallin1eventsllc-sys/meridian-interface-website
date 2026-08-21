@@ -191,10 +191,11 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
       {/* Banner CTA */}
       <section className="bg-[#0f172a] text-white rounded-2xl p-8 md:p-12 text-center space-y-6 shadow-xl">
         <h2 className="font-display font-bold text-2xl md:text-3xl text-white">
-          Start your project with a scoped estimate
+          Start with a conversation, not a price tag
         </h2>
         <p className="text-slate-300 text-sm max-w-xl mx-auto">
-          Book a 1-on-1 consultation and we'll turn your web, app, dashboard, or brand goals into an actionable proposal.
+          Book a one-to-one call and we'll turn your web, app, dashboard, or brand goals into a
+          written quote that itemises every line — once we understand what the work actually is.
         </p>
         <button
           onClick={() => onTabChange('booking')}

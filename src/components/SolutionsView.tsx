@@ -416,10 +416,10 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
               className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg">calendar_month</span>
-              Book Appointment With This Estimate
+              Send This Brief &amp; Book a Call
             </button>
             <p className="text-[10px] text-slate-400 text-center">
-              No deposit required to schedule. Quote confirmed during 1-on-1 discovery session.
+              Nothing to pay to book. We'll price it after the call, in writing.
             </p>
           </div>
         </div>
