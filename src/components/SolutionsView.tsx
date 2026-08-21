@@ -180,48 +180,54 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
   const [includeSEO, setIncludeSEO] = useState(true);
   const [isRush, setIsRush] = useState(false);
 
-  // Price Calculation Logic
-  const getBasePrice = () => {
-    switch (calcService) {
-      case 'web_design': return pageScope === 'small' ? 2500 : pageScope === 'medium' ? 4500 : 7500;
-      case 'app_design': return pageScope === 'small' ? 3800 : pageScope === 'medium' ? 6200 : 9800;
-      case 'dashboards': return pageScope === 'small' ? 3200 : pageScope === 'medium' ? 5400 : 8500;
-      case 'logo_brand': return pageScope === 'small' ? 950 : pageScope === 'medium' ? 1800 : 3500;
-      default: return 3500;
-    }
-  };
-
-  const basePrice = getBasePrice();
-  const animationAddon = includeAnimations ? 600 : 0;
-  const cmsAddon = includeCMS ? 800 : 0;
-  const ecommerceAddon = includeEcommerce ? 1400 : 0;
-  const seoAddon = includeSEO ? 500 : 0;
-  const subtotal = basePrice + animationAddon + cmsAddon + ecommerceAddon + seoAddon;
-  const rushFee = isRush ? Math.round(subtotal * 0.25) : 0;
-  const estimatedTotal = subtotal + rushFee;
+  /*
+   * This used to price the project in the browser and show a running total.
+   *
+   * Two problems with that. Every rate had to ship in the JavaScript to do the
+   * sum, so the whole card was readable from the site's source. And a number
+   * quoted before anyone has understood the work is a number you then have to
+   * argue with — Otis quotes on an invoice, once he knows what is actually
+   * being asked for.
+   *
+   * The selections stay, because they are the valuable part: they tell him what
+   * this visitor wants before the first conversation. They travel into the
+   * booking as a brief instead of a total.
+   */
+  const scopeLabel = pageScope === 'small' ? 'Focused' : pageScope === 'medium' ? 'Standard' : 'Extensive';
+  const chosenExtras = [
+    includeAnimations && 'Interactive animations',
+    includeCMS && 'Content management, so you can edit it yourself',
+    includeEcommerce && 'Online payments and checkout',
+    includeSEO && 'Technical SEO setup',
+    isRush && 'Priority timeline',
+  ].filter(Boolean) as string[];
 
   return (
     <section className="bg-[#0f172a] text-white border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl mb-16 space-y-8 animate-fadeIn">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-blue-300 rounded-full text-xs font-bold uppercase tracking-widest mb-2">
-            <span className="material-symbols-outlined text-sm">calculate</span>
-            Interactive Studio Calculator
+            <span className="material-symbols-outlined text-sm">tune</span>
+            Build Your Brief
           </div>
           <h2 className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
-            Estimate Your Project Scope & Budget
+            Tell us what you need, and we'll price it properly
           </h2>
           <p className="text-xs text-slate-300 max-w-xl mt-1 leading-relaxed">
-            Customize options to calculate estimated investment for your website design, app UI, dashboard, or logo project.
+            Pick the scope and the pieces that matter to you. We'll come back with a written quote
+            that itemises exactly what each part costs — no guessing, and no number invented before
+            we understand the job.
           </p>
         </div>
 
         <div className="bg-white/5 border border-white/15 p-4 rounded-2xl text-right">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Estimated Project Quote</div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your brief so far</div>
           <div className="font-display font-black text-3xl md:text-4xl text-white">
-            ${estimatedTotal.toLocaleString()}
+            {chosenExtras.length + 1}
           </div>
-          <div className="text-[11px] text-slate-400 font-semibold">Estimated Range: ${(estimatedTotal * 0.9).toLocaleString()} – ${(estimatedTotal * 1.15).toLocaleString()}</div>
+          <div className="text-[11px] text-slate-400 font-semibold">
+            {chosenExtras.length === 0 ? 'scope chosen' : `choices — ${scopeLabel.toLowerCase()} scope`}
+          </div>
         </div>
       </div>
 
@@ -306,7 +312,6 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     <span className="block text-[10px] text-slate-400">Framer motion & micro-interactions</span>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-blue-300">+$600</span>
               </label>
 
               <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
@@ -322,7 +327,6 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     <span className="block text-[10px] text-slate-400">Blog, team, services dynamic management</span>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-blue-300">+$800</span>
               </label>
 
               <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
@@ -338,7 +342,6 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     <span className="block text-[10px] text-slate-400">Stripe/Payment gateway integration</span>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-blue-300">+$1,400</span>
               </label>
 
               <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
@@ -354,7 +357,6 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     <span className="block text-[10px] text-slate-400">Meta tags, OpenGraph, sitemap setup</span>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-blue-300">+$500</span>
               </label>
             </div>
           </div>
@@ -384,52 +386,27 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
         <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6 flex flex-col justify-between h-full">
           <div className="space-y-4">
             <h3 className="font-display font-bold text-lg text-white border-b border-white/10 pb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-blue-400">receipt_long</span>
-              Itemized Quote Summary
+              <span className="material-symbols-outlined text-blue-400">checklist</span>
+              What you've asked for
             </h3>
 
             <div className="space-y-2 text-xs text-slate-300">
-              <div className="flex justify-between">
-                <span>Base Service Scope ({pageScope}):</span>
-                <span className="font-mono font-bold text-white">${basePrice.toLocaleString()}</span>
+              <div className="flex items-start gap-2">
+                <span className="material-symbols-outlined text-blue-400 text-sm mt-0.5" aria-hidden="true">check</span>
+                <span><span className="text-white font-semibold">{scopeLabel} scope</span> — we'll confirm exactly what that covers before quoting.</span>
               </div>
-              {includeAnimations && (
-                <div className="flex justify-between">
-                  <span>Interactive Animations:</span>
-                  <span className="font-mono text-white">+$600</span>
+              {chosenExtras.map((extra) => (
+                <div key={extra} className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-blue-400 text-sm mt-0.5" aria-hidden="true">check</span>
+                  <span>{extra}</span>
                 </div>
-              )}
-              {includeCMS && (
-                <div className="flex justify-between">
-                  <span>CMS Content Engine:</span>
-                  <span className="font-mono text-white">+$800</span>
-                </div>
-              )}
-              {includeEcommerce && (
-                <div className="flex justify-between">
-                  <span>E-Commerce Integration:</span>
-                  <span className="font-mono text-white">+$1,400</span>
-                </div>
-              )}
-              {includeSEO && (
-                <div className="flex justify-between">
-                  <span>Technical SEO Package:</span>
-                  <span className="font-mono text-white">+$500</span>
-                </div>
-              )}
-              {isRush && (
-                <div className="flex justify-between text-blue-300 font-semibold">
-                  <span>Priority Rush Sprint (+25%):</span>
-                  <span className="font-mono">+${rushFee.toLocaleString()}</span>
-                </div>
-              )}
+              ))}
             </div>
 
-            <div className="pt-4 border-t border-white/10 flex justify-between items-baseline">
-              <span className="text-xs font-bold uppercase text-slate-400">Estimated Total</span>
-              <span className="font-display font-black text-2xl text-white">
-                ${estimatedTotal.toLocaleString()}
-              </span>
+            <div className="pt-4 border-t border-white/10 text-xs text-slate-300 leading-relaxed">
+              <span className="text-white font-semibold">What happens next.</span> Book a short call
+              and we'll go through this properly. You'll get a written quote that itemises every
+              line and says what it excludes, so nothing arrives as a surprise.
             </div>
           </div>
 

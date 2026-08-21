@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
-import { InvoiceReceiptModal } from './InvoiceReceiptModal';
 import { submitAppointment, newAppointmentId } from '../lib/leads';
 
 interface AppointmentBookingViewProps {
@@ -28,7 +27,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
   // Submission State
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
-  const [docModalMode, setDocModalMode] = useState<'invoice' | 'receipt' | null>(null);
+
 
   const activeServiceObj = SERVICES.find(s => s.id === selectedService) || SERVICES[0];
 
@@ -131,22 +130,27 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
             </div>
           </div>
 
-          {/* Invoice & Payment Receipt Document Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <button
-              onClick={() => setDocModalMode('invoice')}
-              className="py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 font-body font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs"
-            >
-              <span className="material-symbols-outlined text-lg text-blue-700">description</span>
-              View Official Service Invoice
-            </button>
-            <button
-              onClick={() => setDocModalMode('receipt')}
-              className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-body font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs"
-            >
-              <span className="material-symbols-outlined text-lg text-emerald-700">payments</span>
-              View Deposit Receipt
-            </button>
+          {/*
+            An invoice and a deposit receipt used to sit here, and both were
+            fabricated: a hard-coded $3,500 total and a "Deposit Received
+            ($250.00)" badge, shown to someone who had just booked a call and
+            paid nothing. It carried an invoice number and a transaction
+            reference for a transaction that never happened.
+
+            A booking is a request, not a purchase. What follows a request is a
+            quote, written once the work is understood — so that is what this
+            says now.
+          */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <span className="material-symbols-outlined text-base text-blue-700" aria-hidden="true">schedule</span>
+              What happens next
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              We'll be in touch to confirm the details. Once we understand exactly what you need,
+              you'll get a written quote that itemises every line and says plainly what it does and
+              doesn't include. Nothing is owed until you've seen that and agreed to it.
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-slate-100">
@@ -165,14 +169,6 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
             </button>
           </div>
 
-          {docModalMode && createdAppointment && (
-            <InvoiceReceiptModal
-              appointment={createdAppointment}
-              initialMode={docModalMode}
-              onClose={() => setDocModalMode(null)}
-              onUpdateAppointmentStatus={(updated) => setCreatedAppointment(updated)}
-            />
-          )}
         </section>
       ) : (
         /* Multi-Step Appointment Form Grid */

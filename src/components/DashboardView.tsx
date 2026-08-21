@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Appointment } from '../types';
 import { INITIAL_APPOINTMENTS } from '../data/mockData';
 import { getAppointments } from '../lib/leads';
-import { InvoiceReceiptModal } from './InvoiceReceiptModal';
 
 interface DashboardViewProps {
   onOpenBookModal: () => void;
@@ -13,7 +12,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
-  const [docTarget, setDocTarget] = useState<{ appointment: Appointment; mode: 'invoice' | 'receipt' } | null>(null);
 
   useEffect(() => {
     // Read through the same seam every booking is written to (src/lib/leads.ts),
@@ -192,39 +190,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                         {apt.status}
                       </span>
                     </td>
-                    <td className="p-4 text-right space-x-1">
-                      <button
-                        onClick={() => setDocTarget({ appointment: apt, mode: 'invoice' })}
-                        className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
-                        title="View invoice"
-                        aria-label={`View invoice for ${apt.clientName}`}
-                      >
-                        <span className="material-symbols-outlined text-lg">description</span>
-                      </button>
-                      <button
-                        onClick={() => setDocTarget({ appointment: apt, mode: 'receipt' })}
-                        className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
-                        title="View receipt"
-                        aria-label={`View receipt for ${apt.clientName}`}
-                      >
-                        <span className="material-symbols-outlined text-lg">payments</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveAppointment(apt)}
-                        className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
-                        title="View details"
-                        aria-label={`View details for ${apt.clientName}`}
-                      >
-                        <span className="material-symbols-outlined text-lg">visibility</span>
-                      </button>
-                      <button
-                        onClick={() => handleCancelAppointment(apt.id)}
-                        className="p-1.5 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors"
-                        title="Request a change"
-                        aria-label={`Request a change to ${apt.clientName}'s appointment`}
-                      >
-                        <span className="material-symbols-outlined text-lg">edit_calendar</span>
-                      </button>
+                    <td className="p-4 text-right text-[11px] text-slate-500">
+                      {/* The per-row invoice and receipt buttons opened the same
+                          fabricated document as everywhere else. A real invoice
+                          is sent by the studio; nothing here should imply one
+                          already exists. */}
+                      Quote sent separately
                     </td>
                   </tr>
                 ))}
@@ -291,58 +262,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                 </div>
               )}
 
-              {/* Document Actions */}
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <button
-                  onClick={() => setDocTarget({ appointment: activeAppointment, mode: 'invoice' })}
-                  className="py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-1.5"
-                >
-                  <span className="material-symbols-outlined text-base text-blue-700">description</span>
-                  Service Invoice
-                </button>
-                <button
-                  onClick={() => setDocTarget({ appointment: activeAppointment, mode: 'receipt' })}
-                  className="py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-1.5"
-                >
-                  <span className="material-symbols-outlined text-base text-emerald-700">payments</span>
-                  Payment Receipt
-                </button>
-              </div>
+              {/*
+                "Service Invoice", "Payment Receipt" and "Generate Official Pass
+                & Invoice" used to sit here, all three opening the same
+                fabricated document — a hard-coded $3,500 total and a receipt
+                for a $250 deposit nobody had paid, complete with an invoice
+                number and a transaction reference.
 
-              <div className="pt-3 flex gap-3 border-t border-slate-100">
-                <button
-                  onClick={() => setDocTarget({ appointment: activeAppointment, mode: 'invoice' })}
-                  className="flex-1 py-3 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">receipt_long</span>
-                  Generate Official Pass & Invoice
-                </button>
+                A real invoice comes from the owner portal, which is backed by
+                the database and carries the figures actually agreed. Anything
+                that looks like a financial record and is not one has no place
+                in front of a client.
+              */}
+              <div className="pt-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  <span className="font-semibold text-slate-800">Your quote and invoice</span> are
+                  sent to you directly once the scope is agreed. Nothing is owed until you've seen
+                  the written quote.
+                </p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Invoice / Receipt Document Modal */}
-      {docTarget && (
-        <InvoiceReceiptModal
-          appointment={docTarget.appointment}
-          initialMode={docTarget.mode}
-          onClose={() => setDocTarget(null)}
-          onUpdateAppointmentStatus={(updated) => {
-            const newList = appointments.map(a => a.id === updated.id ? updated : a);
-            setAppointments(newList);
-            if (activeAppointment && activeAppointment.id === updated.id) {
-              setActiveAppointment(updated);
-            }
-            try {
-              localStorage.setItem('meridian_appointments', JSON.stringify(newList));
-            } catch (err) {
-              console.error(err);
-            }
-          }}
-        />
-      )}
     </main>
   );
 };

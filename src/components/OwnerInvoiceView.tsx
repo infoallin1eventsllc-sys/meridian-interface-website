@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { OwnerInvoice, InvoiceLineItem } from '../types';
 import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
 import { CampaignLinks } from './CampaignLinks';
-
 import {
-  INITIAL_OWNER_INVOICES,
-  INDUSTRY_PRICING_PRESETS,
-  LOGO_PRICING_TIERS,
-  WEB_PRICING_SCOPES,
-  AGENCY_BUNDLED_PACKAGES,
-  BundledPackage,
-  LogoPricingTier,
-  WebPricingScope
-} from '../data/mockData';
+  fetchCatalogue,
+  EMPTY_CATALOGUE,
+  type PricingCatalogue,
+  type PricingPreset,
+  type BundledPackage,
+  type LogoPricingTier,
+  type WebPricingScope,
+} from '../lib/catalogue';
+
+import { INITIAL_OWNER_INVOICES } from '../data/mockData';
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import {
   backendConfigured,
@@ -79,6 +79,14 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   // Why the form reports its own errors: see the `noValidate` note on <form>.
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  // Pricing arrives from the server after sign-in rather than shipping in the
+  // bundle — see src/lib/catalogue.ts. `null` means "still loading"; an empty
+  // catalogue after loading means the fetch failed, which the UI says out loud
+  // rather than rendering empty tabs that look like there is nothing to sell.
+  const [catalogue, setCatalogue] = useState<PricingCatalogue | null>(null);
+  const [catalogueFailed, setCatalogueFailed] = useState(false);
+  const cat = catalogue ?? EMPTY_CATALOGUE;
+
   const [lineItems, setLineItems] = useState<InvoiceLineItem[]>([
     {
       id: 'li_preset_1',
@@ -117,6 +125,20 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       if (cancelled) return;
       setOffline(isOffline);
       setInvoices(remote.length ? remote : INITIAL_OWNER_INVOICES);
+    });
+    return () => { cancelled = true; };
+  }, [isUnlocked]);
+
+  // Pricing comes down the same way, and for the same reason: it is not public
+  // data. Before this it was compiled into the bundle, where any visitor could
+  // read the whole rate card out of the site's own JavaScript.
+  useEffect(() => {
+    if (!isUnlocked) return;
+    let cancelled = false;
+    fetchCatalogue().then((c) => {
+      if (cancelled) return;
+      setCatalogue(c ?? EMPTY_CATALOGUE);
+      setCatalogueFailed(c === null);
     });
     return () => { cancelled = true; };
   }, [isUnlocked]);
@@ -231,7 +253,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     }
   };
 
-  const handleAddPreset = (preset: typeof INDUSTRY_PRICING_PRESETS[0]) => {
+  const handleAddPreset = (preset: PricingPreset) => {
     const newItem: InvoiceLineItem = {
       id: `li_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       description: preset.title,
@@ -701,7 +723,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
       {portalTab === 'photos' && <OwnerPhotoControl />}
 
-      {portalTab === 'answers' && <ClientExplainers />}
+      {portalTab === 'answers' && <ClientExplainers prices={cat.explainer_prices} />}
 
       {portalTab === 'links' && <CampaignLinks />}
 
@@ -776,7 +798,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               Fixed bundled packages for boutique design and engineering studios like Meridian Interface:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {AGENCY_BUNDLED_PACKAGES.map((bundle) => (
+              {cat.bundles.map((bundle) => (
                 <div
                   key={bundle.id}
                   className="border-2 border-slate-200 hover:border-slate-900 rounded-2xl p-5 bg-gradient-to-b from-slate-50 to-white flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all group"
@@ -843,7 +865,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {LOGO_PRICING_TIERS.map((tier, idx) => (
+                  {cat.logo_tiers.map((tier, idx) => (
                     <tr
                       key={idx}
                       className={tier.isBoutiqueStudio ? 'bg-blue-50/60 font-medium' : 'hover:bg-slate-50'}
@@ -906,7 +928,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {WEB_PRICING_SCOPES.map((scope, idx) => (
+                  {cat.web_scopes.map((scope, idx) => (
                     <tr key={idx} className="hover:bg-slate-50">
                       <td className="p-3 font-bold text-slate-900">{scope.scopeTitle}</td>
                       <td className="p-3 font-semibold text-slate-700">{scope.freelancerRate}</td>
@@ -927,8 +949,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   ))}
                   <tr className="bg-slate-100 font-semibold">
                     <td className="p-3 font-bold text-slate-900">Hourly Rate Comparison</td>
-                    <td className="p-3 text-slate-700">$50 – $120 / hr</td>
-                    <td className="p-3 font-bold text-slate-900 bg-amber-100/50">$100 – $200 / hr</td>
+                    {/* Benchmark bands come from the server catalogue too, so no
+                        competitive figure ships in the browser. */}
+                    <td className="p-3 text-slate-700">{cat.hourly_benchmarks.freelancer}</td>
+                    <td className="p-3 font-bold text-slate-900 bg-amber-100/50">{cat.hourly_benchmarks.boutique}</td>
                     <td className="p-3 text-[11px] text-slate-600" colSpan={2}>
                       Boutique studio hourly rate covers dedicated senior UI/UX designers, lead full-stack engineers, and QA.
                     </td>
@@ -942,7 +966,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         {/* Tab 4: Standard Presets Grid */}
         {pricingTab === 'presets' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fadeIn">
-            {INDUSTRY_PRICING_PRESETS.map((preset) => (
+            {cat.presets.map((preset) => (
               <div
                 key={preset.id}
                 className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs hover:border-slate-400 transition-all flex flex-col justify-between space-y-3 group"
@@ -1115,7 +1139,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 Quick Add Industry Standard Rate Presets
               </div>
               <div className="flex flex-wrap gap-2">
-                {AGENCY_BUNDLED_PACKAGES.map((b) => (
+                {cat.bundles.map((b) => (
                   <button
                     key={b.id}
                     type="button"
@@ -1126,7 +1150,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     Bundle: {b.name} (${b.defaultPrice.toLocaleString()})
                   </button>
                 ))}
-                {INDUSTRY_PRICING_PRESETS.map((p) => (
+                {cat.presets.map((p) => (
                   <button
                     key={p.id}
                     type="button"

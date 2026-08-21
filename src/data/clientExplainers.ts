@@ -24,8 +24,14 @@ export interface ClientExplainer {
   /** Matches how the line reads on the invoice. */
   title: string;
   category: 'Websites' | 'Brand & Logo' | 'Packages' | 'Ongoing Work';
-  /** Displayed as-is; the invoice carries the figure that was actually billed. */
-  price: string;
+  /**
+   * Filled in at runtime from the server catalogue, keyed by `id`.
+   *
+   * It is deliberately absent from this file. Anything here is compiled into
+   * the JavaScript every visitor downloads, and the rate card is not public
+   * data — a client sees a price when Otis sends them one.
+   */
+  price?: string;
   /**
    * Lower-cased fragments used to link an invoice line to this explainer.
    * Matched against the line description, longest first, so
@@ -53,7 +59,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_web_landing',
     title: 'Single-Page / Landing Page Site',
     category: 'Websites',
-    price: '$3,800',
     matches: ['single-page', 'landing page site', 'landing page'],
     summary:
       'One page, designed around a single job: turning the people who land on it into enquiries.',
@@ -109,7 +114,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_web_business',
     title: 'Custom 3–7 Page Business Site',
     category: 'Websites',
-    price: '$8,500',
     matches: ['custom 3–7 page', 'custom 3-7 page', '3–7 page business', 'business site'],
     summary:
       'A full small-business website of up to seven pages, each one designed around what that page has to do.',
@@ -170,7 +174,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_web_app',
     title: 'Complex Custom Web App / Multi-Page Portal',
     category: 'Websites',
-    price: '$18,500 – $22,000',
     matches: [
       'complex custom web app',
       'complex web app',
@@ -238,7 +241,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_logo_suite',
     title: 'Boutique Logo Design Suite',
     category: 'Brand & Logo',
-    price: '$2,500',
     matches: ['boutique logo design suite', 'basic logo', 'logo design suite', 'logo suite'],
     summary:
       'An original logo drawn for you, in every version and file format you will need.',
@@ -292,7 +294,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_brand_full',
     title: 'Full Brand Identity Package',
     category: 'Brand & Logo',
-    price: '$6,500',
     matches: ['full brand identity', 'full brand package', 'full brand', 'brand identity'],
     summary:
       'The positioning work first, then a complete logo system, social graphics, and a written guide anyone you hire later can follow.',
@@ -349,7 +350,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_starter',
     title: 'Starter Package',
     category: 'Packages',
-    price: '$4,500',
     matches: ['starter package'],
     summary:
       'Logo and website together, for a new business that needs to look established from day one.',
@@ -398,7 +398,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_growth',
     title: 'Growth / Professional Package',
     category: 'Packages',
-    price: '$9,500',
     matches: ['growth / professional', 'growth package', 'professional package', 'growth'],
     summary:
       'A full brand kit plus a larger site with working tools built in — for a business the simple site has outgrown.',
@@ -447,7 +446,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_enterprise',
     title: 'Enterprise / Custom Application',
     category: 'Packages',
-    price: '$22,500',
     matches: ['enterprise custom application', 'enterprise / custom', 'enterprise package', 'enterprise'],
     summary:
       'A complete custom platform or mobile app, built end to end, for software the business depends on.',
@@ -498,7 +496,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_tech_stack',
     title: 'Business Tech Stack — Chosen & Connected',
     category: 'Packages',
-    price: '$7,500',
     matches: ['tech stack', 'business tech stack', 'systems & integration', 'integration'],
     summary:
       'The set of tools your business runs on, picked for how you actually work and connected so information moves between them by itself.',
@@ -554,7 +551,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_hourly',
     title: 'Boutique Studio Engineering Hourly Rate',
     category: 'Ongoing Work',
-    price: '$150 / hour',
     matches: ['hourly rate', 'engineering hourly', 'per hour', 'hourly'],
     summary:
       'Design and development time billed by the hour, for work after your project has launched.',
@@ -596,7 +592,6 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_consultation',
     title: 'Custom Service / Design Consultation',
     category: 'Ongoing Work',
-    price: 'Quoted per engagement',
     matches: ['design consultation', 'custom service', 'consultation'],
     summary:
       'Scoped work or advice that does not fit a standard package, priced for what it actually involves.',
@@ -659,7 +654,7 @@ export function explainerForDescription(description: string): ClientExplainer | 
  * bottom so a forwarded copy still says who wrote it.
  */
 export function explainerAsEmail(e: ClientExplainer, priceOverride?: string): string {
-  const price = priceOverride ?? e.price;
+  const price = priceOverride ?? e.price ?? '';
   const lines: string[] = [
     e.title.toUpperCase(),
     price ? `Investment: ${price}` : '',
@@ -695,6 +690,6 @@ export function explainerAsEmail(e: ClientExplainer, priceOverride?: string): st
 
 /** The short answer, for a text message or a one-line reply. */
 export function explainerAsShort(e: ClientExplainer, priceOverride?: string): string {
-  const price = priceOverride ?? e.price;
+  const price = priceOverride ?? e.price ?? '';
   return `${e.title}${price ? ` — ${price}` : ''}\n\n${e.short}\n\nHappy to go through it in more detail if useful.`;
 }

@@ -20,7 +20,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'web_design',
     title: 'Custom Web Design & Development',
     categoryName: 'Web Development',
-    priceRange: '$1,500 - $6,000',
     duration: '1 - 3 Weeks',
     icon: 'language',
     summary: 'High-converting, responsive websites engineered with tailored UX, swift loading speeds, and SEO optimization.',
@@ -38,7 +37,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'app_design',
     title: 'Mobile App Design & Development',
     categoryName: 'iOS & Android Apps',
-    priceRange: '$2,500 - $10,000',
     duration: '2 - 4 Weeks',
     icon: 'phone_iphone',
     summary: 'Native and cross-platform mobile apps with intuitive touch interfaces and sleek design systems.',
@@ -56,7 +54,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'dashboards',
     title: 'Data Analyst, CRM & Financial Dashboards',
     categoryName: 'Analytics & CRM Dashboards',
-    priceRange: '$2,000 - $8,500',
     duration: '1 - 3 Weeks',
     icon: 'analytics',
     summary: 'Bespoke Data Analyst BI dashboards, high-converting CRM sales portals, and executive Financial KPI dashboards.',
@@ -74,7 +71,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'tech_stack',
     title: 'Your Business Tech Stack, Chosen and Connected',
     categoryName: 'Systems & Integration',
-    priceRange: '$4,500 - $15,000',
     duration: '3 - 8 Weeks',
     icon: 'account_tree',
     summary: 'The set of tools your business runs on — website, bookings, payments, CRM, email — picked for how you actually work and wired together so information moves by itself.',
@@ -92,7 +88,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'logo_brand',
     title: 'Logo Design & Visual Identity',
     categoryName: 'Branding & Graphics',
-    priceRange: '$600 - $2,200',
     duration: '3 - 7 Days',
     icon: 'draw',
     summary: 'Distinctive vector logos, typographic systems, and comprehensive brand identity guidelines.',
@@ -110,7 +105,6 @@ export const SERVICES: ServiceDetail[] = [
     id: 'full_package',
     title: 'Full Studio Design Bundle',
     categoryName: 'Web + App + Dashboard + Brand',
-    priceRange: '$4,000 - $14,000',
     duration: '3 - 5 Weeks',
     icon: 'workspace_premium',
     summary: 'Complete digital transformation: Custom Web, Mobile App UI, Analytics Dashboards & Complete Brand Identity.',
@@ -264,322 +258,20 @@ export const INITIAL_APPOINTMENTS: Appointment[] = [
 // Populate this array once genuine client testimonials (with permission) are available.
 export const TESTIMONIALS: Testimonial[] = [];
 
-export interface LogoPricingTier {
-  providerTier: string;
-  basicLogo: string;
-  basicLogoDesc: string;
-  basicLogoRate: number;
-  fullBrandPackage: string;
-  fullBrandDesc: string;
-  fullBrandRate: number;
-  isBoutiqueStudio?: boolean;
-  /** Client-facing wording for the basic logo tier — see WebPricingScope. */
-  basicLogoDeliverables?: string[];
-  /** Client-facing wording for the full brand tier. */
-  fullBrandDeliverables?: string[];
-}
-
-export const LOGO_PRICING_TIERS: LogoPricingTier[] = [
-  {
-    providerTier: 'Freelancer / Independent',
-    basicLogo: '$300 – $1,500',
-    basicLogoDesc: 'A single logo, a few colour versions, and the image files to use it',
-    basicLogoRate: 800,
-    fullBrandPackage: '$1,500 – $4,000',
-    fullBrandDesc: 'A logo, matching fonts and colours, and a short guide to using them',
-    fullBrandRate: 2500
-  },
-  {
-    providerTier: 'Boutique Design Studio (Meridian Interface)',
-    basicLogo: '$1,500 – $3,500',
-    basicLogoDesc: 'A main logo and an alternate version, the original files so it stays sharp at any size, and a matching icon set',
-    basicLogoRate: 2500,
-    basicLogoDeliverables: [
-      'A main logo, drawn for you from scratch — not adapted from a template',
-      'A second, simpler version for small spaces like social profiles',
-      'The original design files, so your logo stays sharp at any size, from a business card to a billboard',
-      'A set of matching icons for your website and app'
-    ],
-    fullBrandPackage: '$3,500 – $10,000+',
-    fullBrandDesc: 'Positioning work first, then a full logo system, ready-made social graphics, and a guide your team can follow',
-    fullBrandRate: 6500,
-    fullBrandDeliverables: [
-      'We start by working out what your brand should stand for, before drawing anything',
-      'A complete logo system — main mark, alternates, and the small-space versions',
-      'Ready-made graphics for your social media profiles and posts',
-      'Your colours and fonts chosen and documented',
-      'A written guide, so anyone you hire later keeps everything consistent'
-    ],
-    isBoutiqueStudio: true
-  },
-  {
-    providerTier: 'Enterprise Agency',
-    basicLogo: '$10,000 – $25,000+',
-    basicLogoDesc: 'Months of research and stakeholder interviews before any design begins',
-    basicLogoRate: 15000,
-    fullBrandPackage: '$25,000 – $100,000+',
-    fullBrandDesc: 'Repositioning an entire company worldwide, including trademark clearance',
-    fullBrandRate: 50000
-  }
-];
-
-export interface WebPricingScope {
-  scopeTitle: string;
-  freelancerRate: string;
-  freelancerAvg: number;
-  boutiqueRate: string;
-  boutiqueAvg: number;
-  deliverables: string;
-  /**
-   * The same scope written for the person paying for it.
-   *
-   * `deliverables` above is studio shorthand — "contact routing, CMS integration"
-   * means something to a designer and nothing to a client staring at a
-   * four-figure line on an invoice. These say what they receive and what it does
-   * for them. Same work, same price; only the words change.
-   */
-  plainDeliverables: string[];
-}
-
-export const WEB_PRICING_SCOPES: WebPricingScope[] = [
-  {
-    scopeTitle: 'Single-Page / Landing Page Site',
-    freelancerRate: '$800 – $2,500',
-    freelancerAvg: 1500,
-    boutiqueRate: '$2,500 – $5,000',
-    boutiqueAvg: 3800,
-    deliverables: 'High-converting responsive landing page, lead capture, mobile optimization, basic SEO.',
-    plainDeliverables: [
-      'One focused page, designed to turn visitors into enquiries',
-      'An enquiry form that emails you the moment someone fills it in',
-      'Looks and works correctly on phones, tablets and desktops',
-      'Set up so Google can find and list your page'
-    ]
-  },
-  {
-    scopeTitle: 'Custom 3–7 Page Business Site',
-    freelancerRate: '$2,500 – $6,000',
-    freelancerAvg: 4000,
-    boutiqueRate: '$5,000 – $12,000',
-    boutiqueAvg: 8500,
-    deliverables: 'Multi-screen UX design, service showcases, contact routing, CMS integration, fast loading.',
-    plainDeliverables: [
-      'Up to seven pages, each designed around what that page needs to do',
-      'Your services laid out so visitors understand what they are buying',
-      'An enquiry form that reaches you instantly, with every message saved',
-      'You can change your own text and images later without calling us',
-      'Built to load quickly, because slow pages lose visitors'
-    ]
-  },
-  {
-    scopeTitle: 'Complex Custom Web App / Multi-Page Portal',
-    freelancerRate: '$6,000 – $15,000',
-    freelancerAvg: 10000,
-    boutiqueRate: '$12,000 – $35,000+',
-    boutiqueAvg: 22000,
-    deliverables: 'Full-stack frontend/backend architecture, user authentication, custom dashboard, API integrations.',
-    plainDeliverables: [
-      'A custom application built around how your business actually works, not a template bent to fit',
-      'Secure sign-in, so each customer sees only their own information',
-      'A dashboard putting the numbers you check daily in one place',
-      'Connected to the tools you already use, so information moves between them automatically'
-    ]
-  }
-];
-
-export interface BundledPackage {
-  id: string;
-  name: string;
-  priceRange: string;
-  defaultPrice: number;
-  tagline: string;
-  features: string[];
-}
-
-export const AGENCY_BUNDLED_PACKAGES: BundledPackage[] = [
-  {
-    id: 'bundle_starter',
-    name: 'Starter Package',
-    priceRange: '$3,500 – $5,500',
-    defaultPrice: 4500,
-    tagline: 'For a new business that needs to look established and start bringing in enquiries.',
-    features: [
-      'An original logo, drawn for you, and the fonts that go with it',
-      'A three to five page website built to bring in enquiries',
-      'Works properly on phones, and set up so Google can list it',
-      'A contact form that emails you the moment someone gets in touch'
-    ]
-  },
-  {
-    id: 'bundle_growth',
-    name: 'Growth / Professional Package',
-    priceRange: '$7,500 – $14,000',
-    defaultPrice: 9500,
-    tagline: 'For a business that has outgrown a simple site and needs the website to do real work.',
-    features: [
-      'A complete brand kit — main logo, alternate version, browser icon, and a guide so everything stays consistent',
-      'A six to twelve page site or web app, designed from scratch rather than adapted from a template',
-      'Working tools built in: a price calculator, online booking, and a portal your clients can log into',
-      'Your domain connected, visitor tracking installed, and us on hand through launch'
-    ]
-  },
-  {
-    id: 'bundle_enterprise',
-    name: 'Enterprise / Custom Application',
-    priceRange: '$15,000 – $35,000+',
-    defaultPrice: 22500,
-    tagline: 'For software your business depends on, where downtime and scale are real concerns.',
-    features: [
-      'A complete custom platform or mobile app, built end to end',
-      'Connected to your other systems, with dashboards showing what matters',
-      'Built to handle growth, and secured properly from the start'
-    ]
-  }
-];
-
-export const INDUSTRY_PRICING_PRESETS = [
-  {
-    id: 'preset_bundle_starter',
-    category: 'Full Agency Package' as const,
-    title: 'Starter Package (Boutique Studio)',
-    rate: 4500,
-    range: '$3,500 – $5,500',
-    description: 'Custom Primary Logo, Typography Guide, 3-5 Page Custom Site, Mobile SEO, Contact Form setup.',
-    plainDeliverables: [
-      'An original logo, drawn for you, and the fonts that go with it',
-      'A three to five page website built to bring in enquiries',
-      'Works properly on phones, and set up so Google can list it',
-      'A contact form that emails you the moment someone gets in touch'
-    ]
-  },
-  {
-    id: 'preset_bundle_growth',
-    category: 'Full Agency Package' as const,
-    title: 'Growth / Professional Package',
-    rate: 9500,
-    range: '$7,500 – $14,000',
-    description: 'Full Brand Suite, 6-12 Page Custom Web App with UI/UX, Interactive Tools, Domain & Launch.',
-    plainDeliverables: [
-      'A complete brand kit — main logo, alternate version, browser icon, and a guide so everything stays consistent',
-      'A six to twelve page site or web app, designed from scratch rather than adapted from a template',
-      'Working tools built in: a price calculator, online booking, and a portal your clients can log into',
-      'Your domain connected, visitor tracking installed, and us on hand through launch'
-    ]
-  },
-  {
-    id: 'preset_bundle_enterprise',
-    category: 'Full Agency Package' as const,
-    title: 'Enterprise Custom Application',
-    rate: 22500,
-    range: '$15,000 – $35,000+',
-    description: 'Full-stack web platform / mobile app interface, API integrations, Analytics Dashboards & architecture.',
-    plainDeliverables: [
-      'A complete custom platform or mobile app, built end to end',
-      'Connected to your other systems, with dashboards showing what matters',
-      'Built to handle growth, and secured properly from the start'
-    ]
-  },
-  {
-    id: 'preset_web_custom',
-    category: 'Web Design' as const,
-    title: 'Custom 3–7 Page Business Site (Boutique Rate)',
-    rate: 8500,
-    range: '$5,000 – $12,000',
-    description: 'Custom multi-screen UX, service showcases, contact routing, CMS, responsive layout & performance tuning.',
-    plainDeliverables: [
-      'Up to seven pages, each designed around what that page needs to do',
-      'Your services laid out so visitors understand what they are buying',
-      'An enquiry form that reaches you instantly, with every message saved',
-      'You can change your own text and images later without calling us',
-      'Built to load quickly, because slow pages lose visitors'
-    ]
-  },
-  {
-    id: 'preset_web_landing',
-    category: 'Web Design' as const,
-    title: 'Single-Page / Landing Page Site',
-    rate: 3800,
-    range: '$2,500 – $5,000',
-    description: 'High-converting responsive landing page, lead capture, mobile optimization, basic SEO.',
-    plainDeliverables: [
-      'One focused page, designed to turn visitors into enquiries',
-      'An enquiry form that emails you the moment someone fills it in',
-      'Looks and works correctly on phones, tablets and desktops',
-      'Set up so Google can find and list your page'
-    ]
-  },
-  {
-    id: 'preset_web_portal',
-    category: 'Web Design' as const,
-    title: 'Complex Web App / Multi-Page Portal',
-    rate: 18500,
-    range: '$12,000 – $35,000+',
-    description: 'Full-stack application framework, auth flow, custom dashboards, API integrations, scalable backend.',
-    plainDeliverables: [
-      'A custom application built around how your business actually works, not a template bent to fit',
-      'Secure sign-in, so each customer sees only their own information',
-      'A dashboard putting the numbers you check daily in one place',
-      'Connected to the tools you already use, so information moves between them automatically'
-    ]
-  },
-  {
-    id: 'preset_logo_boutique',
-    category: 'Logo Design' as const,
-    title: 'Boutique Logo Design Suite (Meridian Standard)',
-    rate: 2500,
-    range: '$1,500 – $3,500',
-    description: 'Custom primary & secondary logos, vector source files (SVG/EPS), custom icon set.',
-    plainDeliverables: [
-      'A main logo, drawn for you from scratch — not adapted from a template',
-      'A second, simpler version for small spaces like social profiles',
-      'The original design files, so your logo stays sharp at any size, from a business card to a billboard',
-      'A set of matching icons for your website and app'
-    ]
-  },
-  {
-    id: 'preset_logo_full_brand',
-    category: 'Logo Design' as const,
-    title: 'Full Brand Identity Package (Boutique Tier)',
-    rate: 6500,
-    range: '$3,500 – $10,000+',
-    description: 'Comprehensive brand strategy, logo system, social kit, typography, full brand guidelines book.',
-    plainDeliverables: [
-      'We start by working out what your brand should stand for, before drawing anything',
-      'A complete logo system — main mark, alternates, and the small-space versions',
-      'Ready-made graphics for your social media profiles and posts',
-      'Your colours and fonts chosen and documented',
-      'A written guide, so anyone you hire later keeps everything consistent'
-    ]
-  },
-  {
-    id: 'preset_tech_stack',
-    category: 'Web Design' as const,
-    title: 'Business Tech Stack — Chosen & Connected',
-    rate: 7500,
-    range: '$4,500 – $15,000',
-    description: 'Process mapping, tool selection, and integration across website, bookings, payments, CRM and email.',
-    plainDeliverables: [
-      'We map how work actually moves through your business before anything is bought',
-      'Tools chosen to fit how you work, rather than making you work their way',
-      'Your website, bookings, payments and email connected so nothing is typed twice',
-      'One dashboard for the numbers you check every day',
-      'The whole setup written down, so whoever you hire next can follow it'
-    ]
-  },
-  {
-    id: 'preset_hourly_studio',
-    category: 'Hourly Design & Engineering' as const,
-    title: 'Boutique Studio Engineering Hourly Rate',
-    rate: 150,
-    range: '$100 – $200 / hr',
-    description: 'Custom design & development rate per hour for maintenance, consulting, or feature extensions.',
-    plainDeliverables: [
-      'Design and development time, billed by the hour',
-      'For changes, new features, or advice after your project has launched',
-      'Tracked and itemised, so you can see what each hour went to'
-    ]
-  }
-];
+/*
+ * The pricing catalogue used to live here — logo tiers, web scopes, bundles,
+ * and the invoice presets, with every rate in them.
+ *
+ * That was a leak. Anything imported into this app is compiled into the
+ * JavaScript every visitor downloads, so the full rate card and the
+ * freelancer-vs-boutique-vs-agency comparison could be read straight out of
+ * the site's source. No public page rendered any of it, which is precisely why
+ * nobody noticed.
+ *
+ * It lives in the database now and reaches the owner portal through the `owner`
+ * edge function, behind the same token that guards the invoices. See
+ * src/lib/catalogue.ts. Clients see a price when Otis sends them one.
+ */
 
 export const INITIAL_OWNER_INVOICES: any[] = [
   {

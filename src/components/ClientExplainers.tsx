@@ -131,9 +131,11 @@ export const CopyExplainerButton: React.FC<{ description: string; rate?: number 
 
 const Explainer: React.FC<{
   item: ClientExplainer;
+  /** From the server catalogue — never bundled. Blank until it loads. */
+  price: string;
   open: boolean;
   onToggle: () => void;
-}> = ({ item, open, onToggle }) => (
+}> = ({ item, price, open, onToggle }) => (
   <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
     <button
       type="button"
@@ -146,7 +148,7 @@ const Explainer: React.FC<{
         <div className="text-[11px] text-slate-500 pt-0.5 leading-relaxed">{item.summary}</div>
       </div>
       <div className="flex items-center gap-3 shrink-0">
-        <span className="font-mono font-bold text-sm text-slate-900">{item.price}</span>
+        <span className="font-mono font-bold text-sm text-slate-900">{price || '—'}</span>
         <span
           className={`material-symbols-outlined text-slate-400 transition-transform ${
             open ? 'rotate-180' : ''
@@ -162,12 +164,12 @@ const Explainer: React.FC<{
       <div className="border-t border-slate-200 p-4 md:p-5 space-y-5 bg-slate-50/60">
         <div className="flex flex-wrap gap-2">
           <CopyButton
-            text={explainerAsEmail(item)}
+            text={explainerAsEmail(item, price)}
             label="Copy full explanation"
             icon="content_copy"
             tone="solid"
           />
-          <CopyButton text={explainerAsShort(item)} label="Copy short answer" icon="sms" />
+          <CopyButton text={explainerAsShort(item, price)} label="Copy short answer" icon="sms" />
         </div>
 
         <section>
@@ -235,7 +237,7 @@ const Explainer: React.FC<{
   </div>
 );
 
-export const ClientExplainers: React.FC = () => {
+export const ClientExplainers: React.FC<{ prices?: Record<string, string> }> = ({ prices = {} }) => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category>('All');
   const [openId, setOpenId] = useState<string | null>(null);
@@ -323,6 +325,7 @@ export const ClientExplainers: React.FC = () => {
             <Explainer
               key={item.id}
               item={item}
+              price={prices[item.id] ?? ''}
               open={openId === item.id}
               onToggle={() => setOpenId(openId === item.id ? null : item.id)}
             />

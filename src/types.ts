@@ -50,7 +50,11 @@ export interface ServiceDetail {
   id: ServiceCategory;
   title: string;
   categoryName: string;
-  priceRange: string;
+  /**
+   * Deliberately absent. Prices are quoted on an invoice, not published — and
+   * anything in this file ships to every visitor's browser whether a page
+   * renders it or not.
+   */
   duration: string;
   icon: string;
   summary: string;
