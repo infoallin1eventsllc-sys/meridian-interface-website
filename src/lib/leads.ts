@@ -1,4 +1,5 @@
 import { Appointment } from '../types';
+import { attributionForSubmission } from './attribution';
 
 /**
  * Single integration seam for every lead the site captures (booking appointments,
@@ -67,7 +68,16 @@ export async function submitAppointment(appointment: Appointment): Promise<Submi
     return { appointment, delivered: false };
   }
 
-  const body = JSON.stringify({ type: 'appointment', payload: appointment });
+  // Carry the lead's origin with the booking. `intake` reads `payload.source`
+  // and stores it as contacts.source, which is the field the marketing system
+  // attributes by — so a tagged Instagram link produces an Instagram lead
+  // rather than another anonymous website one. No backend change needed.
+  const attribution = attributionForSubmission();
+  const payload = attribution
+    ? { ...appointment, source: attribution.source, attribution: attribution.attribution }
+    : appointment;
+
+  const body = JSON.stringify({ type: 'appointment', payload });
 
   // Try twice: a booking is high-value, so a single transient network blip
   // shouldn't cost the studio the lead. (The local copy is the ultimate backstop.)
