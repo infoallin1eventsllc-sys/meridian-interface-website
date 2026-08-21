@@ -672,7 +672,14 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       <div className="mb-8 flex flex-wrap gap-2">
         {([
           { id: 'invoices', label: 'Invoices & Pricing', icon: 'receipt_long' },
-          { id: 'answers', label: 'Client Answers', icon: 'quick_reference_all' },
+          // Icon names must use only letters the SUBSET font can map. Its cmap
+          // covers ' _abcdefghiklmnoprstuvwy' — j, q, x and z are absent, so a
+          // name containing one cannot form a ligature and the browser paints
+          // the raw word instead. "quick_reference_all" did exactly that: 444px
+          // of literal text at 24px, which broke the layout at phone width.
+          // This is the second time (see the expand_more chevron); measure the
+          // rendered width against the font size rather than trusting the name.
+          { id: 'answers', label: 'Client Answers', icon: 'contact_support' },
           { id: 'links', label: 'Campaign Links', icon: 'link' },
           { id: 'photos', label: 'Photo Control', icon: 'photo_camera' }
         ] as const).map((t) => (
