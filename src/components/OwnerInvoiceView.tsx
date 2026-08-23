@@ -178,7 +178,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const handleStartNewInvoiceWithItems = (items: InvoiceLineItem[]) => {
     setActiveInvoice(null);
     setFormClientName('');
-    setFormClientCompany('Meridian Digital Design Studio LLC');
+    setFormClientCompany('Meridian Interface');
     setFormClientEmail('otis@meridianinterface.com');
     setFormClientPhone('281-882-9198');
     setFormIssueDate(new Date().toISOString().split('T')[0]);
@@ -409,7 +409,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     const newInvoice: OwnerInvoice = {
       id: invoiceId,
       clientName: formClientName.trim() || 'Internal Client / Owner Account',
-      clientCompany: formClientCompany.trim() || 'Meridian Digital Design Studio LLC',
+      clientCompany: formClientCompany.trim() || 'Meridian Interface',
       clientEmail: formClientEmail.trim() || 'Meridianinterface@gmail.com',
       clientPhone: formClientPhone.trim() || '281-882-9198',
       issueDate: formIssueDate,
@@ -472,7 +472,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setSaveError(null);
     setActiveInvoice(null);
     setFormClientName('');
-    setFormClientCompany('Meridian Digital Design Studio LLC');
+    setFormClientCompany('Meridian Interface');
     setFormClientEmail('Meridianinterface@gmail.com');
     setFormClientPhone('281-882-9198');
     setFormIssueDate(new Date().toISOString().split('T')[0]);
@@ -648,7 +648,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               <span className="material-symbols-outlined text-xs">verified_user</span>
               Internal
             </span>
-            <span className="text-xs text-slate-500 font-mono">Meridian Digital Studio LLC</span>
+            <span className="text-xs text-slate-500 font-mono">Meridian Interface</span>
           </div>
           <h1 className="font-display font-black text-3xl sm:text-4xl text-slate-900 tracking-tight pt-2">
             Internal Invoice & Pricing Manager
@@ -1088,7 +1088,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 <label className="block font-bold text-slate-700 mb-1">Company / Entity</label>
                 <input
                   type="text"
-                  placeholder="e.g. Meridian Digital Design Studio LLC"
+                  placeholder="e.g. Meridian Interface"
                   value={formClientCompany}
                   onChange={(e) => setFormClientCompany(e.target.value)}
                   className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-900 outline-none focus:border-slate-900"
@@ -1602,11 +1602,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     MERIDIAN INTERFACE
                   </div>
                   <div className="text-xs font-bold text-slate-600 tracking-wider">
-                    DIGITAL DESIGN & DEVELOPMENT STUDIO LLC
+                    DIGITAL DESIGN &amp; DEVELOPMENT STUDIO
                   </div>
                   <div className="text-xs text-slate-500 pt-2 leading-relaxed font-body">
-                    100 Meridian Plaza, Suite 400<br />
-                    New York, NY 10001, United States<br />
+                    Houston, Texas, United States<br />
                     Phone: <span className="font-semibold text-slate-900">281-882-9198</span><br />
                     Email: <span className="font-semibold text-slate-900">Meridianinterface@gmail.com</span><br />
                     Web: <span className="font-semibold text-slate-900">www.meridianinterface.com</span>

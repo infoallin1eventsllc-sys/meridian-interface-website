@@ -277,7 +277,7 @@ export const INITIAL_OWNER_INVOICES: any[] = [
   {
     id: 'INV-OWN-2026-001',
     clientName: 'Internal Studio Audit',
-    clientCompany: 'Meridian Digital Design Studio LLC',
+    clientCompany: 'Meridian Interface',
     clientEmail: 'otis@meridianinterface.com',
     clientPhone: '281-882-9198',
     issueDate: '2026-07-31',
