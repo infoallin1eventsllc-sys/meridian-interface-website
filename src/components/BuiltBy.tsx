@@ -1,5 +1,4 @@
 import React from 'react';
-import { MeridianLogoMark } from './MeridianLogo';
 
 interface BuiltByProps {
   /** The line above the plate. On a client's site the default is the point of
@@ -16,10 +15,11 @@ interface BuiltByProps {
  * because it is meant to travel: the same block goes at the bottom of every
  * site Meridian ships, and a credit that is copy-pasted per project drifts.
  *
- * The mark is drawn for a light background here — the plate is light even when
- * the footer around it is not, which is the whole reason the plate exists. It
- * gives the logo a guaranteed background instead of hoping the surrounding
- * page is a colour the mark survives.
+ * The plate is light even when the footer around it is not, and that is the
+ * whole reason it exists: it gives the logo a guaranteed background instead of
+ * hoping the surrounding page is a colour the artwork survives. Because the
+ * ground is guaranteed, this is the one place that can use Otis's complete
+ * lockup file, wordmark and all.
  */
 export const BuiltBy: React.FC<BuiltByProps> = ({
   kicker = 'THIS WEBSITE BUILT BY',
@@ -34,13 +34,22 @@ export const BuiltBy: React.FC<BuiltByProps> = ({
 
     <a
       href="https://meridianinterface.com"
-      className="mt-4 inline-flex flex-col items-center justify-center gap-3.5 rounded-xl bg-slate-200 px-6 py-6 transition-colors hover:bg-white"
+      className="mt-4 inline-flex items-center justify-center rounded-xl bg-slate-100 px-7 py-6 transition-colors hover:bg-white"
       aria-label="Meridian Interface — visit meridianinterface.com"
     >
-      <MeridianLogoMark size={72} />
-      <span className="font-body text-[10px] font-bold uppercase tracking-[0.12em] text-slate-800 whitespace-nowrap">
-        Meridian Interface
-      </span>
+      {/* The complete lockup file, not a mark plus typed text. The plate is
+          always light, so his near-black wordmark works here — and using his
+          own artwork means the spacing and letterforms are his, not a rebuild
+          that is nearly right. */}
+      <img
+        src="/brand/meridian-lockup.png"
+        alt="Meridian Interface"
+        width={885}
+        height={550}
+        decoding="async"
+        loading="lazy"
+        className="w-[132px] h-auto"
+      />
     </a>
 
     <p className="mt-5 font-body text-xs text-slate-400 max-w-sm">
