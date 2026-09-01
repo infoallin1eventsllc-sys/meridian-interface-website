@@ -3,6 +3,7 @@ import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
 import { ImageWithFallback } from './ImageWithFallback';
 import { useMeridianMotion, m as motion } from '../lib/motion';
+import { LoopSimulator } from './LoopSimulator';
 
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
@@ -163,6 +164,10 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           ))}
         </motion.div>
       </section>
+
+      {/* The Tech Stack service above promises connected tools. This is one
+          running, so a visitor can check the claim instead of taking it. */}
+      <LoopSimulator />
     </main>
   );
 };
@@ -424,6 +429,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           </div>
         </div>
       </div>
+
     </section>
   );
 };
