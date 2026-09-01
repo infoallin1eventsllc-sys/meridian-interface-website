@@ -1,6 +1,7 @@
 import React from 'react';
 import { TabType } from '../types';
 import { MeridianLogo } from './MeridianLogo';
+import { BuiltBy } from './BuiltBy';
 
 interface FooterProps {
   onTabChange: (tab: TabType) => void;
@@ -79,6 +80,13 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) 
               </button>
           </div>
         </div>
+      </div>
+
+      {/* The studio plate, below the working part of the footer and separated
+          from it. On Meridian's own site the default "this website built by"
+          line is redundant, so it carries the studio line instead. */}
+      <div className="max-w-[1440px] mx-auto mt-12 pt-10 border-t border-slate-800">
+        <BuiltBy kicker="A MERIDIAN INTERFACE BUILD" />
       </div>
     </footer>
   );
