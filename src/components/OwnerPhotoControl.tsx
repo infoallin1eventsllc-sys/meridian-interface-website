@@ -100,7 +100,7 @@ const ImageCard: React.FC<{ img: ManagedImage; isCustom: boolean }> = ({ img, is
             isCustom ? 'bg-blue-600 text-white' : 'bg-slate-900/80 text-slate-200'
           }`}
         >
-          {isCustom ? 'Custom' : 'Default'}
+          {isCustom ? 'Published' : 'Not set'}
         </span>
       </div>
 
