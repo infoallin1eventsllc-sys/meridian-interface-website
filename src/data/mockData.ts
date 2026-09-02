@@ -1,18 +1,26 @@
 import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types';
 
+/*
+ * Images the app reaches for by name.
+ *
+ * Six more keys used to sit here — logo, heroBg, heroFutureHands and three
+ * testimonial avatars — every one of them an Unsplash URL that nothing
+ * rendered. TESTIMONIALS is an empty array, so the avatars had never had a
+ * caller at all. They are gone rather than kept "in case": an unused hotlink
+ * is a dependency on someone else's server that no page benefits from, and it
+ * makes the real count of external images impossible to read at a glance.
+ *
+ * What is left is five service-card photographs, still hotlinked from
+ * Unsplash, plus one local file. The photographs are the remaining external
+ * dependency on this file; PORTFOLIO below carries eight more.
+ */
 export const HOTLINK_IMAGES = {
-  logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
-  heroBg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000&auto=format&fit=crop',
   globalEarthBg: '/images/hero-earth.jpg',
-  heroFutureHands: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop',
   webDesign: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1000&auto=format&fit=crop',
   appDesign: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1000&auto=format&fit=crop',
   dashboardDesign: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
   logoDesign: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1000&auto=format&fit=crop',
-  fullPackage: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?q=80&w=1000&auto=format&fit=crop',
-  avatar1: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
-  avatar2: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
-  avatar3: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop'
+  fullPackage: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?q=80&w=1000&auto=format&fit=crop'
 };
 
 export const SERVICES: ServiceDetail[] = [
