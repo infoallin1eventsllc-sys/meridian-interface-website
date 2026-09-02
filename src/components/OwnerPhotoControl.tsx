@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PORTFOLIO, HOTLINK_IMAGES } from '../data/mockData';
+import { ImageWithFallback } from './ImageWithFallback';
 import {
   resolveImage,
   getImageOverrides,
@@ -14,6 +15,8 @@ interface ManagedImage {
   label: string;
   sublabel: string;
   fallback: string;
+  /** Material symbol shown on the blank panel while no image is set. */
+  icon: string;
 }
 
 // Matches the bucket's own limit. Files go to storage now, not into a
@@ -82,12 +85,14 @@ const ImageCard: React.FC<{ img: ManagedImage; isCustom: boolean }> = ({ img, is
   return (
     <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex flex-col">
       <div className="aspect-video bg-slate-900 relative">
-        <img
+        {/* The same panel the public site shows for an unset image, rather than
+            a bare <img src="">, which makes the browser re-request the page and
+            renders as a broken icon. */}
+        <ImageWithFallback
           src={current}
           alt={img.label}
-          onError={(e) => {
-            e.currentTarget.style.visibility = 'hidden';
-          }}
+          icon={img.icon}
+          label={img.sublabel}
           className="w-full h-full object-cover"
         />
         <span
@@ -164,12 +169,14 @@ export const OwnerPhotoControl: React.FC = () => {
       label: 'Homepage Hero Image',
       sublabel: 'Background image behind the homepage headline',
       fallback: HOTLINK_IMAGES.globalEarthBg,
+      icon: 'landscape',
     },
     ...PORTFOLIO.map((p) => ({
       id: p.id,
       label: p.title,
-      sublabel: `${p.categoryLabel} · portfolio image`,
+      sublabel: p.categoryLabel,
       fallback: p.image,
+      icon: 'palette',
     })),
   ];
 
@@ -191,7 +198,7 @@ export const OwnerPhotoControl: React.FC = () => {
           </p>
         </div>
         <div className="shrink-0 text-right">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Custom Images</div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Published</div>
           <div className="font-display font-black text-2xl text-slate-900">
             {customCount}<span className="text-slate-400 text-base"> / {managed.length}</span>
           </div>

@@ -3,20 +3,22 @@ import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types
 /*
  * Images the app reaches for by name.
  *
- * Every one of these used to be an Unsplash photograph of a laptop or a phone,
- * hotlinked from someone else's server. A photograph of a laptop shows no
- * design work, and the same twelve photographs appear on a great many agency
- * sites. These are rendered from HTML in system/tools/render-work-images.mjs,
- * so they are ours, they are served from here, and a change to one is a code
- * change with a diff.
+ * The service and portfolio images are deliberately empty. Otis is designing
+ * his own, and until they exist a blank is the honest state: ImageWithFallback
+ * renders a branded panel carrying the item's icon and category, which reads as
+ * designed rather than broken and costs no network request.
+ *
+ * Two ways to fill them. Photo Control in the owner portal publishes an image
+ * to every visitor without touching the code. Or drop a file in
+ * public/images/work/ and put its path here.
  */
 export const HOTLINK_IMAGES = {
   globalEarthBg: '/images/hero-earth.jpg',
-  webDesign: '/images/work/svc-web.jpg',
-  appDesign: '/images/work/svc-app.jpg',
-  dashboardDesign: '/images/work/svc-dashboard.jpg',
-  logoDesign: '/images/work/svc-logo.jpg',
-  fullPackage: '/images/work/svc-full.jpg'
+  webDesign: '',
+  appDesign: '',
+  dashboardDesign: '',
+  logoDesign: '',
+  fullPackage: '',
 };
 
 export const SERVICES: ServiceDetail[] = [
@@ -142,7 +144,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
     year: 'Concept',
-    image: '/images/work/bi-dashboard.jpg',
+    image: '',
     summary: 'Executive financial dashboard concept tracking real-time revenue, P&L forecasts, cash-flow metrics, and portfolio performance.',
     highlights: ['Financial KPI system', 'Real-time revenue views', 'Exportable reporting']
   },
@@ -153,7 +155,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'CRM Dashboard',
     client: 'B2B SaaS',
     year: 'Concept',
-    image: '/images/work/crm-pipeline.jpg',
+    image: '',
     summary: 'CRM portal concept for sales teams with visual kanban pipelines, deal stages, and rep performance views.',
     highlights: ['Lead pipeline visualizer', 'Deal-stage tracking', 'Activity logging']
   },
@@ -164,7 +166,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Analytics Dashboard',
     client: 'Data & Analytics',
     year: 'Concept',
-    image: '/images/work/analytics-hub.jpg',
+    image: '',
     summary: 'Analytics BI concept featuring interactive metrics, real-time charts, trend models, and cohort analysis.',
     highlights: ['Cohort analysis', 'Custom query builder', 'Interactive charts']
   },
@@ -175,7 +177,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Enterprise SaaS',
     year: 'Concept',
-    image: '/images/work/cloud-platform.jpg',
+    image: '',
     summary: 'Web dashboard and landing-page concept for an enterprise cloud orchestration platform.',
     highlights: ['React + Tailwind', 'Interactive data viz', 'Responsive system']
   },
@@ -186,7 +188,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial App Design',
     client: 'Fintech',
     year: 'Concept',
-    image: '/images/work/banking-app.jpg',
+    image: '',
     summary: 'Dark-mode financial analytics and mobile banking concept with portfolio charts and biometric-style flows.',
     highlights: ['Financial analytics UI', 'Live market charts', 'Secure sign-in flow']
   },
@@ -197,7 +199,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'App Design',
     client: 'Apparel / DTC',
     year: 'Concept',
-    image: '/images/work/apparel-studio.jpg',
+    image: '',
     summary: 'Clothing design app concept: garment canvas with colourways and print specification, alongside the label\u2019s logo, palette and applied brand kit.',
     highlights: ['Garment spec to factory', 'Logo & brand kit builder', 'Live unit costing']
   },
@@ -208,7 +210,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
     year: 'Concept',
-    image: '/images/work/coffee-identity.jpg',
+    image: '',
     summary: 'Brand-identity concept: organic logo mark, packaging vector graphics, and storefront signage direction.',
     highlights: ['Custom typography', 'Packaging vectors', 'Brand identity kit']
   },
@@ -219,7 +221,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Retail / DTC',
     year: 'Concept',
-    image: '/images/work/storefront.jpg',
+    image: '',
     summary: 'E-commerce web concept with product preview and a streamlined checkout flow.',
     highlights: ['Custom storefront theme', 'Product inspector', 'Performance-first build']
   }
