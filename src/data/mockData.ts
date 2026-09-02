@@ -3,24 +3,20 @@ import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types
 /*
  * Images the app reaches for by name.
  *
- * Six more keys used to sit here — logo, heroBg, heroFutureHands and three
- * testimonial avatars — every one of them an Unsplash URL that nothing
- * rendered. TESTIMONIALS is an empty array, so the avatars had never had a
- * caller at all. They are gone rather than kept "in case": an unused hotlink
- * is a dependency on someone else's server that no page benefits from, and it
- * makes the real count of external images impossible to read at a glance.
- *
- * What is left is five service-card photographs, still hotlinked from
- * Unsplash, plus one local file. The photographs are the remaining external
- * dependency on this file; PORTFOLIO below carries eight more.
+ * Every one of these used to be an Unsplash photograph of a laptop or a phone,
+ * hotlinked from someone else's server. A photograph of a laptop shows no
+ * design work, and the same twelve photographs appear on a great many agency
+ * sites. These are rendered from HTML in system/tools/render-work-images.mjs,
+ * so they are ours, they are served from here, and a change to one is a code
+ * change with a diff.
  */
 export const HOTLINK_IMAGES = {
   globalEarthBg: '/images/hero-earth.jpg',
-  webDesign: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1000&auto=format&fit=crop',
-  appDesign: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1000&auto=format&fit=crop',
-  dashboardDesign: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
-  logoDesign: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1000&auto=format&fit=crop',
-  fullPackage: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?q=80&w=1000&auto=format&fit=crop'
+  webDesign: '/images/work/svc-web.jpg',
+  appDesign: '/images/work/svc-app.jpg',
+  dashboardDesign: '/images/work/svc-dashboard.jpg',
+  logoDesign: '/images/work/svc-logo.jpg',
+  fullPackage: '/images/work/svc-full.jpg'
 };
 
 export const SERVICES: ServiceDetail[] = [
@@ -146,7 +142,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/bi-dashboard.jpg',
     summary: 'Executive financial dashboard concept tracking real-time revenue, P&L forecasts, cash-flow metrics, and portfolio performance.',
     highlights: ['Financial KPI system', 'Real-time revenue views', 'Exportable reporting']
   },
@@ -157,7 +153,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'CRM Dashboard',
     client: 'B2B SaaS',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/crm-pipeline.jpg',
     summary: 'CRM portal concept for sales teams with visual kanban pipelines, deal stages, and rep performance views.',
     highlights: ['Lead pipeline visualizer', 'Deal-stage tracking', 'Activity logging']
   },
@@ -168,7 +164,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Analytics Dashboard',
     client: 'Data & Analytics',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/analytics-hub.jpg',
     summary: 'Analytics BI concept featuring interactive metrics, real-time charts, trend models, and cohort analysis.',
     highlights: ['Cohort analysis', 'Custom query builder', 'Interactive charts']
   },
@@ -179,7 +175,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Enterprise SaaS',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/cloud-platform.jpg',
     summary: 'Web dashboard and landing-page concept for an enterprise cloud orchestration platform.',
     highlights: ['React + Tailwind', 'Interactive data viz', 'Responsive system']
   },
@@ -190,7 +186,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial App Design',
     client: 'Fintech',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/banking-app.jpg',
     summary: 'Dark-mode financial analytics and mobile banking concept with portfolio charts and biometric-style flows.',
     highlights: ['Financial analytics UI', 'Live market charts', 'Secure sign-in flow']
   },
@@ -201,7 +197,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'App Design',
     client: 'Wellness',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/fitness-app.jpg',
     summary: 'Fitness-tracking app concept with custom workout builders and wearable-sync patterns.',
     highlights: ['React Native patterns', 'Live activity charts', 'Wearable sync UX']
   },
@@ -212,7 +208,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/coffee-identity.jpg',
     summary: 'Brand-identity concept: organic logo mark, packaging vector graphics, and storefront signage direction.',
     highlights: ['Custom typography', 'Packaging vectors', 'Brand identity kit']
   },
@@ -223,7 +219,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Retail / DTC',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+    image: '/images/work/storefront.jpg',
     summary: 'E-commerce web concept with product preview and a streamlined checkout flow.',
     highlights: ['Custom storefront theme', 'Product inspector', 'Performance-first build']
   }
