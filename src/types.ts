@@ -1,6 +1,6 @@
 export type TabType = 'home' | 'services' | 'portfolio' | 'booking' | 'appointments' | 'owner_invoice';
 
-export type ServiceCategory = 'web_design' | 'app_design' | 'dashboards' | 'logo_brand' | 'tech_stack' | 'full_package';
+export type ServiceCategory = 'web_design' | 'app_design' | 'dashboards' | 'logo_brand' | 'systems' | 'tech_stack' | 'full_package';
 
 export interface InvoiceLineItem {
   id: string;
@@ -66,7 +66,7 @@ export interface ServiceDetail {
 export interface PortfolioItem {
   id: string;
   title: string;
-  category: 'web_design' | 'app_design' | 'dashboards' | 'logo_brand';
+  category: 'web_design' | 'app_design' | 'dashboards' | 'logo_brand' | 'systems';
   categoryLabel: string;
   client: string;
   year: string;
