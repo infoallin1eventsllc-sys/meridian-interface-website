@@ -192,14 +192,14 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p4',
-    title: 'Health & Fitness Tracking App',
+    title: 'Apparel Design & Brand Studio App',
     category: 'app_design',
     categoryLabel: 'App Design',
-    client: 'Wellness',
+    client: 'Apparel / DTC',
     year: 'Concept',
-    image: '/images/work/fitness-app.jpg',
-    summary: 'Fitness-tracking app concept with custom workout builders and wearable-sync patterns.',
-    highlights: ['React Native patterns', 'Live activity charts', 'Wearable sync UX']
+    image: '/images/work/apparel-studio.jpg',
+    summary: 'Clothing design app concept: garment canvas with colourways and print specification, alongside the label\u2019s logo, palette and applied brand kit.',
+    highlights: ['Garment spec to factory', 'Logo & brand kit builder', 'Live unit costing']
   },
   {
     id: 'p5',
