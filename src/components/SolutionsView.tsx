@@ -3,7 +3,6 @@ import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
 import { ImageWithFallback } from './ImageWithFallback';
 import { useMeridianMotion, m as motion } from '../lib/motion';
-import { LoopSimulator } from './LoopSimulator';
 
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
@@ -165,9 +164,12 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         </motion.div>
       </section>
 
-      {/* The Tech Stack service above promises connected tools. This is one
-          running, so a visitor can check the claim instead of taking it. */}
-      <LoopSimulator />
+      {/* The loop simulator used to sit here as proof the Tech Stack service
+          does what it says. Otis's read, Sep 3: clocks, queues and "waiting
+          for approval" are control-panel language, and a control panel on a
+          sales page tells a client the studio is busy with its own machinery.
+          It lives in the owner portal's Tech Stack tab now, for a screen-share
+          when he wants it. */}
     </main>
   );
 };
