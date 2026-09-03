@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { LoopSimulator } from './LoopSimulator';
 import { fetchStack, type StackSnapshot } from '../lib/stack';
 
 /**
@@ -239,6 +240,11 @@ export const TechStack: React.FC = () => {
           service sells — and this page is the inventory a client would get.
         </p>
       )}
+      {/* The working loop, for the owner's eyes and for a screen-share.
+          Moved here from the public Services page on Sep 3. */}
+      <div className="mt-10">
+        <LoopSimulator />
+      </div>
     </section>
   );
 };
