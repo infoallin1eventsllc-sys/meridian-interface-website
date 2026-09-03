@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  approveContent, contactName, fetchQueue, rejectContent, rejectMessage, sendMessage, updateContent,
-  type ContentItem, type MarketingQueue as Queue, type OwnerMessage,
+  approveContent, contactName, fetchConnections, fetchQueue, rejectContent, rejectMessage, sendMessage, updateContent,
+  type Connection, type ContentItem, type MarketingQueue as Queue, type OwnerMessage,
 } from '../lib/marketing';
 
 /**
@@ -287,16 +287,78 @@ const MessageCard: React.FC<{
   );
 };
 
+
+/**
+ * Where each platform stands. The queue above can fill with good drafts and
+ * still reach nobody; this is the row that says why, and what one line fixes
+ * it. Values never come to the browser — only whether each is present.
+ */
+const Connections: React.FC<{ list: Connection[] | null }> = ({ list }) => {
+  const [open, setOpen] = useState<string | null>(null);
+  if (list === null) return null;
+  const wired = list.filter((c) => c.connected).length;
+  return (
+    <div className="space-y-3">
+      <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">
+        Where approved posts can go <span className="text-slate-400">({wired} of {list.length} connected)</span>
+      </h3>
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
+        {list.map((c) => (
+          <div key={c.key} className="px-5 py-3.5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className={`material-symbols-outlined text-lg ${c.connected ? 'text-emerald-600' : 'text-slate-300'}`} aria-hidden="true">
+                {c.connected ? 'check_circle' : 'radio_button_unchecked'}
+              </span>
+              <span className="font-bold text-sm text-slate-900">{c.label}</span>
+              <Pill tone={c.connected ? 'green' : 'slate'}>{c.connected ? 'Connected' : 'Not connected'}</Pill>
+              <span className="text-[12px] text-slate-600 basis-full md:basis-auto md:ml-1">{c.what}</span>
+              {!c.connected && (
+                <button
+                  type="button"
+                  onClick={() => setOpen(open === c.key ? null : c.key)}
+                  className="ml-auto text-[11px] font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-base" aria-hidden="true">{open === c.key ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</span>
+                  How to connect
+                </button>
+              )}
+            </div>
+            {!c.connected && open === c.key && (
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-[12px] leading-relaxed text-slate-700 space-y-2">
+                <p>
+                  Get the credential{c.needs.length > 1 ? 's' : ''} from{' '}
+                  <a href={c.signup} target="_blank" rel="noreferrer" className="font-bold text-slate-900 underline underline-offset-2">
+                    {c.signup.replace(/^https?:\/\//, '')}
+                  </a>
+                  {c.note ? `. ${c.note}` : ', then run this in the Supabase SQL editor, one line at a time, with the value pasted between the quotes:'}
+                </p>
+                {c.lines.length > 0 && (
+                  <pre className="overflow-x-auto rounded-lg bg-[#0f172a] text-slate-100 text-[11.5px] leading-relaxed p-3 font-mono">{c.lines.join('\n')}</pre>
+                )}
+                <p className="text-slate-500">
+                  Each line answers with what it saved or why it refused. Nothing to redeploy — the next post uses it.
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const MarketingQueue: React.FC = () => {
   const [q, setQ] = useState<Queue | null>(null);
+  const [conns, setConns] = useState<Connection[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ tone: 'ok' | 'bad'; text: string } | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetchQueue();
+    const [r, c] = await Promise.all([fetchQueue(), fetchConnections()]);
     setQ(r);
+    setConns(c);
     setFailed(r === null);
     setLoading(false);
   }, []);
@@ -457,6 +519,8 @@ export const MarketingQueue: React.FC = () => {
           ))}
         </div>
       )}
+
+      <Connections list={conns} />
     </section>
   );
 };

@@ -128,3 +128,24 @@ export const updateContent = (id: string, patch: { title?: string; body?: string
   call<{ ok: true }>({ action: 'content_update', id, ...patch });
 export const sendMessage = (id: string) => call<{ ok: true }>({ action: 'message_send', id });
 export const rejectMessage = (id: string) => call<{ ok: true }>({ action: 'message_reject', id });
+
+/** One platform: wired or not, and the line that wires it. Booleans only — no values. */
+export interface Connection {
+  key: string;
+  label: string;
+  connected: boolean;
+  what: string;
+  needs: string[];
+  lines: string[];
+  signup: string;
+  note?: string;
+}
+
+export async function fetchConnections(): Promise<Connection[] | null> {
+  try {
+    const r = await call<{ connections: Connection[] }>({ action: 'channels_status' });
+    return r.connections ?? [];
+  } catch {
+    return null;
+  }
+}
