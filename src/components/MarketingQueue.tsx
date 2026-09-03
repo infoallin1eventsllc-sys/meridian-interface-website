@@ -3,6 +3,7 @@ import {
   approveContent, contactName, fetchConnections, fetchQueue, rejectContent, rejectMessage, sendMessage, updateContent,
   type Connection, type ContentItem, type MarketingQueue as Queue, type OwnerMessage,
 } from '../lib/marketing';
+import { ScriptPlayer } from './ScriptPlayer';
 
 /**
  * Marketing — what the system wrote, waiting on Otis.
@@ -81,8 +82,12 @@ function outcome(item: ContentItem, channelLabel: string): { text: string; tone:
   return { text: item.status, tone: 'amber' };
 }
 
-const Media: React.FC<{ item: ContentItem }> = ({ item }) => {
+const Media: React.FC<{ item: ContentItem; jumpTo?: { index: number; nonce: number } | null; onScene?: (i: number) => void }> = ({ item, jumpTo, onScene }) => {
   const v = item.meta?.video;
+  if (item.kind === 'video' && v?.state !== 'ready' && item.meta?.script) {
+    // No clip yet — play the script the way the clip will show it.
+    return <ScriptPlayer script={item.meta.script} jumpTo={jumpTo} onScene={onScene} />;
+  }
   if (item.kind === 'video' && v?.state === 'ready' && v.url) {
     return (
       <video
@@ -108,10 +113,31 @@ const Media: React.FC<{ item: ContentItem }> = ({ item }) => {
 };
 
 /** The five on-screen lines of a video, in order, when there is no clip to play yet. */
-const ScriptSheet: React.FC<{ item: ContentItem }> = ({ item }) => {
+const ScriptSheet: React.FC<{ item: ContentItem; current?: number; onJump?: (i: number) => void }> = ({ item, current = -1, onJump }) => {
   const s = item.meta?.script;
   const v = item.meta?.video;
   if (item.kind !== 'video' || !s) return null;
+  const lines: Array<{ text: string; strong?: boolean }> = [
+    { text: s.hook, strong: true },
+    ...s.beats.map((b) => ({ text: b })),
+    { text: s.price_line, strong: true },
+    { text: s.cta },
+  ];
+  const Line: React.FC<{ i: number; text: string; strong?: boolean }> = ({ i, text, strong }) => (
+    <li>
+      <button
+        type="button"
+        onClick={() => onJump?.(i)}
+        className={`w-full text-left rounded-md px-1.5 py-0.5 -mx-1.5 transition-colors ${
+          i === current ? 'bg-white shadow-[inset_3px_0_0_#4F6D8C]' : 'hover:bg-white/70'
+        }`}
+        title="Play from here"
+      >
+        <span className="font-mono text-[11px] text-slate-400 mr-2 tabular-nums">{i + 1}</span>
+        {strong ? <strong>{text}</strong> : text}
+      </button>
+    </li>
+  );
   const note =
     v?.state === 'ready' ? null
       : v?.state === 'rendering' ? 'The clip is rendering — it will appear here in a minute or two.'
@@ -120,15 +146,10 @@ const ScriptSheet: React.FC<{ item: ContentItem }> = ({ item }) => {
   return (
     <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
       <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">
-        On screen, in order
+        On screen, in order <span className="normal-case tracking-normal font-medium text-slate-400">— click a line to play from it</span>
       </div>
-      <ol className="space-y-1.5 text-[13px] leading-snug text-slate-800">
-        <li><span className="font-mono text-[11px] text-slate-400 mr-2">1</span><strong>{s.hook}</strong></li>
-        {s.beats.map((b, i) => (
-          <li key={i}><span className="font-mono text-[11px] text-slate-400 mr-2">{i + 2}</span>{b}</li>
-        ))}
-        <li><span className="font-mono text-[11px] text-slate-400 mr-2">{s.beats.length + 2}</span><strong>{s.price_line}</strong></li>
-        <li><span className="font-mono text-[11px] text-slate-400 mr-2">{s.beats.length + 3}</span>{s.cta}</li>
+      <ol className="space-y-1 text-[13px] leading-snug text-slate-800">
+        {lines.map((l, i) => <Line key={i} i={i} text={l.text} strong={l.strong} />)}
       </ol>
       {note && (
         <p className={`mt-3 text-[12px] leading-relaxed ${v?.state === 'failed' ? 'text-red-800' : 'text-slate-600'}`}>
@@ -151,6 +172,8 @@ const ContentCard: React.FC<{
   const [title, setTitle] = useState(item.title ?? '');
   const [body, setBody] = useState(item.body ?? '');
   const [expanded, setExpanded] = useState(false);
+  const [jump, setJump] = useState<{ index: number; nonce: number } | null>(null);
+  const [scene, setScene] = useState(-1);
   const decidable = item.status === 'pending_approval';
   const retryable = item.status === 'failed' && !item.meta?.video?.error;
   const m = item.meta ?? {};
@@ -159,8 +182,10 @@ const ContentCard: React.FC<{
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col md:flex-row gap-5">
-        <div className="shrink-0">
-          <Media item={item} />
+        {/* A fixed column: the player and the images size to it, not to the
+            text beside them, which is what let the phone collapse to 70px. */}
+        <div className="shrink-0 w-full md:w-[240px]">
+          <Media item={item} jumpTo={jump} onScene={setScene} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5 mb-2">
@@ -208,7 +233,7 @@ const ContentCard: React.FC<{
                   {expanded ? 'Show less' : 'Read all'}
                 </button>
               )}
-              <ScriptSheet item={item} />
+              <ScriptSheet item={item} current={scene} onJump={(i) => setJump({ index: i, nonce: Date.now() })} />
             </>
           )}
 
