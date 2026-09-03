@@ -219,7 +219,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
                   icon="palette"
-                  label={item.categoryLabel}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
                 <div className="absolute top-3 left-3 bg-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold text-white uppercase tracking-wider">

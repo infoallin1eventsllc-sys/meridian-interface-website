@@ -10,7 +10,7 @@ interface ImpactViewProps {
 }
 
 export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal }) => {
-  const [filter, setFilter] = useState<'all' | 'web_design' | 'app_design' | 'logo_brand'>('all');
+  const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
@@ -42,6 +42,8 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           { id: 'all', label: 'All Projects', icon: 'apps' },
           { id: 'web_design', label: 'Web Design', icon: 'language' },
           { id: 'app_design', label: 'Mobile Apps', icon: 'phone_iphone' },
+          { id: 'systems', label: 'Agentic Systems', icon: 'account_tree' },
+          { id: 'dashboards', label: 'Dashboards', icon: 'dashboard' },
           { id: 'logo_brand', label: 'Logo & Branding', icon: 'draw' }
         ].map(cat => (
           <button
@@ -75,7 +77,6 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
                   icon="palette"
-                  label={item.categoryLabel}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
                 <div className="absolute top-3 left-3 bg-slate-900 px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">

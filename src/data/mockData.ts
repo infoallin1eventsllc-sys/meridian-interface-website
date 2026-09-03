@@ -1,18 +1,24 @@
 import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types';
 
+/*
+ * Images the app reaches for by name.
+ *
+ * The service and portfolio images are deliberately empty. Otis is designing
+ * his own, and until they exist a blank is the honest state: ImageWithFallback
+ * renders a branded panel carrying the item's icon and category, which reads as
+ * designed rather than broken and costs no network request.
+ *
+ * Two ways to fill them. Photo Control in the owner portal publishes an image
+ * to every visitor without touching the code. Or drop a file in
+ * public/images/work/ and put its path here.
+ */
 export const HOTLINK_IMAGES = {
-  logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
-  heroBg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000&auto=format&fit=crop',
   globalEarthBg: '/images/hero-earth.jpg',
-  heroFutureHands: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop',
-  webDesign: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1000&auto=format&fit=crop',
-  appDesign: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1000&auto=format&fit=crop',
-  dashboardDesign: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop',
-  logoDesign: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1000&auto=format&fit=crop',
-  fullPackage: 'https://images.unsplash.com/photo-1642543492481-44e81e3914a7?q=80&w=1000&auto=format&fit=crop',
-  avatar1: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
-  avatar2: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
-  avatar3: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop'
+  webDesign: '',
+  appDesign: '',
+  dashboardDesign: '',
+  logoDesign: '',
+  fullPackage: '',
 };
 
 export const SERVICES: ServiceDetail[] = [
@@ -132,13 +138,24 @@ export const SERVICES: ServiceDetail[] = [
  */
 export const PORTFOLIO: PortfolioItem[] = [
   {
+    id: 'p10',
+    title: 'Agentic Tech Stack for Growing Businesses',
+    category: 'systems',
+    categoryLabel: 'Agentic Systems',
+    client: 'Owner-Operated Business',
+    year: 'Concept',
+    image: '',
+    summary: 'An always-on system a small business owns outright: an enquiry becomes a contact, the agent drafts the follow-up and the week\u2019s posts, a human approves, it publishes and measures, and a summary lands every Monday.',
+    highlights: ['Runs without a person watching', 'Nothing sends unapproved', 'One system, no per-seat fees']
+  },
+  {
     id: 'p7',
     title: 'Financial & Revenue BI Dashboard',
     category: 'dashboards',
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'Executive financial dashboard concept tracking real-time revenue, P&L forecasts, cash-flow metrics, and portfolio performance.',
     highlights: ['Financial KPI system', 'Real-time revenue views', 'Exportable reporting']
   },
@@ -149,7 +166,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'CRM Dashboard',
     client: 'B2B SaaS',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'CRM portal concept for sales teams with visual kanban pipelines, deal stages, and rep performance views.',
     highlights: ['Lead pipeline visualizer', 'Deal-stage tracking', 'Activity logging']
   },
@@ -160,7 +177,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Analytics Dashboard',
     client: 'Data & Analytics',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'Analytics BI concept featuring interactive metrics, real-time charts, trend models, and cohort analysis.',
     highlights: ['Cohort analysis', 'Custom query builder', 'Interactive charts']
   },
@@ -171,7 +188,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Enterprise SaaS',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'Web dashboard and landing-page concept for an enterprise cloud orchestration platform.',
     highlights: ['React + Tailwind', 'Interactive data viz', 'Responsive system']
   },
@@ -182,20 +199,20 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial App Design',
     client: 'Fintech',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'Dark-mode financial analytics and mobile banking concept with portfolio charts and biometric-style flows.',
     highlights: ['Financial analytics UI', 'Live market charts', 'Secure sign-in flow']
   },
   {
     id: 'p4',
-    title: 'Health & Fitness Tracking App',
+    title: 'Apparel Design & Brand Studio App',
     category: 'app_design',
     categoryLabel: 'App Design',
-    client: 'Wellness',
+    client: 'Apparel / DTC',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800&auto=format&fit=crop',
-    summary: 'Fitness-tracking app concept with custom workout builders and wearable-sync patterns.',
-    highlights: ['React Native patterns', 'Live activity charts', 'Wearable sync UX']
+    image: '',
+    summary: 'Clothing design app concept: garment canvas with colourways and print specification, alongside the label\u2019s logo, palette and applied brand kit.',
+    highlights: ['Garment spec to factory', 'Logo & brand kit builder', 'Live unit costing']
   },
   {
     id: 'p5',
@@ -204,7 +221,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'Brand-identity concept: organic logo mark, packaging vector graphics, and storefront signage direction.',
     highlights: ['Custom typography', 'Packaging vectors', 'Brand identity kit']
   },
@@ -215,7 +232,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Web Design',
     client: 'Retail / DTC',
     year: 'Concept',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+    image: '',
     summary: 'E-commerce web concept with product preview and a streamlined checkout flow.',
     highlights: ['Custom storefront theme', 'Product inspector', 'Performance-first build']
   }

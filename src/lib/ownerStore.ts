@@ -196,3 +196,63 @@ export async function deleteInvoice(id: string): Promise<{ offline: boolean }> {
     return { offline: true };
   }
 }
+
+/* --------------------------------------------------------- site images ---- */
+
+/**
+ * Publishing an image override.
+ *
+ * These live on their own edge function rather than `owner`, because the read
+ * side has to be public — every visitor needs it on page load — while
+ * everything past `owner`'s auth gate requires a session. The writes still
+ * require this store's token, verified server-side against the same signing
+ * key that issued it.
+ */
+const DEFAULT_IMAGES_ENDPOINT =
+  'https://glzodwhyavexpuusbqjy.supabase.co/functions/v1/site-images';
+const IMAGES_ENDPOINT: string =
+  (import.meta.env.VITE_SITE_IMAGES_ENDPOINT as string | undefined)?.trim() ||
+  DEFAULT_IMAGES_ENDPOINT;
+
+async function imagesCall<T>(payload: Record<string, unknown>): Promise<T> {
+  const token = getToken();
+  const res = await fetch(IMAGES_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    // Same rule as the invoice calls: an expired session should show the gate
+    // again rather than fail silently and look like a broken button.
+    setToken(null);
+    throw new Error('Your session expired — sign in again.');
+  }
+  if (!res.ok || body?.ok === false) throw new Error(body?.error || `HTTP ${res.status}`);
+  return body as T;
+}
+
+/** Point an image id at a URL. An empty url reverts it to the shipped default. */
+export async function publishImageUrl(
+  id: string,
+  url: string,
+): Promise<Record<string, string>> {
+  const body = await imagesCall<{ overrides: Record<string, string> }>({
+    action: 'set', id, url,
+  });
+  return body.overrides;
+}
+
+/** Upload a file and point the image id at the stored copy. */
+export async function publishImageFile(
+  id: string,
+  base64: string,
+  contentType: string,
+): Promise<{ url: string; overrides: Record<string, string> }> {
+  return await imagesCall<{ url: string; overrides: Record<string, string> }>({
+    action: 'upload', id, data: base64, content_type: contentType,
+  });
+}
