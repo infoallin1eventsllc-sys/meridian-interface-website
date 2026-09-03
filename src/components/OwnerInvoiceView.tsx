@@ -3,6 +3,7 @@ import { OwnerInvoice, InvoiceLineItem } from '../types';
 import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
 import { CampaignLinks } from './CampaignLinks';
 import { SystemHealth } from './SystemHealth';
+import { MarketingQueue } from './MarketingQueue';
 import { TechStack } from './TechStack';
 import {
   fetchCatalogue,
@@ -44,7 +45,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'answers' | 'links' | 'health' | 'stack' | 'photos'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -696,6 +697,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       <div className="mb-8 flex flex-wrap gap-2">
         {([
           { id: 'invoices', label: 'Invoices & Pricing', icon: 'receipt_long' },
+          { id: 'marketing', label: 'Marketing', icon: 'campaign' },
           // Icon names must use only letters the SUBSET font can map. Its cmap
           // covers ' _abcdefghiklmnoprstuvwy' — j, q, x and z are absent, so a
           // name containing one cannot form a ligature and the browser paints
@@ -757,6 +759,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
       {portalTab === 'links' && <CampaignLinks />}
 
+      {portalTab === 'marketing' && <MarketingQueue />}
       {portalTab === 'health' && <SystemHealth />}
       {portalTab === 'stack' && <TechStack />}
 
