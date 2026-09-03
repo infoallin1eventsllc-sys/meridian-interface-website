@@ -182,7 +182,9 @@ const ContentCard: React.FC<{
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col md:flex-row gap-5">
-        <div className="shrink-0">
+        {/* A fixed column: the player and the images size to it, not to the
+            text beside them, which is what let the phone collapse to 70px. */}
+        <div className="shrink-0 w-full md:w-[240px]">
           <Media item={item} jumpTo={jump} onScene={setScene} />
         </div>
         <div className="min-w-0 flex-1">
