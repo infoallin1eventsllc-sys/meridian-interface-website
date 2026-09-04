@@ -1,22 +1,33 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meridian Stack Planner</title>
-    <meta name="description" content="Plan an agentic tech stack for a growing business: the five layers, what each costs, how a workflow runs with a person in the loop, the return on it, and the governance around it. A Meridian Interface build." />
-    <meta property="og:title" content="Meridian Stack Planner" />
-    <meta property="og:description" content="Plan an agentic tech stack for a growing business, then have Meridian Interface build it." />
-    <meta property="og:type" content="website" />
-    <link rel="icon" type="image/png" href="/demos/stack-planner/brand/meridian-mark.png" />
-    <link rel="preload" href="/demos/stack-planner/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/demos/stack-planner/fonts/hanken-grotesk-var-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <script type="module" crossorigin src="/demos/stack-planner/assets/index-CIJ7Pn4W.js"></script>
-    <link rel="stylesheet" crossorigin href="/demos/stack-planner/assets/index-BjD-_N-w.css">
-  
+/**
+ * Stamps every hosted demo with a Meridian Interface bar across the top.
+ *
+ * The demos carry client-facing product names — Aurora Reserve, FinSight,
+ * ORCHESTRA — because that is the demonstration: a bank interface has to look
+ * like a bank, not like its agency. The risk Otis spotted is that a visitor who
+ * clicks through from the portfolio then believes they have left Meridian's
+ * site. So every demo opens with a bar naming Meridian as the studio that built
+ * it, saying plainly that it is a demonstration, and offering the way back.
+ *
+ * This runs over the BUILT output rather than each app's source, so all four
+ * carry exactly the same bar and it cannot drift app by app. Run it after
+ * copying a fresh build into public/demos/<slug>/.
+ */
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
+const DEMOS = join(process.cwd(), 'public', 'demos');
+const BAR_H = 46;
+
+const LABEL = {
+  'stack-planner': 'Stack Planner',
+  finsight: 'FinSight — financial dashboard',
+  aurora: 'Aurora Reserve — private banking interface',
+  orchestra: 'ORCHESTRA — cloud console',
+};
+
+const styles = `
 <style id="meridian-demo-bar-style">
-  :root { --meridian-bar: 46px; }
+  :root { --meridian-bar: ${BAR_H}px; }
   body { padding-top: var(--meridian-bar) !important; }
   /* These apps size themselves to the viewport; leave room for the bar so the
      demo is not pushed off the bottom of the screen. */
@@ -48,17 +59,28 @@
   @media (max-width: 720px) {
     #meridian-demo-bar .mb-what, #meridian-demo-bar .mb-sep { display: none; }
   }
-</style>
-</head>
-  <body class="antialiased">
+</style>`;
+
+const bar = (slug) => `
 <div id="meridian-demo-bar">
   <img src="brand/meridian-mark.png" alt="Meridian Interface" />
   <span class="mb-built">Built by Meridian Interface</span>
   <span class="mb-sep">·</span>
-  <span class="mb-what">Stack Planner</span>
+  <span class="mb-what">${LABEL[slug] ?? slug}</span>
   <span class="mb-tag">Demonstration</span>
   <a class="mb-home" href="/">meridianinterface.com &rarr;</a>
-</div>
-<div id="root"></div>
-  </body>
-</html>
+</div>`;
+
+let done = 0;
+for (const slug of readdirSync(DEMOS)) {
+  const file = join(DEMOS, slug, 'index.html');
+  if (!existsSync(file)) continue;
+  let html = readFileSync(file, 'utf8');
+  if (html.includes('meridian-demo-bar')) { console.log(`${slug}: already stamped`); continue; }
+  html = html.replace('</head>', `${styles}\n</head>`);
+  html = html.replace(/(<body[^>]*>)/, `$1${bar(slug)}`);
+  writeFileSync(file, html);
+  console.log(`${slug}: stamped`);
+  done += 1;
+}
+console.log(`${done} demo(s) stamped`);
