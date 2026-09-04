@@ -46,3 +46,11 @@
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .animate-fadeIn { animation: fadeIn .25s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* The proposal sheet prints as a document: no app chrome, no page background. */
+@media print {
+  html, body { background: #fff !important; }
+  .print\:hidden { display: none !important; }
+  .break-inside-avoid { break-inside: avoid; }
+  @page { margin: 14mm; }
+}

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { RoiInputs, RoiPresetKey, ROI_PRESETS, computeRoi } from '../lib/roi';
 import { 
   Calculator, 
   DollarSign, 
@@ -11,95 +12,28 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-export const RoiCalculator: React.FC = () => {
-  const [teamSize, setTeamSize] = useState<number>(12);
-  const [avgSalary, setAvgSalary] = useState<number>(60000);
-  const [hoursPerWeekRepetitive, setHoursPerWeekRepetitive] = useState<number>(8);
-  const [automationRate, setAutomationRate] = useState<number>(40); // percentage
-  const [monthlyStackCost, setMonthlyStackCost] = useState<number>(250); // running cost, USD/month
-  // The two inputs the original calculator left out, which is why it produced
-  // a three-day payback: what it costs to build, and how much of the freed
-  // time actually turns into money rather than just disappearing into the day.
-  const [buildCost, setBuildCost] = useState<number>(7500);
-  const [realisationRate, setRealisationRate] = useState<number>(50); // percentage
+interface RoiCalculatorProps {
+  inputs: RoiInputs;
+  set: (patch: Partial<RoiInputs>) => void;
+}
 
-  /*
-   * Presets aimed at the businesses this studio actually works with, and
-   * deliberately cautious. The version this replaces opened on 35 people
-   * losing 14 hours a week each with 60% of it automatable — assumptions that
-   * do most of the work in the answer, unannounced. A first screen that
-   * flatters is a first screen nobody trusts twice.
-   */
-  const applyRoiPreset = (preset: 'small' | 'growing' | 'established' | 'large') => {
-    if (preset === 'small') {
-      setTeamSize(4);
-      setAvgSalary(52000);
-      setHoursPerWeekRepetitive(7);
-      setAutomationRate(35);
-      setMonthlyStackCost(120);
-      setBuildCost(4500);
-    } else if (preset === 'growing') {
-      setTeamSize(12);
-      setAvgSalary(60000);
-      setHoursPerWeekRepetitive(8);
-      setAutomationRate(40);
-      setMonthlyStackCost(250);
-      setBuildCost(7500);
-    } else if (preset === 'established') {
-      setTeamSize(45);
-      setAvgSalary(75000);
-      setHoursPerWeekRepetitive(9);
-      setAutomationRate(45);
-      setMonthlyStackCost(700);
-      setBuildCost(15000);
-    } else {
-      setTeamSize(250);
-      setAvgSalary(90000);
-      setHoursPerWeekRepetitive(10);
-      setAutomationRate(50);
-      setMonthlyStackCost(2500);
-      setBuildCost(35000);
-    }
-  };
+/**
+ * The inputs live in App so the proposal sheet can print the same numbers the
+ * client just watched move on screen. Nothing is calculated here — see lib/roi.
+ */
+export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => {
+  const {
+    teamSize, avgSalary, hoursPerWeekRepetitive,
+    automationRate, monthlyStackCost, buildCost, realisationRate,
+  } = inputs;
 
-  /*
-   * The maths, and what it deliberately does not do.
-   *
-   * The version this replaces multiplied every freed hour by a full salary
-   * rate, ignored what the build costs, and reported a three-day payback and a
-   * five-figure percentage return. Nobody with money to spend believes that,
-   * and once they stop believing this screen they stop believing the rest.
-   *
-   * Two corrections. Freed time is only worth money to the degree it gets
-   * used for something that earns or replaces a hire — that is the realisation
-   * rate, and half is a fair default. And the build is a real one-off cost, so
-   * payback is measured against it in months, not against the software bill in
-   * days.
-   */
-  const hourlyRate = avgSalary / 2080; // 52 weeks x 40 hours
+  const applyRoiPreset = (preset: RoiPresetKey) => set(ROI_PRESETS[preset]);
 
-  const weeklyHoursFreed = Math.round(teamSize * hoursPerWeekRepetitive * (automationRate / 100));
-  const annualHoursFreed = weeklyHoursFreed * 52;
-
-  // What that time is worth once it is actually redeployed.
-  const annualValue = annualHoursFreed * hourlyRate * (realisationRate / 100);
-  const annualStackCost = monthlyStackCost * 12;
-
-  // Year one carries the build; every year after does not.
-  const firstYearNet = annualValue - annualStackCost - buildCost;
-  const ongoingAnnualNet = annualValue - annualStackCost;
-
-  // Months to earn the build back, once running costs are paid.
-  const monthlyNet = (annualValue - annualStackCost) / 12;
-  const paybackMonths = monthlyNet > 0 ? buildCost / monthlyNet : Infinity;
-  const paybackLabel = !isFinite(paybackMonths)
-    ? 'Does not pay back'
-    : paybackMonths < 1
-      ? 'Under a month'
-      : `${paybackMonths.toFixed(paybackMonths < 10 ? 1 : 0)} months`;
-
-  // One full-time year is about 1,800 working hours after leave and admin.
-  const headcountLeverage = (annualHoursFreed / 1800).toFixed(1);
+  const {
+    hourlyRate, weeklyHoursFreed, annualHoursFreed, annualValue,
+    annualStackCost, firstYearNet, ongoingAnnualNet, paybackMonths,
+    paybackLabel, headcountLeverage,
+  } = computeRoi(inputs);
 
   return (
     <div className="space-y-6">
@@ -195,7 +129,7 @@ export const RoiCalculator: React.FC = () => {
               max="2500"
               step="5"
               value={teamSize}
-              onChange={(e) => setTeamSize(Number(e.target.value))}
+              onChange={(e) => set({ teamSize: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-emerald-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -224,7 +158,7 @@ export const RoiCalculator: React.FC = () => {
               max="160000"
               step="5000"
               value={avgSalary}
-              onChange={(e) => setAvgSalary(Number(e.target.value))}
+              onChange={(e) => set({ avgSalary: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -251,7 +185,7 @@ export const RoiCalculator: React.FC = () => {
               min="4"
               max="28"
               value={hoursPerWeekRepetitive}
-              onChange={(e) => setHoursPerWeekRepetitive(Number(e.target.value))}
+              onChange={(e) => set({ hoursPerWeekRepetitive: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -279,7 +213,7 @@ export const RoiCalculator: React.FC = () => {
               max="85"
               step="5"
               value={automationRate}
-              onChange={(e) => setAutomationRate(Number(e.target.value))}
+              onChange={(e) => set({ automationRate: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-emerald-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -307,7 +241,7 @@ export const RoiCalculator: React.FC = () => {
               max="30000"
               step="50"
               value={monthlyStackCost}
-              onChange={(e) => setMonthlyStackCost(Number(e.target.value))}
+              onChange={(e) => set({ monthlyStackCost: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -337,7 +271,7 @@ export const RoiCalculator: React.FC = () => {
               max="40000"
               step="500"
               value={buildCost}
-              onChange={(e) => setBuildCost(Number(e.target.value))}
+              onChange={(e) => set({ buildCost: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
@@ -367,7 +301,7 @@ export const RoiCalculator: React.FC = () => {
               max="100"
               step="5"
               value={realisationRate}
-              onChange={(e) => setRealisationRate(Number(e.target.value))}
+              onChange={(e) => set({ realisationRate: Number(e.target.value) })}
               className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-400"
             />
             <p className="text-[11px] text-slate-500 leading-relaxed">

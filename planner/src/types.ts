@@ -8,6 +8,8 @@ export interface StackLayerItem {
   category: 'Foundation' | 'Orchestration' | 'Memory' | 'Tools & Protocols' | 'Governance & Evals';
   tagline: string;
   description: string;
+  /** One sentence for the client-facing proposal, where the jargon above will not do. */
+  plain?: string;
   bestFor: string;
   tradeOffs: {
     pros: string[];

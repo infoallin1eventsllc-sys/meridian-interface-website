@@ -32,6 +32,22 @@ npm run build      # typecheck + production build into dist/
 npm run preview
 ```
 
+## Show it to a client without deploying anything
+
+Two ways, neither needing a domain:
+
+- **`npm run build`, then `node ../../tools/...`** — or simpler, open `dist/index.html` after a build via `npm run preview`.
+- **A single self-contained file.** Everything — fonts, logo, code — can be inlined into one `.html` you keep on a laptop or phone and open by double-clicking. It works with no internet at all; only the AI advisor needs a connection, and it says so in the header when it cannot reach the service. The proposal sheet, the planner, the ROI model and the export all work offline.
+
+## The proposal sheet
+
+The **Proposal** button (header, or from Export) renders the plan as a one-page
+document on Meridian letterhead: what the client said, what would be built, what
+it frees up, what it costs, when it pays back, and how it is governed. It prints
+to PDF from the browser and reads fine on screen in a meeting. It uses the
+`plain` line on each catalogue component rather than the technical description,
+because the client reads this one without you in the room.
+
 ## Deploy it (Vercel)
 
 This directory is a second Vercel project on the same repository:

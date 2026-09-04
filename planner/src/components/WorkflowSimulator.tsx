@@ -137,7 +137,7 @@ export const WorkflowSimulator: React.FC<WorkflowSimulatorProps> = ({ aiLive }) 
               className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-none flex items-center gap-1.5 transition-all"
             >
               <Play className="w-3.5 h-3.5" />
-              <span>{currentStepIndex >= 0 ? 'Restart Execution' : 'Execute Workflow'}</span>
+              <span>{currentStepIndex >= 0 ? 'Restart Execution' : 'Run it'}</span>
             </button>
           </div>
         </div>
@@ -214,7 +214,7 @@ export const WorkflowSimulator: React.FC<WorkflowSimulatorProps> = ({ aiLive }) 
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-            EVENT INGRESS
+            WHAT STARTS IT
           </span>
           <span className="text-slate-700 font-mono">
             {isCustomMode && customGoal ? customGoal : activePreset.triggerEvent}
@@ -435,9 +435,9 @@ export const WorkflowSimulator: React.FC<WorkflowSimulatorProps> = ({ aiLive }) 
           <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto text-blue-600">
             <Play className="w-6 h-6 ml-0.5" />
           </div>
-          <h3 className="text-base font-bold text-slate-900">Simulator Ready</h3>
+          <h3 className="text-base font-bold text-slate-900">Nothing running yet</h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Click "Execute Workflow" above to watch the autonomous multi-agent sequence step through reasoning, tool invocation, and human sign-off in real time.
+            Click "Run it" above to watch the autonomous multi-agent sequence step through reasoning, tool invocation, and human sign-off in real time.
           </p>
         </div>
       )}
