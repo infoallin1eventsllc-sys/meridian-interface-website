@@ -5,7 +5,7 @@ import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
-import { Lightbox, useLightbox, type LightboxItem } from './Lightbox';
+import { Lightbox, type LightboxItem } from './Lightbox';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -38,11 +38,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   // Only pieces that actually have a picture can be enlarged; an empty frame
   // opening to a bigger empty frame would be a worse experience than no zoom.
-  const shots: LightboxItem[] = filteredPortfolio
-    .filter((item) => !!resolveImage(item.id, item.image))
-    .map((item) => ({ src: resolveImage(item.id, item.image), alt: item.title, caption: `${item.title} — ${item.categoryLabel}` }));
-  const shotIndex = (id: string, image: string) => shots.findIndex((s) => s.src === resolveImage(id, image));
-  const box = useLightbox(shots);
+  // A piece with several screens contributes all of them, so a visitor can
+  // arrow through the product rather than seeing one frame of it.
+  // One set per piece, not one set for the whole grid: arrowing through
+  // ORCHESTRA should walk its four screens, not wander into the next product,
+  // and the counter should read "1 / 4" rather than "5 / 10".
+  const screensFor = (item: typeof PORTFOLIO[number]): LightboxItem[] => {
+    const cover = resolveImage(item.id, item.image);
+    if (!cover) return [];
+    if (!item.gallery?.length) return [{ src: cover, alt: item.title, caption: `${item.title} — ${item.categoryLabel}` }];
+    return item.gallery.map((g) => ({ src: g.src, alt: `${item.title} — ${g.caption}`, caption: `${item.title} — ${g.caption}` }));
+  };
+  const [zoom, setZoom] = useState<{ items: LightboxItem[]; index: number } | null>(null);
+  const openZoom = (item: typeof PORTFOLIO[number]) => {
+    const items = screensFor(item);
+    if (items.length) setZoom({ items, index: 0 });
+  };
 
   const handleInlineBook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,8 +243,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
             >
               <div
-                {...(shotIndex(item.id, item.image) >= 0
-                  ? { ...box.triggerProps(shotIndex(item.id, item.image)), className: 'aspect-video relative overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600' }
+                {...(screensFor(item).length
+                  ? {
+                      role: 'button' as const,
+                      tabIndex: 0,
+                      'aria-label': `View ${item.title} full screen`,
+                      onClick: () => openZoom(item),
+                      onKeyDown: (e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openZoom(item); }
+                      },
+                      className: 'aspect-video relative overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
+                    }
                   : { className: 'aspect-video relative overflow-hidden bg-slate-900' })}
               >
                 <ImageWithFallback
@@ -243,11 +263,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   icon="palette"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
-                {shotIndex(item.id, item.image) >= 0 && (
+                {screensFor(item).length > 0 && (
                   <span className="absolute inset-0 grid place-items-center bg-slate-950/0 group-hover:bg-slate-950/30 transition-colors">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-slate-900 text-[11px] font-bold uppercase tracking-widest">
                       <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">search</span>
-                      Full screen
+                      {item.gallery?.length ? `See all ${item.gallery.length} screens` : 'Full screen'}
                     </span>
                   </span>
                 )}
@@ -285,7 +305,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ))}
         </div>
 
-        <Lightbox items={shots} index={box.index} onClose={box.close} onIndexChange={box.setIndex} />
+        <Lightbox
+          items={zoom?.items ?? []}
+          index={zoom ? zoom.index : null}
+          onClose={() => setZoom(null)}
+          onIndexChange={(i) => setZoom((z) => (z ? { ...z, index: i } : z))}
+        />
       </section>
 
       {/* Quick Interactive Appointment Scheduler Banner - Relocated under Selected Works */}

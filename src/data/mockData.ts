@@ -152,14 +152,20 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p7',
-    title: 'Financial & Revenue BI Dashboard',
+    title: 'FinSight — Financial & Revenue Dashboard',
     category: 'dashboards',
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
-    year: 'Concept',
-    image: '',
-    summary: 'Executive financial dashboard concept tracking real-time revenue, P&L forecasts, cash-flow metrics, and portfolio performance.',
-    highlights: ['Financial KPI system', 'Real-time revenue views', 'Exportable reporting']
+    year: '2026',
+    image: '/images/portfolio/finsight-bi.jpg',
+    gallery: [
+      { src: '/images/portfolio/finsight-bi.jpg', caption: 'Executive summary — every figure against its target' },
+      { src: '/images/portfolio/finsight-bi-revenue.jpg', caption: 'Revenue, with the forecast separated from what actually happened' },
+      { src: '/images/portfolio/finsight-bi-forecast.jpg', caption: 'Profit and loss, with forecasts' },
+      { src: '/images/portfolio/finsight-bi-treasury.jpg', caption: 'Treasury and currency exposure' },
+    ],
+    summary: 'The numbers a finance lead checks on a Monday, on one screen: revenue as it lands, each figure against its target, profit and loss with the forecast kept visibly separate from the actuals, cash runway, and currency exposure.',
+    highlights: ['Every figure against target', 'Forecast kept apart from actuals', 'Board presentation mode']
   },
   {
     id: 'p8',
@@ -185,25 +191,35 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p1',
-    title: 'Enterprise Cloud Platform — Web UI',
+    title: 'ORCHESTRA — Enterprise Cloud Console',
     category: 'web_design',
-    categoryLabel: 'Web Design',
+    categoryLabel: 'Cloud Platform',
     client: 'Enterprise SaaS',
-    year: 'Concept',
-    image: '',
-    summary: 'Web dashboard and landing-page concept for an enterprise cloud orchestration platform.',
-    highlights: ['React + Tailwind', 'Interactive data viz', 'Responsive system']
+    year: '2026',
+    image: '/images/portfolio/orchestra-cloud.jpg',
+    gallery: [
+      { src: '/images/portfolio/orchestra-cloud.jpg', caption: 'Cluster overview — multi-region topology with live inter-region latency' },
+      { src: '/images/portfolio/orchestra-cloud-telemetry.jpg', caption: 'Telemetry stream' },
+      { src: '/images/portfolio/orchestra-cloud-clusters.jpg', caption: 'Compute clusters' },
+      { src: '/images/portfolio/orchestra-cloud-finops.jpg', caption: 'FinOps cost engine — spend by provider, with right-sizing recommendations' },
+    ],
+    summary: 'A console for running services across several clouds at once: a live map of regions and the latency between them, telemetry, staged deployments you can roll back, and a cost engine that shows where the money goes and what to do about it.',
+    highlights: ['Multi-region topology', 'Canary deploy and rollback', 'FinOps cost engine']
   },
   {
     id: 'p2',
-    title: 'Mobile Banking & Wealth App',
+    title: 'Aurora Reserve — Private Banking Interface',
     category: 'app_design',
     categoryLabel: 'Financial App Design',
-    client: 'Fintech',
-    year: 'Concept',
-    image: '',
-    summary: 'Dark-mode financial analytics and mobile banking concept with portfolio charts and biometric-style flows.',
-    highlights: ['Financial analytics UI', 'Live market charts', 'Secure sign-in flow']
+    client: 'Private Wealth',
+    year: '2026',
+    image: '/images/portfolio/aurora-banking.jpg',
+    gallery: [
+      { src: '/images/portfolio/aurora-banking.jpg', caption: 'Two devices driven side by side from one console — vault and portfolio' },
+      { src: '/images/portfolio/aurora-banking-decks.jpg', caption: 'Telemetry decks and the transaction ledger' },
+    ],
+    summary: 'A private banking interface shown as two phones side by side, driven from one screen: balances and holdings on one, the transaction ledger and a concierge line on the other, with multi-currency switching and an approval step before anything moves.',
+    highlights: ['Two devices, one console', 'Multi-currency switching', 'Approval before money moves']
   },
   {
     id: 'p4',

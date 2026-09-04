@@ -3,7 +3,7 @@ import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
-import { Lightbox } from './Lightbox';
+import { Lightbox, type LightboxItem } from './Lightbox';
 
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
@@ -14,7 +14,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
   // The detail panel's picture opens full screen; a concept with no picture stays inert.
-  const [zoomed, setZoomed] = useState(false);
+  const [zoomed, setZoomed] = useState<number | null>(null);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
@@ -70,7 +70,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           <button
             type="button"
             key={item.id}
-            onClick={() => { setZoomed(false); setActiveItem(item); }}
+            onClick={() => { setZoomed(null); setActiveItem(item); }}
             aria-label={`View concept: ${item.title}`}
             className="text-left w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all group flex flex-col justify-between"
           >
@@ -150,9 +150,9 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                       role: 'button' as const,
                       tabIndex: 0,
                       'aria-label': `View ${activeItem.title} full screen`,
-                      onClick: () => setZoomed(true),
+                      onClick: () => setZoomed(0),
                       onKeyDown: (e: React.KeyboardEvent) => {
-                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(true); }
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(0); }
                       },
                       className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
                     }
@@ -225,10 +225,14 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
       </section>
       {activeItem && (
         <Lightbox
-          items={[{ src: resolveImage(activeItem.id, activeItem.image), alt: activeItem.title, caption: `${activeItem.title} — ${activeItem.categoryLabel}` }]}
-          index={zoomed ? 0 : null}
-          onClose={() => setZoomed(false)}
-          onIndexChange={() => {}}
+          items={
+            (activeItem.gallery?.length
+              ? activeItem.gallery.map((g) => ({ src: g.src, alt: `${activeItem.title} — ${g.caption}`, caption: `${activeItem.title} — ${g.caption}` }))
+              : [{ src: resolveImage(activeItem.id, activeItem.image), alt: activeItem.title, caption: `${activeItem.title} — ${activeItem.categoryLabel}` }]) as LightboxItem[]
+          }
+          index={zoomed}
+          onClose={() => setZoomed(null)}
+          onIndexChange={setZoomed}
         />
       )}
 
