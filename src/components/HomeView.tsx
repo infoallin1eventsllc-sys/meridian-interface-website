@@ -5,6 +5,7 @@ import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
+import { Lightbox, useLightbox, type LightboxItem } from './Lightbox';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -34,6 +35,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const filteredPortfolio = selectedCategory === 'all'
     ? concepts
     : concepts.filter(item => item.category === selectedCategory);
+
+  // Only pieces that actually have a picture can be enlarged; an empty frame
+  // opening to a bigger empty frame would be a worse experience than no zoom.
+  const shots: LightboxItem[] = filteredPortfolio
+    .filter((item) => !!resolveImage(item.id, item.image))
+    .map((item) => ({ src: resolveImage(item.id, item.image), alt: item.title, caption: `${item.title} — ${item.categoryLabel}` }));
+  const shotIndex = (id: string, image: string) => shots.findIndex((s) => s.src === resolveImage(id, image));
+  const box = useLightbox(shots);
 
   const handleInlineBook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -222,7 +231,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               key={item.id}
               className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
             >
-              <div className="aspect-video relative overflow-hidden bg-slate-900">
+              <div
+                {...(shotIndex(item.id, item.image) >= 0
+                  ? { ...box.triggerProps(shotIndex(item.id, item.image)), className: 'aspect-video relative overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600' }
+                  : { className: 'aspect-video relative overflow-hidden bg-slate-900' })}
+              >
                 <ImageWithFallback
                   frame
                   src={resolveImage(item.id, item.image)}
@@ -230,6 +243,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   icon="palette"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                 />
+                {shotIndex(item.id, item.image) >= 0 && (
+                  <span className="absolute inset-0 grid place-items-center bg-slate-950/0 group-hover:bg-slate-950/30 transition-colors">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-slate-900 text-[11px] font-bold uppercase tracking-widest">
+                      <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">search</span>
+                      Full screen
+                    </span>
+                  </span>
+                )}
                 <div className="absolute top-3 left-3 bg-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold text-white uppercase tracking-wider">
                   {item.categoryLabel}
                 </div>
@@ -264,6 +285,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ))}
         </div>
 
+        <Lightbox items={shots} index={box.index} onClose={box.close} onIndexChange={box.setIndex} />
       </section>
 
       {/* Quick Interactive Appointment Scheduler Banner - Relocated under Selected Works */}
