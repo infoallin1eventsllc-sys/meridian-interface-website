@@ -73,6 +73,8 @@ export interface PortfolioItem {
   image: string;
   /** Extra screens, shown full-size when the picture is opened. */
   gallery?: { src: string; caption: string }[];
+  /** A working copy a visitor can click through, served from this site. */
+  demo?: string;
   summary: string;
   highlights: string[];
 }

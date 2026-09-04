@@ -300,6 +300,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     </span>
                   ))}
                 </div>
+
+                {/* A picture shows what it looks like; this lets them use it. */}
+                {item.demo && (
+                  <a
+                    href={item.demo}
+                    className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0f172a] text-white font-body font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">open_in_new</span>
+                    Open the working demo
+                  </a>
+                )}
               </div>
             </div>
           ))}

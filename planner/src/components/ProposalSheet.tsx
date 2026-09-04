@@ -122,7 +122,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
       <article className="mx-auto my-6 print:my-0 bg-white text-[#191c1f] max-w-[820px] px-8 sm:px-12 py-10 shadow-lg print:shadow-none print:max-w-none">
         <header className="flex items-start justify-between gap-6 pb-6 border-b-2 border-[#0f172a]">
           <div>
-            <img src="/brand/meridian-lockup.png" alt="Meridian Interface" width={885} height={550} className="h-12 w-auto" />
+            <img src={`${import.meta.env.BASE_URL}brand/meridian-lockup.png`} alt="Meridian Interface" width={885} height={550} className="h-12 w-auto" />
             <p className="text-[11px] text-[#475569] mt-2">{MERIDIAN.tagline} · {MERIDIAN.city}</p>
           </div>
           <div className="text-right text-[11px] text-[#475569] leading-relaxed">

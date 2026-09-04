@@ -17,10 +17,15 @@ import { TabType } from '../types';
  * then the section still does its job — it shows the thing and books the call.
  */
 
-const PLANNER_URL = (import.meta.env.VITE_PLANNER_URL as string | undefined)?.trim() || '';
-const plannerLink = PLANNER_URL
-  ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=home-feature&utm_campaign=stack-planner`
-  : '';
+/*
+ * The planner is served from this site at /demos/stack-planner/, so it needs no
+ * domain and no second Vercel project. VITE_PLANNER_URL still wins if it is
+ * ever given one of its own.
+ */
+const PLANNER_URL = (import.meta.env.VITE_PLANNER_URL as string | undefined)?.trim() || '/demos/stack-planner/';
+const plannerLink = PLANNER_URL.startsWith('/')
+  ? PLANNER_URL
+  : `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=home-feature&utm_campaign=stack-planner`;
 
 const SHOTS = [
   { src: '/images/portfolio/agentic-tech-stack-builder.jpg', label: 'Choose the pieces, see the monthly cost' },
@@ -113,7 +118,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
                 className="px-6 py-3.5 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-lg" aria-hidden="true">explore</span>
-                Open it yourself
+                Open it and try it
               </a>
             )}
           </div>
