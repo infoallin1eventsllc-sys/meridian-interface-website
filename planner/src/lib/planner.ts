@@ -88,3 +88,25 @@ export async function simulateWorkflow(goal: string, companyContext: string): Pr
   const r = await call<{ ok: true; steps: SimulationStep[]; model: string }>({ action: 'simulate', goal, companyContext });
   return { steps: r.steps, model: r.model };
 }
+
+export interface PlanSubmission {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  note: string;
+  stage: string;
+  /** The exported plan itself, as Markdown. */
+  plan: string;
+}
+
+/**
+ * Send the finished plan to Meridian.
+ *
+ * The server forwards it to the same intake webhook the booking form uses, so
+ * it lands as a contact with the plan attached and a follow-up queued. Throws
+ * a PlannerError with a sentence worth showing when it does not.
+ */
+export async function sendPlanToMeridian(sub: PlanSubmission): Promise<void> {
+  await call<{ ok: true }>({ action: 'send_plan', ...sub }, 30_000);
+}
