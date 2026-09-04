@@ -171,14 +171,23 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p8',
-    title: 'CRM Sales & Lead Pipeline Portal',
+    title: 'Meridian CRM — Operations Hub',
     category: 'dashboards',
     categoryLabel: 'CRM Dashboard',
-    client: 'B2B SaaS',
-    year: 'Concept',
-    image: '',
-    summary: 'CRM portal concept for sales teams with visual kanban pipelines, deal stages, and rep performance views.',
-    highlights: ['Lead pipeline visualizer', 'Deal-stage tracking', 'Activity logging']
+    client: 'Meridian Interface',
+    // The studio's own desk, built and in daily use. The hosted copy keeps its
+    // data in the visitor's browser, so anyone can click through it.
+    year: '2026',
+    demo: '/demos/meridian-crm/',
+    image: '/images/portfolio/meridian-crm.jpg',
+    gallery: [
+      { src: '/images/portfolio/meridian-crm.jpg', caption: 'Overview — pipeline, money in and out, and what happened today' },
+      { src: '/images/portfolio/meridian-crm-leads.jpg', caption: 'Leads funnel — every enquiry with its value and stage' },
+      { src: '/images/portfolio/meridian-crm-invoices.jpg', caption: 'Invoices — sent, paid, overdue, and a receipt on mark-paid' },
+      { src: '/images/portfolio/meridian-crm-kanban.jpg', caption: 'Kanban board — the week’s work, dragged between columns' },
+    ],
+    summary: 'The desk a small studio runs on: leads, clients, projects, invoices and software costs in one place, a copilot that reads the live figures before it answers, and a privacy switch that blurs every name and number the moment a screen is shared.',
+    highlights: ['Privacy mode for screen sharing', 'Copilot reads the live figures', 'One owner, signed in with Google']
   },
   {
     id: 'p9',
@@ -186,10 +195,17 @@ export const PORTFOLIO: PortfolioItem[] = [
     category: 'dashboards',
     categoryLabel: 'Analytics Dashboard',
     client: 'Data & Analytics',
-    year: 'Concept',
-    image: '',
-    summary: 'Analytics BI concept featuring interactive metrics, real-time charts, trend models, and cohort analysis.',
-    highlights: ['Cohort analysis', 'Custom query builder', 'Interactive charts']
+    year: '2026',
+    demo: '/demos/analytics-hub/',
+    image: '/images/portfolio/analytics-hub.jpg',
+    gallery: [
+      { src: '/images/portfolio/analytics-hub.jpg', caption: 'Dashboard — every metric against its target, with a confidence range' },
+      { src: '/images/portfolio/analytics-hub-trends.jpg', caption: 'Trend models — four forecasts and what-if sliders' },
+      { src: '/images/portfolio/analytics-hub-cohorts.jpg', caption: 'Cohorts — retention and net revenue retention by month joined' },
+      { src: '/images/portfolio/analytics-hub-anomalies.jpg', caption: 'Anomalies — what moved, why, and what to do' },
+    ],
+    summary: 'A BI desk for a subscription business: every metric against its target with a confidence range, a live stream of what customers are doing, four forecasting models with what-if sliders, cohort retention tables, and an assistant that answers questions about the numbers in plain English.',
+    highlights: ['Four forecast models, what-if sliders', 'Cohort retention and NRR', 'Ask the numbers a question']
   },
   {
     id: 'p1',
@@ -249,14 +265,19 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p6',
-    title: 'E-Commerce Storefront',
+    title: 'MODERN_STREET — Streetwear Storefront',
     category: 'web_design',
-    categoryLabel: 'Web Design',
+    categoryLabel: 'E-Commerce',
     client: 'Retail / DTC',
-    year: 'Concept',
-    image: '',
-    summary: 'E-commerce web concept with product preview and a streamlined checkout flow.',
-    highlights: ['Custom storefront theme', 'Product inspector', 'Performance-first build']
+    year: '2026',
+    demo: '/demos/modern-street/',
+    // One picture for now: the storefront's product photographs are hotlinked
+    // from Google's image host, which the screenshot sandbox could not reach,
+    // so the inner screens came out with empty frames. Reshoot them from a
+    // normal browser and add a gallery like the others.
+    image: '/images/portfolio/modern-street.jpg',
+    summary: 'A high-contrast streetwear storefront with an editorial feel: curated essentials, seasonal collections, a product page with colour and size, a cart that remembers what was chosen, and a checkout that gets out of the way.',
+    highlights: ['Editorial layout and type', 'Colour and size variants', 'Cart to checkout in three steps']
   }
 ];
 

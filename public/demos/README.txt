@@ -8,6 +8,9 @@ of its own:
   /demos/finsight/       -> FinSight BI dashboard
   /demos/aurora/         -> Aurora Reserve interface
   /demos/orchestra/      -> ORCHESTRA cloud console
+  /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
+  /demos/analytics-hub/  -> Data Analytics Intelligence Hub
+  /demos/modern-street/  -> MODERN_STREET storefront
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
 from, then copy the build here. For the planner, which lives in this repo:
@@ -17,6 +20,14 @@ from, then copy the build here. For the planner, which lives in this repo:
 
 DEMO_BASE matters: without it every asset points at the site root and the demo
 loads a blank page.
+
+The CRM needs one more flag, VITE_DEMO_MODE=true, or the copy will demand a
+Google sign-in nobody here has. With the flag it keeps its data in the
+visitor's browser and answers AI requests with a note instead of calling a
+server that does not exist on a static host. Its README has the exact command.
+
+Each demo folder also carries brand/meridian-mark.png for the bar below and
+the tab icon; copy it from public/brand/ when adding a new one.
 
 Then stamp the Meridian bar back on — a fresh build does not have it:
 

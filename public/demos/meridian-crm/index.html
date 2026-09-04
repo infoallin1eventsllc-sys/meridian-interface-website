@@ -1,36 +1,21 @@
-/**
- * Stamps every hosted demo with a Meridian Interface bar across the top.
- *
- * The demos carry client-facing product names — Aurora Reserve, FinSight,
- * ORCHESTRA — because that is the demonstration: a bank interface has to look
- * like a bank, not like its agency. The risk Otis spotted is that a visitor who
- * clicks through from the portfolio then believes they have left Meridian's
- * site. So every demo opens with a bar naming Meridian as the studio that built
- * it, saying plainly that it is a demonstration, and offering the way back.
- *
- * This runs over the BUILT output rather than each app's source, so all four
- * carry exactly the same bar and it cannot drift app by app. Run it after
- * copying a fresh build into public/demos/<slug>/.
- */
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
-
-const DEMOS = join(process.cwd(), 'public', 'demos');
-const BAR_H = 46;
-
-const LABEL = {
-  'stack-planner': 'Stack Planner',
-  finsight: 'FinSight — financial dashboard',
-  aurora: 'Aurora Reserve — private banking interface',
-  orchestra: 'ORCHESTRA — cloud console',
-  'meridian-crm': 'Meridian CRM — operations hub',
-  'analytics-hub': 'Analytics Intelligence Hub — BI dashboard',
-  'modern-street': 'MODERN_STREET — streetwear storefront',
-};
-
-const styles = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meridian Interface — CRM & Operations Hub</title>
+    <meta name="description" content="A full-stack CRM and operations hub: leads funnel, client contacts, projects, Kanban board, invoices, SaaS expense tracking, Gmail inbox, memos and reports, and a Gemini AI copilot with a one-tap privacy mode." />
+    <meta property="og:title" content="Meridian Interface — CRM & Operations Hub" />
+    <meta property="og:description" content="A full-stack CRM and operations hub: leads funnel, client contacts, projects, Kanban board, invoices, SaaS expense tracking, Gmail inbox, memos and reports, and a Gemini AI copilot with a one-tap privacy mode." />
+    <link rel="icon" type="image/png" href="/demos/meridian-crm/meridian-interface-logo.png" />
+    <!-- Type is served from this app. No font CDN, so it renders the same on a
+         locked-down corporate network as it does at a coffee shop. -->
+    <link rel="stylesheet" href="/demos/meridian-crm/fonts/fonts.css" />
+    <script type="module" crossorigin src="/demos/meridian-crm/assets/index-blE_PybD.js"></script>
+    <link rel="stylesheet" crossorigin href="/demos/meridian-crm/assets/index-DAXyuJ0p.css">
+  
 <style id="meridian-demo-bar-style">
-  :root { --meridian-bar: ${BAR_H}px; }
+  :root { --meridian-bar: 46px; }
   body { padding-top: var(--meridian-bar) !important; }
   /* These apps size themselves to the viewport; leave room for the bar so the
      demo is not pushed off the bottom of the screen. */
@@ -62,28 +47,18 @@ const styles = `
   @media (max-width: 720px) {
     #meridian-demo-bar .mb-what, #meridian-demo-bar .mb-sep { display: none; }
   }
-</style>`;
-
-const bar = (slug) => `
+</style>
+</head>
+  <body>
 <div id="meridian-demo-bar">
   <img src="brand/meridian-mark.png" alt="Meridian Interface" />
   <span class="mb-built">Built by Meridian Interface</span>
   <span class="mb-sep">·</span>
-  <span class="mb-what">${LABEL[slug] ?? slug}</span>
+  <span class="mb-what">Meridian CRM — operations hub</span>
   <span class="mb-tag">Demonstration</span>
   <a class="mb-home" href="/">meridianinterface.com &rarr;</a>
-</div>`;
+</div>
+    <div id="root"></div>
+  </body>
+</html>
 
-let done = 0;
-for (const slug of readdirSync(DEMOS)) {
-  const file = join(DEMOS, slug, 'index.html');
-  if (!existsSync(file)) continue;
-  let html = readFileSync(file, 'utf8');
-  if (html.includes('meridian-demo-bar')) { console.log(`${slug}: already stamped`); continue; }
-  html = html.replace('</head>', `${styles}\n</head>`);
-  html = html.replace(/(<body[^>]*>)/, `$1${bar(slug)}`);
-  writeFileSync(file, html);
-  console.log(`${slug}: stamped`);
-  done += 1;
-}
-console.log(`${done} demo(s) stamped`);
