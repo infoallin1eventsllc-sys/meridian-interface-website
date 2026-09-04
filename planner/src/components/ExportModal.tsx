@@ -11,6 +11,7 @@ interface ExportModalProps {
   selectedStack: SelectedStack;
   businessStage: BusinessStage;
   businessModel: BusinessModel;
+  onOpenProposal: () => void;
 }
 
 const MODEL_LABEL: Record<BusinessModel, string> = {
@@ -21,7 +22,7 @@ const MODEL_LABEL: Record<BusinessModel, string> = {
   large_enterprise: 'Large enterprise',
 };
 
-export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, selectedStack, businessStage, businessModel }) => {
+export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, selectedStack, businessStage, businessModel, onOpenProposal }) => {
   const [format, setFormat] = useState<'markdown' | 'json'>('markdown');
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -176,6 +177,13 @@ Figures above are planning estimates, not a quote.
             <button id="copy-export-content-btn" onClick={handleCopy} className="px-3 py-1 rounded-lg font-semibold bg-white hover:bg-slate-50 text-[#0f172a] border border-slate-300 flex items-center gap-1.5 transition-colors">
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
+            </button>
+            <button
+              id="open-proposal-from-export-btn"
+              onClick={onOpenProposal}
+              className="px-3 py-1 rounded-lg font-semibold bg-white hover:bg-slate-50 text-[#0f172a] border border-slate-300 flex items-center gap-1.5 transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5" /><span>As a proposal</span>
             </button>
             <button id="download-export-file-btn" onClick={handleDownload} className="px-3 py-1 rounded-lg font-semibold bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center gap-1.5 transition-colors">
               <Download className="w-3.5 h-3.5" /><span>Download</span>

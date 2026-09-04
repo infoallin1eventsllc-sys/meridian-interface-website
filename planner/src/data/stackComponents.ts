@@ -15,6 +15,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Foundation',
       tagline: 'The model most of the stack runs on: fast, careful, priced for volume',
       description: 'Handles the daily volume: triage, drafting, reading invoices and documents, and structured JSON for tools. Published price $2 per million input tokens and $10 per million output; a growing business typically uses 5 to 30 million tokens a month.',
+      plain: 'The model that does most of the reading, writing and deciding, every day.',
       bestFor: 'Customer triage, invoice reading, drafting, routing, most agent steps.',
       tradeOffs: {
         pros: ['Follows instructions and returns structured output reliably', 'Reads documents and images natively', 'Prompt caching cuts the cost of repeated context'],
@@ -32,6 +33,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Foundation',
       tagline: 'For the steps where being right matters more than being quick',
       description: 'The strongest reasoning tier: contract review, multi-step financial checks, deciding what to do with an unusual case. Published price $5 per million input tokens and $25 per million output. Used for a minority of steps, not the whole workflow.',
+      plain: 'A stronger, slower model kept for the hard calls — the unusual case a junior person would escalate.',
       bestFor: 'Escalations, exceptions, planning, anything that would otherwise go to a senior person.',
       tradeOffs: {
         pros: ['Best accuracy on complex, multi-step reasoning', 'Handles long, messy inputs well'],
@@ -49,6 +51,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Foundation',
       tagline: 'Each step goes to the cheapest model that can do it well',
       description: 'A small routing layer sends simple, high-volume steps to Claude Haiku 4.5 ($1 / $5 per million tokens), ordinary work to Sonnet 5, and flagged or ambiguous cases to Opus 5. Most businesses land here once volume grows.',
+      plain: 'Sends each job to the cheapest model that can do it well, and only the hard ones to the expensive model.',
       bestFor: 'Any business that wants low cost on the common path and real judgement on the rare one.',
       tradeOffs: {
         pros: ['Typically cuts blended model spend by half or more', 'Fast on the common path, strong on the hard one'],
@@ -66,6 +69,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Foundation',
       tagline: 'The same models, billed and governed inside the cloud account the business already has',
       description: 'Runs the models through the business\'s existing AWS, Google Cloud or Azure account. Access control, billing and logging stay with the cloud team. Private networking and no-retention data terms are available on enterprise agreements; confirm them in the contract, not in this planner.',
+      plain: 'The same models, but billed and controlled inside the cloud account your business already has.',
       bestFor: 'Businesses whose IT or compliance policy requires everything to stay inside one cloud account.',
       tradeOffs: {
         pros: ['Billing and access inside the existing cloud', 'Private endpoints available', 'Enterprise data terms negotiable'],
@@ -86,6 +90,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Orchestration',
       tagline: 'Deterministic graph workflows with cyclic loops and state persistence',
       description: 'Industry-standard orchestrator for multi-agent systems requiring state machines, rollback checkpoints, time-travel debugging, and Human-in-the-Loop gates.',
+      plain: 'The part that runs the steps in order, remembers where it got to, and can stop and wait for you.',
       bestFor: 'Complex multi-step processes with cyclical reviews (e.g. drafting -> review -> approval -> execute).',
       tradeOffs: {
         pros: ['Stateful persistence across interruptions', 'Native Human-in-the-Loop support', 'Active ecosystem'],
@@ -103,6 +108,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Orchestration',
       tagline: 'Durable execution: a workflow survives restarts and long waits',
       description: 'Designed so a workflow survives server restarts, network hiccups, and a person taking days to approve a step.',
+      plain: 'The same job, built so it survives a server restart or a week waiting for someone to approve a step.',
       bestFor: 'Mission-critical billing, regulatory, and multi-day business operations.',
       tradeOffs: {
         pros: ['Workflow state is persisted, not held in memory', 'Can wait indefinitely for a person', 'Deterministic replay'],
@@ -120,6 +126,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Orchestration',
       tagline: 'Declarative persona-based agent swarms for rapid prototyping',
       description: 'Quickly set up specialized agents with predefined roles, backstories, and delegator hierarchies that communicate in natural language.',
+      plain: 'A quicker way to set up several agents that talk to each other, best for smaller, well-defined jobs.',
       bestFor: 'Rapid validation, content production teams, and exploratory research swarms.',
       tradeOffs: {
         pros: ['Extremely fast initial setup (hours, not days)', 'Intuitive role definitions'],
@@ -137,6 +144,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Orchestration',
       tagline: 'Multi-region active-active durable state execution with RPO=0',
       description: 'Mission-critical distributed state machine supporting cross-continental enterprise failover, cryptographically signed checkpoints, and multi-tenant department namespaces.',
+      plain: 'The heavy-duty version, for work that must not fail even if a whole data centre goes down.',
       bestFor: 'Large-company ERP automation, payment rails, and mission-critical telemetry.',
       tradeOffs: {
         pros: ['Workflow state survives a data-centre outage', 'Built-in audit replay and compensation transactions (Saga pattern)', 'Granular namespace IAM'],
@@ -157,6 +165,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Memory',
       tagline: 'Semantic vector search paired with structured transactional relational state',
       description: 'Stores semantic knowledge, unstructured customer tickets, and company manuals in vector space, with relational audit logs and user accounts in Postgres.',
+      plain: 'Where the system keeps what it knows: your documents and past conversations, plus the exact records.',
       bestFor: 'Growing businesses needing both knowledge search and strict transactional ACID records.',
       tradeOffs: {
         pros: ['Combines high-speed cosine vector search with relational integrity', 'Cost-effective'],
@@ -174,6 +183,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Memory',
       tagline: 'Adaptive user/customer personalization memory with sub-millisecond cache',
       description: 'Dynamic long-term episodic memory extraction that remembers individual customer preferences, previous issues, and agent session context seamlessly.',
+      plain: 'Fast short-term memory, so an agent remembers the last few minutes of a conversation without looking it all up again.',
       bestFor: 'High-touch customer support, VIP sales engagement, and individualized assistant agents.',
       tradeOffs: {
         pros: ['Automatically updates user facts over time', 'Sub-millisecond memory recall via Redis'],
@@ -191,6 +201,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Memory',
       tagline: 'Single unified database for relational schema, JSON, and vector embeddings',
       description: 'Consolidates all business data, user state, and agent semantic memory into a single PostgreSQL engine using the pgvector extension.',
+      plain: 'The simplest memory: one database holding both your records and what the agents have learned. Cheapest to run.',
       bestFor: 'Lean engineering teams who want zero infrastructure sprawl and standard SQL queries.',
       tradeOffs: {
         pros: ['One database for everything', 'Standard SQL joins between vector similarity and table columns'],
@@ -208,6 +219,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Memory',
       tagline: 'Multi-tenant semantic fabric with Row-Level Security and Private VPC peering',
       description: 'Combines ultra-dense vector search with enterprise relational data clouds (Snowflake / Databricks). Enforces Active Directory / Okta user-level row security (RLS) so agents never expose confidential executive data to unauthorized queries.',
+      plain: 'Memory for larger companies, where each department can only see its own data.',
       bestFor: 'Cross-department enterprise knowledge graphs, legal document vaults, and executive business intelligence.',
       tradeOffs: {
         pros: ['Row-level security keeps each department to its own data', 'Direct SQL + Vector hybrid retrieval', 'Private-network deployment available'],
@@ -228,6 +240,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Tools & Protocols',
       tagline: 'Open standard for secure, modular agent tool discovery and execution',
       description: 'Universal protocol supported by Anthropic, Google, and open-source tooling. Standardizes how agents read files, query databases, invoke APIs, and discover server capabilities.',
+      plain: 'The standard way agents reach your other tools — the CRM, the calendar, the accounting package.',
       bestFor: 'Future-proofing agent toolchains and decoupling tool code from specific agent frameworks.',
       tradeOffs: {
         pros: ['Standardized JSON-RPC protocol', 'Growing ecosystem of pre-built MCP connectors (HubSpot, GitHub, Slack, Postgres, Jira)', 'Sandboxed security boundaries'],
@@ -245,6 +258,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Tools & Protocols',
       tagline: 'Auto-generates callable agent functions directly from company Swagger/REST specs',
       description: 'Ingests internal REST API specs and creates typed agent tools with schema validation in real time.',
+      plain: 'A way to connect tools that do not have a ready-made connector yet.',
       bestFor: 'Businesses with existing internal REST microservices and legacy endpoints.',
       tradeOffs: {
         pros: ['Direct integration with existing backends without rewriting endpoints', 'Strict type contracts'],
@@ -262,6 +276,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Tools & Protocols',
       tagline: 'Isolated secure container execution for dynamic calculations and data transformation',
       description: 'Allows agents to write and execute Python/SQL on the fly in micro-VMs to analyze CSVs, generate charts, and reconcile ledger discrepancies without security risks.',
+      plain: 'A locked room where an agent can run a calculation or process a spreadsheet without touching anything else.',
       bestFor: 'Finance, business intelligence, inventory forecasting, and data enrichment agents.',
       tradeOffs: {
         pros: ['Handles complex mathematical logic without LLM calculation errors', 'Processes large datasets locally'],
@@ -279,6 +294,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Tools & Protocols',
       tagline: 'Zero-Trust tool invocation broker with mTLS, SAML, and SAP/Salesforce/Workday connectors',
       description: 'Centralized enterprise Model Context Protocol gateway. Enforces fine-grained attribute-based access control (ABAC), token bucket rate limiting per business unit, dynamic secret injection via HashiCorp Vault, and signed audit receipts.',
+      plain: 'The same connections, with a central switch a security team can use to cut off any tool or agent instantly.',
       bestFor: 'Connecting agents safely to core enterprise systems of record without giving raw database credentials.',
       tradeOffs: {
         pros: ['Centralized CISO killswitch for any tool or agent', 'Native SAP BAPI, ServiceNow REST, and Workday SOAP integrations', 'HashiCorp Vault credential rotation'],
@@ -299,6 +315,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Comprehensive observability, latency tracing, token billing, and prompt versioning',
       description: 'Tracks every agent thought step, tool call, token cost, and user feedback with complete visual flamegraphs and automated CI/CD eval assertions.',
+      plain: 'The record of what every agent did, what it cost, and whether it was any good — so you can check rather than hope.',
       bestFor: 'Production visibility, auditing agent failure points, and tracking unit economics.',
       tradeOffs: {
         pros: ['Open source and cloud options', 'Detailed flamegraphs of multi-agent traces', 'Automated accuracy scores'],
@@ -316,6 +333,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Fixed safety rules, personal-data masking, and output checks',
       description: 'Enforces strict input/output structural validators. Redacts SSNs, credit cards, and addresses before LLM transmission, and prevents unapproved out-of-bounds agent actions.',
+      plain: 'The filter that masks personal details before they reach a model, and blocks attempts to trick the agents.',
       bestFor: 'Regulated industries (FinTech, Health, Legal) and customer-facing autonomous responders.',
       tradeOffs: {
         pros: ['Masks personal data before it reaches a model', 'Detects prompt injection and jailbreak attempts', 'Strict schema enforcement on tool calls'],
@@ -333,6 +351,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Autonomous execution for low-risk tasks with interactive human sign-off on critical actions',
       description: 'Lets agents run routine tasks on their own, but queues Slack/Email approval cards whenever a tool action exceeds predefined safety thresholds (e.g. refund > $200, bulk email > 50 recipients).',
+      plain: 'The approval step: anything above a limit you set waits for you, in an email or a message, with one tap to approve.',
       bestFor: 'Growing businesses transitioning from manual human labor to trusted agent autonomy.',
       tradeOffs: {
         pros: ['A person sees anything that matters before it happens', 'Builds team trust incrementally'],
@@ -350,6 +369,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Autonomous machine identity governance, prompt injection defense, and immutable SHA-256 ledger',
       description: 'Complete enterprise compliance suite. Treats every AI agent as a distinct Non-Human Identity (NHI) with short-lived tokens, real-time prompt armor against jailbreaks, automated PII/PHI tokenization, and WORM (Write-Once-Read-Many) audit logging complying with EU AI Act Art. 14 and SOC 2 Type II.',
+      plain: 'Gives each agent its own identity and keeps a record nobody can quietly edit — what a security review asks for.',
       bestFor: 'Large companies whose security team needs a named identity and a durable record for every agent.',
       tradeOffs: {
         pros: ['Gives a security team the identity and change records their audits ask for', 'Append-only, hashed audit log', 'Kill switch that isolates one agent at a time'],
@@ -496,10 +516,10 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
 export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
   {
     id: 'inbound-deal-booking',
-    title: 'Inbound Lead Qualification & Meeting Booking',
-    category: 'Sales & RevOps',
-    description: 'Autonomous handling of high-value inbound enterprise lead with account research, calendar negotiation, and CRM synchronization.',
-    triggerEvent: 'Inbound Webhook: Demo Request Form submission from alex@scalevelocity.com ($18M ARR SaaS)',
+    title: 'An enquiry comes in and gets answered',
+    category: 'Sales & enquiries',
+    description: 'Someone fills in the form. The agents look them up, check the calendar, draft a reply with real times in it, and wait for you to approve it.',
+    triggerEvent: 'Website form: a new enquiry from a 40-person distribution company',
     defaultSteps: [
       {
         agentName: 'Inbound Triage Agent',
@@ -586,10 +606,10 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
   },
   {
     id: 'customer-dispute-resolution',
-    title: 'Tier-1 Dispute & Safe Partial Refund Execution',
-    category: 'Customer Support',
-    description: 'Autonomous resolution of a shipping delay inquiry with proactive store credit and verified policy guardrails.',
-    triggerEvent: 'Customer Ticket #48291: "Order #84920 delayed by 8 days, requesting update or cancellation."',
+    title: 'A late delivery, and what to do about it',
+    category: 'Customer support',
+    description: 'A customer is unhappy about a delay. The agents check the order, apply your policy, and put the goodwill credit in front of a person before it is offered.',
+    triggerEvent: 'Support message: "My order is eight days late. Update or cancel it."',
     defaultSteps: [
       {
         agentName: 'Support Triage Agent',
@@ -675,10 +695,10 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
   },
   {
     id: 'monthly-invoice-reconciliation',
-    title: 'Vendor Invoice Multimodal OCR & Ledger Sync',
-    category: 'Finance & Ops',
-    description: 'Multimodal extraction of vendor PDF bill, cross-checking against bank feeds, and queuing 1-click accounting journal entry.',
-    triggerEvent: 'Email Attachment: "Invoice_AWS_Infrastructure_Aug2026.pdf" ($4,280.00)',
+    title: 'A supplier bill lands in the inbox',
+    category: 'Finance & invoicing',
+    description: 'The bill is read, matched against what was ordered and what the bank shows, and queued as a draft entry for one tap to release.',
+    triggerEvent: 'Email attachment: a supplier invoice PDF for $4,280.00',
     defaultSteps: [
       {
         agentName: 'Multimodal Ingestion Agent',
@@ -766,11 +786,11 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
   },
   {
     id: 'enterprise-it-incident',
-    title: 'Severity-1 Incident Remediation & Canary Rollback',
-    category: 'IT & Cyber SecOps',
+    title: 'A production alert at 2am (larger teams)',
+    category: 'IT & security',
     isEnterprise: true,
-    description: 'Autonomous Tier-1 incident classification across Datadog metrics, ServiceNow Change Records, and dual-approved canary Kubernetes rollback.',
-    triggerEvent: 'Datadog Alert: Payment Gateway Latency P99 > 3,800ms / Error Rate Spike 14.2% across EU-Central Region',
+    description: 'For teams with an on-call rota. The alert is investigated and written up, and the rollback waits for two people to approve it.',
+    triggerEvent: 'Monitoring alert: payments slowed to 3.8 seconds, errors climbing',
     defaultSteps: [
       {
         agentName: 'SecOps Telemetry Agent',
@@ -858,11 +878,11 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
   },
   {
     id: 'global-procurement-sap',
-    title: 'Cross-Border SAP S/4HANA PO Reconciliation ($480,000 Audit)',
-    category: 'Finance & Ops',
+    title: 'A large overseas invoice needing two signatures (larger companies)',
+    category: 'Finance & invoicing',
     isEnterprise: true,
-    description: 'Autonomous 3-way matching across global ERP SAP S/4HANA instances, bill of lading customs verification, and Foreign Corrupt Practices Act (FCPA) sanctions screening.',
-    triggerEvent: 'SAP IDoc Inbound: Foreign Vendor Siemens Industrial AG Invoice EUR 440,000 (~$480,000 USD) for Component Assembly',
+    description: 'A big invoice from abroad. The agents match it to the order and the shipping paperwork, run the sanctions checks, and stage the payment for two named people to release.',
+    triggerEvent: 'ERP: an overseas supplier invoice for about $480,000',
     defaultSteps: [
       {
         agentName: 'SAP S/4HANA BAPI Ingestion Agent',
@@ -952,7 +972,7 @@ export const STAGE_PRESETS = {
   seed: {
     title: 'Seed / Early-Stage (2-10 Team)',
     revenue: '< $1M ARR',
-    description: 'Lean footprint maximizing speed and ROI with low overhead and minimal ops maintenance.',
+    description: 'The smallest setup that does real work: one model, one place to keep what it knows, and approvals on anything that leaves the building.',
     recommendedSelection: {
       foundation: 'claude-sonnet-5',
       orchestration: 'langgraph',
@@ -967,7 +987,7 @@ export const STAGE_PRESETS = {
   growth: {
     title: 'Growth SMB (10-50 Team)',
     revenue: '$1M - $10M ARR',
-    description: 'Robust multi-agent collaboration with dedicated vector memory, latency routing, and structured evals.',
+    description: 'Several agents working together, cheap models for the routine and a strong one for the hard calls, with a record of how well it is doing.',
     recommendedSelection: {
       foundation: 'model-router',
       orchestration: 'langgraph',
@@ -982,7 +1002,7 @@ export const STAGE_PRESETS = {
   scale: {
     title: 'Scaling Mid-Market (50-250 Team)',
     revenue: '$10M - $50M ARR',
-    description: 'Enterprise-grade durable state machines, rigorous PII guardrails, and automated unit-cost tracking.',
+    description: 'Work that survives restarts and long waits, personal data masked before it reaches a model, and the cost of each job tracked.',
     recommendedSelection: {
       foundation: 'model-router',
       orchestration: 'temporal-agentic',

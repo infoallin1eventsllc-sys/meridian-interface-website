@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Cpu, PlayCircle, Briefcase, Calculator, Sparkles, Download, ShieldCheck, CalendarCheck } from 'lucide-react';
+import { Layers, Cpu, PlayCircle, Briefcase, Calculator, Sparkles, Download, ShieldCheck, CalendarCheck, FileText } from 'lucide-react';
 import { MeridianLogo } from './MeridianLogo';
 import { MERIDIAN } from '../lib/brand';
 
@@ -7,6 +7,7 @@ interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenExport: () => void;
+  onOpenProposal: () => void;
   /** True when the planner service has a model connected. */
   aiLive: boolean;
 }
@@ -21,7 +22,7 @@ export const NAV_ITEMS = [
   { id: 'advisor', label: 'AI advisor', icon: Sparkles },
 ] as const;
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenExport, aiLive }) => {
+export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenExport, onOpenProposal, aiLive }) => {
   return (
     <header className="sticky top-0 z-40 border-b border-[#e2e8f0] bg-white/95 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,6 +53,16 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenE
               <span className={`w-1.5 h-1.5 rounded-full ${aiLive ? 'bg-emerald-500' : 'bg-slate-400'}`} />
               <span>{aiLive ? 'AI advisor live' : 'AI advisor offline'}</span>
             </div>
+
+            <button
+              id="open-proposal-btn"
+              onClick={onOpenProposal}
+              aria-label="View as a proposal"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg bg-white hover:bg-slate-50 text-[#0f172a] border border-slate-300 transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Proposal</span>
+            </button>
 
             <button
               id="export-blueprint-btn"

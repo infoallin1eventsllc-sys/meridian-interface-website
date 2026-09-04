@@ -8,10 +8,12 @@ import { RoiCalculator } from './components/RoiCalculator';
 import { AiAdvisor } from './components/AiAdvisor';
 import { EnterpriseGovernance } from './components/EnterpriseGovernance';
 import { ExportModal } from './components/ExportModal';
+import { ProposalSheet } from './components/ProposalSheet';
 import { BuiltBy } from './components/BuiltBy';
 import { SelectedStack, BusinessStage, BusinessModel } from './types';
 import { STAGE_PRESETS } from './data/stackComponents';
 import { fetchStatus } from './lib/planner';
+import { RoiInputs, ROI_DEFAULTS } from './lib/roi';
 import { motion, AnimatePresence } from 'motion/react';
 
 const fade = {
@@ -27,6 +29,11 @@ export default function App() {
   const [businessModel, setBusinessModel] = useState<BusinessModel>('b2b_saas');
   const [selectedStack, setSelectedStack] = useState<SelectedStack>(STAGE_PRESETS.growth.recommendedSelection);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [isProposalOpen, setIsProposalOpen] = useState<boolean>(false);
+  // The ROI inputs live here so the proposal sheet can print the same numbers
+  // the client just watched move on the calculator.
+  const [roi, setRoi] = useState<RoiInputs>(ROI_DEFAULTS);
+  const setRoiPart = (patch: Partial<RoiInputs>) => setRoi((prev) => ({ ...prev, ...patch }));
   const [aiLive, setAiLive] = useState<boolean>(false);
 
   // Is a model connected? Decides whether the advisor promises an answer.
@@ -41,7 +48,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f7f9fd] text-[#191c1f] flex flex-col">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} onOpenExport={() => setIsExportOpen(true)} aiLive={aiLive} />
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenExport={() => setIsExportOpen(true)}
+        onOpenProposal={() => setIsProposalOpen(true)}
+        aiLive={aiLive}
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         <AnimatePresence mode="wait">
@@ -67,7 +80,7 @@ export default function App() {
             <motion.div key="departments" {...fade}><DepartmentPlaybooks /></motion.div>
           )}
           {activeTab === 'roi' && (
-            <motion.div key="roi" {...fade}><RoiCalculator /></motion.div>
+            <motion.div key="roi" {...fade}><RoiCalculator inputs={roi} set={setRoiPart} /></motion.div>
           )}
           {activeTab === 'enterprise' && (
             <motion.div key="enterprise" {...fade}><EnterpriseGovernance onOpenExport={() => setIsExportOpen(true)} /></motion.div>
@@ -88,6 +101,16 @@ export default function App() {
         selectedStack={selectedStack}
         businessStage={businessStage}
         businessModel={businessModel}
+        onOpenProposal={() => { setIsExportOpen(false); setIsProposalOpen(true); }}
+      />
+
+      <ProposalSheet
+        isOpen={isProposalOpen}
+        onClose={() => setIsProposalOpen(false)}
+        selectedStack={selectedStack}
+        businessStage={businessStage}
+        businessModel={businessModel}
+        roi={roi}
       />
     </div>
   );
