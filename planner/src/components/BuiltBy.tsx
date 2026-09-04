@@ -15,7 +15,7 @@ export const BuiltBy: React.FC<{ variant?: 'card' | 'footer' }> = ({ variant = '
       <footer className="border-t border-[#e2e8f0] bg-white py-6 px-4 sm:px-6 lg:px-8 text-xs text-[#475569]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <img src="/brand/meridian-lockup.png" alt="Meridian Interface" width={885} height={550} className="h-11 w-auto" />
+            <img src={`${import.meta.env.BASE_URL}brand/meridian-lockup.png`} alt="Meridian Interface" width={885} height={550} className="h-11 w-auto" />
             <div>
               <div className="font-semibold text-[#0f172a]">A Meridian Interface build</div>
               <div>{MERIDIAN.tagline} · {MERIDIAN.city}</div>
@@ -38,7 +38,7 @@ export const BuiltBy: React.FC<{ variant?: 'card' | 'footer' }> = ({ variant = '
 
   return (
     <section className="rounded-2xl border border-[#e2e8f0] bg-white p-5 sm:p-6 flex flex-col md:flex-row md:items-center gap-5">
-      <img src="/brand/meridian-lockup.png" alt="Meridian Interface" width={885} height={550} className="h-14 w-auto shrink-0" />
+      <img src={`${import.meta.env.BASE_URL}brand/meridian-lockup.png`} alt="Meridian Interface" width={885} height={550} className="h-14 w-auto shrink-0" />
       <div className="flex-1 min-w-0">
         <h3 className="text-base font-extrabold text-[#0f172a]" style={{ fontFamily: 'var(--font-display)' }}>
           Want this built rather than planned?

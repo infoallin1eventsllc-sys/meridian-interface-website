@@ -146,6 +146,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     // Built, running, and used with clients — so it says so, and the picture is
     // a screenshot of the real thing rather than an empty frame.
     year: '2026',
+    demo: '/demos/stack-planner/',
     image: '/images/portfolio/agentic-tech-stack.jpg',
     summary: 'An always-on system a small business owns outright: an enquiry becomes a contact, the agent drafts the follow-up and the week\u2019s posts, a human approves, it publishes and measures, and a summary lands every Monday.',
     highlights: ['Runs without a person watching', 'Nothing sends unapproved', 'One system, no per-seat fees']
@@ -157,6 +158,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
     year: '2026',
+    demo: '/demos/finsight/',
     image: '/images/portfolio/finsight-bi.jpg',
     gallery: [
       { src: '/images/portfolio/finsight-bi.jpg', caption: 'Executive summary — every figure against its target' },
@@ -196,6 +198,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Cloud Platform',
     client: 'Enterprise SaaS',
     year: '2026',
+    demo: '/demos/orchestra/',
     image: '/images/portfolio/orchestra-cloud.jpg',
     gallery: [
       { src: '/images/portfolio/orchestra-cloud.jpg', caption: 'Cluster overview — multi-region topology with live inter-region latency' },
@@ -213,6 +216,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Financial App Design',
     client: 'Private Wealth',
     year: '2026',
+    demo: '/demos/aurora/',
     image: '/images/portfolio/aurora-banking.jpg',
     gallery: [
       { src: '/images/portfolio/aurora-banking.jpg', caption: 'Two devices driven side by side from one console — vault and portfolio' },

@@ -168,6 +168,16 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                 />
               </div>
 
+              {activeItem.demo && (
+                <a
+                  href={activeItem.demo}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors self-start"
+                >
+                  <span className="material-symbols-outlined text-lg leading-none" aria-hidden="true">open_in_new</span>
+                  Open the working demo
+                </a>
+              )}
+
               <div className="flex justify-between items-center text-xs text-slate-500 font-bold border-b border-slate-100 pb-3">
                 <span>Sector: {activeItem.client}</span>
                 <span>{activeItem.year}</span>

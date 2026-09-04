@@ -35,7 +35,7 @@ export const MeridianLogoMark: React.FC<{
   lightMode?: boolean;
 }> = ({ size = 36, className = '' }) => (
   <img
-    src="/brand/meridian-mark.png"
+    src={`${import.meta.env.BASE_URL}brand/meridian-mark.png`}
     width={size}
     height={size}
     alt=""
