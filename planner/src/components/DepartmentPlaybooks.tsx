@@ -26,14 +26,14 @@ export const DepartmentPlaybooks: React.FC = () => {
       <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200">
-            Autonomous Department Blueprints
+            Department by department
           </span>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-            High-Leverage Agentic Playbooks
+            Where agents earn their place
           </h2>
         </div>
         <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-          Where does an autonomous agent stack drive immediate cash flow and operational leverage? Explore real-world squad blueprints for the 4 core departments in growing companies.
+Five worked examples. Each one shows the agents involved, the tools they connect to, the rules they run under, and the point where the work stops and waits for you. Start with the one that is costing you the most time.
         </p>
       </div>
 
@@ -57,7 +57,7 @@ export const DepartmentPlaybooks: React.FC = () => {
                   {playbook.department}
                 </span>
                 <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-emerald-600 border border-slate-200">
-                  {playbook.roiMultiplier}
+                  {playbook.whenToBuild}
                 </span>
               </div>
               <h4 className="text-sm font-bold text-slate-900 mt-1.5 truncate">
@@ -79,7 +79,7 @@ export const DepartmentPlaybooks: React.FC = () => {
               </span>
               <span className="text-xs text-emerald-600 font-mono font-bold flex items-center gap-1">
                 <TrendingUp className="w-3.5 h-3.5" />
-                {activePlaybook.roiMultiplier}
+                {activePlaybook.whenToBuild}
               </span>
             </div>
             <h3 className="text-xl font-bold text-slate-900 mt-1.5">
@@ -92,7 +92,7 @@ export const DepartmentPlaybooks: React.FC = () => {
 
           <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl min-w-[240px]">
             <div className="text-[10px] font-mono uppercase text-slate-500 mb-1">
-              Event Trigger Ingress
+              What sets it off
             </div>
             <div className="text-xs font-mono text-blue-700 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -106,7 +106,7 @@ export const DepartmentPlaybooks: React.FC = () => {
           <Target className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
           <div>
             <h5 className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
-              Quantified Business Impact & Headcount Leverage
+              What changes for the business
             </h5>
             <p className="text-xs text-emerald-800 mt-1 leading-relaxed">
               {activePlaybook.businessImpact}
@@ -119,7 +119,7 @@ export const DepartmentPlaybooks: React.FC = () => {
           <div className="flex items-center gap-2 mb-3">
             <Bot className="w-4 h-4 text-blue-600" />
             <h4 className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
-              Autonomous Agent Squad (Role Breakdown)
+              The agents, and what each one does
             </h4>
           </div>
 
@@ -140,7 +140,7 @@ export const DepartmentPlaybooks: React.FC = () => {
                         : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                     }`}
                   >
-                    {agent.autonomyLevel} Autonomy
+                    {agent.autonomyLevel === 'Full' ? 'Runs on its own' : agent.autonomyLevel === 'Supervised' ? 'You approve it' : 'You work with it'}
                   </span>
                 </div>
                 <div className="text-sm font-bold text-slate-900">{agent.name}</div>
@@ -156,7 +156,7 @@ export const DepartmentPlaybooks: React.FC = () => {
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
               <Wrench className="w-4 h-4 text-emerald-600" />
-              Connected Tools (MCP Protocol)
+              The tools they connect to
             </div>
             <div className="space-y-2">
               {activePlaybook.mcpTools.map((tool, i) => (
@@ -180,14 +180,14 @@ export const DepartmentPlaybooks: React.FC = () => {
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-amber-600" />
-              Hard Guardrails & HITL Threshold Gate
+              The rules they run under
             </div>
 
             {/* HITL Gate Specifics */}
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
               <div className="text-xs font-semibold text-amber-700 flex items-center gap-1.5 mb-1">
                 <UserCheck className="w-3.5 h-3.5" />
-                Human Approval Gate Trigger
+                Where it stops and waits for you
               </div>
               <p className="text-xs text-amber-800 leading-relaxed">
                 {activePlaybook.humanInTheLoopCheckpoint}

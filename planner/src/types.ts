@@ -32,10 +32,12 @@ export interface SelectedStack {
 export interface DepartmentPlaybook {
   id: string;
   title: string;
-  department: 'Sales & RevOps' | 'Customer Support' | 'Finance & Ops' | 'Marketing & Content' | 'IT & Cyber SecOps';
+  department: 'Sales & enquiries' | 'Customer support' | 'Finance & invoicing' | 'Marketing' | 'IT & security';
   summary: string;
+  /** What actually changes for the business. Never an invented percentage. */
   businessImpact: string;
-  roiMultiplier: string;
+  /** Meridian's advice on sequencing, not a return figure. */
+  whenToBuild: string;
   humanInTheLoopCheckpoint: string;
   agents: {
     name: string;
