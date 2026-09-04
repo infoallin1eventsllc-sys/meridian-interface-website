@@ -3,6 +3,7 @@ import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
+import { Lightbox } from './Lightbox';
 
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
@@ -12,6 +13,8 @@ interface ImpactViewProps {
 export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal }) => {
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
+  // The detail panel's picture opens full screen; a concept with no picture stays inert.
+  const [zoomed, setZoomed] = useState(false);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
@@ -67,7 +70,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           <button
             type="button"
             key={item.id}
-            onClick={() => setActiveItem(item)}
+            onClick={() => { setZoomed(false); setActiveItem(item); }}
             aria-label={`View concept: ${item.title}`}
             className="text-left w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all group flex flex-col justify-between"
           >
@@ -141,7 +144,20 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                 {activeItem.title}
               </h2>
 
-              <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
+              <div
+                {...(resolveImage(activeItem.id, activeItem.image)
+                  ? {
+                      role: 'button' as const,
+                      tabIndex: 0,
+                      'aria-label': `View ${activeItem.title} full screen`,
+                      onClick: () => setZoomed(true),
+                      onKeyDown: (e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(true); }
+                      },
+                      className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
+                    }
+                  : { className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900' })}
+              >
                 <ImageWithFallback
                   frame
                   src={resolveImage(activeItem.id, activeItem.image)}
@@ -207,6 +223,15 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           Book a Design Appointment
         </button>
       </section>
+      {activeItem && (
+        <Lightbox
+          items={[{ src: resolveImage(activeItem.id, activeItem.image), alt: activeItem.title, caption: `${activeItem.title} — ${activeItem.categoryLabel}` }]}
+          index={zoomed ? 0 : null}
+          onClose={() => setZoomed(false)}
+          onIndexChange={() => {}}
+        />
+      )}
+
     </main>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ImageWithFallback } from './ImageWithFallback';
+import { Lightbox, useLightbox, type LightboxItem } from './Lightbox';
 import { TabType } from '../types';
 
 /**
@@ -27,7 +28,15 @@ const SHOTS = [
   { src: '/images/portfolio/agentic-tech-stack-proposal.jpg', label: 'A proposal you keep' },
 ];
 
-export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ onTabChange }) => (
+/* The main screen first, then the three details — the order they are shown in. */
+const GALLERY: LightboxItem[] = [
+  { src: '/images/portfolio/agentic-tech-stack.jpg', alt: 'The Meridian Stack Planner, showing the five layers of an agentic tech stack', caption: 'The Meridian Stack Planner — the five layers' },
+  ...SHOTS.map((s) => ({ src: s.src, alt: s.label, caption: s.label })),
+];
+
+export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ onTabChange }) => {
+  const box = useLightbox(GALLERY);
+  return (
   <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto">
     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
       <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -40,7 +49,10 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
               <span className="ml-2 text-[10px] font-mono text-slate-500 truncate">Meridian Stack Planner</span>
             </div>
-            <div className="aspect-video relative bg-white">
+            <div
+              {...box.triggerProps(0)}
+              className="aspect-video relative bg-white cursor-zoom-in group focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+            >
               <ImageWithFallback
                 frame
                 src="/images/portfolio/agentic-tech-stack.jpg"
@@ -49,6 +61,12 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
                 label="Stack Planner"
                 className="w-full h-full object-cover"
               />
+              <span className="absolute inset-0 grid place-items-center bg-slate-950/0 group-hover:bg-slate-950/25 transition-colors">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-slate-900 text-[11px] font-bold uppercase tracking-widest shadow-sm">
+                  <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">search</span>
+                  See it full screen
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -104,9 +122,12 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
 
       {/* Three more real screens, so it reads as a product rather than one lucky shot. */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-slate-200 border-t border-slate-200">
-        {SHOTS.map((s) => (
+        {SHOTS.map((s, i) => (
           <figure key={s.src} className="bg-white p-4 space-y-2.5">
-            <div className="aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+            <div
+              {...box.triggerProps(i + 1)}
+              className="aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-50 cursor-zoom-in hover:border-blue-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+            >
               <ImageWithFallback
                 frame
                 src={s.src}
@@ -121,5 +142,8 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
         ))}
       </div>
     </div>
+
+    <Lightbox items={GALLERY} index={box.index} onClose={box.close} onIndexChange={box.setIndex} />
   </section>
-);
+  );
+};
