@@ -99,10 +99,10 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
           <div>
             <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <Sliders className="w-5 h-5 text-emerald-600" />
-              Stack Configurator & Unit Cost Modeler
+              Build your stack, and see what it costs
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Select your company growth stage and business model to auto-tune the optimal 5-layer agent stack.
+              Pick the stage and the kind of business. The five layers below fill in with a sensible starting point; change any of them and the monthly estimate follows.
             </p>
           </div>
 

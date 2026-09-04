@@ -101,11 +101,11 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       id: 'temporal-agentic',
       name: 'Temporal + Durable Agent Execution',
       category: 'Orchestration',
-      tagline: 'Enterprise durable execution with guaranteed fault tolerance',
-      description: 'Guarantees execution survival across pod restarts, network hiccups, and long-running human approval delays (days/weeks).',
+      tagline: 'Durable execution: a workflow survives restarts and long waits',
+      description: 'Designed so a workflow survives server restarts, network hiccups, and a person taking days to approve a step.',
       bestFor: 'Mission-critical billing, regulatory, and multi-day business operations.',
       tradeOffs: {
-        pros: ['Zero workflow data loss', 'Indefinite wait-for-human timeouts', 'Deterministic replay'],
+        pros: ['Workflow state is persisted, not held in memory', 'Can wait indefinitely for a person', 'Deterministic replay'],
         cons: ['Requires workflow code determinism discipline']
       },
       monthlyCostRange: '$50 - $350 / mo',
@@ -139,7 +139,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       description: 'Mission-critical distributed state machine supporting cross-continental enterprise failover, cryptographically signed checkpoints, and multi-tenant department namespaces.',
       bestFor: 'Large-company ERP automation, payment rails, and mission-critical telemetry.',
       tradeOffs: {
-        pros: ['Zero workflow data loss even during complete data center outages', 'Built-in audit replay and compensation transactions (Saga pattern)', 'Granular namespace IAM'],
+        pros: ['Workflow state survives a data-centre outage', 'Built-in audit replay and compensation transactions (Saga pattern)', 'Granular namespace IAM'],
         cons: ['Requires distributed systems SRE expertise']
       },
       monthlyCostRange: '$800 - $3,500 / mo',
@@ -210,7 +210,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       description: 'Combines ultra-dense vector search with enterprise relational data clouds (Snowflake / Databricks). Enforces Active Directory / Okta user-level row security (RLS) so agents never expose confidential executive data to unauthorized queries.',
       bestFor: 'Cross-department enterprise knowledge graphs, legal document vaults, and executive business intelligence.',
       tradeOffs: {
-        pros: ['Zero unauthorized cross-department data exposure (RLS enforced)', 'Direct SQL + Vector hybrid retrieval', 'Private-network deployment available'],
+        pros: ['Row-level security keeps each department to its own data', 'Direct SQL + Vector hybrid retrieval', 'Private-network deployment available'],
         cons: ['Requires enterprise Snowflake/Databricks integration setup']
       },
       monthlyCostRange: '$1,200 - $4,800 / mo',
@@ -314,11 +314,11 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       id: 'guardrails-pii-filter',
       name: 'Guardrails AI + NeMo Guardrails',
       category: 'Governance & Evals',
-      tagline: 'Deterministic safety rules, PII anonymization, and hallucination bounds',
+      tagline: 'Fixed safety rules, personal-data masking, and output checks',
       description: 'Enforces strict input/output structural validators. Redacts SSNs, credit cards, and addresses before LLM transmission, and prevents unapproved out-of-bounds agent actions.',
       bestFor: 'Regulated industries (FinTech, Health, Legal) and customer-facing autonomous responders.',
       tradeOffs: {
-        pros: ['Guarantees zero PII leakage', 'Prevents jailbreaks and tool injection attacks', 'Strict schema enforcement'],
+        pros: ['Masks personal data before it reaches a model', 'Detects prompt injection and jailbreak attempts', 'Strict schema enforcement on tool calls'],
         cons: ['Adds 40-100ms validation check before and after inference']
       },
       monthlyCostRange: '$40 - $150 / mo',
@@ -332,10 +332,10 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       name: 'Human-in-the-Loop Threshold Gate',
       category: 'Governance & Evals',
       tagline: 'Autonomous execution for low-risk tasks with interactive human sign-off on critical actions',
-      description: 'Allows agents to operate 100% autonomously for routine tasks, but queues Slack/Email approval cards whenever a tool action exceeds predefined safety thresholds (e.g. refund > $200, bulk email > 50 recipients).',
+      description: 'Lets agents run routine tasks on their own, but queues Slack/Email approval cards whenever a tool action exceeds predefined safety thresholds (e.g. refund > $200, bulk email > 50 recipients).',
       bestFor: 'Growing businesses transitioning from manual human labor to trusted agent autonomy.',
       tradeOffs: {
-        pros: ['Zero business risk from accidental hallucinations', 'Builds team trust incrementally'],
+        pros: ['A person sees anything that matters before it happens', 'Builds team trust incrementally'],
         cons: ['Workflow pauses until human clicks Approve (handled seamlessly via async webhooks)']
       },
       monthlyCostRange: '$0 - $50 / mo',
@@ -421,7 +421,7 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
     title: 'Autonomous Bookkeeping & Invoice Reconciliation',
     department: 'Finance & Ops',
     summary: 'Ingests incoming PDF invoices from email, parses line items with the foundation model reading the PDF directly, matches with purchase orders and bank feed lines, and drafts journal entries in QuickBooks/Xero.',
-    businessImpact: 'Cuts month-end financial closing cycle from 9 business days down to 36 hours; eliminates 92% of manual data entry errors.',
+    businessImpact: 'Month-end close moves from days to hours, and the typing errors that come from re-keying invoices go away because nothing is re-keyed. Figures depend on your volume; the ROI screen estimates them.',
     roiMultiplier: '3.9x ROI',
     humanInTheLoopCheckpoint: 'Any transaction discrepancy > $25 or new vendor setup requires 1-click CFO approval via Slack.',
     sampleTrigger: 'AP invoice received at billing@company.com or new Plaid bank transaction posted',
@@ -487,7 +487,7 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
     ],
     guardrails: [
       'Dual-officer cryptographic sign-off required for any production cluster mutation',
-      'Air-gapped VPC boundary enforcement: zero external egress during active threat containment',
+      'Network egress locked down while an incident is being contained',
       'Continuous compliance audit trail streamed directly to immutable WORM storage'
     ]
   }
@@ -789,7 +789,7 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
         },
         guardrailCheck: {
           passed: true,
-          rule: 'PII scrubbing active: zero customer credit card or account data accessed during trace inspection.'
+          rule: 'Personal-data masking on: card and account numbers were not read during trace inspection.'
         },
         requiresHumanApproval: false
       },

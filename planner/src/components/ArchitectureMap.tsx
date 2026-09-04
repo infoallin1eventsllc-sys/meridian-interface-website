@@ -44,12 +44,12 @@ const LAYERS: LayerDetail[] = [
     color: 'text-amber-600',
     borderColor: 'border-amber-400',
     bgGlow: 'bg-amber-50',
-    summary: 'Ensures agents never execute unauthorized actions, leak PII, or hallucinate beyond safe business thresholds.',
+    summary: 'Keeps agents inside the rules: no action above a threshold without a person, no personal data reaching a model unmasked, every step traced.',
     keyComponents: ['Human-in-the-Loop Threshold Gate', 'Langfuse / Arize Observability', 'NeMo / Guardrails AI PII Redactor', 'Budget & Rate Limiter'],
     protocols: ['OpenTelemetry (OTel)', 'JSON Schema Validators', 'Slack BlockKit Webhooks'],
-    businessImpact: 'Guarantees zero regulatory non-compliance, eliminates rogue automated chargebacks, and builds executive trust in autonomous ops.',
+    businessImpact: 'The mistakes that would cost real money stop for a person first, and the record of what happened is there when someone asks. That is what lets a team trust the agents with more over time.',
     whyItMatters: 'Growing businesses cannot afford reputation damage or financial leaks caused by unchecked agentic autonomy. Guardrails establish hard deterministic rails around non-deterministic LLMs.',
-    failureModeWithoutIt: 'Agents can execute unauthorized refunds, send hallucinations to enterprise prospects, or leak customer cardholder data.',
+    failureModeWithoutIt: 'An agent issues a refund nobody approved, sends a confident wrong answer to a prospect, or passes card details into a prompt.',
     codeSnippet: `// Guardrail Threshold Check Before Tool Execution
 if (toolCall.action === 'issue_refund' && toolCall.amount > 150) {
   return await queueHumanApprovalCard({
@@ -122,7 +122,7 @@ const [pastOrders, companyPolicyDocs] = await Promise.all([
     summary: 'Controls the multi-agent state machine, routing tasks between specialized roles, handling retries, and coordinating handoffs.',
     keyComponents: ['LangGraph State Graphs', 'Temporal Durable Workflows', 'CrewAI / AutoGen Role Hierarchies', 'Event-Driven Dispatchers'],
     protocols: ['State Machine Checkpoints', 'PubSub Event Bus', 'gRPC'],
-    businessImpact: 'Prevents infinite token loops, guarantees multi-day workflow survival, and allows deterministic step replay for debugging.',
+    businessImpact: 'Stops runaway loops, keeps a workflow alive while it waits days for a person, and lets you replay any run step by step to see what happened.',
     whyItMatters: 'Complex business operations require multiple specialized agents (e.g. Inbound Triage -> Research -> Calendar Negotiator -> CRM Updater). The orchestrator manages their contract and handoffs.',
     failureModeWithoutIt: 'Hallucinatory loops, unpredictable infinite execution cycles, and unrecoverable network dropouts mid-transaction.',
     codeSnippet: `// LangGraph Deterministic Multi-Agent State Graph
@@ -200,14 +200,14 @@ export const ArchitectureMap: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200">
-                Core Blueprint
+                How it fits together
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                 The 5-Layer Agentic Architecture
               </h2>
             </div>
             <p className="text-sm text-slate-500 mt-1.5 max-w-2xl">
-              Modern growing businesses don't just use chatbots — they deploy autonomous multi-agent systems built on this hardened, layered stack. Click any layer to inspect its operational role, protocols, and failure modes.
+              A chatbot answers questions. An agentic stack does work: it reads what comes in, decides, uses your tools, and stops to ask when it should. These five layers are how Meridian builds one. Click a layer to see what it does, what it uses, and what goes wrong without it.
             </p>
           </div>
 
