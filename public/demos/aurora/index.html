@@ -24,9 +24,53 @@
     <link rel="apple-touch-icon" href="/demos/aurora/brand/meridian-mark.png" />
     <script type="module" crossorigin src="/demos/aurora/assets/index-DXjG4e0w.js"></script>
     <link rel="stylesheet" crossorigin href="/demos/aurora/assets/index-D0-PyXj8.css">
-  </head>
+  
+
+<style id="meridian-demo-bar-style">
+  :root { --meridian-bar: 46px; }
+  body { padding-top: var(--meridian-bar) !important; }
+  /* These apps size themselves to the viewport; leave room for the bar so the
+     demo is not pushed off the bottom of the screen. */
+  .h-screen { height: calc(100vh - var(--meridian-bar)) !important; }
+  .min-h-screen { min-height: calc(100vh - var(--meridian-bar)) !important; }
+  /* An app's own sticky header pins to the top of the viewport, which is now
+     behind this bar. Push it down so both are readable. */
+  .sticky.top-0 { top: var(--meridian-bar) !important; }
+  #meridian-demo-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--meridian-bar); z-index: 2147483000;
+    display: flex; align-items: center; gap: 14px; padding: 0 16px;
+    background: #0f172a; color: #fff; box-sizing: border-box;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  #meridian-demo-bar img { height: 26px; width: auto; display: block; flex: none; }
+  #meridian-demo-bar .mb-built { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+  #meridian-demo-bar .mb-what { font-size: 12px; color: #cbd5e1; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  #meridian-demo-bar .mb-sep { color: #475569; }
+  #meridian-demo-bar .mb-tag { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: #cbd5e1; border: 1px solid rgba(255,255,255,.25); border-radius: 999px;
+    padding: 3px 9px; white-space: nowrap; flex: none; }
+  #meridian-demo-bar a.mb-home { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: #fff; text-decoration: none;
+    background: #2563eb; padding: 7px 12px; border-radius: 8px; }
+  #meridian-demo-bar a.mb-home:hover { background: #1d4ed8; }
+  #meridian-demo-bar a.mb-home:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  @media (max-width: 720px) {
+    #meridian-demo-bar .mb-what, #meridian-demo-bar .mb-sep { display: none; }
+  }
+</style>
+</head>
   <body class="bg-white text-slate-900 antialiased selection:bg-slate-900 selection:text-white min-h-screen overflow-x-hidden">
-    <div id="root"></div>
+<div id="meridian-demo-bar">
+  <img src="brand/meridian-mark.png" alt="Meridian Interface" />
+  <span class="mb-built">Built by Meridian Interface</span>
+  <span class="mb-sep">·</span>
+  <span class="mb-what">Aurora Reserve — private banking interface</span>
+  <span class="mb-tag">Demonstration</span>
+  <a class="mb-home" href="/">meridianinterface.com &rarr;</a>
+</div>
+<div id="root"></div>
   </body>
 </html>
 

@@ -17,3 +17,14 @@ from, then copy the build here. For the planner, which lives in this repo:
 
 DEMO_BASE matters: without it every asset points at the site root and the demo
 loads a blank page.
+
+Then stamp the Meridian bar back on — a fresh build does not have it:
+
+  node tools/brand-demos.mjs
+
+That bar is why the demos can keep their own product names. A bank interface
+has to look like a bank, not like its agency, or it stops demonstrating that
+Meridian can build a brand for a client. The bar makes sure nobody mistakes
+whose work it is: it names Meridian, says the page is a demonstration, and
+links back to the site. It is applied to the built HTML rather than each app's
+source, so all four carry exactly the same bar and it cannot drift.
