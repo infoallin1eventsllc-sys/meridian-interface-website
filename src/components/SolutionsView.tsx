@@ -109,6 +109,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
 
         <div className="lg:col-span-5 h-72 lg:h-full min-h-[320px] relative rounded-xl overflow-hidden bg-slate-900 shadow-md">
           <ImageWithFallback
+                  frame
             src={currentService.image}
             alt={currentService.title}
             icon={currentService.icon}
