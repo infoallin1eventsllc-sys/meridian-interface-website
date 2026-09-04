@@ -39,6 +39,25 @@ Two ways, neither needing a domain:
 - **`npm run build`, then `node ../../tools/...`** — or simpler, open `dist/index.html` after a build via `npm run preview`.
 - **A single self-contained file.** Everything — fonts, logo, code — can be inlined into one `.html` you keep on a laptop or phone and open by double-clicking. It works with no internet at all; only the AI advisor needs a connection, and it says so in the header when it cannot reach the service. The proposal sheet, the planner, the ROI model and the export all work offline.
 
+## House rule: no number nobody measured
+
+This app started as an AI Studio export and arrived full of invented certainty —
+a "99.4% clearance score", "SOC 2 Type II: Verified 0 Exceptions", "4.8x ROI",
+"deflects 52% of tier-1 tickets", "payback in 3 days". All of it is gone. A
+client's security reviewer or accountant disproves a figure like that in a
+minute, and then stops believing the honest parts too.
+
+What replaced it:
+
+- Compliance items say **Designed in**, **Pattern available** or **Client obtains**.
+- Playbook badges carry build sequencing, which is our advice, not a return figure.
+- The ROI model counts the build cost and discounts freed time, and shows its
+  working so a client can move the assumption they disagree with.
+- A judgement is labelled as one ("our judgement for this shape, not a
+  measurement").
+
+Keep it that way when adding anything here.
+
 ## The proposal sheet
 
 The **Proposal** button (header, or from Export) renders the plan as a one-page
