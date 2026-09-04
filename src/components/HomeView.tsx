@@ -130,6 +130,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div>
                 <div className="h-48 relative overflow-hidden bg-slate-900">
                   <ImageWithFallback
+                  frame
                     src={service.image}
                     alt={service.title}
                     icon={service.icon}
@@ -216,6 +217,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             >
               <div className="aspect-video relative overflow-hidden bg-slate-900">
                 <ImageWithFallback
+                  frame
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
                   icon="palette"

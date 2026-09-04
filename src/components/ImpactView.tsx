@@ -74,6 +74,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             <div>
               <div className="aspect-[16/10] relative overflow-hidden bg-slate-900">
                 <ImageWithFallback
+                  frame
                   src={resolveImage(item.id, item.image)}
                   alt={item.title}
                   icon="palette"
@@ -142,6 +143,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
 
               <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-900">
                 <ImageWithFallback
+                  frame
                   src={resolveImage(activeItem.id, activeItem.image)}
                   alt={activeItem.title}
                   icon="palette"
