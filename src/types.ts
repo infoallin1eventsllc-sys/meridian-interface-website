@@ -71,6 +71,8 @@ export interface PortfolioItem {
   client: string;
   year: string;
   image: string;
+  /** Extra screens, shown full-size when the picture is opened. */
+  gallery?: { src: string; caption: string }[];
   summary: string;
   highlights: string[];
 }
