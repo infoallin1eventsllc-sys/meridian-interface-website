@@ -368,42 +368,42 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
 export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
   {
     id: 'sales-revops',
-    title: 'Autonomous Inbound Sales & RevOps',
-    department: 'Sales & RevOps',
-    summary: 'Instantly enriches inbound demo requests, verifies ICP criteria, extracts executive signals from web presence, and proposes personalized meeting times with account executives.',
-    businessImpact: 'Reduces lead response time from 4.2 hours to under 45 seconds; increases qualified meeting conversion by 38%.',
-    roiMultiplier: '4.8x ROI',
-    humanInTheLoopCheckpoint: 'Mandatory review before high-tier outbound sequence dispatch or custom enterprise quote generation.',
+    title: 'Enquiries answered while you are on a job',
+    department: 'Sales & enquiries',
+    summary: 'An enquiry arrives. The agents look up who it is, decide whether it is the kind of work you want, and draft a reply offering times that are actually free in your calendar. You approve it, or edit it first.',
+    businessImpact: 'The reply goes out in minutes instead of the next morning, which is usually the whole difference between a job and a missed call. How much that is worth depends on how many enquiries you get and what one is worth — the ROI screen works it out from your numbers.',
+    whenToBuild: 'Most start here',
+    humanInTheLoopCheckpoint: 'Nothing reaches a customer unsent-by-you: every reply and every quote waits for your approval.',
     sampleTrigger: 'Website form submission / inbound email from prospect',
     agents: [
-      { name: 'Lead Enrichment Agent', role: 'Scrapes domain signals, LinkedIn company page, and tech stack', autonomyLevel: 'Full' },
-      { name: 'ICP Scoring & Routing Agent', role: 'Calculates deal tier (Tier 1 vs Self-Serve) and assigns territory', autonomyLevel: 'Full' },
-      { name: 'Meeting Negotiator Agent', role: 'Finds optimal calendar slots across AE timezones and crafts contextual invite', autonomyLevel: 'Supervised' }
+      { name: 'Lookup agent', role: 'Finds the business behind the enquiry — size, industry, website', autonomyLevel: 'Full' },
+      { name: 'Sorting agent', role: 'Decides whether this is the work you want, and who it should go to', autonomyLevel: 'Full' },
+      { name: 'Scheduling agent', role: 'Finds real gaps in your calendar and drafts the reply offering them', autonomyLevel: 'Supervised' }
     ],
     mcpTools: [
-      { name: 'mcp-hubspot', description: 'Read/Write CRM contacts, deals, and lead status', protocol: 'Model Context Protocol' },
-      { name: 'mcp-google-calendar', description: 'Verify AE availability and generate dynamic meet links', protocol: 'Google Workspace API / MCP' },
-      { name: 'mcp-clearbit-apollo', description: 'Enrich employee count, funding, and industry vertical', protocol: 'REST / MCP' }
+      { name: 'mcp-hubspot', description: 'Reads and updates contacts, jobs and their status', protocol: 'Model Context Protocol' },
+      { name: 'mcp-google-calendar', description: 'Reads real availability and creates the meeting link', protocol: 'Google Workspace API / MCP' },
+      { name: 'mcp-company-lookup', description: 'Looks up company size, industry and location from a domain', protocol: 'REST / MCP' }
     ],
     guardrails: [
-      'Strict email cadence limits (max 1 email / 48 hours per contact)',
-      'Tone audit: Professional, consultative, zero aggressive spam tactics',
-      'Data residency compliance (GDPR / CCPA consent validation)'
+      'At most one email to the same person every 48 hours',
+      'The reply is checked against your tone before you see it — no pressure tactics',
+      'Consent and unsubscribe state checked before anything is sent'
     ]
   },
   {
     id: 'customer-support',
-    title: 'Autonomous 24/7 Tier-1 Customer Care',
-    department: 'Customer Support',
-    summary: 'Resolves routine customer queries, checks shipping or billing status, performs guided troubleshooting, and processes pre-approved refunds without human intervention.',
-    businessImpact: 'Deflects 52% of tier-1 support tickets with a 94% CSAT rating; achieves sub-2 minute average resolution time.',
-    roiMultiplier: '5.2x ROI',
-    humanInTheLoopCheckpoint: 'Customer sentiment drops below -0.6 or requested refund amount exceeds $150 threshold.',
+    title: 'The routine questions, answered at 11pm',
+    department: 'Customer support',
+    summary: 'Where is my order, can I change my appointment, why was I charged this. The agents look up the real answer in your systems and reply. Anything about money, or anyone who sounds upset, comes to you first.',
+    businessImpact: 'The repetitive questions stop landing on whoever is nearest the phone, and customers get an answer outside your hours. The share that can be handled this way depends on your business; expect to measure it in the first month rather than predict it.',
+    whenToBuild: 'Common second',
+    humanInTheLoopCheckpoint: 'An unhappy customer, or any refund over the limit you set, goes to a person.',
     sampleTrigger: 'Zendesk ticket created / Intercom chat message received',
     agents: [
-      { name: 'Intent & Sentiment Triage Agent', role: 'Classifies issue urgency, customer tone, and account tier', autonomyLevel: 'Full' },
-      { name: 'Knowledge Retrieval Agent', role: 'Queries internal docs, release notes, and FAQs with hybrid vector search', autonomyLevel: 'Full' },
-      { name: 'Resolution & Action Executor', role: 'Interacts with billing systems, resets credentials, or queues replacement orders', autonomyLevel: 'Supervised' }
+      { name: 'Triage agent', role: 'Works out what they are asking and how annoyed they sound', autonomyLevel: 'Full' },
+      { name: 'Answer agent', role: 'Finds the real answer in your own documents and order records', autonomyLevel: 'Full' },
+      { name: 'Action agent', role: 'Reschedules, reissues or refunds — within the limits you set', autonomyLevel: 'Supervised' }
     ],
     mcpTools: [
       { name: 'mcp-zendesk-intercom', description: 'Read conversation history, update tags, post agent replies', protocol: 'MCP' },
@@ -411,24 +411,24 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
       { name: 'mcp-vector-docs', description: 'Semantic search over knowledge base and troubleshooting SOPs', protocol: 'Qdrant / MCP' }
     ],
     guardrails: [
-      'Refund cap: strictly limited to $150 without manager 1-click confirmation',
-      'PII masking on all customer chat transcripts before vector indexing',
-      'Automated sentiment escalation to human support manager'
+      'Refunds above your limit need one tap from you before anything moves',
+      'Names, card numbers and addresses are masked before any text reaches a model',
+      'An upset customer is handed to a person, not talked to by an agent'
     ]
   },
   {
     id: 'finance-ops',
-    title: 'Autonomous Bookkeeping & Invoice Reconciliation',
-    department: 'Finance & Ops',
-    summary: 'Ingests incoming PDF invoices from email, parses line items with the foundation model reading the PDF directly, matches with purchase orders and bank feed lines, and drafts journal entries in QuickBooks/Xero.',
+    title: 'Invoices read, matched and drafted — not re-typed',
+    department: 'Finance & invoicing',
+    summary: 'Bills arrive as PDFs in an inbox. The agents read them, match them against what was ordered and what cleared the bank, and draft the entry in QuickBooks or Xero. Nothing is paid without you releasing it.',
     businessImpact: 'Month-end close moves from days to hours, and the typing errors that come from re-keying invoices go away because nothing is re-keyed. Figures depend on your volume; the ROI screen estimates them.',
-    roiMultiplier: '3.9x ROI',
-    humanInTheLoopCheckpoint: 'Any transaction discrepancy > $25 or new vendor setup requires 1-click CFO approval via Slack.',
+    whenToBuild: 'Common second',
+    humanInTheLoopCheckpoint: 'Anything that does not match, and every new supplier, waits for one tap from you.',
     sampleTrigger: 'AP invoice received at billing@company.com or new Plaid bank transaction posted',
     agents: [
-      { name: 'Multimodal OCR Ingestion Agent', role: 'Extracts tax IDs, line items, PO numbers, and payment terms from scanned PDFs', autonomyLevel: 'Full' },
-      { name: 'Three-Way Match Auditor Agent', role: 'Cross-checks Invoice vs Purchase Order vs Bank Clearing Feed', autonomyLevel: 'Full' },
-      { name: 'GL Posting & Reconciler Agent', role: 'Classifies expense account and drafts balanced journal entries', autonomyLevel: 'Supervised' }
+      { name: 'Reading agent', role: 'Pulls the amounts, dates, tax numbers and terms out of the PDF', autonomyLevel: 'Full' },
+      { name: 'Matching agent', role: 'Checks the bill against what was ordered and what the bank shows', autonomyLevel: 'Full' },
+      { name: 'Bookkeeping agent', role: 'Picks the right account and drafts the entry for your bookkeeper to release', autonomyLevel: 'Supervised' }
     ],
     mcpTools: [
       { name: 'mcp-quickbooks-xero', description: 'Read/Write chart of accounts, vendor records, and draft bills', protocol: 'Accounting API / MCP' },
@@ -436,24 +436,24 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
       { name: 'mcp-slack-approvals', description: 'Post interactive approval card with attached invoice PDF preview', protocol: 'Slack BlockKit / MCP' }
     ],
     guardrails: [
-      'Zero auto-disbursement of cash: Agent only prepares draft bills for human release',
-      'Duplicate invoice detector using fuzzy hash matching across past 24 months',
-      'Immutable audit log tracking the exact OCR confidence score and rationale'
+      'No agent ever moves money. It prepares the bill; a person releases it.',
+      'Duplicate bills are caught against the last two years, including near-identical ones',
+      'Every reading is logged with how confident it was and why it decided that'
     ]
   },
   {
     id: 'marketing-content',
-    title: 'Autonomous Growth & Content Engine',
-    department: 'Marketing & Content',
-    summary: 'Monitors competitor announcements, analyzes top-ranking SEO keywords, generates multi-channel editorial briefs, drafts newsletter campaigns, and schedules social distribution.',
-    businessImpact: 'Increases qualified organic search traffic by 64% and accelerates content publishing cadence by 4.5x with consistent brand voice.',
-    roiMultiplier: '4.1x ROI',
-    humanInTheLoopCheckpoint: 'Brand voice editor reviews drafts before social scheduling or live blog publication.',
+    title: 'The posts and emails that never get written',
+    department: 'Marketing',
+    summary: 'The agents watch what is being searched for in your trade, draft the week\'s posts and the newsletter in your voice, and queue them. You read them, change what you want, and approve. Nothing is published unapproved.',
+    businessImpact: 'Marketing stops being the thing that slips when work gets busy, because the drafts are already waiting. What it does to your traffic depends on your trade and how competitive it is — that is measured, not promised.',
+    whenToBuild: 'Third or fourth',
+    humanInTheLoopCheckpoint: 'Every post and every email waits in a queue until you approve it.',
     sampleTrigger: 'Weekly editorial cadence trigger / Trending industry keyword alert',
     agents: [
-      { name: 'Market Intelligence & Trend Agent', role: 'Monitors RSS, Google Search Trends, and competitor changelogs', autonomyLevel: 'Full' },
-      { name: 'Content Strategist Agent', role: 'Builds comprehensive content briefs with target keywords and outlines', autonomyLevel: 'Full' },
-      { name: 'Copywriter & Asset Agent', role: 'Drafts long-form post, creates platform-specific social hooks, and summarizes newsletter', autonomyLevel: 'Collaborative' }
+      { name: 'Watching agent', role: 'Tracks what people search for in your trade, and what competitors announce', autonomyLevel: 'Full' },
+      { name: 'Planning agent', role: 'Decides what is worth writing about this week, and why', autonomyLevel: 'Full' },
+      { name: 'Drafting agent', role: 'Writes the post, the social versions of it, and the newsletter', autonomyLevel: 'Collaborative' }
     ],
     mcpTools: [
       { name: 'mcp-cms-wordpress-webflow', description: 'Create draft blog posts with formatted markdown and metadata', protocol: 'CMS API / MCP' },
@@ -461,24 +461,24 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
       { name: 'mcp-social-scheduler', description: 'Stage draft social posts across LinkedIn, X, and newsletters', protocol: 'Buffer / Hootsuite / MCP' }
     ],
     guardrails: [
-      'Brand guideline validator: scans for forbidden terms, competitor claims, and voice tone',
-      'Plagiarism and duplicate content safety verification',
-      'Mandatory human sign-off on all public posts'
+      'Checked against your own rules: words you never use, claims you never make',
+      'Checked for copied text and for repeating something you already published',
+      'Nothing goes public without your approval. This one is not configurable.'
     ]
   },
   {
     id: 'enterprise-security-itsm',
-    title: 'Enterprise IT & SecOps Triage',
-    department: 'IT & Cyber SecOps',
-    summary: 'Autonomous Tier-1 incident classification, threat intelligence correlation, automated firewall micro-segmentation, and ServiceNow Change Request preparation.',
-    businessImpact: 'Reduces Mean Time to Detect (MTTD) from 42 mins to 18 secs; automates 78% of routine patch validation with zero accidental production downtime.',
-    roiMultiplier: '6.5x Enterprise ROI',
-    humanInTheLoopCheckpoint: 'Mandatory CISO / Principal SRE 2-factor approval before applying production firewall rules or server failover.',
+    title: 'IT alerts triaged before anyone is paged',
+    department: 'IT & security',
+    summary: 'For teams big enough to have an on-call rota. Alerts are sorted, the noisy ones closed, the real ones written up with what changed and what it affects — ready for a person to approve the fix.',
+    businessImpact: 'The on-call engineer is woken for things that are actually happening, with the investigation already written up. Nothing is changed in production without a person approving it.',
+    whenToBuild: 'Larger teams only',
+    humanInTheLoopCheckpoint: 'Two people sign off before any firewall rule or failover touches production.',
     sampleTrigger: 'ServiceNow Incident INC094812 / Datadog High-Risk Outlier Alert',
     agents: [
-      { name: 'SecOps Telemetry Ingestion Agent', role: 'Ingests SIEM streams, correlates CVE databases, and evaluates blast radius', autonomyLevel: 'Full' },
-      { name: 'Policy & Change Control Agent', role: 'Generates ISO 27001 / SOC 2 change justification ticket and impact analysis', autonomyLevel: 'Supervised' },
-      { name: 'Remediation Orchestrator Agent', role: 'Executes approved zero-downtime rollback or pod isolation via Kubernetes MCP', autonomyLevel: 'Collaborative' }
+      { name: 'Alert agent', role: 'Reads the monitoring streams and works out what an alert could affect', autonomyLevel: 'Full' },
+      { name: 'Write-up agent', role: 'Drafts the change ticket: what happened, what it affects, what it proposes', autonomyLevel: 'Supervised' },
+      { name: 'Fix agent', role: 'Carries out the rollback or isolation once two people have approved it', autonomyLevel: 'Collaborative' }
     ],
     mcpTools: [
       { name: 'mcp-servicenow', description: 'Query/update change requests, configuration items (CMDB), and incident SLAs', protocol: 'ServiceNow REST / MCP' },
@@ -486,9 +486,9 @@ export const DEPARTMENT_PLAYBOOKS: DepartmentPlaybook[] = [
       { name: 'mcp-kubernetes-vault', description: 'Read pod states, isolate compromised containers, and rotate secrets via HashiCorp Vault', protocol: 'KubeAPI / MCP' }
     ],
     guardrails: [
-      'Dual-officer cryptographic sign-off required for any production cluster mutation',
+      'Two named people must sign off before anything in production changes',
       'Network egress locked down while an incident is being contained',
-      'Continuous compliance audit trail streamed directly to immutable WORM storage'
+      'Every action written to an append-only log the team cannot edit afterwards'
     ]
   }
 ];
@@ -533,7 +533,7 @@ export const WORKFLOW_PRESETS: SimulationWorkflow[] = [
           args: { collection: 'case_studies', query: 'Fintech AWS Stripe automated reconciliation ROI' }
         },
         toolResult: {
-          topMatch: 'How PayFast cut manual reconciliation hours by 85%',
+          topMatch: 'Case study: reconciliation, before and after (internal library)',
           stats: 'Saved $14,000/mo within 45 days',
           relevance: 0.93
         },
