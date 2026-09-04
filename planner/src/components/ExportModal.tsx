@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { SelectedStack, BusinessStage, BusinessModel } from '../types';
 import { STACK_LAYERS, STAGE_PRESETS } from '../data/stackComponents';
-import { X, Copy, Check, Download, FileText, Code2 } from 'lucide-react';
+import { X, Copy, Check, Download, FileText, Code2, Send, Loader2, CheckCircle2 } from 'lucide-react';
+import { sendPlanToMeridian, PlannerError } from '../lib/planner';
 import { MERIDIAN } from '../lib/brand';
 
 interface ExportModalProps {
@@ -23,6 +24,17 @@ const MODEL_LABEL: Record<BusinessModel, string> = {
 export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, selectedStack, businessStage, businessModel }) => {
   const [format, setFormat] = useState<'markdown' | 'json'>('markdown');
   const [copied, setCopied] = useState<boolean>(false);
+
+  // Sending the plan to Meridian: the whole reason a client fills this in.
+  const [sendOpen, setSendOpen] = useState<boolean>(false);
+  const [sending, setSending] = useState<boolean>(false);
+  const [sent, setSent] = useState<boolean>(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [company, setCompany] = useState('');
+  const [note, setNote] = useState('');
 
   if (!isOpen) return null;
 
@@ -171,8 +183,111 @@ Figures above are planning estimates, not a quote.
           </div>
         </div>
 
-        <div className="p-4 overflow-auto font-mono text-xs text-slate-700 bg-white leading-relaxed whitespace-pre select-all">
+        <div className="p-4 overflow-auto font-mono text-xs text-slate-700 bg-white leading-relaxed whitespace-pre select-all flex-1">
           {activeContent}
+        </div>
+
+        {/* Send it to Meridian. Downloading a file is not a next step; this is. */}
+        <div className="border-t border-[#e2e8f0] bg-[#f7f9fd] px-4 py-3">
+          {sent ? (
+            <div className="flex items-start gap-2.5 text-sm text-emerald-800">
+              <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
+              <div>
+                <div className="font-semibold">Sent. Otis has your plan.</div>
+                <div className="text-xs text-emerald-900/80 mt-0.5">
+                  You will hear back within one business day. Keep your copy — download or copy it above.
+                </div>
+              </div>
+            </div>
+          ) : !sendOpen ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-xs text-[#475569] leading-relaxed max-w-lg">
+                Send this plan to Meridian and we will read it before we talk, so the call starts with your stack rather than with questions you have already answered.
+              </p>
+              <button
+                id="open-send-plan-btn"
+                onClick={() => setSendOpen(true)}
+                className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-white flex items-center gap-2 whitespace-nowrap transition-colors"
+              >
+                <Send className="w-3.5 h-3.5" />
+                Send this plan to Meridian
+              </button>
+            </div>
+          ) : (
+            <form
+              className="space-y-2.5"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setSending(true);
+                setSendError(null);
+                try {
+                  await sendPlanToMeridian({
+                    name, email, phone, company, note,
+                    stage: `${stageInfo.title} · ${MODEL_LABEL[businessModel]}`,
+                    plan: markdownContent,
+                  });
+                  setSent(true);
+                } catch (err) {
+                  setSendError(err instanceof PlannerError ? err.message : 'Something went wrong. Try again, or email the plan to otis@meridianinterface.com.');
+                } finally {
+                  setSending(false);
+                }
+              }}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <label className="text-[11px] font-semibold text-[#475569]">
+                  Your name
+                  <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name"
+                    className="mt-1 w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-300 text-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+                </label>
+                <label className="text-[11px] font-semibold text-[#475569]">
+                  Business
+                  <input value={company} onChange={(e) => setCompany(e.target.value)} autoComplete="organization"
+                    className="mt-1 w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-300 text-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+                </label>
+                <label className="text-[11px] font-semibold text-[#475569]">
+                  Email
+                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email"
+                    className="mt-1 w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-300 text-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+                </label>
+                <label className="text-[11px] font-semibold text-[#475569]">
+                  Phone
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" autoComplete="tel"
+                    className="mt-1 w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-300 text-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+                </label>
+              </div>
+              <label className="block text-[11px] font-semibold text-[#475569]">
+                Anything you want us to know (optional)
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
+                  className="mt-1 w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-300 text-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#2563eb] resize-none" />
+              </label>
+
+              {sendError && (
+                <p className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">{sendError}</p>
+              )}
+
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[11px] text-slate-500">
+                  An email address or a phone number, so we can reply. Your plan goes with it.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => setSendOpen(false)}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold text-[#475569] hover:bg-slate-100 transition-colors">
+                    Cancel
+                  </button>
+                  <button
+                    id="send-plan-btn"
+                    type="submit"
+                    disabled={sending || (!email.trim() && !phone.trim())}
+                    className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    {sending ? 'Sending…' : 'Send my plan'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>

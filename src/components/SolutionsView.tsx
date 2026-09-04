@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
+
+/**
+ * The Stack Planner lives on its own domain (a second Vercel project rooted at
+ * `planner/` in this repo). The link only renders once that address is set, so
+ * the services page never points at a domain that has not been connected yet.
+ */
+const PLANNER_URL = (import.meta.env.VITE_PLANNER_URL as string | undefined)?.trim() || '';
+const plannerLink = PLANNER_URL
+  ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=services&utm_campaign=stack-planner`
+  : '';
 import { ImageWithFallback } from './ImageWithFallback';
 import { useMeridianMotion, m as motion } from '../lib/motion';
 
@@ -96,7 +106,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             </div>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => onSelectServiceForBooking(currentService.id)}
               className="w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"
@@ -104,6 +114,19 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
               <span className="material-symbols-outlined text-lg">event</span>
               Book Appointment for {currentService.categoryName}
             </button>
+
+            {/* Only on the tech stack service, and only once the planner has an
+                address: it lets someone work out what they want before paying
+                for a call, which is the whole argument for the tool. */}
+            {currentService.id === 'tech_stack' && plannerLink && (
+              <a
+                href={plannerLink}
+                className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">explore</span>
+                Plan your stack first — free
+              </a>
+            )}
           </div>
         </div>
 
