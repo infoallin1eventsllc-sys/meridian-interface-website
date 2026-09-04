@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Printer } from 'lucide-react';
-import { SelectedStack, BusinessStage, BusinessModel } from '../types';
+import { SelectedStack, BusinessStage, BusinessModel, AdvisorBlueprint } from '../types';
 import { STACK_LAYERS, STAGE_PRESETS } from '../data/stackComponents';
 import { RoiInputs, computeRoi, money } from '../lib/roi';
 import { MERIDIAN } from '../lib/brand';
@@ -26,6 +26,10 @@ interface ProposalSheetProps {
   businessStage: BusinessStage;
   businessModel: BusinessModel;
   roi: RoiInputs;
+  /** Present only when the client ran the AI advisor. */
+  blueprint: AdvisorBlueprint | null;
+  /** The name the advisor's plan was written for, used to prefill the header. */
+  companyName: string;
 }
 
 const MODEL_LABEL: Record<BusinessModel, string> = {
@@ -45,9 +49,11 @@ const LAYER_TITLE: Record<keyof SelectedStack, string> = {
 };
 
 export const ProposalSheet: React.FC<ProposalSheetProps> = ({
-  isOpen, onClose, selectedStack, businessStage, businessModel, roi,
+  isOpen, onClose, selectedStack, businessStage, businessModel, roi, blueprint, companyName,
 }) => {
   const [client, setClient] = useState('');
+  // The advisor already asked who this is for; do not ask twice.
+  useEffect(() => { if (companyName && !client) setClient(companyName); }, [companyName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Lock the page behind the sheet. Without this a scroll inside the document
   // carries on into the app underneath, which in a meeting looks broken.
@@ -72,6 +78,11 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
   const stage = STAGE_PRESETS[businessStage];
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+  // Sections are numbered as they render, because the rollout section only
+  // exists when the client ran the advisor.
+  let section = 0;
+  const n = () => ++section;
+
   const layers = (Object.keys(LAYER_TITLE) as (keyof SelectedStack)[]).map((key) => {
     const list = STACK_LAYERS[key];
     const item = list.find((i) => i.id === selectedStack[key]) || list[0];
@@ -81,15 +92,15 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-slate-200 print:bg-white print:static print:overflow-visible">
       {/* Controls. Never printed. */}
-      <div className="sticky top-0 z-10 bg-[#0f172a] text-white px-4 py-2.5 flex items-center justify-between gap-3 print:hidden">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="sticky top-0 z-10 bg-[#0f172a] text-white px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 print:hidden">
+        <div className="flex items-center gap-3 min-w-0 w-full sm:w-auto sm:flex-1 order-last sm:order-none">
           <span className="text-xs font-semibold whitespace-nowrap">Proposal outline</span>
           <input
             value={client}
             onChange={(e) => setClient(e.target.value)}
             placeholder="Prepared for… (business name)"
             aria-label="Business name"
-            className="px-3 py-1.5 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 w-56 max-w-full"
+            className="px-3 py-1.5 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 flex-1 min-w-0 sm:w-56 sm:flex-none sm:min-w-[14rem]"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -130,7 +141,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           how your business actually runs.
         </p>
 
-        <Section title="1. What you told us">
+        <Section title={`${n()}. What you told us`}>
           <Grid rows={[
             ['Stage', `${stage.title} (${stage.revenue})`],
             ['Kind of business', MODEL_LABEL[businessModel]],
@@ -140,13 +151,13 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           ]} />
         </Section>
 
-        <Section title="2. What we would build">
+        <Section title={`${n()}. What we would build`}>
           <div className="space-y-2.5">
             {layers.map(({ key, title, item }) => (
               <div key={key} className="border border-[#e2e8f0] rounded-lg p-3.5 break-inside-avoid">
-                <div className="flex items-baseline justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-4">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">{title}</div>
-                  <div className="text-[11px] font-mono text-[#475569] whitespace-nowrap">{item.monthlyCostRange}</div>
+                  <div className="text-[11px] font-mono text-[#475569] sm:whitespace-nowrap">{item.monthlyCostRange}</div>
                 </div>
                 <div className="text-sm font-bold text-[#0f172a] mt-0.5">{item.name}</div>
                 <p className="text-xs text-[#475569] mt-1 leading-relaxed">{item.plain ?? item.description}</p>
@@ -158,7 +169,33 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           </p>
         </Section>
 
-        <Section title="3. What it frees up">
+        {blueprint && blueprint.phasedDeployment?.length > 0 && (
+          <Section title={`${n()}. How we would roll it out`}>
+            <p className="text-xs text-[#475569] mb-3 leading-relaxed max-w-[62ch]">{blueprint.summary}</p>
+            <div className="space-y-2.5">
+              {blueprint.phasedDeployment.map((phase, i) => (
+                <div key={i} className="border border-[#e2e8f0] rounded-lg p-3.5 break-inside-avoid">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-4">
+                    <div className="text-sm font-bold text-[#0f172a]">{phase.phase}</div>
+                    <div className="text-[11px] text-[#475569] sm:text-right">{phase.impact}</div>
+                  </div>
+                  <ul className="mt-2 space-y-1">
+                    {phase.actions.map((a, k) => (
+                      <li key={k} className="flex gap-2.5 text-xs text-[#475569] leading-relaxed">
+                        <span className="text-[#2563eb] font-bold shrink-0">·</span><span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-[#475569] mt-3 leading-relaxed">
+              Drafted by Claude from what you described, and reviewed by us before any of it is quoted.
+            </p>
+          </Section>
+        )}
+
+        <Section title={`${n()}. What it frees up`}>
           <Grid rows={[
             ['Time spent on repeat work today', `${r.weeklyRepeatHours.toLocaleString()} hours a week`],
             ['Time the agents would take on', `${r.weeklyHoursFreed.toLocaleString()} hours a week`],
@@ -173,7 +210,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           </p>
         </Section>
 
-        <Section title="4. What it costs, and when it pays for itself">
+        <Section title={`${n()}. What it costs, and when it pays for itself`}>
           <Grid rows={[
             ['Design and build (one-off)', money(roi.buildCost)],
             ['Running it', `${money(roi.monthlyStackCost)} a month · ${money(r.annualStackCost)} a year`],
@@ -186,15 +223,18 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           </p>
         </Section>
 
-        <Section title="5. How it runs, day to day">
+        <Section title={`${n()}. How it runs, day to day`}>
           <ul className="space-y-1.5 text-sm text-[#191c1f]">
-            {[
+            {Array.from(new Set([
+              // What the advisor recommended for this business, first, then the
+              // rules that hold on every build regardless.
+              ...(blueprint?.guardrailRecommendations ?? []).slice(0, 3),
               'Each agent has its own login with the least access it needs — never yours.',
               'Nothing reaches a customer, and no money moves, without a person approving it.',
               'Personal details are masked before any text reaches a model.',
               'Every action and every approval is written to a log that cannot be quietly edited.',
               'Certifications such as SOC 2 or HIPAA belong to your business and your vendors. The stack is built so the evidence those audits ask for already exists.',
-            ].map((line) => (
+            ])).map((line) => (
               <li key={line} className="flex gap-2.5 leading-relaxed">
                 <span className="text-[#2563eb] font-bold shrink-0">·</span>
                 <span>{line}</span>
@@ -203,7 +243,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           </ul>
         </Section>
 
-        <Section title="6. Next step">
+        <Section title={`${n()}. Next step`}>
           <p className="text-sm leading-relaxed max-w-[62ch]">
             A call to walk through how work actually moves through your business. We map that first, then confirm the
             numbers above against what we find, then quote. Nothing is built before you have seen the quote.
@@ -239,9 +279,9 @@ const Grid: React.FC<{ rows: [string, string][]; emphasiseLast?: boolean }> = ({
     {rows.map(([k, v], i) => {
       const strong = emphasiseLast && i === rows.length - 1;
       return (
-        <div key={k} className="flex items-baseline justify-between gap-6 py-2">
+        <div key={k} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-6 py-2">
           <dt className={`text-xs ${strong ? 'font-bold text-[#0f172a]' : 'text-[#475569]'}`}>{k}</dt>
-          <dd className={`font-mono tabular-nums text-right whitespace-nowrap ${strong ? 'text-base font-bold text-[#0f172a]' : 'text-sm text-[#0f172a]'}`}>{v}</dd>
+          <dd className={`font-mono tabular-nums sm:text-right ${strong ? 'text-base font-bold text-[#0f172a]' : 'text-sm text-[#0f172a]'}`}>{v}</dd>
         </div>
       );
     })}

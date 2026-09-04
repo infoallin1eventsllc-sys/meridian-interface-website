@@ -120,7 +120,7 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
         {/* Stage Selector Pills */}
         <div>
           <label className="text-xs font-mono font-semibold text-slate-500 uppercase tracking-wider block mb-2">
-            Company Growth Stage
+            Where the business is now
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {(['seed', 'growth', 'scale', 'enterprise'] as BusinessStage[]).map((st) => {
@@ -155,7 +155,7 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
         {/* Business Model Archetype */}
         <div>
           <label className="text-xs font-mono font-semibold text-slate-500 uppercase tracking-wider block mb-2">
-            Business Model Archetype
+            What kind of business it is
           </label>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
             {businessModelOptions.map((opt) => (
@@ -182,45 +182,45 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
         <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
             <DollarSign className="w-4 h-4 text-emerald-600" />
-            <span>Estimated Monthly Infra</span>
+            <span>Estimated running cost</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-slate-900 font-mono">
             {calculateCostEstimate()}
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5">Tokens, vector DB & orchestration</div>
+          <div className="text-[11px] text-slate-500 mt-0.5">Model usage, memory and orchestration</div>
         </div>
 
         <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
             <Gauge className="w-4 h-4 text-blue-600" />
-            <span>Autonomy Score</span>
+            <span>How much can run unattended</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-blue-700 font-mono">
             {avgReadiness} / 10.0
           </div>
-          <div className="text-[11px] text-emerald-600 mt-0.5">High production readiness</div>
+          <div className="text-[11px] text-emerald-600 mt-0.5">Our judgement for this shape, not a measurement</div>
         </div>
 
         <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
             <Clock className="w-4 h-4 text-indigo-600" />
-            <span>Setup Timeline</span>
+            <span>Typical build time</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-slate-900 font-mono">
             {STAGE_PRESETS[businessStage].implementationTime}
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5">Sprint to initial agent deployment</div>
+          <div className="text-[11px] text-slate-500 mt-0.5">From first meeting to something running</div>
         </div>
 
         <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
             <TrendingUp className="w-4 h-4 text-amber-600" />
-            <span>Human-in-the-Loop Gate</span>
+            <span>Where a person steps in</span>
           </div>
           <div className="text-base sm:text-lg font-bold text-amber-700 font-mono">
-            Active Guard
+            Always on
           </div>
-          <div className="text-[11px] text-slate-500 mt-0.5">Zero unapproved financial actions</div>
+          <div className="text-[11px] text-slate-500 mt-0.5">Money and customer contact wait for you</div>
         </div>
       </div>
 

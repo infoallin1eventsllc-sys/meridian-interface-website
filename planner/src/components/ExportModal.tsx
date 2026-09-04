@@ -65,7 +65,7 @@ Built by ${MERIDIAN.name} — ${MERIDIAN.siteLabel} · ${MERIDIAN.email} · ${ME
 - **Kind of business:** ${MODEL_LABEL[businessModel]}
 - **Estimated running cost:** ${stageInfo.avgMonthlyCost}
 - **Typical build time:** ${stageInfo.implementationTime}
-- **Fit for autonomy (planning score):** ${stageInfo.readinessScore} / 10
+- **How much could run unattended (our judgement, not a measurement):** ${stageInfo.readinessScore} / 10
 
 ---
 
@@ -112,7 +112,7 @@ Figures above are planning estimates, not a quote.
         businessModel,
         estimatedMonthlyCost: stageInfo.avgMonthlyCost,
         typicalBuildTime: stageInfo.implementationTime,
-        autonomyFitScore: stageInfo.readinessScore,
+        unattendedJudgement: `${stageInfo.readinessScore} / 10 (Meridian's judgement, not a measurement)`,
       },
       layers: { foundation: fItem, orchestration: oItem, memory: mItem, toolsProtocol: tItem, governance: gItem },
       governanceDesign: {

@@ -21,9 +21,14 @@ import { MERIDIAN } from '../lib/brand';
 interface AiAdvisorProps {
   /** True when the planner service has a model connected. */
   aiLive: boolean;
+  /** Lifted so the proposal sheet can print the rollout the client just read. */
+  blueprint: AdvisorBlueprint | null;
+  setBlueprint: (b: AdvisorBlueprint | null) => void;
+  /** The company name the plan was written for, for the proposal's header. */
+  onCompanyName: (name: string) => void;
 }
 
-export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive }) => {
+export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlueprint, onCompanyName }) => {
   const [companyName, setCompanyName] = useState<string>('Apex Logistics');
   const [industry, setIndustry] = useState<string>('B2B Freight & Supply Chain SaaS');
   const [stage, setStage] = useState<string>('Growth ($1M - $10M ARR)');
@@ -34,7 +39,6 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive }) => {
   const [targetAutonomyGoal, setTargetAutonomyGoal] = useState<string>('Autonomous department workflows with Human-in-the-Loop oversight on transactions > $200');
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [blueprint, setBlueprint] = useState<AdvisorBlueprint | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -48,6 +52,7 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive }) => {
         companyName, industry, stage, teamSize, monthlyBudget, currentTools, painPoints, targetAutonomyGoal,
       });
       setBlueprint(bp);
+      onCompanyName(companyName.trim());
     } catch (err) {
       setError(err instanceof PlannerError ? err.message : 'Something went wrong. Try again in a moment.');
     } finally {

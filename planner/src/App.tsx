@@ -10,7 +10,7 @@ import { EnterpriseGovernance } from './components/EnterpriseGovernance';
 import { ExportModal } from './components/ExportModal';
 import { ProposalSheet } from './components/ProposalSheet';
 import { BuiltBy } from './components/BuiltBy';
-import { SelectedStack, BusinessStage, BusinessModel } from './types';
+import { SelectedStack, BusinessStage, BusinessModel, AdvisorBlueprint } from './types';
 import { STAGE_PRESETS } from './data/stackComponents';
 import { fetchStatus } from './lib/planner';
 import { RoiInputs, ROI_DEFAULTS } from './lib/roi';
@@ -33,6 +33,9 @@ export default function App() {
   // The ROI inputs live here so the proposal sheet can print the same numbers
   // the client just watched move on the calculator.
   const [roi, setRoi] = useState<RoiInputs>(ROI_DEFAULTS);
+  // The advisor's plan and who it was written for, so the proposal can carry both.
+  const [blueprint, setBlueprint] = useState<AdvisorBlueprint | null>(null);
+  const [companyName, setCompanyName] = useState<string>('');
   const setRoiPart = (patch: Partial<RoiInputs>) => setRoi((prev) => ({ ...prev, ...patch }));
   const [aiLive, setAiLive] = useState<boolean>(false);
 
@@ -86,7 +89,7 @@ export default function App() {
             <motion.div key="enterprise" {...fade}><EnterpriseGovernance onOpenExport={() => setIsExportOpen(true)} /></motion.div>
           )}
           {activeTab === 'advisor' && (
-            <motion.div key="advisor" {...fade}><AiAdvisor aiLive={aiLive} /></motion.div>
+            <motion.div key="advisor" {...fade}><AiAdvisor aiLive={aiLive} blueprint={blueprint} setBlueprint={setBlueprint} onCompanyName={setCompanyName} /></motion.div>
           )}
         </AnimatePresence>
 
@@ -111,6 +114,8 @@ export default function App() {
         businessStage={businessStage}
         businessModel={businessModel}
         roi={roi}
+        blueprint={blueprint}
+        companyName={companyName}
       />
     </div>
   );
