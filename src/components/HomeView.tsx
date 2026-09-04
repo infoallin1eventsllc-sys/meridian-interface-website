@@ -4,6 +4,7 @@ import { SERVICES, PORTFOLIO, HOTLINK_IMAGES } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
 import { ImageWithFallback } from './ImageWithFallback';
+import { StackPlannerFeature } from './StackPlannerFeature';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -26,9 +27,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [quickDate, setQuickDate] = useState('2026-08-05');
   const [quickTime, setQuickTime] = useState('10:00 AM - 11:00 AM EST');
 
+  // The Stack Planner has its own section above this grid, because it is a
+  // finished product and everything in the grid is a concept. Showing it twice
+  // would also put a real 2026 build under a heading that says "concepts".
+  const concepts = PORTFOLIO.filter(item => item.id !== 'p10');
   const filteredPortfolio = selectedCategory === 'all'
-    ? PORTFOLIO
-    : PORTFOLIO.filter(item => item.category === selectedCategory);
+    ? concepts
+    : concepts.filter(item => item.category === selectedCategory);
 
   const handleInlineBook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,6 +174,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
           ))}
         </div>
       </section>
+
+      <StackPlannerFeature onTabChange={onTabChange} />
 
       {/* Portfolio Showcase Grid (Selected Works) */}
       <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto space-y-8">

@@ -142,9 +142,11 @@ export const PORTFOLIO: PortfolioItem[] = [
     title: 'Agentic Tech Stack for Growing Businesses',
     category: 'systems',
     categoryLabel: 'Agentic Systems',
-    client: 'Owner-Operated Business',
-    year: 'Concept',
-    image: '',
+    client: 'Meridian Interface',
+    // Built, running, and used with clients — so it says so, and the picture is
+    // a screenshot of the real thing rather than an empty frame.
+    year: '2026',
+    image: '/images/portfolio/agentic-tech-stack.jpg',
     summary: 'An always-on system a small business owns outright: an enquiry becomes a contact, the agent drafts the follow-up and the week\u2019s posts, a human approves, it publishes and measures, and a summary lands every Monday.',
     highlights: ['Runs without a person watching', 'Nothing sends unapproved', 'One system, no per-seat fees']
   },

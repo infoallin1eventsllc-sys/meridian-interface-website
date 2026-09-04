@@ -29,7 +29,13 @@
     <meta name="theme-color" content="#0f172a" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Favicon & Canonical -->
+    <!-- Favicon & Canonical.
+         The mark alone, not the lockup: the lockup squeezed into a square turns
+         the wordmark to mush at tab size, and meridian-icon-512.png has no
+         transparency so it shows a pale box on a dark home screen. The mark
+         holds down to about 20px on either ground. -->
+    <link rel="icon" type="image/png" href="/brand/meridian-mark.png" />
+    <link rel="apple-touch-icon" href="/brand/meridian-mark.png" />
     <link rel="canonical" href="https://meridianinterface.com/" />
 
     <!-- Fonts are self-hosted (see src/index.css / public/fonts) — no external CDN dependency. -->
