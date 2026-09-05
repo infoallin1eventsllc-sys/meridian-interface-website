@@ -218,7 +218,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     description:
       'A bold homage to the rugged Monterey Peninsula. Features vibrant retro graphic typography, coastal surf breaks, and the silhouette of iconic Monterey Cypress trees framing our legendary sub emblem.',
     image: IMG.merchCypress,
-    badges: ['Full Back Artwork', 'Monterey Cypress & Waves', 'Vintage Cypress Green'],
+    badges: ['Full Back Artwork', 'Monterey Cypress & Waves', 'Vintage Black'],
     specs: {
       label1: 'Print Style',
       val1: 'Zero-Hand Water',
