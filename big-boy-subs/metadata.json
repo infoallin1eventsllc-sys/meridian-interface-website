@@ -1,0 +1,6 @@
+{
+  "name": "Big Boy Subs",
+  "description": "Official application for Big Boy Subs in Monterey, CA — order fresh sliced deli subs, customize with The Works, explore coastal peninsula locations, and shop official merchandise.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

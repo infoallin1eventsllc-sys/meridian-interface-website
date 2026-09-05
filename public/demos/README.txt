@@ -12,6 +12,7 @@ of its own:
   /demos/analytics-hub/  -> Data Analytics Intelligence Hub
   /demos/modern-street/  -> storefront/          (this repo)
   /demos/fog-city/       -> fog-city/            (this repo)
+  /demos/big-boy-subs/   -> big-boy-subs/        (this repo)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
 from, then copy the build here. For the planner, which lives in this repo:
