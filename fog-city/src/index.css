@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-primary: #6F4E37;
+  --color-primary-container: #2C1B10;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #D4A373;
+
+  --color-secondary: #8C7851;
+  --color-secondary-container: #D4A373;
+  --color-on-secondary-container: #2C1B10;
+
+  --color-surface: #FAF7F2;
+  --color-surface-container: #F2EDE4;
+  --color-surface-container-low: #F7F3EC;
+  --color-surface-container-high: #E9E1D6;
+  --color-surface-container-highest: #E5D3C0;
+  --color-surface-container-lowest: #ffffff;
+
+  --color-on-surface: #2C1B10;
+  --color-on-surface-variant: #5C5043;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: #4A3728;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar styling in Natural Tones */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4A373;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8C7851;
+}
+
