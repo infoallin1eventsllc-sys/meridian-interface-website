@@ -260,14 +260,21 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p5',
-    title: 'Artisan Coffee Brand Identity',
+    title: 'Fog City Roasters — Coffee Brand Identity',
     category: 'logo_brand',
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
-    year: 'Concept',
-    image: '/images/work/coffee-identity.jpg',
-    summary: 'Brand-identity concept: organic logo mark, packaging vector graphics, and storefront signage direction.',
-    highlights: ['Custom typography', 'Packaging vectors', 'Brand identity kit']
+    year: '2026',
+    image: '/images/portfolio/fog-city-roasters.jpg',
+    gallery: [
+      { src: '/images/portfolio/fog-city-roasters.jpg', caption: 'The promotional piece — wordmark, packaging line and the city it belongs to' },
+      { src: '/images/portfolio/fog-city-roasters-cafe.jpg', caption: 'In the café, with the single-origin range' },
+      { src: '/images/portfolio/fog-city-roasters-beans.jpg', caption: 'Fresh roast' },
+      { src: '/images/portfolio/fog-city-roasters-latte.jpg', caption: 'The pour' },
+      { src: '/images/portfolio/fog-city-roasters-iced.jpg', caption: 'Signature iced' },
+    ],
+    summary: 'Brand identity for a San Francisco roaster: a gold-on-fog wordmark, a three-roast packaging line — Morning Fog, Sutro Sunset — and promotional photography that puts the bags in the city they are named for.',
+    highlights: ['Custom wordmark', 'Packaging line', 'Promotional photography']
   },
   {
     id: 'p6',
