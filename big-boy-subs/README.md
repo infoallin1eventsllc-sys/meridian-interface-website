@@ -9,5 +9,9 @@ Subs is a fictional restaurant.
 
 The bundle shipped no images: all twenty-two were hotlinked from a temporary AI Studio
 host. They are now Adobe Stock photographs licensed to Meridian, in src/assets/images, with
-small SVGs for the logo and avatar. Type and the Material Symbols icon font are self-hosted;
-the icon font is subset to the names the app uses.
+small SVGs for the logo and avatar. Type and the Material Symbols icon font are self-hosted. Re-subset the icon font with
+
+    python3 tools/subset-icons.py
+
+after adding any icon. Icons are named as ligature text, so one missing from the
+font does not go blank — the browser prints the word on the page.
