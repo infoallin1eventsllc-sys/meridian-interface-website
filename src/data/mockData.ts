@@ -14,17 +14,16 @@ import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types
  */
 export const HOTLINK_IMAGES = {
   globalEarthBg: '/images/hero-earth.jpg',
-  // Rendered mockups, not stock photography of somebody else's laptop. Every
-  // scene is HTML in system/tools/work-scenes, so changing one is a code change
-  // with a diff. Re-render with: node system/tools/render-work-images.mjs
-  webDesign: '/images/work/svc-web.jpg',
-  appDesign: '/images/work/svc-app.jpg',
-  dashboardDesign: '/images/work/svc-dashboard.jpg',
-  // Its own scene rather than reusing the dashboard one: these two cards sit
-  // side by side in the services grid, and twins there read as a mistake.
-  techStack: '/images/work/cloud-platform.jpg',
+  // The service cards show the products Meridian actually built — the same
+  // screenshots the portfolio uses — not concept renders. A service card that
+  // shows a fictional client's dashboard says less than one that shows FinSight.
+  webDesign: '/images/portfolio/modern-street.jpg',
+  appDesign: '/images/portfolio/aurora-banking.jpg',
+  dashboardDesign: '/images/portfolio/finsight-bi.jpg',
+  techStack: '/images/portfolio/agentic-tech-stack.jpg',
+  // No real logo product to show yet, so this one stays a rendered scene.
   logoDesign: '/images/work/svc-logo.jpg',
-  fullPackage: '/images/work/svc-full.jpg',
+  fullPackage: '/images/portfolio/meridian-crm.jpg',
 };
 
 export const SERVICES: ServiceDetail[] = [
