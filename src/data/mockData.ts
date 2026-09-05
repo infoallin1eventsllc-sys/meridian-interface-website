@@ -248,14 +248,21 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p4',
-    title: 'Apparel Design & Brand Studio App',
-    category: 'app_design',
-    categoryLabel: 'App Design',
-    client: 'Apparel / DTC',
-    year: 'Concept',
-    image: '/images/work/apparel-studio.jpg',
-    summary: 'Clothing design app concept: garment canvas with colourways and print specification, alongside the label\u2019s logo, palette and applied brand kit.',
-    highlights: ['Garment spec to factory', 'Logo & brand kit builder', 'Live unit costing']
+    title: 'Big Boy Subs — Restaurant Ordering Site',
+    category: 'web_design',
+    categoryLabel: 'Restaurant Website',
+    client: 'Food & Beverage',
+    year: '2026',
+    demo: '/demos/big-boy-subs/',
+    image: '/images/portfolio/big-boy-subs.jpg',
+    gallery: [
+      { src: '/images/portfolio/big-boy-subs.jpg', caption: 'The ordering home screen — hero sub, the day\'s specials and the seaside patio' },
+      { src: '/images/portfolio/big-boy-subs-menu.jpg', caption: 'The menu, every sub photographed' },
+      { src: '/images/portfolio/big-boy-subs-locations.jpg', caption: 'Locations across the Monterey Peninsula' },
+      { src: '/images/portfolio/big-boy-subs-merch.jpg', caption: 'The merch shop' },
+    ],
+    summary: 'A sandwich shop\'s ordering site for the Monterey Peninsula: a photographed menu with a sub customiser, a bag that remembers the order, catering packages by headcount, three locations with hours, a merch shop and a loyalty card — all working, nothing charged.',
+    highlights: ['Sub customiser and bag', 'Catering by headcount', 'Locations, loyalty and merch']
   },
   {
     id: 'p5',
