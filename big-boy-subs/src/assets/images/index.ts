@@ -1,3 +1,7 @@
+import merchSurf from './merch-surf.jpg';
+import merchPocket from './merch-pocket.jpg';
+import merchCypress from './merch-cypress.jpg';
+import merchHoodie from './merch-hoodie.jpg';
 import logo from './logo.svg';
 import avatar from './avatar.svg';
 import italian from './italian.jpg';
@@ -16,4 +20,4 @@ import tee1 from './tee1.jpg';
 import tee2 from './tee2.jpg';
 import hoodie from './hoodie.jpg';
 
-export const IMG = { logo, avatar, italian, club, veggie, tuna, roastbeef, cheesesteak, buffalo, platter, patio, terrace, loverspoint, carmel, tee1, tee2, hoodie };
+export const IMG = { merchSurf, merchPocket, merchCypress, merchHoodie, logo, avatar, italian, club, veggie, tuna, roastbeef, cheesesteak, buffalo, platter, patio, terrace, loverspoint, carmel, tee1, tee2, hoodie };

@@ -179,8 +179,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     category: 'surf',
     description:
       "Inspired by vintage 1970s California surf culture and sunny afternoons at Lover's Point. Featuring a weathered, sun-drenched print of our giant sandwich crest on sun-faded off-white heavyweight cotton.",
-    image:
-      IMG.tee2,
+    image: IMG.merchSurf,
     badges: ['Distressed Screenprint', '100% Ring-Spun Cotton', 'Washed Cream'],
     specs: {
       label1: 'Weight',
@@ -199,8 +198,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     category: 'minimalist',
     description:
       'An understated streetwear aesthetic crafted for effortless coastal style. Features a 1.75-inch woven embroidery micro patch of the Big Boy Subs emblem nestled on a reinforced left chest pocket.',
-    image:
-      IMG.tee1,
+    image: IMG.merchPocket,
     badges: ['Embroidered Micro Patch', 'Heavyweight Boxy Cut', 'Midnight Slate Navy'],
     specs: {
       label1: 'Weight',
@@ -219,9 +217,8 @@ export const MERCH_ITEMS: MerchItem[] = [
     category: 'graphic',
     description:
       'A bold homage to the rugged Monterey Peninsula. Features vibrant retro graphic typography, coastal surf breaks, and the silhouette of iconic Monterey Cypress trees framing our legendary sub emblem.',
-    image:
-      IMG.tee2,
-    badges: ['Full Back Artwork', 'Monterey Cypress & Waves', 'Vintage Black'],
+    image: IMG.merchCypress,
+    badges: ['Full Back Artwork', 'Monterey Cypress & Waves', 'Vintage Cypress Green'],
     specs: {
       label1: 'Print Style',
       val1: 'Zero-Hand Water',
@@ -239,8 +236,7 @@ export const MERCH_ITEMS: MerchItem[] = [
     category: 'hoodie',
     description:
       'Crafted for chilly Monterey mornings and breezy sunsets at Lovers Point. 450 GSM custom-milled loopback French terry featuring our signature distressed Big Boy Subs circular sandwich emblem.',
-    image:
-      IMG.hoodie,
+    image: IMG.merchHoodie,
     badges: ['Vintage Screenprint', '450 GSM Fleece', 'Pre-Shrunk Fit'],
     specs: {
       label1: 'Fabric',
