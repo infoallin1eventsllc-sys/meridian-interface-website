@@ -3,21 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MODERN_STREET - Curated Streetwear</title>
-    <meta name="description" content="High-contrast minimalist streetwear e-commerce storefront with curated essentials, editorial collections, and interactive cart." />
-    <meta property="og:title" content="MODERN_STREET - Curated Streetwear" />
-    <meta property="og:description" content="High-contrast minimalist streetwear e-commerce storefront with curated essentials, editorial collections, and interactive cart." />
+    <title>MODERN_STREET — Storefront Demonstration by Meridian Interface</title>
+    <meta name="description" content="A working e-commerce storefront — catalogue, product detail, cart, promo codes and checkout — built by Meridian Interface as a demonstration of what a retail client's own store can do." />
+    <meta property="og:title" content="MODERN_STREET — Storefront Demonstration" />
+    <meta property="og:description" content="A working e-commerce storefront built by Meridian Interface. MODERN_STREET is a fictional label used to demonstrate the software." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <!-- The mark, not the lockup: the lockup's wordmark turns to mush at tab size. -->
     <link rel="icon" type="image/png" href="/demos/modern-street/brand/meridian-mark.png" />
     <link rel="apple-touch-icon" href="/demos/modern-street/brand/meridian-mark.png" />
     <!-- Type is served from this app. No font CDN, so it renders the same on a
-         locked-down corporate network as it does at a coffee shop. -->
+         locked-down corporate network as it does on open wifi. -->
     <link rel="stylesheet" href="/demos/modern-street/fonts/fonts.css" />
-  <script type="module" crossorigin src="/demos/modern-street/assets/index-wEqnpyzm.js"></script>
-  <link rel="stylesheet" crossorigin href="/demos/modern-street/assets/index-CQFdw4H3.css">
-
+    <script type="module" crossorigin src="/demos/modern-street/assets/index-DEvM2WGo.js"></script>
+    <link rel="stylesheet" crossorigin href="/demos/modern-street/assets/index-BOz4dhSp.css">
+  
 <style id="meridian-demo-bar-style">
   :root { --meridian-bar: 46px; }
   body { padding-top: var(--meridian-bar) !important; }
@@ -28,6 +27,11 @@
   /* An app's own sticky header pins to the top of the viewport, which is now
      behind this bar. Push it down so both are readable. */
   .sticky.top-0 { top: var(--meridian-bar) !important; }
+  /* Same problem for a fixed header (the storefront uses one): it ignores the
+     body padding above and pins under the bar, hiding its own logo and nav.
+     Targets the literal top-0 class, so full-screen inset-0 modal overlays,
+     which must keep covering the whole viewport, are left alone. */
+  .fixed.top-0 { top: var(--meridian-bar) !important; }
   #meridian-demo-bar {
     position: fixed; top: 0; left: 0; right: 0; height: var(--meridian-bar); z-index: 2147483000;
     display: flex; align-items: center; gap: 14px; padding: 0 16px;
@@ -65,4 +69,3 @@
     <div id="root"></div>
   </body>
 </html>
-

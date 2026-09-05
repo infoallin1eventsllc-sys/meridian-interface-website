@@ -39,6 +39,11 @@ const styles = `
   /* An app's own sticky header pins to the top of the viewport, which is now
      behind this bar. Push it down so both are readable. */
   .sticky.top-0 { top: var(--meridian-bar) !important; }
+  /* Same problem for a fixed header (the storefront uses one): it ignores the
+     body padding above and pins under the bar, hiding its own logo and nav.
+     Targets the literal top-0 class, so full-screen inset-0 modal overlays,
+     which must keep covering the whole viewport, are left alone. */
+  .fixed.top-0 { top: var(--meridian-bar) !important; }
   #meridian-demo-bar {
     position: fixed; top: 0; left: 0; right: 0; height: var(--meridian-bar); z-index: 2147483000;
     display: flex; align-items: center; gap: 14px; padding: 0 16px;
@@ -74,16 +79,39 @@ const bar = (slug) => `
   <a class="mb-home" href="/">meridianinterface.com &rarr;</a>
 </div>`;
 
-let done = 0;
+/**
+ * Remove a previously stamped bar so it can be replaced with the current one.
+ *
+ * Both patterns are anchored to the bar's own markup and end at its own closing
+ * tag — the style block at </style>, the bar at the </a></div> that only the
+ * bar has. An earlier attempt matched the bar's opening div and then any later
+ * </div>, which quietly ate the app's own <div id="root"> and left every demo
+ * a blank page. Do not loosen these.
+ */
+const unstamp = (html) => html
+  .replace(/\n?<style id="meridian-demo-bar-style">[\s\S]*?<\/style>/, '')
+  .replace(/\n?<div id="meridian-demo-bar">[\s\S]*?<\/a>\s*<\/div>/, '');
+
+let done = 0, updated = 0;
 for (const slug of readdirSync(DEMOS)) {
   const file = join(DEMOS, slug, 'index.html');
   if (!existsSync(file)) continue;
-  let html = readFileSync(file, 'utf8');
-  if (html.includes('meridian-demo-bar')) { console.log(`${slug}: already stamped`); continue; }
+  const before = readFileSync(file, 'utf8');
+  const had = before.includes('meridian-demo-bar');
+  let html = unstamp(before);
+
+  if (!html.includes('id="root"')) {
+    console.error(`${slug}: ABORTED — stripping the old bar would have removed the app root`);
+    process.exitCode = 1;
+    continue;
+  }
+
   html = html.replace('</head>', `${styles}\n</head>`);
   html = html.replace(/(<body[^>]*>)/, `$1${bar(slug)}`);
+
+  if (html === before) { console.log(`${slug}: unchanged`); continue; }
   writeFileSync(file, html);
-  console.log(`${slug}: stamped`);
-  done += 1;
+  console.log(`${slug}: ${had ? 'bar updated' : 'stamped'}`);
+  had ? updated++ : done++;
 }
-console.log(`${done} demo(s) stamped`);
+console.log(`${done} stamped, ${updated} updated`);
