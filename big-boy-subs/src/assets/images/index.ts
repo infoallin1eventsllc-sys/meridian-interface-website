@@ -2,7 +2,7 @@ import merchSurf from './merch-surf.jpg';
 import merchPocket from './merch-pocket.jpg';
 import merchCypress from './merch-cypress.jpg';
 import merchHoodie from './merch-hoodie.jpg';
-import logo from './logo.svg';
+import logo from './logo.png';
 import avatar from './avatar.svg';
 import italian from './italian.jpg';
 import club from './club.jpg';
