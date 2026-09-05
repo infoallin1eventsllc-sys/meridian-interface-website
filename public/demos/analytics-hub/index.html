@@ -18,6 +18,8 @@
   <script type="module" crossorigin src="/demos/analytics-hub/assets/index-DMzmv3zL.js"></script>
   <link rel="stylesheet" crossorigin href="/demos/analytics-hub/assets/index-PXC-wGkL.css">
 
+
+
 <style id="meridian-demo-bar-style">
   :root { --meridian-bar: 46px; }
   body { padding-top: var(--meridian-bar) !important; }
@@ -28,6 +30,11 @@
   /* An app's own sticky header pins to the top of the viewport, which is now
      behind this bar. Push it down so both are readable. */
   .sticky.top-0 { top: var(--meridian-bar) !important; }
+  /* Same problem for a fixed header (the storefront uses one): it ignores the
+     body padding above and pins under the bar, hiding its own logo and nav.
+     Targets the literal top-0 class, so full-screen inset-0 modal overlays,
+     which must keep covering the whole viewport, are left alone. */
+  .fixed.top-0 { top: var(--meridian-bar) !important; }
   #meridian-demo-bar {
     position: fixed; top: 0; left: 0; right: 0; height: var(--meridian-bar); z-index: 2147483000;
     display: flex; align-items: center; gap: 14px; padding: 0 16px;

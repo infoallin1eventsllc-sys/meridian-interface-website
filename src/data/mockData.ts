@@ -271,11 +271,13 @@ export const PORTFOLIO: PortfolioItem[] = [
     client: 'Retail / DTC',
     year: '2026',
     demo: '/demos/modern-street/',
-    // One picture for now: the storefront's product photographs are hotlinked
-    // from Google's image host, which the screenshot sandbox could not reach,
-    // so the inner screens came out with empty frames. Reshoot them from a
-    // normal browser and add a gallery like the others.
     image: '/images/portfolio/modern-street.jpg',
+    gallery: [
+      { src: '/images/portfolio/modern-street.jpg', caption: 'The catalogue — every garment photographed on the same ground' },
+      { src: '/images/portfolio/modern-street-product.jpg', caption: 'A product, with a second view, colourway and size' },
+      { src: '/images/portfolio/modern-street-cart.jpg', caption: 'The bag, with quantities and a promo code' },
+      { src: '/images/portfolio/modern-street-checkout.jpg', caption: 'Checkout — a demonstration, so no card is asked for and nothing is charged' },
+    ],
     summary: 'A high-contrast streetwear storefront with an editorial feel: curated essentials, seasonal collections, a product page with colour and size, a cart that remembers what was chosen, and a checkout that gets out of the way.',
     highlights: ['Editorial layout and type', 'Colour and size variants', 'Cart to checkout in three steps']
   }

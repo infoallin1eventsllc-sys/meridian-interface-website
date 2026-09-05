@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --color-editorial-bg: #F9F7F2;
+  --color-editorial-card: #ffffff;
+  --color-editorial-container: #ECE8E1;
+  --color-editorial-muted: #DED9D0;
+  --color-editorial-stone: #B5B0A8;
+  --color-editorial-dark: #1A1A1A;
+  --color-editorial-border: rgba(26, 26, 26, 0.1);
+
+  --color-brand-primary: #1A1A1A;
+  --color-brand-charcoal: #1A1A1A;
+  --color-brand-blue: #1A1A1A;
+  --color-brand-blue-hover: #333333;
+  --color-surface-bg: #F9F7F2;
+  --color-surface-card: #ffffff;
+  --color-surface-container: #ECE8E1;
+  --color-surface-low: #F3EFEA;
+  --color-surface-high: #DED9D0;
+  --color-border-outline: rgba(26, 26, 26, 0.15);
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #F9F7F2;
+  color: #1A1A1A;
+}
+
+h1, h2, h3, .font-serif, .font-display, .font-heading {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+.editorial-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.editorial-card-hover:hover {
+  border-color: rgba(26, 26, 26, 0.4);
+  box-shadow: 0px 16px 36px rgba(26, 26, 26, 0.08);
+}
+
