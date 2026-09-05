@@ -11,6 +11,7 @@ of its own:
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
   /demos/analytics-hub/  -> Data Analytics Intelligence Hub
   /demos/modern-street/  -> storefront/          (this repo)
+  /demos/fog-city/       -> fog-city/            (this repo)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
 from, then copy the build here. For the planner, which lives in this repo:

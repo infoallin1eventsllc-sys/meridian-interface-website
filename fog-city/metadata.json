@@ -1,0 +1,6 @@
+{
+  "name": "Fog City Roasters",
+  "description": "Promotional website for Fog City Roasters, San Francisco's historic specialty coffee roasters established in 1984, featuring artisan roasts, café menu, origin stories, and tasting room bookings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

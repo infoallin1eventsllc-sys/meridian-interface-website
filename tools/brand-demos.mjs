@@ -26,6 +26,7 @@ const LABEL = {
   'meridian-crm': 'Meridian CRM — operations hub',
   'analytics-hub': 'Analytics Intelligence Hub — BI dashboard',
   'modern-street': 'MODERN_STREET — streetwear storefront',
+  'fog-city': 'Fog City Roasters — coffee brand site',
 };
 
 const styles = `

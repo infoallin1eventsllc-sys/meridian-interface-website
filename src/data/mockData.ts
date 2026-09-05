@@ -264,6 +264,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
     year: '2026',
+    demo: '/demos/fog-city/',
     image: '/images/portfolio/fog-city-roasters.jpg',
     gallery: [
       { src: '/images/portfolio/fog-city-roasters.jpg', caption: 'The promotional piece — wordmark, packaging line and the city it belongs to' },

@@ -9,8 +9,6 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "strict": true,
-    "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "isolatedModules": true,
@@ -24,12 +22,5 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "planner",
-    "storefront",
-    "fog-city"
-  ]
+  }
 }
