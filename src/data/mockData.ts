@@ -14,11 +14,17 @@ import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types
  */
 export const HOTLINK_IMAGES = {
   globalEarthBg: '/images/hero-earth.jpg',
-  webDesign: '',
-  appDesign: '',
-  dashboardDesign: '',
-  logoDesign: '',
-  fullPackage: '',
+  // Rendered mockups, not stock photography of somebody else's laptop. Every
+  // scene is HTML in system/tools/work-scenes, so changing one is a code change
+  // with a diff. Re-render with: node system/tools/render-work-images.mjs
+  webDesign: '/images/work/svc-web.jpg',
+  appDesign: '/images/work/svc-app.jpg',
+  dashboardDesign: '/images/work/svc-dashboard.jpg',
+  // Its own scene rather than reusing the dashboard one: these two cards sit
+  // side by side in the services grid, and twins there read as a mistake.
+  techStack: '/images/work/cloud-platform.jpg',
+  logoDesign: '/images/work/svc-logo.jpg',
+  fullPackage: '/images/work/svc-full.jpg',
 };
 
 export const SERVICES: ServiceDetail[] = [
@@ -88,7 +94,7 @@ export const SERVICES: ServiceDetail[] = [
       'One dashboard for the numbers you check daily',
       'Written down, so the next person you hire can follow it'
     ],
-    image: HOTLINK_IMAGES.dashboardDesign
+    image: HOTLINK_IMAGES.techStack
   },
   {
     id: 'logo_brand',
@@ -248,7 +254,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'App Design',
     client: 'Apparel / DTC',
     year: 'Concept',
-    image: '',
+    image: '/images/work/apparel-studio.jpg',
     summary: 'Clothing design app concept: garment canvas with colourways and print specification, alongside the label\u2019s logo, palette and applied brand kit.',
     highlights: ['Garment spec to factory', 'Logo & brand kit builder', 'Live unit costing']
   },
@@ -259,7 +265,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
     year: 'Concept',
-    image: '',
+    image: '/images/work/coffee-identity.jpg',
     summary: 'Brand-identity concept: organic logo mark, packaging vector graphics, and storefront signage direction.',
     highlights: ['Custom typography', 'Packaging vectors', 'Brand identity kit']
   },
