@@ -6,6 +6,7 @@ import { HeroBackdrop } from './HeroBackdrop';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
 import { Lightbox, type LightboxItem } from './Lightbox';
+import { StudioReelCard } from './StudioReelCard';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -192,6 +193,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             </div>
           ))}
+
+          {/* Six services leave two empty cells on a large screen. The reel
+              closes the row, and says in half a minute what the cards above
+              describe in words. */}
+          <StudioReelCard onTabChange={onTabChange} />
         </div>
       </section>
 
