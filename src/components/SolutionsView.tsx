@@ -12,6 +12,7 @@ const plannerLink = PLANNER_URL
   ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=services&utm_campaign=stack-planner`
   : '';
 import { ImageWithFallback } from './ImageWithFallback';
+import { Showreel } from './Showreel';
 import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
@@ -193,7 +194,9 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           for approval" are control-panel language, and a control panel on a
           sales page tells a client the studio is busy with its own machinery.
           It lives in the owner portal's Tech Stack tab now, for a screen-share
-          when he wants it. */}
+          when he wants it. The showreel makes the same point the other way
+          round: it shows the work instead of the machinery. */}
+      <Showreel />
     </main>
   );
 };
