@@ -75,6 +75,9 @@ export interface PortfolioItem {
   gallery?: { src: string; caption: string }[];
   /** A working copy a visitor can click through, served from this site. */
   demo?: string;
+  /** A film of the work. When set, the detail panel plays this instead of
+      showing the still — see components/ReelPlayer.tsx and lib/reel.ts. */
+  video?: string;
   summary: string;
   highlights: string[];
 }

@@ -4,6 +4,7 @@ import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
 import { Lightbox, type LightboxItem } from './Lightbox';
+import { ReelPlayer } from './ReelPlayer';
 
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
@@ -144,29 +145,36 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                 {activeItem.title}
               </h2>
 
-              <div
-                {...(resolveImage(activeItem.id, activeItem.image)
-                  ? {
-                      role: 'button' as const,
-                      tabIndex: 0,
-                      'aria-label': `View ${activeItem.title} full screen`,
-                      onClick: () => setZoomed(0),
-                      onKeyDown: (e: React.KeyboardEvent) => {
-                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(0); }
-                      },
-                      className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
-                    }
-                  : { className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900' })}
-              >
-                <ImageWithFallback
-                  frame
-                  src={resolveImage(activeItem.id, activeItem.image)}
-                  alt={activeItem.title}
-                  icon="palette"
-                  label={activeItem.categoryLabel}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {/* A piece with a film plays it here. Moving work makes its own
+                  case better than a screenshot of it does, and the still is
+                  still reachable through the grid behind this panel. */}
+              {activeItem.video ? (
+                <ReelPlayer src={activeItem.video} label={`Watch ${activeItem.title}`} />
+              ) : (
+                <div
+                  {...(resolveImage(activeItem.id, activeItem.image)
+                    ? {
+                        role: 'button' as const,
+                        tabIndex: 0,
+                        'aria-label': `View ${activeItem.title} full screen`,
+                        onClick: () => setZoomed(0),
+                        onKeyDown: (e: React.KeyboardEvent) => {
+                          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(0); }
+                        },
+                        className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
+                      }
+                    : { className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900' })}
+                >
+                  <ImageWithFallback
+                    frame
+                    src={resolveImage(activeItem.id, activeItem.image)}
+                    alt={activeItem.title}
+                    icon="palette"
+                    label={activeItem.categoryLabel}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
               {activeItem.demo && (
                 <a

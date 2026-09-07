@@ -1,4 +1,5 @@
 import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types';
+import { REEL } from '../lib/reel';
 
 /*
  * Images the app reaches for by name.
@@ -153,6 +154,10 @@ export const PORTFOLIO: PortfolioItem[] = [
     year: '2026',
     demo: '/demos/stack-planner/',
     image: '/images/portfolio/agentic-tech-stack.jpg',
+    // The reel plays here rather than the still: this entry is the one place
+    // on the site where a visitor is already asking what the stack actually
+    // does, and the film answers it in forty-seven seconds.
+    video: REEL.landscape,
     summary: 'An always-on system a small business owns outright: an enquiry becomes a contact, the agent drafts the follow-up and the week\u2019s posts, a human approves, it publishes and measures, and a summary lands every Monday.',
     highlights: ['Runs without a person watching', 'Nothing sends unapproved', 'One system, no per-seat fees']
   },
