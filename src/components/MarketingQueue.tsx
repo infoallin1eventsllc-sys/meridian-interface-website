@@ -117,12 +117,14 @@ const ScriptSheet: React.FC<{ item: ContentItem; current?: number; onJump?: (i: 
   const s = item.meta?.script;
   const v = item.meta?.video;
   if (item.kind !== 'video' || !s) return null;
+  // Same rule as the player: the cost line is only in older drafts, and a
+  // script without one gets no line rather than an empty row.
   const lines: Array<{ text: string; strong?: boolean }> = [
     { text: s.hook, strong: true },
-    ...s.beats.map((b) => ({ text: b })),
-    { text: s.price_line, strong: true },
+    ...(s.beats ?? []).map((b) => ({ text: b })),
+    ...(s.price_line ? [{ text: s.price_line, strong: true }] : []),
     { text: s.cta },
-  ];
+  ].filter((l) => typeof l.text === 'string' && l.text.length > 0);
   const Line: React.FC<{ i: number; text: string; strong?: boolean }> = ({ i, text, strong }) => (
     <li>
       <button

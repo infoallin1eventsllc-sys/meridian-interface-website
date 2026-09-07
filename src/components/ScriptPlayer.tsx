@@ -22,15 +22,23 @@ const BRAND = { paper: '#F5F4EF', ink: '#23262B', slate: '#3E4C63', steel: '#4F6
 type Scene = { kicker: string; accent?: boolean; text: string };
 
 export function scenesFor(s: VideoScript): Scene[] {
+  // The cost screen only exists for drafts written before the owner's rule of
+  // Sep 7. Newer scripts have no price_line, and this used to hand `undefined`
+  // to sizeFor(), whose text.length threw and blanked the whole portal tab.
+  // Absent price line, absent screen - which is also what the renderer does.
   return [
     { kicker: '', accent: true, text: s.hook },
-    ...s.beats.slice(0, 3).map((b, i) => ({ kicker: `${i + 1} of 3`, text: b })),
-    { kicker: 'What it costs', accent: true, text: s.price_line },
+    ...(s.beats ?? []).slice(0, 3).map((b, i) => ({ kicker: `${i + 1} of 3`, text: b })),
+    ...(s.price_line ? [{ kicker: 'What it costs', accent: true, text: s.price_line }] : []),
     { kicker: 'Next step', text: s.cta },
-  ];
+  ].filter((scene) => typeof scene.text === 'string' && scene.text.length > 0);
 }
 
-const sizeFor = (text: string) => (text.length > 60 ? '6.7cqw' : text.length > 36 ? '8.1cqw' : '9.6cqw');
+// Defensive on purpose: a missing line should cost a screen, never the page.
+const sizeFor = (text: string) => {
+  const n = (text ?? '').length;
+  return n > 60 ? '6.7cqw' : n > 36 ? '8.1cqw' : '9.6cqw';
+};
 
 export const ScriptPlayer: React.FC<{
   script: VideoScript;

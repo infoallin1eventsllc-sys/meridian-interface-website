@@ -17,6 +17,7 @@ import {
 
 import { INITIAL_OWNER_INVOICES } from '../data/mockData';
 import { OwnerPhotoControl } from './OwnerPhotoControl';
+import { ErrorBoundary } from './ErrorBoundary';
 import {
   backendConfigured,
   deleteInvoice as deleteInvoiceRemote,
@@ -759,7 +760,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
       {portalTab === 'links' && <CampaignLinks />}
 
-      {portalTab === 'marketing' && <MarketingQueue />}
+      {portalTab === 'marketing' && (
+        <ErrorBoundary label="Marketing">
+          <MarketingQueue />
+        </ErrorBoundary>
+      )}
       {portalTab === 'health' && <SystemHealth />}
       {portalTab === 'stack' && <TechStack />}
 

@@ -18,7 +18,10 @@ const OWNER_ENDPOINT: string =
 export interface VideoScript {
   hook: string;
   beats: string[];
-  price_line: string;
+  /** Older drafts only. A video never shows what anything costs (owner rule,
+      Sep 7), so scripts written since carry no price line at all. Anything
+      reading this must cope with it being absent. */
+  price_line?: string;
   cta: string;
   caption: string;
   hashtags: string[];
