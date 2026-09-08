@@ -9,6 +9,7 @@ import { ImpactView } from './components/ImpactView';
 import { ConnectView } from './components/ConnectView';
 import { DashboardView } from './components/DashboardView';
 import { OwnerInvoiceView } from './components/OwnerInvoiceView';
+import { LegalView } from './components/LegalView';
 import { Modals } from './components/Modals';
 import { MotionProvider } from './components/MotionProvider';
 
@@ -37,6 +38,14 @@ export default function App() {
   // only reads storage on mount, and a client who just booked sees a stale list
   // and reasonably concludes the booking failed.
   const [bookingVersion, setBookingVersion] = useState(0);
+  // Which legal document the footer asked for. Both live on one page; this
+  // only decides which heading it opens at.
+  const [legalDoc, setLegalDoc] = useState<'privacy' | 'terms'>('privacy');
+
+  const handleOpenLegal = (doc: 'privacy' | 'terms') => {
+    setLegalDoc(doc);
+    handleTabChange('legal');
+  };
 
   const handleAppointmentCreated = (_appointment: Appointment) => {
     // Deliberately does not log the appointment: it carries personal data
@@ -98,12 +107,15 @@ export default function App() {
         {currentTab === 'owner_invoice' && (
           <OwnerInvoiceView onTabChange={handleTabChange} />
         )}
+
+        {currentTab === 'legal' && <LegalView doc={legalDoc} />}
       </div>
 
       {/* Footer */}
       <Footer
         onTabChange={handleTabChange}
         onOpenBookModal={() => setIsBookModalOpen(true)}
+        onOpenLegal={handleOpenLegal}
       />
 
       {/* Floating Bottom Navigation Bar for Mobile */}

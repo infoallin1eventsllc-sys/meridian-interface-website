@@ -1,4 +1,4 @@
-export type TabType = 'home' | 'services' | 'portfolio' | 'booking' | 'appointments' | 'owner_invoice';
+export type TabType = 'home' | 'services' | 'portfolio' | 'booking' | 'appointments' | 'owner_invoice' | 'legal';
 
 export type ServiceCategory = 'web_design' | 'app_design' | 'dashboards' | 'logo_brand' | 'systems' | 'tech_stack' | 'full_package';
 

@@ -6,9 +6,11 @@ import { BuiltBy } from './BuiltBy';
 interface FooterProps {
   onTabChange: (tab: TabType) => void;
   onOpenBookModal: () => void;
+  /** Opens the legal page at one of its two documents. */
+  onOpenLegal: (doc: 'privacy' | 'terms') => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) => {
+export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, onOpenLegal }) => {
   // The studio login is always reachable. An earlier version hid it whenever no
   // passcode was configured, on the theory that a gate nobody can pass should
   // not be advertised — but the effect was that the owner shipped the site and
@@ -57,6 +59,15 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal }) 
           </button>
           <button onClick={() => onTabChange('appointments')} className="hover:text-white transition-colors">
             Client Portal
+          </button>
+          {/* A visitor hands over a name, an email and a phone number on the
+              booking form. Where that goes has to be reachable from every page,
+              not buried. */}
+          <button onClick={() => onOpenLegal('privacy')} className="hover:text-white transition-colors">
+            Privacy
+          </button>
+          <button onClick={() => onOpenLegal('terms')} className="hover:text-white transition-colors">
+            Terms
           </button>
         </nav>
 
