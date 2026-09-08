@@ -10,10 +10,17 @@ import { ConnectView } from './components/ConnectView';
 import { DashboardView } from './components/DashboardView';
 import { OwnerInvoiceView } from './components/OwnerInvoiceView';
 import { LegalView } from './components/LegalView';
+import { UnsubscribeView } from './components/UnsubscribeView';
 import { Modals } from './components/Modals';
 import { MotionProvider } from './components/MotionProvider';
 
 export default function App() {
+  // An unsubscribe link must work for someone who has never seen this site and
+  // does not want to. It is not a tab: no header, no nav, no booking prompt —
+  // it does the one thing they asked for and gets out of the way.
+  const isUnsubscribe = typeof window !== 'undefined' &&
+    window.location.pathname.replace(/\/+$/, '') === '/unsubscribe';
+
   const [currentTab, setCurrentTab] = useState<TabType>('home');
   const [preselectedService, setPreselectedService] = useState<ServiceCategory>('web_design');
 
@@ -52,6 +59,16 @@ export default function App() {
     // (name, email, phone) that must not be written to the browser console.
     setBookingVersion((v) => v + 1);
   };
+
+  if (isUnsubscribe) {
+    return (
+      <MotionProvider>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-body">
+          <UnsubscribeView />
+        </div>
+      </MotionProvider>
+    );
+  }
 
   return (
     <MotionProvider>
