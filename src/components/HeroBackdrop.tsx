@@ -76,22 +76,30 @@ function buildLattice() {
   const nodes: LatticeNode[] = [];
   const whiskers: Whisker[] = [];
 
-  const RINGS = [-72, -58, -44, -30, -16, 0, 16, 30, 44, 58];
-  const MERIDIANS = 18;
+  /* Density, chosen 9 Sep after comparing four geometries side by side.
+     Sixteen rings and thirty meridians against the previous ten and eighteen,
+     with longer unbroken runs, so the sphere carries more structure.
+
+     The rings are generated rather than listed: the old hand-written array ran
+     -72 to +58, which is not symmetric, so the lattice sat slightly low without
+     anyone deciding it should. */
+  const RING_COUNT = 16;
+  const RINGS = Array.from({ length: RING_COUNT }, (_, i) => -76 + (152 * i) / (RING_COUNT - 1));
+  const MERIDIANS = 30;
   const D2R = Math.PI / 180;
 
   RINGS.forEach((deg, ri) => {
     const lat = deg * D2R;
-    const steps = 92;
+    const steps = 128;
     let on = rand() > 0.4;
-    let run = 2 + Math.floor(rand() * 7);
+    let run = 2 + Math.floor(rand() * 11);
     for (let s = 0; s < steps; s++) {
       const lon1 = (s / steps) * Math.PI * 2;
       const lon2 = ((s + 1) / steps) * Math.PI * 2;
       const d = density(lat, lon1);
       if (run-- <= 0) {
-        on = rand() < 0.35 + d * 0.5;
-        run = on ? 2 + Math.floor(rand() * 9) : 1 + Math.floor(rand() * 6);
+        on = rand() < 0.5 + d * 0.5;
+        run = on ? 2 + Math.floor(rand() * 11) : 1 + Math.floor(rand() * 6);
       }
       if (!on) continue;
       const heavy = rand() < d * 0.08;
@@ -109,7 +117,7 @@ function buildLattice() {
 
   for (let m = 0; m < MERIDIANS; m++) {
     const lon = (m / MERIDIANS) * Math.PI * 2;
-    const steps = 64;
+    const steps = 90;
     let on = rand() > 0.35;
     let run = 3 + Math.floor(rand() * 6);
     for (let s = 0; s < steps; s++) {
@@ -117,7 +125,7 @@ function buildLattice() {
       const lat2 = -Math.PI / 2 + ((s + 1) / steps) * Math.PI;
       const d = density(lat1, lon);
       if (run-- <= 0) {
-        on = rand() < 0.4 + d * 0.45;
+        on = rand() < 0.55 + d * 0.45;
         run = on ? 3 + Math.floor(rand() * 8) : 2 + Math.floor(rand() * 7);
       }
       if (!on) continue;
@@ -164,6 +172,26 @@ export const HeroBackdrop: React.FC = () => {
 
     const { segments, nodes, whiskers } = buildLattice();
 
+    /* The hairlines are batched by depth; the heavy strokes and accents are
+       drawn one at a time on top. Splitting them here means the draw loop is
+       not re-testing every segment's weight on every frame. */
+    const fine = segments.filter((s) => s.w <= 1.4 && !s.accent);
+    const bold = segments.filter((s) => s.w > 1.4 || s.accent);
+
+    /* Scratch for one frame of hairlines, allocated once so no frame has to ask
+       for memory. Each fine segment is projected a single time per frame and
+       its two endpoints parked here; the depth buckets then read these numbers.
+       Before this, the bucket loop ran the projection over the whole lattice
+       once per bucket — five times the trigonometry for one frame's worth of
+       lines, which is what the denser geometry could no longer afford. */
+    const BUCKETS = 5;
+    const fx1 = new Float64Array(fine.length);
+    const fy1 = new Float64Array(fine.length);
+    const fx2 = new Float64Array(fine.length);
+    const fy2 = new Float64Array(fine.length);
+    const bucketIdx = Array.from({ length: BUCKETS }, () => new Int32Array(fine.length));
+    const bucketLen = new Int32Array(BUCKETS);
+
     let W = 0, H = 0, cx = 0, cy = 0, R = 0;
     let yaw = 0, T = 0, amp = 0, reveal = 0;
     let pointerX = -9999, pointerY = -9999, pointerLive = false;
@@ -184,7 +212,15 @@ export const HeroBackdrop: React.FC = () => {
       scratch.lon = lon + amp * 0.09 * facing * Math.cos(T * 0.62);
     }
 
-    function project(lat: number, lon: number, k?: number) {
+    interface Pt { x: number; y: number; z: number }
+    const scratchA: Pt = { x: 0, y: 0, z: 0 };
+    const scratchB: Pt = { x: 0, y: 0, z: 0 };
+
+    /* Writes into a point the caller owns. The hot loop hands in one of the two
+       scratch points above rather than allocating a few thousand short-lived
+       objects every frame; `project` below is the same maths for the call sites
+       where one more object costs nothing. */
+    function projectInto(out: Pt, lat: number, lon: number, k?: number) {
       deform(lon);
       const a = scratch.lon + yaw;
       const x = Math.cos(lat) * Math.sin(a);
@@ -209,8 +245,14 @@ export const HeroBackdrop: React.FC = () => {
           py += dy * pull;
         }
       }
-      return { x: px, y: py, z: z2 };
+      out.x = px;
+      out.y = py;
+      out.z = z2;
+      return out;
     }
+
+    const project = (lat: number, lon: number, k?: number): Pt =>
+      projectInto({ x: 0, y: 0, z: 0 }, lat, lon, k);
 
     const alphaFor = (z: number, base: number) => {
       const depth = (z + 1) / 2;
@@ -258,29 +300,39 @@ export const HeroBackdrop: React.FC = () => {
 
       /* Fine lines are batched into five depth buckets: one path and one stroke
          per bucket rather than per segment, which is what keeps a few thousand
-         dashes affordable every frame. */
-      const BUCKETS = 5;
+         dashes affordable every frame.
+
+         Project once, then sort into buckets by the depth of the midpoint — the
+         same test as before, written as an index rather than a range scan, so a
+         segment's position is worked out once instead of being recomputed for
+         every bucket it does not belong to. */
+      bucketLen.fill(0);
+      for (let i = 0; i < fine.length; i++) {
+        const s = fine[i];
+        if (fade(s.order) <= 0) continue;
+        const p1 = projectInto(scratchA, s.lat1, s.lon1);
+        const p2 = projectInto(scratchB, s.lat2, s.lon2);
+        const b = Math.floor(((((p1.z + p2.z) / 2) + 1) / 2) * BUCKETS);
+        if (b < 0 || b >= BUCKETS) continue;
+        fx1[i] = p1.x; fy1[i] = p1.y;
+        fx2[i] = p2.x; fy2[i] = p2.y;
+        bucketIdx[b][bucketLen[b]++] = i;
+      }
+
       for (let b = 0; b < BUCKETS; b++) {
-        const lo = -1 + (b / BUCKETS) * 2;
-        const hi = -1 + ((b + 1) / BUCKETS) * 2;
-        const mid = (lo + hi) / 2;
+        if (!bucketLen[b]) continue;
+        const mid = -1 + ((b + 0.5) / BUCKETS) * 2;
         const aInk = alphaFor(mid, 0.46);
         if (aInk < 0.012) continue;
 
+        const idx = bucketIdx[b];
+        const n = bucketLen[b];
         c.beginPath();
-        let drew = false;
-        for (const s of segments) {
-          if (s.w > 1.4 || s.accent) continue;
-          if (fade(s.order) <= 0) continue;
-          const p1 = project(s.lat1, s.lon1);
-          const p2 = project(s.lat2, s.lon2);
-          const z = (p1.z + p2.z) / 2;
-          if (z < lo || z >= hi) continue;
-          c.moveTo(p1.x, p1.y);
-          c.lineTo(p2.x, p2.y);
-          drew = true;
+        for (let j = 0; j < n; j++) {
+          const i = idx[j];
+          c.moveTo(fx1[i], fy1[i]);
+          c.lineTo(fx2[i], fy2[i]);
         }
-        if (!drew) continue;
         c.strokeStyle = `rgba(${LINE},${(aInk * Math.min(1, reveal * 1.4)).toFixed(3)})`;
         c.lineWidth = 0.55 + ((mid + 1) / 2) * 0.5;
         c.stroke();
@@ -304,8 +356,7 @@ export const HeroBackdrop: React.FC = () => {
         c.stroke();
       }
 
-      for (const sg of segments) {
-        if (sg.w <= 1.4 && !sg.accent) continue;
+      for (const sg of bold) {
         const f = fade(sg.order);
         if (f <= 0) continue;
         const q1 = project(sg.lat1, sg.lon1);
