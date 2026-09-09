@@ -12,7 +12,6 @@ const plannerLink = PLANNER_URL
   ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=services&utm_campaign=stack-planner`
   : '';
 import { ImageWithFallback } from './ImageWithFallback';
-import { Showreel } from './Showreel';
 import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
@@ -189,14 +188,15 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         </motion.div>
       </section>
 
-      {/* The loop simulator used to sit here as proof the Tech Stack service
-          does what it says. Otis's read, Sep 3: clocks, queues and "waiting
-          for approval" are control-panel language, and a control panel on a
-          sales page tells a client the studio is busy with its own machinery.
-          It lives in the owner portal's Tech Stack tab now, for a screen-share
-          when he wants it. The showreel makes the same point the other way
-          round: it shows the work instead of the machinery. */}
-      <Showreel />
+      {/* Two things have stood in this slot and both have been taken out.
+          First the loop simulator, on Otis's read of Sep 3 that a control panel
+          on a sales page tells a client the studio is busy with its own
+          machinery. Then the showreel that replaced it, removed on his call of
+          9 Sep. The heading, the copy and the download link went with it — the
+          section existed only to hold the film, and a heading promising a
+          minute of work with no film under it is worse than no section.
+          The reel component and its film are still in the repo; the portfolio's
+          Tech Stack entry still plays the same cut. */}
     </main>
   );
 };
