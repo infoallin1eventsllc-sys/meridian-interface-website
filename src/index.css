@@ -88,10 +88,22 @@
    once, so the hero resolves as one orchestrated moment.
    --------------------------------------------------------------------------- */
 
-.hero-video {
-  /* The clip is graded to sit under the scrims; a hard edge at the video's
-     bounds would give away that it is a rectangle rather than the scene. */
-  will-change: transform;
+.hero-lattice {
+  /* Where the Earth photograph used to sit: right of centre, bleeding off the
+     edge so the sphere is cropped rather than floating in the middle. The
+     canvas is square; the hero is not, so it is sized in viewport units and
+     pulled off-canvas rather than stretched. */
+  right: -16vw;
+  top: 50%;
+  width: min(86vw, 1120px);
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 980px) {
+  /* On a phone the copy takes the whole column, so the globe moves behind it
+     and drops back — present as texture, never competing with the headline. */
+  .hero-lattice { right: -34vw; width: 130vw; opacity: 0.62; }
 }
 
 @keyframes hero-rise {
