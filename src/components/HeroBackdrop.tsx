@@ -48,8 +48,8 @@ function shouldStayStill(): boolean {
   return false;
 }
 
-interface Segment { lat1: number; lon1: number; lat2: number; lon2: number; w: number; accent: boolean; order: number }
-interface LatticeNode { lat: number; lon: number; r: number; ring: boolean; accent: boolean; order: number }
+interface Segment { lat1: number; lon1: number; lat2: number; lon2: number; w: number; accent: boolean; order: number; core: boolean; key: number }
+interface LatticeNode { lat: number; lon: number; r: number; ring: boolean; accent: boolean; order: number; core: boolean; key: number }
 interface Whisker { pts: { lat: number; lon: number; k: number }[]; order: number }
 
 /** Deterministic PRNG, so the lattice is the same drawing every time. */
@@ -69,6 +69,19 @@ function density(lat: number, lon: number): number {
   const low = 1 - Math.abs(lat + 0.35) / 1.7;
   return Math.max(0.06, Math.min(1, band * 0.72 + low * 0.5));
 }
+
+/* Which of the dense lattice's rings and meridians also belonged to the sparse one.
+   The hero that ran until 9 Sep drew 10 rings and 18 meridians; this one draws 16 and
+   30. Picking the old counts as an evenly spread subset of the new is what lets the
+   two be the same globe: the old lattice is never rebuilt or cross-faded, it is just
+   the part that stays lit while the rest comes and goes. */
+function subset(total: number, keep: number): Set<number> {
+  const s = new Set<number>();
+  for (let k = 0; k < keep; k++) s.add(Math.round((k * (total - 1)) / (keep - 1)));
+  return s;
+}
+const RING_KEEP = subset(16, 10);
+const MER_KEEP = subset(30, 18);
 
 function buildLattice() {
   const rand = rng(SEED);
@@ -90,6 +103,7 @@ function buildLattice() {
 
   RINGS.forEach((deg, ri) => {
     const lat = deg * D2R;
+    const core = RING_KEEP.has(ri);
     const steps = 128;
     let on = rand() > 0.4;
     let run = 2 + Math.floor(rand() * 11);
@@ -108,15 +122,18 @@ function buildLattice() {
         w: heavy ? 2.6 + rand() * 1.8 : 0.7,
         accent: !heavy && rand() < 0.07,
         order: 0.08 + (ri / RINGS.length) * 0.5 + rand() * 0.3,
+        core, key: lon1 / (Math.PI * 2),
       });
       if (rand() < d * 0.05) {
-        nodes.push({ lat, lon: lon1, r: 1 + rand() * 2.2, ring: rand() < 0.3, accent: rand() < 0.2, order: 0.3 + rand() * 0.55 });
+        nodes.push({ lat, lon: lon1, r: 1 + rand() * 2.2, ring: rand() < 0.3, accent: rand() < 0.2,
+                     order: 0.3 + rand() * 0.55, core, key: lon1 / (Math.PI * 2) });
       }
     }
   });
 
   for (let m = 0; m < MERIDIANS; m++) {
     const lon = (m / MERIDIANS) * Math.PI * 2;
+    const core = MER_KEEP.has(m);
     const steps = 90;
     let on = rand() > 0.35;
     let run = 3 + Math.floor(rand() * 6);
@@ -135,9 +152,11 @@ function buildLattice() {
         w: heavy ? 2.4 + rand() * 1.5 : 0.65,
         accent: !heavy && rand() < 0.055,
         order: 0.05 + (m / MERIDIANS) * 0.45 + rand() * 0.3,
+        core, key: lon / (Math.PI * 2),
       });
       if (rand() < d * 0.035) {
-        nodes.push({ lat: lat1, lon, r: 1 + rand() * 1.9, ring: rand() < 0.34, accent: rand() < 0.18, order: 0.3 + rand() * 0.55 });
+        nodes.push({ lat: lat1, lon, r: 1 + rand() * 1.9, ring: rand() < 0.34, accent: rand() < 0.18,
+                     order: 0.3 + rand() * 0.55, core, key: lon / (Math.PI * 2) });
       }
     }
   }
@@ -185,12 +204,18 @@ export const HeroBackdrop: React.FC = () => {
        once per bucket — five times the trigonometry for one frame's worth of
        lines, which is what the denser geometry could no longer afford. */
     const BUCKETS = 5;
+    /* Lines mid-sweep are drawn dimmer than lines fully arrived, so the wave has a
+       soft edge instead of a hard front. Quantising that into four steps keeps the
+       batching intact: twenty strokes a frame instead of five, still nothing like
+       one stroke per line. */
+    const GROWTH_STEPS = 4;
+    const NBATCH = BUCKETS * GROWTH_STEPS;
     const fx1 = new Float64Array(fine.length);
     const fy1 = new Float64Array(fine.length);
     const fx2 = new Float64Array(fine.length);
     const fy2 = new Float64Array(fine.length);
-    const bucketIdx = Array.from({ length: BUCKETS }, () => new Int32Array(fine.length));
-    const bucketLen = new Int32Array(BUCKETS);
+    const bucketIdx = Array.from({ length: NBATCH }, () => new Int32Array(fine.length));
+    const bucketLen = new Int32Array(NBATCH);
 
     let W = 0, H = 0, cx = 0, cy = 0, R = 0;
     let yaw = 0, T = 0, amp = 0, reveal = 0;
@@ -254,6 +279,28 @@ export const HeroBackdrop: React.FC = () => {
     const project = (lat: number, lon: number, k?: number): Pt =>
       projectInto({ x: 0, y: 0, z: 0 }, lat, lon, k);
 
+    /* The detail wave.
+       Core lines are lit at all times. Every other line is absent at the start of a
+       cycle, sweeps in around the globe, holds at full detail, then sweeps back out —
+       so the lattice reads as the old hero becoming the new one and back again, with
+       no cut and no cross-fade. The front always travels the same direction, in both
+       halves, so it never looks like footage being rewound.
+
+       Eighteen seconds a cycle, agreed 10 Sep after watching it at several speeds. */
+    const CYCLE_SECONDS = 18;
+    const FEATHER = 0.38;
+    let phase = 0;
+
+    function growth(key: number): number {
+      if (still) return 1;
+      const growing = phase < 0.5;
+      const local = (phase % 0.5) / 0.5;
+      const front = -FEATHER + local * (1 + FEATHER);
+      let g = (front - key) / FEATHER;
+      g = g < 0 ? 0 : g > 1 ? 1 : g;
+      return growing ? g : 1 - g;
+    }
+
     const alphaFor = (z: number, base: number) => {
       const depth = (z + 1) / 2;
       return base * (0.12 + 0.88 * depth * depth);
@@ -310,32 +357,40 @@ export const HeroBackdrop: React.FC = () => {
       for (let i = 0; i < fine.length; i++) {
         const s = fine[i];
         if (fade(s.order) <= 0) continue;
+        const g = s.core ? 1 : growth(s.key);
+        if (g <= 0.02) continue;
         const p1 = projectInto(scratchA, s.lat1, s.lon1);
         const p2 = projectInto(scratchB, s.lat2, s.lon2);
         const b = Math.floor(((((p1.z + p2.z) / 2) + 1) / 2) * BUCKETS);
         if (b < 0 || b >= BUCKETS) continue;
+        const gi = g >= 1 ? GROWTH_STEPS - 1 : Math.floor(g * GROWTH_STEPS);
         fx1[i] = p1.x; fy1[i] = p1.y;
         fx2[i] = p2.x; fy2[i] = p2.y;
-        bucketIdx[b][bucketLen[b]++] = i;
+        const k = b * GROWTH_STEPS + gi;
+        bucketIdx[k][bucketLen[k]++] = i;
       }
 
       for (let b = 0; b < BUCKETS; b++) {
-        if (!bucketLen[b]) continue;
         const mid = -1 + ((b + 0.5) / BUCKETS) * 2;
         const aInk = alphaFor(mid, 0.46);
         if (aInk < 0.012) continue;
-
-        const idx = bucketIdx[b];
-        const n = bucketLen[b];
-        c.beginPath();
-        for (let j = 0; j < n; j++) {
-          const i = idx[j];
-          c.moveTo(fx1[i], fy1[i]);
-          c.lineTo(fx2[i], fy2[i]);
-        }
-        c.strokeStyle = `rgba(${LINE},${(aInk * Math.min(1, reveal * 1.4)).toFixed(3)})`;
         c.lineWidth = 0.55 + ((mid + 1) / 2) * 0.5;
-        c.stroke();
+
+        for (let gs = 0; gs < GROWTH_STEPS; gs++) {
+          const k = b * GROWTH_STEPS + gs;
+          const n = bucketLen[k];
+          if (!n) continue;
+          const idx = bucketIdx[k];
+          c.beginPath();
+          for (let j = 0; j < n; j++) {
+            const i = idx[j];
+            c.moveTo(fx1[i], fy1[i]);
+            c.lineTo(fx2[i], fy2[i]);
+          }
+          const a = aInk * ((gs + 1) / GROWTH_STEPS) * Math.min(1, reveal * 1.4);
+          c.strokeStyle = `rgba(${LINE},${a.toFixed(3)})`;
+          c.stroke();
+        }
       }
 
       for (const wk of whiskers) {
@@ -359,11 +414,13 @@ export const HeroBackdrop: React.FC = () => {
       for (const sg of bold) {
         const f = fade(sg.order);
         if (f <= 0) continue;
+        const g = sg.core ? 1 : growth(sg.key);
+        if (g <= 0.02) continue;
         const q1 = project(sg.lat1, sg.lon1);
         const q2 = project(sg.lat2, sg.lon2);
         const zq = (q1.z + q2.z) / 2;
         if (zq < -0.25) continue;
-        const a = alphaFor(zq, sg.accent ? 0.95 : 0.8) * f;
+        const a = alphaFor(zq, sg.accent ? 0.95 : 0.8) * f * g;
         c.strokeStyle = `rgba(${sg.accent ? ACCENT : GLINT},${a.toFixed(3)})`;
         c.lineWidth = sg.accent ? 1.7 : sg.w;
         c.beginPath();
@@ -375,12 +432,15 @@ export const HeroBackdrop: React.FC = () => {
       for (const nd of nodes) {
         const f = fade(nd.order);
         if (f <= 0) continue;
+        const g = nd.core ? 1 : growth(nd.key);
+        if (g <= 0.02) continue;
         const np = project(nd.lat, nd.lon);
         if (np.z < -0.2) continue;
-        const a = alphaFor(np.z, 0.9) * f;
+        const a = alphaFor(np.z, 0.9) * f * g;
         const col = nd.accent ? ACCENT : GLINT;
         c.beginPath();
-        c.arc(np.x, np.y, nd.r * (0.7 + ((np.z + 1) / 2) * 0.5), 0, Math.PI * 2);
+        // Scaled as well as faded, so a node grows into place rather than blinking on.
+        c.arc(np.x, np.y, nd.r * (0.7 + ((np.z + 1) / 2) * 0.5) * (0.4 + 0.6 * g), 0, Math.PI * 2);
         if (nd.ring) {
           c.strokeStyle = `rgba(${col},${a.toFixed(3)})`;
           c.lineWidth = 0.9;
@@ -468,6 +528,10 @@ export const HeroBackdrop: React.FC = () => {
         }
 
         yaw += 0.00075;
+
+        /* The cycle starts once the assemble is done, so the globe arrives sparse and
+           the detail sweeps in as its first move rather than fighting the reveal. */
+        phase = (Math.max(0, T - 2.2) % CYCLE_SECONDS) / CYCLE_SECONDS;
 
         nextPing -= 0.016;
         if (nextPing <= 0 && nodes.length) {
