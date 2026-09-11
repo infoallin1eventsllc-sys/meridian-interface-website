@@ -33,7 +33,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!demos/|video/|images/|fonts/|brand/|assets/).*)",
+      "source": "/((?!_vercel/|demos/|video/|images/|fonts/|brand/|assets/).*)",
       "destination": "/index.html"
     }
   ]
