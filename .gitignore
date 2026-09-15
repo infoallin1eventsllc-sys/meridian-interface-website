@@ -6,3 +6,10 @@ coverage/
 *.log
 .env*
 !.env.example
+# .env.production is committed deliberately. It holds only the PostHog project
+# key, which is public by definition — it is compiled into the JavaScript every
+# visitor downloads. Ignoring it would hide it from the repository and from
+# nobody else, while leaving the build dependent on a dashboard field. Anything
+# genuinely secret must never be added to that file: the VITE_ prefix means
+# published.
+!.env.production
