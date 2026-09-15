@@ -78,8 +78,18 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
         </P>
         <P>
           <strong>How you found us.</strong> If you arrive through a campaign link, the form carries
-          the campaign tag with it so we know which channel brought you. We do not run advertising
-          trackers or third-party analytics on this site.
+          the campaign tag with it so we know which channel brought you.
+        </P>
+        <P>
+          <strong>How you use the site.</strong> We use PostHog, an analytics service, to count
+          visits and see which sections people read. It also records anonymous replays of how
+          visitors move through the pages - where they click, where they scroll, where they give
+          up - which is how we find the parts that confuse people. Three limits we have set
+          deliberately: anything you type into a form is hidden before a recording leaves your
+          browser, so your name, email address and phone number are never in it; the studio's own
+          private area is never recorded at all; and if your browser sends a "Do Not Track" signal
+          we do not measure your visit. We do not run advertising trackers, and we do not sell this
+          or share it with anyone beyond the provider named below.
         </P>
         <P>
           <strong>What stays in your own browser.</strong> A copy of your booking is kept in your
@@ -107,9 +117,9 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
         <P>
           We use a small number of service providers to run the studio, and your information passes
           through them only for the purposes above: <strong>Supabase</strong> (our database and
-          servers), <strong>Vercel</strong> (website hosting), <strong>Anthropic</strong> (drafting
-          replies), <strong>SendGrid</strong> (sending email), and <strong>Stripe</strong> (taking
-          payment).
+          servers), <strong>Vercel</strong> (website hosting), <strong>PostHog</strong> (site
+          analytics), <strong>Anthropic</strong> (drafting replies), <strong>SendGrid</strong>{' '}
+          (sending email), and <strong>Stripe</strong> (taking payment).
         </P>
         <P>
           <strong>Card payments go to Stripe directly.</strong> Payment happens on a page Stripe
@@ -130,6 +140,11 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
             <strong>Stop marketing email at any time.</strong> Every marketing email carries an
             unsubscribe link that works immediately and needs no reply from us. You will still get
             messages about work in progress, like a booking confirmation or an invoice.
+          </LI>
+          <LI>
+            <strong>Turn off measurement.</strong> Switch on "Do Not Track" in your browser and we
+            will not count or record your visit. Blocking analytics with an extension works too -
+            nothing on this site depends on it, and everything keeps working.
           </LI>
           <LI>
             <strong>Ask what we hold, or ask us to correct or delete it.</strong> Email{' '}

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from './types';
+import { initAnalytics, trackPage } from './lib/analytics';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { Footer } from './components/Footer';
@@ -22,6 +23,16 @@ export default function App() {
     window.location.pathname.replace(/\/+$/, '') === '/unsubscribe';
 
   const [currentTab, setCurrentTab] = useState<TabType>('home');
+
+  /* Analytics starts once, and never on the unsubscribe page: that page is
+     reached by someone asking to hear less from this business, and measuring
+     them on their way out would be the wrong instinct. Inert unless a PostHog
+     key is configured — see src/lib/analytics.ts. */
+  useEffect(() => {
+    if (isUnsubscribe) return;
+    initAnalytics();
+    trackPage('home');
+  }, [isUnsubscribe]);
   const [preselectedService, setPreselectedService] = useState<ServiceCategory>('web_design');
 
   // Modal States
@@ -31,12 +42,14 @@ export default function App() {
 
   const handleTabChange = (tab: TabType) => {
     setCurrentTab(tab);
+    trackPage(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleQuickBookService = (serviceId: ServiceCategory) => {
     setPreselectedService(serviceId);
     setCurrentTab('booking');
+    trackPage('booking');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
