@@ -26,6 +26,7 @@ import {
   login as ownerLogin,
   saveInvoice as saveInvoiceRemote,
   signOut,
+  onSessionRejected,
 } from '../lib/ownerStore';
 
 interface OwnerInvoiceViewProps {
@@ -120,16 +121,39 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     return () => { cancelled = true; };
   }, []);
 
+  // Put the gate back the moment the server refuses this session.
+  //
+  // `isUnlocked` starts from isSignedIn(), which only asks whether a token
+  // string exists — not whether the server signed it. That is deliberate (it
+  // avoids a round trip before showing the portal a returning owner is
+  // entitled to) and it means anyone can open the portal SHELL by writing any
+  // value into sessionStorage. No records ever load, because every request is
+  // rejected, but a portal that sits there looking open reads as access that
+  // was never granted. This closes it the instant the server says no.
+  useEffect(() => {
+    onSessionRejected(() => {
+      setIsUnlocked(false);
+      setInvoices([]);
+      setCatalogue(EMPTY_CATALOGUE);
+      setPinError('That session is no longer valid. Enter the passcode again.');
+    });
+    return () => onSessionRejected(null);
+  }, []);
+
   // Invoices come from the server once unlocked. Nothing is fetched before
   // that — the list is not public data.
   useEffect(() => {
     if (!isUnlocked) return;
     let cancelled = false;
-    listInvoices().then(({ invoices: remote, offline: isOffline }) => {
-      if (cancelled) return;
-      setOffline(isOffline);
-      setInvoices(remote.length ? remote : INITIAL_OWNER_INVOICES);
-    });
+    listInvoices()
+      .then(({ invoices: remote, offline: isOffline }) => {
+        if (cancelled) return;
+        setOffline(isOffline);
+        setInvoices(remote.length ? remote : INITIAL_OWNER_INVOICES);
+      })
+      // A rejected session already re-locked the portal above; there is nothing
+      // to show and nothing to report beyond that.
+      .catch(() => { if (!cancelled) setInvoices([]); });
     return () => { cancelled = true; };
   }, [isUnlocked]);
 

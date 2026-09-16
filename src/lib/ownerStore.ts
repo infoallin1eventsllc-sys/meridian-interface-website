@@ -55,6 +55,31 @@ export function isSignedIn(): boolean {
 
 export function signOut(): void {
   setToken(null);
+  // Locking the portal has to mean the records are gone from this browser too.
+  // Otherwise "Lock" clears the key and leaves the filing cabinet open.
+  clearLocal();
+}
+
+/**
+ * Thrown when the server refuses the session, as opposed to failing to answer.
+ *
+ * The distinction is the whole point. Every caller below falls back to a local
+ * cache when the network is down, which is right for a studio working on a bad
+ * connection and completely wrong for a browser the server just told to go
+ * away. Before this existed, one `catch` served both, so a rejected session
+ * was handed the cached invoices as a consolation prize.
+ */
+export class UnauthorizedError extends Error {
+  constructor() {
+    super('unauthorized');
+    this.name = 'UnauthorizedError';
+  }
+}
+
+/** Notified whenever the server rejects the session, so the UI can re-lock. */
+let onRejected: (() => void) | null = null;
+export function onSessionRejected(fn: (() => void) | null): void {
+  onRejected = fn;
 }
 
 async function call<T>(payload: Record<string, unknown>): Promise<T> {
@@ -69,9 +94,13 @@ async function call<T>(payload: Record<string, unknown>): Promise<T> {
   });
   const body = await res.json().catch(() => ({}));
   if (res.status === 401 && payload.action !== 'login') {
-    // The session expired or was revoked; make the UI show the gate again
-    // rather than silently returning empty lists.
+    // The session expired, was forged, or was revoked. Drop it and put the
+    // gate back up — a portal that still looks open is worse than one that
+    // asks again, because it reads as authorisation that was never granted.
     setToken(null);
+    clearLocal();
+    onRejected?.();
+    throw new UnauthorizedError();
   }
   if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
   return body as T;
@@ -85,6 +114,14 @@ function readLocal(): OwnerInvoice[] {
     return raw ? (JSON.parse(raw) as OwnerInvoice[]) : [];
   } catch {
     return [];
+  }
+}
+
+function clearLocal(): void {
+  try {
+    localStorage.removeItem(LOCAL_INVOICES_KEY);
+  } catch {
+    /* nothing to clear, or storage is unavailable */
   }
 }
 
@@ -171,7 +208,9 @@ export async function listInvoices(): Promise<{ invoices: OwnerInvoice[]; offlin
   try {
     const r = await call<{ invoices: OwnerInvoice[] }>({ action: 'list' });
     return { invoices: r.invoices ?? [], offline: false };
-  } catch {
+  } catch (err) {
+    // A refused session gets nothing. Only an unreachable server earns the cache.
+    if (err instanceof UnauthorizedError) throw err;
     return { invoices: readLocal(), offline: true };
   }
 }
@@ -180,7 +219,8 @@ export async function saveInvoice(invoice: OwnerInvoice): Promise<{ offline: boo
   try {
     await call({ action: 'save', invoice });
     return { offline: false };
-  } catch {
+  } catch (err) {
+    if (err instanceof UnauthorizedError) throw err;
     const list = readLocal().filter((i) => i.id !== invoice.id);
     writeLocal([invoice, ...list]);
     return { offline: true };
@@ -191,7 +231,8 @@ export async function deleteInvoice(id: string): Promise<{ offline: boolean }> {
   try {
     await call({ action: 'delete', id });
     return { offline: false };
-  } catch {
+  } catch (err) {
+    if (err instanceof UnauthorizedError) throw err;
     writeLocal(readLocal().filter((i) => i.id !== id));
     return { offline: true };
   }
