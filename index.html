@@ -53,6 +53,62 @@
     <link rel="apple-touch-icon" href="/brand/meridian-mark.png" />
     <link rel="canonical" href="https://meridianinterface.com/" />
 
+    <!-- Structured data.
+         Everything above describes the page; this describes the business, and
+         it is the only content on this site a search engine can read without
+         running JavaScript. The app renders into an empty <div id="root">, so
+         the served HTML carries no headings, no links and no prose — Google
+         renders the page on a later pass and sees it, Bing, DuckDuckGo, Yandex
+         and every AI crawler do not.
+
+         Nothing here is invented. There is no street address because the
+         business does not have one yet, so only the locality is claimed; there
+         are no ratings, no review counts and no founding date, because those
+         would be fabrications and the kind search engines penalise. Add
+         streetAddress and sameAs when the LLC and the PO box exist. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "@id": "https://meridianinterface.com/#studio",
+      "name": "Meridian Interface",
+      "description": "Digital design and development studio. Custom web applications, mobile app interfaces, analytics and CRM dashboards, and brand identity systems.",
+      "url": "https://meridianinterface.com/",
+      "logo": "https://meridianinterface.com/brand/meridian-mark.png",
+      "image": "https://meridianinterface.com/images/og-card.jpg",
+      "email": "otis@meridianinterface.com",
+      "telephone": "+1-281-882-9198",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Houston",
+        "addressRegion": "TX",
+        "addressCountry": "US"
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Houston" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "knowsAbout": [
+        "Web design",
+        "Web development",
+        "Mobile app interface design",
+        "Analytics dashboards",
+        "CRM dashboards",
+        "Brand identity design"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Studio services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Custom Web Design & Development" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Mobile App Design & Development" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Data Analyst, CRM & Financial Dashboards" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Logo Design & Visual Identity" } }
+        ]
+      }
+    }
+    </script>
+
     <!-- Fonts are self-hosted (see src/index.css / public/fonts) — no external CDN dependency. -->
   </head>
   <body class="bg-[#f7f9fd] text-[#191c1f] antialiased">
