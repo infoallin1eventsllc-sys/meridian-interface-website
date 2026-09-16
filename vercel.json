@@ -5,7 +5,6 @@
       "source": "/(.*)",
       "headers": [
         {
-          "comment": "PostHog needs three exceptions, and they are the only third-party origins on this site. It fetches its runtime config and the session-replay recorder as scripts from us-assets.i.posthog.com, posts events to us.i.posthog.com, and compresses replay data in a blob: worker. Without all three the library initialises and then fails silently: analytics was configured on 15 Sep and recorded nothing at all until 16 Sep, because script-src and connect-src blocked every request it made and nothing surfaced except an empty dashboard. Routing PostHog through a same-origin Vercel rewrite would let this go back to 'self', at the cost of a proxy to maintain.",
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; script-src 'self' https://us-assets.i.posthog.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://glzodwhyavexpuusbqjy.supabase.co; media-src 'self' blob: https://glzodwhyavexpuusbqjy.supabase.co; connect-src 'self' https://glzodwhyavexpuusbqjy.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
@@ -34,7 +33,6 @@
   ],
   "rewrites": [
     {
-      "comment": "The app owns exactly two paths. Everything else falls through to the filesystem, and Vercel answers an unmatched path with 404.html and a real 404 status. A catch-all rewrite used to sit here, which meant a mistyped URL silently returned the homepage with status 200 - a soft 404, which search engines index as a real page and which tells a visitor nothing went wrong when it did.",
       "source": "/unsubscribe",
       "destination": "/index.html"
     }
