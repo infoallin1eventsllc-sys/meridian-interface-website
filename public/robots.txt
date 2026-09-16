@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# The studio portal and the unsubscribe endpoint are not content. Neither is
+# useful in a search result, and the unsubscribe page should never be crawled:
+# a crawler following an unsubscribe link is how mailing lists lose subscribers
+# who never asked to leave.
+Disallow: /unsubscribe
+
+Sitemap: https://meridianinterface.com/sitemap.xml

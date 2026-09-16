@@ -28,45 +28,48 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
           <p className="text-slate-300 text-xs max-w-sm pt-1">
             Web design, mobile app interfaces, analytics &amp; CRM dashboards, and brand identity systems.
           </p>
-          <div className="text-xs text-slate-300 font-semibold pt-1 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2">
-            <a href="https://meridianinterface.com" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
+          <div className="text-xs text-slate-300 font-semibold pt-1 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
+            <a href="https://meridianinterface.com" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
               <span className="material-symbols-outlined text-sm">language</span>
               meridianinterface.com
             </a>
-            <a href="tel:+12818829198" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
+            <a href="tel:+12818829198" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
               <span className="material-symbols-outlined text-sm">call</span>
               281-882-9198
             </a>
-            <a href="mailto:otis@meridianinterface.com" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
+            <a href="mailto:otis@meridianinterface.com" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
               <span className="material-symbols-outlined text-sm">mail</span>
               otis@meridianinterface.com
             </a>
           </div>
         </div>
 
-        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs font-bold uppercase tracking-wider text-slate-300">
-          <button onClick={() => onTabChange('home')} className="hover:text-white transition-colors">
+        {/* py-1 on each link, not decoration: uppercase 12px text gives a 16px-tall
+            tap target, which is fiddly on a phone and under the 24px WCAG 2.2
+            minimum. The padding lifts each one to 24px without moving any text. */}
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-bold uppercase tracking-wider text-slate-300">
+          <button onClick={() => onTabChange('home')} className="py-1 hover:text-white transition-colors">
             Home
           </button>
-          <button onClick={() => onTabChange('services')} className="hover:text-white transition-colors">
+          <button onClick={() => onTabChange('services')} className="py-1 hover:text-white transition-colors">
             Services
           </button>
-          <button onClick={() => onTabChange('portfolio')} className="hover:text-white transition-colors">
+          <button onClick={() => onTabChange('portfolio')} className="py-1 hover:text-white transition-colors">
             Portfolio
           </button>
-          <button onClick={() => onTabChange('booking')} className="hover:text-white transition-colors">
+          <button onClick={() => onTabChange('booking')} className="py-1 hover:text-white transition-colors">
             Book Appointment
           </button>
-          <button onClick={() => onTabChange('appointments')} className="hover:text-white transition-colors">
+          <button onClick={() => onTabChange('appointments')} className="py-1 hover:text-white transition-colors">
             Client Portal
           </button>
           {/* A visitor hands over a name, an email and a phone number on the
               booking form. Where that goes has to be reachable from every page,
               not buried. */}
-          <button onClick={() => onOpenLegal('privacy')} className="hover:text-white transition-colors">
+          <button onClick={() => onOpenLegal('privacy')} className="py-1 hover:text-white transition-colors">
             Privacy
           </button>
-          <button onClick={() => onOpenLegal('terms')} className="hover:text-white transition-colors">
+          <button onClick={() => onOpenLegal('terms')} className="py-1 hover:text-white transition-colors">
             Terms
           </button>
         </nav>

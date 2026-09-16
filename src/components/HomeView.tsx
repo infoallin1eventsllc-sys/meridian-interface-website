@@ -285,7 +285,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="p-6 space-y-3">
                 <div className="flex justify-between items-center text-xs text-slate-500 font-semibold">
                   <span>{item.client}</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] uppercase tracking-wider">{item.year}</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider">{item.year}</span>
                 </div>
 
                 <h3 className="font-display font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">
@@ -349,12 +349,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           <form onSubmit={handleInlineBook} className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            {/* Every label carries htmlFor and every control the matching id.
+                These read as labelled on screen because the text sits directly
+                above the field, but without the pairing a screen reader
+                announces three unnamed fields in a row — on the form that is
+                the site's main way of getting in touch. */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label
+                htmlFor="quick-service"
+                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
+              >
                 Design Service Needed
               </label>
               <div className="relative">
                 <select
+                  id="quick-service"
                   value={quickService}
                   onChange={(e) => setQuickService(e.target.value as ServiceCategory)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors appearance-none"
@@ -382,10 +391,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label
+                htmlFor="quick-date"
+                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
+              >
                 Preferred Date
               </label>
               <input
+                id="quick-date"
                 type="date"
                 value={quickDate}
                 onChange={(e) => setQuickDate(e.target.value)}
@@ -394,11 +407,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label
+                htmlFor="quick-time"
+                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
+              >
                 Time Slot
               </label>
               <div className="relative">
                 <select
+                  id="quick-time"
                   value={quickTime}
                   onChange={(e) => setQuickTime(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors appearance-none"

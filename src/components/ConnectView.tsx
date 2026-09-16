@@ -203,7 +203,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       <div className="space-y-0.5">
                         <div className="font-display font-bold text-sm">{s.title}</div>
                         <div className={`text-[11px] font-semibold ${
-                          selectedService === s.id ? 'text-slate-300' : 'text-slate-500'
+                          selectedService === s.id ? 'text-slate-300' : 'text-slate-600'
                         }`}>
                           {s.categoryName}
                         </div>

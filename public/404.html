@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found — Meridian Interface</title>
+<!--
+  A standalone page, deliberately.
+
+  This is served for any URL the site does not have, outside the React app, so
+  it cannot depend on the bundle loading — a 404 that needs 570 KB of JavaScript
+  to tell you a page is missing is a worse experience than the one it replaces.
+  No script tags: the Content-Security-Policy on this site allows scripts only
+  from itself, and there is nothing here worth scripting.
+
+  Until 16 Sep an unknown URL returned the homepage with status 200. That looked
+  fine and was two problems: a visitor who mistyped an address was shown the
+  front page as though nothing had happened, and search engines were free to
+  index every wrong URL as a real page.
+-->
+<style>
+  :root{
+    --ground:#0B111F; --mid:#0E1526; --lift:#121C30;
+    --accent:#4A85FF; --text:#EEF3FC; --muted:#93A4C0; --edge:#1E2A44;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--ground); color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px; line-height:1.6;
+    background-image:
+      radial-gradient(ellipse 90% 70% at 78% 40%, rgba(30,58,110,.45), transparent 62%),
+      linear-gradient(160deg,#0B111F 0%,#0E1526 46%,#121C30 100%);
+  }
+  main{max-width:520px}
+  .code{
+    font-size:12px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 14px;
+  }
+  h1{
+    font-size:clamp(28px,6vw,40px); font-weight:800; letter-spacing:-.02em;
+    line-height:1.12; margin:0 0 14px; text-wrap:balance;
+  }
+  p{color:var(--muted); margin:0 0 26px; max-width:46ch}
+  .actions{display:flex; flex-wrap:wrap; gap:12px}
+  a{
+    display:inline-block; text-decoration:none; font-weight:700; font-size:14px;
+    padding:13px 22px; border-radius:8px; transition:background .15s, border-color .15s;
+  }
+  .primary{background:var(--accent); color:#fff}
+  .primary:hover{background:#3a74ee}
+  .secondary{border:1px solid var(--edge); color:var(--text)}
+  .secondary:hover{border-color:var(--accent)}
+  a:focus-visible{outline:2px solid var(--text); outline-offset:3px}
+  .sig{margin:34px 0 0; font-size:12px; color:#6b7c99; letter-spacing:.04em}
+</style>
+</head>
+<body>
+  <main>
+    <p class="code">Error 404</p>
+    <h1>That page isn't here.</h1>
+    <p>
+      The address may have been mistyped, or the page may have moved. Nothing is
+      broken on our end — this one just doesn't exist.
+    </p>
+    <div class="actions">
+      <a class="primary" href="/">Go to the homepage</a>
+      <a class="secondary" href="mailto:otis@meridianinterface.com">Email us instead</a>
+    </div>
+    <p class="sig">Meridian Interface — Houston, Texas</p>
+  </main>
+</body>
+</html>

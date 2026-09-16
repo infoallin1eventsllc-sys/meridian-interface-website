@@ -86,6 +86,18 @@ export default function App() {
   return (
     <MotionProvider>
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-body selection:bg-slate-200">
+      {/* Skip link — first thing in the tab order, invisible until focused.
+          Without it, anyone navigating by keyboard has to tab through the whole
+          header (logo, five nav items, search, book, menu) on every section
+          change before reaching the content. `sr-only` keeps it out of the
+          layout; `focus:not-sr-only` brings it back the moment it is reached. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2.5 focus:rounded-lg focus:bg-[#0f172a] focus:text-white focus:text-xs focus:font-bold focus:uppercase focus:tracking-widest focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        Skip to main content
+      </a>
+
       {/* Fixed Header */}
       <Header
         currentTab={currentTab}
@@ -95,8 +107,10 @@ export default function App() {
         onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
       />
 
-      {/* Main View Area */}
-      <div className="flex-grow">
+      {/* Main View Area. The id is the skip link's target; tabIndex={-1} lets it
+          receive focus programmatically so the next Tab continues from here
+          rather than jumping back to the top of the document. */}
+      <div id="main-content" tabIndex={-1} className="flex-grow focus:outline-none">
         {currentTab === 'home' && (
           <HomeView
             onTabChange={handleTabChange}

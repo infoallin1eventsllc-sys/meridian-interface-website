@@ -92,7 +92,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
               <div className="p-6 space-y-3">
                 <div className="flex justify-between items-center text-xs text-slate-500 font-semibold">
                   <span>{item.client}</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-100 text-[10px] uppercase tracking-wider">{item.year}</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider">{item.year}</span>
                 </div>
 
                 <h3 className="font-display font-bold text-xl text-slate-900 group-hover:text-blue-600 transition-colors">

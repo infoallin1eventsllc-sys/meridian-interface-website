@@ -52,7 +52,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
               <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
               <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-              <span className="ml-2 text-[10px] font-mono text-slate-500 truncate">Meridian Stack Planner</span>
+              <span className="ml-2 text-[10px] font-mono text-slate-600 truncate">Meridian Stack Planner</span>
             </div>
             <div
               {...box.triggerProps(0)}

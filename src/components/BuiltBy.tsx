@@ -27,7 +27,7 @@ export const BuiltBy: React.FC<BuiltByProps> = ({
 }) => (
   <div className={`flex flex-col items-center text-center ${className}`}>
     {kicker && (
-      <p className="font-body text-[10px] md:text-[11px] font-bold uppercase tracking-[0.28em] text-slate-500">
+      <p className="font-body text-[10px] md:text-[11px] font-bold uppercase tracking-[0.28em] text-slate-400">
         {kicker}
       </p>
     )}
@@ -59,15 +59,15 @@ export const BuiltBy: React.FC<BuiltByProps> = ({
     {/* Bullets are decorative; aria-hidden keeps a screen reader from reading
         "bullet" between every contact detail. */}
     <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 font-body text-xs font-semibold text-slate-300">
-      <a href="https://meridianinterface.com" className="hover:text-white transition-colors">
+      <a href="https://meridianinterface.com" className="py-1 hover:text-white transition-colors">
         meridianinterface.com
       </a>
       <span aria-hidden="true" className="text-slate-600">&bull;</span>
-      <a href="mailto:otis@meridianinterface.com" className="hover:text-white transition-colors">
+      <a href="mailto:otis@meridianinterface.com" className="py-1 hover:text-white transition-colors">
         otis@meridianinterface.com
       </a>
       <span aria-hidden="true" className="text-slate-600">&bull;</span>
-      <a href="tel:+12818829198" className="hover:text-white transition-colors">
+      <a href="tel:+12818829198" className="py-1 hover:text-white transition-colors">
         (281) 882-9198
       </a>
     </div>

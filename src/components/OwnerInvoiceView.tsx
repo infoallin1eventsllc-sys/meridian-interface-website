@@ -1162,11 +1162,15 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 </select>
               </div>
 
+              {/* No `www.` — the host is not configured, so a client who clicks
+                  it lands on "site cannot be reached". The same string on a
+                  booking confirmation did exactly that on 16 Sep. This field
+                  is what gets printed on invoices and proposals. */}
               <div>
                 <label className="block font-bold text-slate-700 mb-1">Studio Website</label>
                 <input
                   type="text"
-                  value="www.meridianinterface.com"
+                  value="meridianinterface.com"
                   readOnly
                   className="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-lg text-xs font-mono text-slate-600"
                 />
@@ -1619,7 +1623,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     Houston, Texas, United States<br />
                     Phone: <span className="font-semibold text-slate-900">281-882-9198</span><br />
                     Email: <span className="font-semibold text-slate-900">Meridianinterface@gmail.com</span><br />
-                    Web: <span className="font-semibold text-slate-900">www.meridianinterface.com</span>
+                    Web: <span className="font-semibold text-slate-900">meridianinterface.com</span>
                   </div>
                 </div>
 
@@ -1753,7 +1757,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
               <div className="pt-4 border-t border-slate-200 text-center text-[11px] text-slate-500 space-y-1">
                 <p className="font-bold text-slate-700">MERIDIAN INTERFACE STUDIO • INTERNAL DOCUMENT</p>
-                <p>Website: www.meridianinterface.com | Email: Meridianinterface@gmail.com | Phone: 281-882-9198</p>
+                <p>Website: meridianinterface.com | Email: Meridianinterface@gmail.com | Phone: 281-882-9198</p>
               </div>
             </div>
           </div>

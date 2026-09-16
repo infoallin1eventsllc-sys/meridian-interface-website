@@ -682,7 +682,7 @@ export function explainerAsEmail(e: ClientExplainer, priceOverride?: string): st
     '',
     '—',
     'Meridian Interface — Digital Design & Development Studio',
-    'Meridianinterface@gmail.com • 281-882-9198 • www.meridianinterface.com',
+    'Meridianinterface@gmail.com • 281-882-9198 • meridianinterface.com',
   );
 
   return lines.filter((line, i) => !(line === '' && lines[i - 1] === '')).join('\n');

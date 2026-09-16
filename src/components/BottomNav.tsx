@@ -13,7 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
         <button
           onClick={() => onTabChange('home')}
           className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
-            currentTab === 'home' ? 'text-[#0f172a]' : 'text-slate-400 hover:text-slate-600'
+            currentTab === 'home' ? 'text-[#0f172a]' : 'text-slate-500 hover:text-slate-700'
           }`}
         >
           <span className="material-symbols-outlined text-xl">home</span>
@@ -23,7 +23,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
         <button
           onClick={() => onTabChange('services')}
           className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
-            currentTab === 'services' ? 'text-[#0f172a]' : 'text-slate-400 hover:text-slate-600'
+            currentTab === 'services' ? 'text-[#0f172a]' : 'text-slate-500 hover:text-slate-700'
           }`}
         >
           <span className="material-symbols-outlined text-xl">grid_view</span>
@@ -41,7 +41,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
         <button
           onClick={() => onTabChange('portfolio')}
           className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
-            currentTab === 'portfolio' ? 'text-[#0f172a]' : 'text-slate-400 hover:text-slate-600'
+            currentTab === 'portfolio' ? 'text-[#0f172a]' : 'text-slate-500 hover:text-slate-700'
           }`}
         >
           <span className="material-symbols-outlined text-xl">palette</span>
@@ -51,7 +51,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
         <button
           onClick={() => onTabChange('appointments')}
           className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-colors ${
-            currentTab === 'appointments' ? 'text-[#0f172a]' : 'text-slate-400 hover:text-slate-600'
+            currentTab === 'appointments' ? 'text-[#0f172a]' : 'text-slate-500 hover:text-slate-700'
           }`}
         >
           <span className="material-symbols-outlined text-xl">event_available</span>
