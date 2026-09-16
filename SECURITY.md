@@ -1,6 +1,6 @@
 # Security measures — meridianinterface.com
 
-Last verified against production on 16 September 2026. Every line below was
+Last verified against production on 16 September 2026, after the fixes below. Every line below was
 tested, not assumed. Where something is unverified or still open, it says so.
 
 This file describes how the site defends itself and what Otis has to do to keep
@@ -85,7 +85,7 @@ refused by every table.
 | `pay` | 240/hour | Only `status` is unauthenticated, and it returns three booleans |
 | `planner` | hourly per address + daily spend cap | Rejects foreign origins |
 | `pay-webhook` | none, deliberately | Stripe's signature is the gate; throttling risks dropping a real payment notification |
-| `owner` | login throttle live; general limit **written, not deployed** | See §5 |
+| `owner` | 600/hour, plus 8 failed logins per 15 min | Deployed 16 Sep, v39 |
 
 ### The site itself
 
@@ -100,6 +100,8 @@ refused by every table.
 | No secret in the shipped JavaScript | Bundle scanned for Anthropic, SendGrid, Stripe and service-role patterns — none |
 | No secret in git history | All 215 system commits and 116 website commits scanned; only a placeholder |
 | Dependencies | `npm audit`: 0 vulnerabilities |
+| Nightly CRM snapshot, restorable | `take_crm_snapshot` at 08:15 UTC; rows rebuilt from snapshot 1 with `jsonb_populate_recordset` were byte-identical to live, zero differences in either direction |
+| A backup that stops running raises an alert | `crm-snapshot` is covered by the same cron sweep as everything else (migration 0029) |
 | Nothing sensitive logged | 3 `console.error` calls across 16 functions, all message strings; the booking handler deliberately logs nothing, because the appointment carries a name, email and phone |
 
 ---
@@ -137,15 +139,30 @@ Stated plainly rather than left for someone to discover.
 
 | Item | Risk | What closes it |
 |---|---|---|
-| `owner` general rate limit is committed but not deployed | Supabase invocation cost, not data. Login is already throttled and everything past it needs the passcode | `supabase functions deploy owner` (keep `verify_jwt` false) |
-| No backup of the CRM | Five deals were destroyed on 9 Sep and could not be recovered, because nothing backs this up | Supabase scheduled backups, or a nightly export |
-| Stale alerts in System Health (933 / 650 / 594 repeats) | Real alerts are buried under noise | Resolve or suppress the three known-stale rules |
-| Safari and Firefox untested | Unknown rendering or behaviour differences | A real device, or BrowserStack |
+| Safari and Firefox untested | Unknown rendering or behaviour differences. Everything here was driven in Chromium, which is what this environment has | A real device, or BrowserStack |
 | Demo client names shown publicly | Not a breach — the appointments page shows seeded examples, not real bookings — but fabricated clients presented as real is a credibility question | Decide whether to keep them |
+| Snapshots live in the same database they protect | They defend against a bad `DELETE`, which is what actually happened on 9 Sep. They do not defend against losing the Supabase project itself | Supabase paid-tier backups, or periodically download a snapshot |
+| Stripe not connected | No invoice can be paid online | `STRIPE_SECRET_KEY` as a Supabase secret |
+| No postal address on file | Marketing email is refused without one, by design. Transactional mail is unaffected | A PO box, then `settings.business_profile.postal_address` |
+
+### Closed on 16 September
+
+| Was | Now |
+|---|---|
+| `owner` rate limit written but not deployed | Deployed, v39, 600/hour, verified live |
+| No backup of the CRM | Nightly snapshot at 08:15 UTC, 30-day retention, restore path tested against live rows |
+| Three alerts firing on stale conditions (946 / 663 / 607 repeats) | One accurate alert. See migration 0029 |
 
 ---
 
 ## 6. If something goes wrong
+
+**Data deleted by mistake.** Snapshots go back 30 days. List them with
+`select * from public.list_crm_snapshots();`, then read a table back with
+`select * from jsonb_populate_recordset(null::public.deals,
+public.read_crm_snapshot(<id>, 'deals'));`. Inspect before inserting — restore
+is deliberately not one command, because overwriting good data with old data at
+2am is its own disaster.
 
 **Suspected portal compromise.** Change `OWNER_PASSCODE` in Supabase secrets.
 Sessions last at most 8 hours, so the window closes on its own; changing the
