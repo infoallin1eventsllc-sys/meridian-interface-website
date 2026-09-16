@@ -41,6 +41,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
     }
   };
 
+  /* Which rows are the seeded examples.
+     This page is headed "My Appointments" and says "your appointments", then
+     lists Alexander Hayes and Samantha Wu with their email addresses and
+     budgets. Otis knows they are examples. A first-time visitor who has never
+     booked anything does not, and the natural reading is not "nice demo" — it
+     is "this site is showing me another client's data". That is a poor
+     impression anywhere and a worse one on a page whose job is proving this
+     studio can build a secure client portal. Labelling them costs nothing and
+     removes the misreading entirely. */
+  const EXAMPLE_IDS = new Set(INITIAL_APPOINTMENTS.map((a) => a.id));
+  const isExample = (id: string) => EXAMPLE_IDS.has(id);
+  const showingExamples = appointments.some((a) => isExample(a.id));
+  const realCount = appointments.filter((a) => !isExample(a.id)).length;
+
   const filtered = appointments.filter(apt => {
     const matchesSearch = apt.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       apt.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,6 +80,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
           <p className="font-body text-sm text-slate-600">
             Track, review, or modify your web design, app interface, and logo branding appointments.
           </p>
+
+          {showingExamples && (
+            <div className="flex items-start gap-2 mt-3 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg max-w-xl">
+              <span className="material-symbols-outlined text-base text-amber-700 shrink-0 mt-px" aria-hidden="true">
+                info
+              </span>
+              <p className="font-body text-[12px] text-amber-900 leading-relaxed">
+                <span className="font-bold">Sample data.</span>{' '}
+                {realCount > 0
+                  ? 'The rows marked "Example" are here to show how this page works — they are not real clients. Your own bookings appear alongside them.'
+                  : 'The rows below are examples showing how this page works once you book. They are not real clients, and nobody else can see your appointments here.'}
+              </p>
+            </div>
+          )}
         </div>
 
         <button
@@ -170,8 +198,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                   <tr key={apt.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-4 font-mono font-bold text-slate-900">{apt.id}</td>
                     <td className="p-4">
-                      <div className="font-bold text-slate-900">{apt.clientName}</div>
-                      <div className="text-[11px] text-slate-500">{apt.clientEmail}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900">{apt.clientName}</span>
+                        {isExample(apt.id) && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider">
+                            Example
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-slate-600">{apt.clientEmail}</div>
                     </td>
                     <td className="p-4 font-semibold text-slate-800">{apt.serviceTitle}</td>
                     <td className="p-4">
