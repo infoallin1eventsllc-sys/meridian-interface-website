@@ -113,6 +113,72 @@
   </head>
   <body class="bg-[#f7f9fd] text-[#191c1f] antialiased">
     <div id="root"></div>
+
+    <!-- The page, for anything that does not run JavaScript.
+         =====================================================================
+         The site renders entirely from JavaScript into the empty div above, so
+         the HTML served to a crawler contains no prose at all — measured on
+         16 Sep: 0 words, 0 headings, 0 links. Google renders on a second pass
+         and sees the real thing. Bing renders inconsistently and DuckDuckGo
+         takes Bing's index. Yandex, Applebot and every AI crawler — the ones
+         answering "who builds dashboards in Houston" — do not render at all.
+
+         Why <noscript> rather than prerendered markup inside #root: React
+         clears that container when it mounts, so prerendered content flashes
+         and is replaced. A white block appearing over a dark hero for 300ms
+         is a visible regression on the first thing anyone sees. Content here
+         never renders for a visitor whose JavaScript works, so there is no
+         flash and nothing to reconcile.
+
+         This is a fallback, not a trick. Every claim below is on the rendered
+         page in the same words. If the page copy changes, change this too —
+         a fallback that says something different from the page is cloaking,
+         and search engines treat it accordingly.
+
+         The better fix is server-side rendering, which would put all 1,332
+         words into the HTML for every crawler and every visitor. That is a
+         restructure of the app, not a tag, and it is a decision rather than a
+         patch. -->
+    <noscript>
+      <main style="max-width:44rem;margin:0 auto;padding:3rem 1.25rem;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.65;color:#191c1f">
+        <p style="font-size:.75rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#2563eb;margin:0 0 .5rem">
+          Digital Design &amp; Development Studio
+        </p>
+        <h1 style="font-size:2rem;line-height:1.15;letter-spacing:-.02em;margin:0 0 1rem">
+          Custom websites, apps, and dashboards. Designed and built end to end.
+        </h1>
+        <p style="margin:0 0 2rem">
+          Meridian Interface is a digital design and development studio in Houston, Texas.
+          We design and develop bespoke web experiences, mobile app interfaces, analytics
+          and CRM dashboards, and complete brand identities.
+        </p>
+
+        <h2 style="font-size:1.25rem;margin:0 0 .75rem">What we design and develop</h2>
+        <ul style="margin:0 0 2rem;padding-left:1.25rem">
+          <li><strong>Custom Web Design &amp; Development</strong> — bespoke web experiences, from landing pages to full multi-page business sites.</li>
+          <li><strong>Mobile App Design &amp; Development</strong> — end-to-end mobile user flows, clickable prototypes and full iOS and Android interfaces.</li>
+          <li><strong>Data Analyst, CRM &amp; Financial Dashboards</strong> — analytics and CRM dashboards that show a business what it is actually doing.</li>
+          <li><strong>Your Business Tech Stack, Chosen and Connected</strong> — systems and integration work, so the tools you run talk to each other.</li>
+          <li><strong>Logo Design &amp; Visual Identity</strong> — logos, vector iconography, colour palettes and typography rules.</li>
+          <li><strong>Full Studio Design Bundle</strong> — web, app, dashboard and brand together.</li>
+        </ul>
+
+        <h2 style="font-size:1.25rem;margin:0 0 .75rem">Get in touch</h2>
+        <p style="margin:0 0 .5rem">
+          Book a one-to-one consultation, or reach the studio directly:
+        </p>
+        <p style="margin:0 0 2rem">
+          <a href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a><br />
+          <a href="tel:+12818829198">281-882-9198</a><br />
+          Houston, Texas, United States
+        </p>
+
+        <p style="font-size:.8rem;color:#5b6472;margin:0">
+          This page needs JavaScript for the full site — the portfolio, the booking
+          form and the client portal. Everything above is the short version.
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
