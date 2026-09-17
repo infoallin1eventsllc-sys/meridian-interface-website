@@ -114,7 +114,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_web_business',
     title: 'Custom 3–7 Page Business Site',
     category: 'Websites',
-    matches: ['custom 3–7 page', 'custom 3-7 page', '3–7 page business', 'business site'],
+    matches: ['custom 3–7 page', 'custom 3-7 page', '3–7 page business', 'business site', 'custom web design', 'web design & development', 'web design', 'business website', 'trade business', 'restaurant website'],
     summary:
       'A full small-business website of up to seven pages, each one designed around what that page has to do.',
     short:
@@ -180,6 +180,11 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
       'multi-page portal',
       'web app',
       'portal',
+      'dashboards',
+      'dashboard',
+      'crm',
+      'analytics intelligence',
+      'operations hub',
     ],
     summary:
       'Software built around how your business actually runs — with accounts, a dashboard, and connections to the tools you already use.',
@@ -241,7 +246,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_logo_suite',
     title: 'Boutique Logo Design Suite',
     category: 'Brand & Logo',
-    matches: ['boutique logo design suite', 'basic logo', 'logo design suite', 'logo suite'],
+    matches: ['boutique logo design suite', 'basic logo', 'logo design suite', 'logo suite', 'logo design', 'visual identity'],
     summary:
       'An original logo drawn for you, in every version and file format you will need.',
     short:
@@ -446,7 +451,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_enterprise',
     title: 'Enterprise / Custom Application',
     category: 'Packages',
-    matches: ['enterprise custom application', 'enterprise / custom', 'enterprise package', 'enterprise'],
+    matches: ['enterprise custom application', 'enterprise / custom', 'enterprise package', 'enterprise', 'mobile app'],
     summary:
       'A complete custom platform or mobile app, built end to end, for software the business depends on.',
     short:
