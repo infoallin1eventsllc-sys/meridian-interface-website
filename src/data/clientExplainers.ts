@@ -154,7 +154,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     outcome:
       'You get a website that carries the whole business rather than a single message — somewhere a customer can arrive knowing nothing, understand what you do, see that you are credible, and get in touch.',
     excluded: [
-      'Pages beyond the seventh — quoted individually',
+      'Pages beyond the seventh — either the eight to twelve page tier, or charged per page',
       'Online payments or a shop, which is a different build',
       'A customer login area or booking system (see the web app tier)',
       'Copywriting, photography, and paid stock images',
@@ -505,7 +505,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     summary:
       'A full brand kit plus a larger site with working tools built in — for a business the simple site has outgrown.',
     short:
-      'For a business that has outgrown a basic site and needs the website to do actual work. You get a complete brand kit, a six to twelve page site or web app designed from scratch, and working tools built in — a price calculator, online booking, and a client login area — plus your domain connected and us on hand through launch.',
+      'For a business that has outgrown a basic site and needs the website to do actual work. You get a complete brand kit, a site of up to seven pages designed from scratch, and working tools built in — a price calculator, online booking, and a client login area — plus your domain connected and us on hand through launch. If you need more pages than that, the larger site tier covers eight to twelve.',
     included: [
       {
         what: 'A complete brand kit',
@@ -513,7 +513,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
           'Main logo, alternate, browser icon, and a guide so everything stays consistent as more people touch it.',
       },
       {
-        what: 'A six to twelve page site or web app, designed from scratch',
+        what: 'A site of up to seven pages, designed from scratch',
         why:
           'At this size a template starts to show. Every page is laid out for its own job.',
       },
