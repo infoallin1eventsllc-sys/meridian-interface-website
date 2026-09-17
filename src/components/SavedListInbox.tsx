@@ -13,7 +13,7 @@
 import { useEffect, useState } from 'react';
 import { fetchLeads, itemsAsInvoiceLines, receivedLabel, type InboxLead } from '../lib/inbox';
 
-export function SavedListInbox() {
+export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: InboxLead) => void }) {
   const [leads, setLeads] = useState<InboxLead[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
@@ -144,14 +144,26 @@ export function SavedListInbox() {
             ) : null}
 
             {lead.items.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => copyLines(lead)}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#0f172a] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-slate-700"
-              >
-                <span className="material-symbols-outlined text-base">content_copy</span>
-                {copied === (lead.appointmentId ?? '') ? 'Copied' : 'Copy as invoice lines'}
-              </button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {onCreateInvoice ? (
+                  <button
+                    type="button"
+                    onClick={() => onCreateInvoice(lead)}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#0f172a] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-slate-700"
+                  >
+                    <span className="material-symbols-outlined text-base">receipt_long</span>
+                    Start invoice from this list
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => copyLines(lead)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 transition-colors hover:bg-slate-50"
+                >
+                  <span className="material-symbols-outlined text-base">content_copy</span>
+                  {copied === (lead.appointmentId ?? '') ? 'Copied' : 'Copy lines'}
+                </button>
+              </div>
             ) : null}
           </div>
         </article>

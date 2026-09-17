@@ -5,6 +5,7 @@ import { CampaignLinks } from './CampaignLinks';
 import { SystemHealth } from './SystemHealth';
 import { MarketingQueue } from './MarketingQueue';
 import { SavedListInbox } from './SavedListInbox';
+import type { InboxLead } from '../lib/inbox';
 import { TechStack } from './TechStack';
 import {
   fetchCatalogue,
@@ -217,6 +218,53 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setFormTax(0);
     setLineItems(items);
     setIsCreatingNew(true);
+  };
+
+  /**
+   * Start an invoice from a client's saved list.
+   *
+   * This is the step that used to be retyping. The client picked the items on
+   * the site; they arrive in the Saved Lists tab; this carries them straight
+   * onto a draft invoice along with who sent them, so the only thing left to
+   * do is the one thing that was always Meridian's to do — decide what each
+   * line costs.
+   *
+   * Every rate starts at zero deliberately. A guessed number that reaches a
+   * client is worse than an empty field, and the whole point of the saved-list
+   * flow is that pricing happens here, deliberately, after the conversation.
+   */
+  const handleStartInvoiceFromLead = (lead: InboxLead) => {
+    const items: InvoiceLineItem[] = lead.items.map((item, n) => ({
+      id: `li_${Date.now()}_${n}`,
+      description: item.title,
+      // The category shown on the site becomes the deliverable line rather
+      // than being dropped; it is what the client thought they were choosing.
+      deliverables: item.detail ? [item.detail] : [],
+      category: 'Custom',
+      quantity: 1,
+      rate: 0,
+      amount: 0,
+    }));
+
+    setActiveInvoice(null);
+    setFormClientName(lead.client.name ?? '');
+    setFormClientCompany(lead.client.company ?? '');
+    setFormClientEmail(lead.client.email ?? '');
+    setFormClientPhone(lead.client.phone ?? '');
+    setFormIssueDate(new Date().toISOString().split('T')[0]);
+    setFormDueDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+    setFormStatus('Draft');
+    setFormNotes(
+      [
+        `From the client's saved list${lead.appointmentId ? ` (${lead.appointmentId})` : ''}.`,
+        lead.saidByClient ? `They said: ${lead.saidByClient}` : '',
+      ].filter(Boolean).join('\n'),
+    );
+    setFormDiscount(0);
+    setFormTax(0);
+    setLineItems(items);
+    setIsCreatingNew(true);
+    setPortalTab('invoices');
   };
 
   const handleAddBundleToInvoice = (bundle: BundledPackage) => {
@@ -784,7 +832,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
       {portalTab === 'picks' && (
         <ErrorBoundary label="Saved Lists">
-          <SavedListInbox />
+          <SavedListInbox onCreateInvoice={handleStartInvoiceFromLead} />
         </ErrorBoundary>
       )}
       {portalTab === 'photos' && <OwnerPhotoControl />}
