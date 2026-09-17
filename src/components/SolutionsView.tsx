@@ -1,3 +1,4 @@
+import { SaveToListButton } from './SaveToListButton';
 import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES } from '../data/mockData';
@@ -107,6 +108,18 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-3">
+            {/* A service is the thing most people actually want to shortlist —
+                they know they need a logo and a site, and want to ask for both
+                at once rather than booking twice. */}
+            <SaveToListButton
+              className="w-full sm:w-auto px-8 py-4"
+              item={{
+                id: currentService.id,
+                kind: 'service',
+                title: currentService.title,
+                subtitle: currentService.categoryName,
+              }}
+            />
             <button
               onClick={() => onSelectServiceForBooking(currentService.id)}
               className="w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"

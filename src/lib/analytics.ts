@@ -66,6 +66,7 @@ const PATHS: Record<TabType, string> = {
   services: '/services',
   portfolio: '/portfolio',
   booking: '/book',
+  bucket: '/my-list',
   appointments: '/appointments',
   owner_invoice: '/studio',
   legal: '/legal',

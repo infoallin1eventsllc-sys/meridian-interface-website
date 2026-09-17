@@ -1,3 +1,4 @@
+import { SaveToListButton } from './SaveToListButton';
 import React, { useState } from 'react';
 import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
@@ -68,9 +69,14 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
       {/* Portfolio Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
         {filteredPortfolio.map((item) => (
+          <div key={item.id} className="relative">
+          <SaveToListButton
+            variant="compact"
+            className="absolute top-3 right-3 z-10"
+            item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, image: resolveImage(item.id, item.image) }}
+          />
           <button
             type="button"
-            key={item.id}
             onClick={() => { setZoomed(null); setActiveItem(item); }}
             aria-label={`View concept: ${item.title}`}
             className="text-left w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all group flex flex-col justify-between"
@@ -122,6 +128,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
               </span>
             </div>
           </button>
+          </div>
         ))}
       </section>
 
@@ -209,15 +216,28 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-3 border-t border-slate-100">
+                {/* Saving is the lower-commitment of the two, and the one most
+                    people want after looking at a single piece: keep it first
+                    and quiet, with booking beside it for anyone already sure. */}
+                <SaveToListButton
+                  className="w-full sm:flex-1"
+                  item={{
+                    id: activeItem.id,
+                    kind: 'work',
+                    title: activeItem.title,
+                    subtitle: activeItem.categoryLabel,
+                    image: resolveImage(activeItem.id, activeItem.image),
+                  }}
+                />
                 <button
                   onClick={() => {
                     setActiveItem(null);
                     onTabChange('booking');
                   }}
-                  className="w-full py-3 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 py-3 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
                 >
                   <span className="material-symbols-outlined text-base">calendar_month</span>
-                  Book Appointment for Similar Project
+                  Book an appointment
                 </button>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import { SavedListButton } from './SavedListButton';
 import React from 'react';
 import { TabType } from '../types';
 import { MeridianLogo } from './MeridianLogo';
@@ -85,6 +86,8 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Action Tools */}
         <div className="flex items-center gap-2 md:gap-3">
+          <SavedListButton onTabChange={onTabChange} active={currentTab === 'bucket'} />
+
           <button
             onClick={onOpenSearch}
             className="p-2 text-[#0f172a] hover:bg-slate-200/60 rounded-full transition-colors active:scale-95"

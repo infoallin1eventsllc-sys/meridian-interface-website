@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from './types';
+import { BucketView } from './components/BucketView';
 import { initAnalytics, trackPage } from './lib/analytics';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -151,6 +152,8 @@ export default function App() {
         {currentTab === 'owner_invoice' && (
           <OwnerInvoiceView onTabChange={handleTabChange} />
         )}
+
+        {currentTab === 'bucket' && <BucketView onTabChange={handleTabChange} />}
 
         {currentTab === 'legal' && <LegalView doc={legalDoc} />}
       </div>
