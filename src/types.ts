@@ -46,6 +46,27 @@ export interface OwnerInvoice {
   createdAt: string;
 }
 
+
+/**
+ * When one service is sold at more than one size, the sizes a client chooses
+ * between before saving it.
+ *
+ * Web design is the case this exists for. A client wanting a landing page and
+ * a client wanting twelve pages were clicking the same card, so the reply they
+ * got described a three-to-seven page site either way and Otis had to correct
+ * it by hand. Asking once, on the card, costs the client one click and saves
+ * that whole exchange.
+ */
+export interface ServiceSize {
+  id: string;
+  /** What the client picks, in their terms. */
+  label: string;
+  /** One line under the label, so the choice is obvious without guessing. */
+  hint: string;
+  /** The Client Answer this size declares. Same contract as explainerId. */
+  explainerId: string;
+}
+
 export interface ServiceDetail {
   id: ServiceCategory;
   title: string;
@@ -64,6 +85,8 @@ export interface ServiceDetail {
    * product with the nearest thing that happened to match.
    */
   explainerId: string | null;
+  /** Sizes this service is sold at. Absent when it only comes one way. */
+  sizes?: ServiceSize[];
 
   /**
    * Deliberately absent. Prices are quoted on an invoice, not published — and

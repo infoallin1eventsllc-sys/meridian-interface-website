@@ -25,8 +25,18 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
   onSelectServiceForBooking
 }) => {
   const [selectedServiceId, setSelectedServiceId] = useState<ServiceCategory>('web_design');
+  // Which size of this service the client wants. Keyed by service id so
+  // switching away and back does not silently keep an answer from another
+  // service, which would put the wrong tier on their reply.
+  const [sizeByService, setSizeByService] = useState<Record<string, string>>({});
 
   const currentService = SERVICES.find(s => s.id === selectedServiceId) || SERVICES[0];
+  const sizes = currentService.sizes;
+  // Default to the middle tier, which is what this card meant before it asked.
+  const chosenSizeId = sizeByService[currentService.id]
+    ?? sizes?.find((z) => z.id === 'small')?.id
+    ?? sizes?.[0]?.id;
+  const chosenSize = sizes?.find((z) => z.id === chosenSizeId);
   const m = useMeridianMotion();
 
   return (
@@ -107,6 +117,41 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             </div>
           </div>
 
+          {sizes?.length ? (
+            <div className="pt-4">
+              <div className="font-body text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+                How big is yours?
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {sizes.map((z) => {
+                  const active = z.id === chosenSizeId;
+                  return (
+                    <button
+                      key={z.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setSizeByService((prev) => ({ ...prev, [currentService.id]: z.id }))}
+                      className={`text-left px-4 py-3 rounded-lg border transition-all ${
+                        active
+                          ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm'
+                          : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="font-body font-bold text-sm">{z.label}</div>
+                      <div className={`font-body text-xs mt-0.5 ${active ? 'text-slate-300' : 'text-slate-500'}`}>
+                        {z.hint}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="font-body text-xs text-slate-500 mt-2">
+                Not sure? Pick the closest — we settle the exact size in the conversation,
+                and nothing is priced until then.
+              </p>
+            </div>
+          ) : null}
+
           <div className="pt-4 flex flex-col sm:flex-row gap-3">
             {/* A service is the thing most people actually want to shortlist —
                 they know they need a logo and a site, and want to ask for both
@@ -114,11 +159,16 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             <SaveToListButton
               className="w-full sm:w-auto px-8 py-4"
               item={{
-                id: currentService.id,
+                // The size is part of the identity: saving "one page" and
+                // "8-12 pages" must be two different things in the list, not
+                // one entry that silently overwrites the other.
+                id: chosenSize ? `${currentService.id}:${chosenSize.id}` : currentService.id,
                 kind: 'service',
-                title: currentService.title,
+                title: chosenSize
+                  ? `${currentService.title} — ${chosenSize.label}`
+                  : currentService.title,
                 subtitle: currentService.categoryName,
-                explainerId: currentService.explainerId,
+                explainerId: chosenSize ? chosenSize.explainerId : currentService.explainerId,
               }}
             />
             <button

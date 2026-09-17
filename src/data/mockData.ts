@@ -37,6 +37,15 @@ export const SERVICES: ServiceDetail[] = [
     title: 'Custom Web Design & Development',
     categoryName: 'Web Development',
     explainerId: 'exp_web_business',
+    // A client wanting one page and a client wanting twelve were clicking the
+    // same card. Asking here means the reply they get describes the site they
+    // actually want, and the invoice starts on the right tier.
+    sizes: [
+      { id: 'landing', label: 'One page',       hint: 'A single landing page',                explainerId: 'exp_web_landing' },
+      { id: 'small',   label: '3–7 pages',      hint: 'A standard business site',             explainerId: 'exp_web_business' },
+      { id: 'large',   label: '8–12 pages',     hint: 'Several services, or more than one location', explainerId: 'exp_web_large' },
+      { id: 'app',     label: 'More than a website', hint: 'Logins, dashboards, an application', explainerId: 'exp_web_app' },
+    ],
     duration: '1 - 3 Weeks',
     icon: 'language',
     summary: 'High-converting, responsive websites engineered with tailored UX, swift loading speeds, and SEO optimization.',
