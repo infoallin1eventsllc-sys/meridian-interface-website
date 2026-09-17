@@ -171,6 +171,104 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     ],
   },
   {
+    id: 'exp_web_large',
+    title: 'Custom 8\u201312 Page Business Site',
+    category: 'Websites',
+    matches: [
+      'custom 8\u201312 page',
+      'custom 8-12 page',
+      '8\u201312 page business',
+      '8-12 page business',
+      'larger business site',
+      'eleven page',
+      'twelve page',
+    ],
+    summary:
+      'A larger business website of eight to twelve pages, for a company with more to explain than a small site can hold.',
+    short:
+      'This is a bigger version of the business site: eight to twelve pages, for a company with several services, locations, or audiences that each need their own page. Every page is designed for its own job rather than repeating one layout, and you can edit your own text and images afterwards without calling us.',
+    included: [
+      {
+        what: 'Eight to twelve pages, each designed for what that page has to do',
+        why: 'A services page, a page per location, a page per audience \u2014 each one built around the visitor who lands on it rather than one template repeated twelve times.',
+      },
+      {
+        what: 'A navigation structure that holds together at this size',
+        why: 'Twelve pages is the point where a menu stops being obvious. The structure is worked out first, so visitors can still find things.',
+      },
+      {
+        what: 'Your services presented so people understand what they are buying',
+        why: 'More pages means more room to explain, and more room to lose someone. Each service gets the space to make its own case.',
+      },
+      {
+        what: 'An enquiry form that reaches you instantly, with every message stored',
+        why: 'Nothing sits in a form waiting to be noticed, and nothing is lost if an email goes astray.',
+      },
+      {
+        what: 'You can change your own text and images afterwards',
+        why: 'At this size you will want to change things often. You should not need us for a phone number or a price list.',
+      },
+      {
+        what: 'Search setup across every page, and loading speed tuned before launch',
+        why: 'A bigger site is slower by default unless somebody deals with it. This is dealt with before you launch, not after someone complains.',
+      },
+    ],
+    outcome:
+      'You get a site that can carry a business with real range \u2014 several services, more than one location, more than one kind of customer \u2014 without the whole thing turning into a wall of text on one page.',
+    excluded: [
+      'Pages beyond the twelfth \u2014 each additional page is quoted separately',
+      'Online payments or a shop, which is a different build',
+      'A customer login area or booking system (see the web app tier)',
+      'Copywriting, photography, and paid stock images',
+      'Ongoing SEO or content work after launch',
+      'Hosting and domain fees, paid to those providers directly',
+    ],
+    timeline: 'Typically five to eight weeks, depending on how quickly content arrives.',
+    needFromYou: [
+      'The list of pages you want, or the services and locations they should cover',
+      'Your wording for each page, or a decision to have it written (quoted separately)',
+      'Your logo and brand colours, or the go-ahead to design them',
+      'Photographs, or a decision to license stock (quoted separately)',
+    ],
+  },
+  {
+    id: 'exp_extra_page',
+    title: 'Additional Page',
+    category: 'Websites',
+    matches: ['additional page', 'extra page', 'page beyond', 'added page'],
+    summary:
+      'One more page added to whatever site was agreed, designed and built to match what is already there.',
+    short:
+      'Every site tier covers a set number of pages. This is one page beyond that, charged per page. It is designed to match the site it joins \u2014 same layout language, same navigation, same behaviour on phones \u2014 so it does not read as an afterthought.',
+    included: [
+      {
+        what: 'One page, designed to match the site it joins',
+        why: 'The point of paying for a designed page rather than a duplicated one is that nobody can tell which pages came later.',
+      },
+      {
+        what: 'Added to the navigation properly',
+        why: 'A page nobody can find from the menu is a page nobody reads.',
+      },
+      {
+        what: 'Correct on phones, and included in the search setup',
+        why: 'Held to the same standard as every other page on the site, because visitors do not know or care which ones were extra.',
+      },
+    ],
+    outcome:
+      'You can grow the site as the business grows, at a price you know in advance, rather than renegotiating the whole project every time you add a service.',
+    excluded: [
+      'Writing the words on the page \u2014 we lay out and design what you supply',
+      'Photography or paid stock images for the new page',
+      'Rebuilding or restructuring the existing site around it',
+      'New functionality that is not already on the site \u2014 quoted separately',
+    ],
+    timeline: 'Usually within a week of the wording arriving, alongside other work.',
+    needFromYou: [
+      'What the page is for, and where it belongs in the menu',
+      'The wording, and any images it should carry',
+    ],
+  },
+  {
     id: 'exp_web_app',
     title: 'Complex Custom Web App / Multi-Page Portal',
     category: 'Websites',
