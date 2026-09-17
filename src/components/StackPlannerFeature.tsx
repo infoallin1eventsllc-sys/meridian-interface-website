@@ -28,8 +28,8 @@ const plannerLink = PLANNER_URL.startsWith('/')
   : `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=home-feature&utm_campaign=stack-planner`;
 
 const SHOTS = [
-  { src: '/images/portfolio/agentic-tech-stack-builder.jpg', label: 'Choose the pieces, see the monthly cost' },
-  { src: '/images/portfolio/agentic-tech-stack-roi.jpg', label: 'What it frees up, and when it pays for itself' },
+  { src: '/images/portfolio/agentic-tech-stack-builder.jpg', label: 'Choose the pieces, layer by layer' },
+  { src: '/images/portfolio/agentic-tech-stack-roi.jpg', label: 'What it frees up, in hours and people' },
   { src: '/images/portfolio/agentic-tech-stack-proposal.jpg', label: 'A proposal you keep' },
 ];
 
@@ -86,8 +86,9 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
             </h2>
             <p className="font-body text-sm text-slate-600 leading-relaxed">
               Before we build a business its AI system, we plan it together in this. It lays out the five layers such a
-              system needs, what each one costs a month, how a job runs with a person approving anything that matters,
-              and what the whole thing is worth set against what it costs to build. You leave with a written proposal.
+              system needs, how a job runs with a person approving anything that matters, and how much time the whole
+              thing would give a team back. You leave with a written proposal. What it costs we go through with you on
+              the call — it depends on what you actually need, and a number quoted before that is a guess.
             </p>
           </div>
 
@@ -100,7 +101,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
             ))}
             <li className="flex items-start gap-2.5 font-body text-xs text-slate-700">
               <span className="material-symbols-outlined text-blue-600 text-base leading-none mt-0.5" aria-hidden="true">check_circle</span>
-              <span>Every figure is an estimate you can change, with the working shown</span>
+              <span>Every figure is yours to change, with the working shown</span>
             </li>
           </ul>
 

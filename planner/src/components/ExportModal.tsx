@@ -51,7 +51,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, selec
 
   const layerMd = (n: number, title: string, item: typeof fItem) => `### Layer ${n}: ${title}
 - **Choice:** ${item.name}
-- **Monthly cost (estimate):** ${item.monthlyCostRange}
 - **Response speed:** ${item.latencyRating}
 - **Standards used:** ${item.standardProtocols.join(', ')}
 - **Why:** ${item.description}`;
@@ -63,7 +62,6 @@ Built by ${MERIDIAN.name} — ${MERIDIAN.siteLabel} · ${MERIDIAN.email} · ${ME
 ## Business profile
 - **Stage:** ${stageInfo.title} (${stageInfo.revenue})
 - **Kind of business:** ${MODEL_LABEL[businessModel]}
-- **Estimated running cost:** ${stageInfo.avgMonthlyCost}
 - **Typical build time:** ${stageInfo.implementationTime}
 - **How much could run unattended (our judgement, not a measurement):** ${stageInfo.readinessScore} / 10
 
@@ -110,7 +108,6 @@ Figures above are planning estimates, not a quote.
         stageTitle: stageInfo.title,
         revenueTier: stageInfo.revenue,
         businessModel,
-        estimatedMonthlyCost: stageInfo.avgMonthlyCost,
         typicalBuildTime: stageInfo.implementationTime,
         unattendedJudgement: `${stageInfo.readinessScore} / 10 (Meridian's judgement, not a measurement)`,
       },

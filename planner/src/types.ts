@@ -15,7 +15,6 @@ export interface StackLayerItem {
     pros: string[];
     cons: string[];
   };
-  monthlyCostRange: string;
   latencyRating: 'Ultra-Fast (<200ms)' | 'Fast (<800ms)' | 'Standard (1-2s)';
   autonomyReadiness: number; // 1-10
   standardProtocols: string[];
@@ -91,7 +90,6 @@ export interface AdvisorBlueprint {
     component: string;
     role: string;
     status: string;
-    estimatedCost: string;
   }[];
   phasedDeployment: {
     phase: string;
@@ -103,7 +101,6 @@ export interface AdvisorBlueprint {
     monthlyHoursSaved: number;
     headcountEquivalentLeverage: string;
     projectedMonthlySavings: string;
-    paybackWeeks: number;
   };
 }
 

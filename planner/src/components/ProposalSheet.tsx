@@ -157,7 +157,6 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
               <div key={key} className="border border-[#e2e8f0] rounded-lg p-3.5 break-inside-avoid">
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-4">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">{title}</div>
-                  <div className="text-[11px] font-mono text-[#475569] sm:whitespace-nowrap">{item.monthlyCostRange}</div>
                 </div>
                 <div className="text-sm font-bold text-[#0f172a] mt-0.5">{item.name}</div>
                 <p className="text-xs text-[#475569] mt-1 leading-relaxed">{item.plain ?? item.description}</p>
@@ -210,14 +209,18 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
           </p>
         </Section>
 
-        <Section title={`${n()}. What it costs, and when it pays for itself`}>
-          <Grid rows={[
-            ['Design and build (one-off)', money(roi.buildCost)],
-            ['Running it', `${money(roi.monthlyStackCost)} a month · ${money(r.annualStackCost)} a year`],
-            ['First year, everything counted', `${r.firstYearNet >= 0 ? '+' : '−'}${money(Math.abs(r.firstYearNet))}`],
-            ['Every year after that', `${r.ongoingAnnualNet >= 0 ? '+' : '−'}${money(Math.abs(r.ongoingAnnualNet))}`],
-            ['Pays the build back in', r.paybackLabel],
-          ]} emphasiseLast />
+        <Section title={`${n()}. What it costs`}>
+          <p className="text-sm text-[#191c1f] leading-relaxed">
+            Deliberately not filled in here. There are two numbers — a one-off to design and build the system, and
+            the monthly cost of the services it runs on — and both depend on which pieces you actually need, how much
+            you put through them, and what you already pay for. A figure printed before that conversation would be a
+            guess, and you would be entitled to hold us to it.
+          </p>
+          <p className="text-sm text-[#191c1f] leading-relaxed mt-2.5">
+            Bring this document to the call and we will go through both, line by line, against the stack above. The
+            monthly services are billed to you by the providers directly, not through us, so you keep them if you ever
+            walk away.
+          </p>
           <p className="text-[11px] text-[#475569] mt-3 leading-relaxed">
             You own the setup. There is no per-seat fee that grows every time you hire.
           </p>

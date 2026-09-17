@@ -67,14 +67,6 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
   // Aggregate stats
   const avgReadiness = (selectedItems.reduce((acc, item) => acc + item.autonomyReadiness, 0) / selectedItems.length).toFixed(1);
   
-  // Cost estimation heuristic
-  const calculateCostEstimate = () => {
-    if (businessStage === 'seed') return '$90 - $240 / month';
-    if (businessStage === 'growth') return '$280 - $620 / month';
-    if (businessStage === 'scale') return '$750 - $1,800 / month';
-    return '$7,600 - $25,000 / month (Dedicated PTUs)';
-  };
-
   const layersNav = [
     { key: 'foundation', label: '1. Foundation Model', current: currentFoundation.name },
     { key: 'orchestration', label: '2. Orchestrator', current: currentOrchestration.name },
@@ -99,10 +91,10 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
           <div>
             <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <Sliders className="w-5 h-5 text-emerald-600" />
-              Build your stack, and see what it costs
+              Build your stack, layer by layer
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Pick the stage and the kind of business. The five layers below fill in with a sensible starting point; change any of them and the monthly estimate follows.
+              Pick the stage and the kind of business. The five layers below fill in with a sensible starting point; change any of them and the rest of the plan follows.
             </p>
           </div>
 
@@ -178,18 +170,7 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
       </div>
 
       {/* Real-time Metrics Dashboard Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
-            <DollarSign className="w-4 h-4 text-emerald-600" />
-            <span>Estimated running cost</span>
-          </div>
-          <div className="text-base sm:text-lg font-bold text-slate-900 font-mono">
-            {calculateCostEstimate()}
-          </div>
-          <div className="text-[11px] text-slate-500 mt-0.5">Model usage, memory and orchestration</div>
-        </div>
-
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white border border-slate-200 p-3.5 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
             <Gauge className="w-4 h-4 text-blue-600" />
@@ -292,10 +273,6 @@ export const StackBuilder: React.FC<StackBuilderProps> = ({
                   </p>
 
                   <div className="mt-3 pt-3 border-t border-slate-200 space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between text-slate-700">
-                      <span className="text-slate-500 font-mono">Cost:</span>
-                      <span className="font-mono text-emerald-600 text-[11px]">{option.monthlyCostRange}</span>
-                    </div>
                     <div className="flex items-center justify-between text-slate-700">
                       <span className="text-slate-500 font-mono">Latency:</span>
                       <span className="font-mono text-slate-700 text-[11px]">{option.latencyRating}</span>

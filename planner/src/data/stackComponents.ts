@@ -14,14 +14,13 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       name: 'Claude Sonnet 5 (everyday work)',
       category: 'Foundation',
       tagline: 'The model most of the stack runs on: fast, careful, priced for volume',
-      description: 'Handles the daily volume: triage, drafting, reading invoices and documents, and structured JSON for tools. Published price $2 per million input tokens and $10 per million output; a growing business typically uses 5 to 30 million tokens a month.',
+      description: 'Handles the daily volume: triage, drafting, reading invoices and documents, and structured JSON for tools. Billed by the amount of text it processes rather than per seat, so it costs what you use.',
       plain: 'The model that does most of the reading, writing and deciding, every day.',
       bestFor: 'Customer triage, invoice reading, drafting, routing, most agent steps.',
       tradeOffs: {
         pros: ['Follows instructions and returns structured output reliably', 'Reads documents and images natively', 'Prompt caching cuts the cost of repeated context'],
         cons: ['Send the hardest judgement calls to Opus instead']
       },
-      monthlyCostRange: '$40 - $250 / mo (5M - 30M tokens, estimate)',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.4,
       standardProtocols: ['Messages API', 'Streaming', 'Tool use (JSON schema)'],
@@ -32,14 +31,13 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       name: 'Claude Opus 5 (hard judgement)',
       category: 'Foundation',
       tagline: 'For the steps where being right matters more than being quick',
-      description: 'The strongest reasoning tier: contract review, multi-step financial checks, deciding what to do with an unusual case. Published price $5 per million input tokens and $25 per million output. Used for a minority of steps, not the whole workflow.',
+      description: 'The strongest reasoning tier: contract review, multi-step financial checks, deciding what to do with an unusual case. Costs materially more per step than the everyday tier, which is why it is used for a minority of steps and not the whole workflow.',
       plain: 'A stronger, slower model kept for the hard calls — the unusual case a junior person would escalate.',
       bestFor: 'Escalations, exceptions, planning, anything that would otherwise go to a senior person.',
       tradeOffs: {
         pros: ['Best accuracy on complex, multi-step reasoning', 'Handles long, messy inputs well'],
         cons: ['Slower and costlier per call; route to it, do not default to it']
       },
-      monthlyCostRange: '$150 - $600 / mo (estimate)',
       latencyRating: 'Standard (1-2s)',
       autonomyReadiness: 9.8,
       standardProtocols: ['Messages API', 'Adaptive thinking', 'Tool use (JSON schema)'],
@@ -50,14 +48,13 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       name: 'Model router (Haiku 4.5 → Sonnet 5 → Opus 5)',
       category: 'Foundation',
       tagline: 'Each step goes to the cheapest model that can do it well',
-      description: 'A small routing layer sends simple, high-volume steps to Claude Haiku 4.5 ($1 / $5 per million tokens), ordinary work to Sonnet 5, and flagged or ambiguous cases to Opus 5. Most businesses land here once volume grows.',
+      description: 'A small routing layer sends simple, high-volume steps to Claude Haiku 4.5, ordinary work to Sonnet 5, and flagged or ambiguous cases to Opus 5 — so the expensive tier is only paid for when the job needs it. Most businesses land here once volume grows.',
       plain: 'Sends each job to the cheapest model that can do it well, and only the hard ones to the expensive model.',
       bestFor: 'Any business that wants low cost on the common path and real judgement on the rare one.',
       tradeOffs: {
         pros: ['Typically cuts blended model spend by half or more', 'Fast on the common path, strong on the hard one'],
         cons: ['One more component to watch; routing rules need occasional tuning']
       },
-      monthlyCostRange: '$60 - $300 / mo (estimate)',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.6,
       standardProtocols: ['Rule + classifier routing', 'Messages API', 'Per-model budgets'],
@@ -75,7 +72,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Billing and access inside the existing cloud', 'Private endpoints available', 'Enterprise data terms negotiable'],
         cons: ['Higher floor cost', 'Provisioning and commitment paperwork', 'New model versions can arrive later than on the direct API']
       },
-      monthlyCostRange: '$500 - $5,000+ / mo (estimate)',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.7,
       standardProtocols: ['Cloud IAM', 'Private endpoints', 'Streaming'],
@@ -96,7 +92,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Stateful persistence across interruptions', 'Native Human-in-the-Loop support', 'Active ecosystem'],
         cons: ['Steeper learning curve than simple linear chains']
       },
-      monthlyCostRange: 'Open Source / Cloud: $0 - $100 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.7,
       standardProtocols: ['Checkpointers', 'State Graphs', 'PubSub'],
@@ -114,7 +109,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Workflow state is persisted, not held in memory', 'Can wait indefinitely for a person', 'Deterministic replay'],
         cons: ['Requires workflow code determinism discipline']
       },
-      monthlyCostRange: '$50 - $350 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.9,
       standardProtocols: ['gRPC', 'Durable Workflows', 'Temporal Cloud'],
@@ -132,7 +126,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Extremely fast initial setup (hours, not days)', 'Intuitive role definitions'],
         cons: ['Can generate runaway token loops if max iterations are not strictly enforced']
       },
-      monthlyCostRange: 'Open Source / $0 - $40 / mo',
       latencyRating: 'Standard (1-2s)',
       autonomyReadiness: 8.4,
       standardProtocols: ['CLI', 'Sequential/Hierarchical Processes'],
@@ -150,7 +143,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Workflow state survives a data-centre outage', 'Built-in audit replay and compensation transactions (Saga pattern)', 'Granular namespace IAM'],
         cons: ['Requires distributed systems SRE expertise']
       },
-      monthlyCostRange: '$800 - $3,500 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 10.0,
       standardProtocols: ['gRPC mTLS', 'Distributed Saga', 'OpenTelemetry Traces'],
@@ -171,7 +163,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Combines high-speed cosine vector search with relational integrity', 'Cost-effective'],
         cons: ['Two database systems to manage or monitor']
       },
-      monthlyCostRange: '$30 - $140 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.4,
       standardProtocols: ['gRPC', 'PostgreSQL Wire Protocol', 'HNSW Index'],
@@ -189,7 +180,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Automatically updates user facts over time', 'Sub-millisecond memory recall via Redis'],
         cons: ['Memory extraction prompts add minor token overhead during conversation turn']
       },
-      monthlyCostRange: '$45 - $180 / mo',
       latencyRating: 'Ultra-Fast (<200ms)',
       autonomyReadiness: 9.3,
       standardProtocols: ['Redis RESP', 'REST API', 'Graph Extract'],
@@ -207,7 +197,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['One database for everything', 'Standard SQL joins between vector similarity and table columns'],
         cons: ['Slightly lower QPS limits at massive scale (>10M vectors) compared to dedicated vector engines']
       },
-      monthlyCostRange: '$25 - $95 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.1,
       standardProtocols: ['Postgres SQL', 'IVFFlat / HNSW'],
@@ -225,7 +214,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Row-level security keeps each department to its own data', 'Direct SQL + Vector hybrid retrieval', 'Private-network deployment available'],
         cons: ['Requires enterprise Snowflake/Databricks integration setup']
       },
-      monthlyCostRange: '$1,200 - $4,800 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 10.0,
       standardProtocols: ['Snowflake SQL API', 'PrivateLink', 'Qdrant gRPC', 'JWT Claims'],
@@ -246,7 +234,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Standardized JSON-RPC protocol', 'Growing ecosystem of pre-built MCP connectors (HubSpot, GitHub, Slack, Postgres, Jira)', 'Sandboxed security boundaries'],
         cons: ['Requires running lightweight MCP server daemons']
       },
-      monthlyCostRange: 'Open Source / Protocol native ($0)',
       latencyRating: 'Ultra-Fast (<200ms)',
       autonomyReadiness: 9.9,
       standardProtocols: ['MCP (JSON-RPC 2.0)', 'stdio', 'SSE'],
@@ -264,7 +251,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Direct integration with existing backends without rewriting endpoints', 'Strict type contracts'],
         cons: ['Large OpenAPI schemas can consume excessive context tokens if not filtered']
       },
-      monthlyCostRange: '$0 - $30 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 8.9,
       standardProtocols: ['OpenAPI 3.1', 'REST', 'Webhooks'],
@@ -282,7 +268,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Handles complex mathematical logic without LLM calculation errors', 'Processes large datasets locally'],
         cons: ['Requires secure isolated container infrastructure (e.g. E2B, Modal, Docker)']
       },
-      monthlyCostRange: '$20 - $120 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.6,
       standardProtocols: ['gVisor', 'Firecracker MicroVMs', 'Docker'],
@@ -300,7 +285,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Centralized CISO killswitch for any tool or agent', 'Native SAP BAPI, ServiceNow REST, and Workday SOAP integrations', 'HashiCorp Vault credential rotation'],
         cons: ['Requires corporate API gateway configuration']
       },
-      monthlyCostRange: '$600 - $2,500 / mo',
       latencyRating: 'Ultra-Fast (<200ms)',
       autonomyReadiness: 10.0,
       standardProtocols: ['MCP JSON-RPC 2.0', 'mTLS', 'OAuth2 / SAML 2.0', 'HashiCorp Vault'],
@@ -321,7 +305,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Open source and cloud options', 'Detailed flamegraphs of multi-agent traces', 'Automated accuracy scores'],
         cons: ['Requires wrapping agent client calls with telemetry SDK']
       },
-      monthlyCostRange: 'Free Tier / Cloud $49 - $190 / mo',
       latencyRating: 'Ultra-Fast (<200ms)',
       autonomyReadiness: 9.8,
       standardProtocols: ['OTel Standard', 'REST API', 'Batch Exporter'],
@@ -339,7 +322,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Masks personal data before it reaches a model', 'Detects prompt injection and jailbreak attempts', 'Strict schema enforcement on tool calls'],
         cons: ['Adds 40-100ms validation check before and after inference']
       },
-      monthlyCostRange: '$40 - $150 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.7,
       standardProtocols: ['Colang', 'Regex Masks', 'Structured Output Validators'],
@@ -357,7 +339,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['A person sees anything that matters before it happens', 'Builds team trust incrementally'],
         cons: ['Workflow pauses until human clicks Approve (handled seamlessly via async webhooks)']
       },
-      monthlyCostRange: '$0 - $50 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 9.9,
       standardProtocols: ['Slack BlockKit', 'Webhook Callbacks', 'JWT Action Signatures'],
@@ -375,7 +356,6 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
         pros: ['Gives a security team the identity and change records their audits ask for', 'Append-only, hashed audit log', 'Kill switch that isolates one agent at a time'],
         cons: ['Requires integration with enterprise SIEM (Splunk / Microsoft Sentinel)']
       },
-      monthlyCostRange: '$1,500 - $5,000 / mo',
       latencyRating: 'Fast (<800ms)',
       autonomyReadiness: 10.0,
       standardProtocols: ['WORM Audit Vault', 'SHA-256 Signatures', 'Okta NHI', 'Splunk HEC'],
@@ -980,7 +960,6 @@ export const STAGE_PRESETS = {
       toolsProtocol: 'mcp-gateway',
       governance: 'hitl-approval-engine'
     },
-    avgMonthlyCost: '$80 - $220 / mo',
     readinessScore: 8.8,
     implementationTime: '1 - 2 weeks'
   },
@@ -995,7 +974,6 @@ export const STAGE_PRESETS = {
       toolsProtocol: 'mcp-gateway',
       governance: 'langfuse-opentelemetry'
     },
-    avgMonthlyCost: '$250 - $650 / mo',
     readinessScore: 9.6,
     implementationTime: '2 - 4 weeks'
   },
@@ -1010,7 +988,6 @@ export const STAGE_PRESETS = {
       toolsProtocol: 'code-interpreter-sandbox',
       governance: 'guardrails-pii-filter'
     },
-    avgMonthlyCost: '$750 - $2,200 / mo',
     readinessScore: 9.9,
     implementationTime: '4 - 8 weeks'
   },
@@ -1025,7 +1002,6 @@ export const STAGE_PRESETS = {
       toolsProtocol: 'mcp-enterprise-gateway',
       governance: 'enterprise-iam-audit-vault'
     },
-    avgMonthlyCost: '$7,600 - $25,000 / mo',
     readinessScore: 10.0,
     implementationTime: '6 - 12 weeks'
   }

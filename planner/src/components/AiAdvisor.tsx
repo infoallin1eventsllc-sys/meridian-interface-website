@@ -33,7 +33,10 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlue
   const [industry, setIndustry] = useState<string>('B2B Freight & Supply Chain SaaS');
   const [stage, setStage] = useState<string>('Growth ($1M - $10M ARR)');
   const [teamSize, setTeamSize] = useState<string>('32 team members');
-  const [monthlyBudget, setMonthlyBudget] = useState<string>('$300 - $1,200 / month');
+  // Left blank on purpose: a pre-filled bracket here reads as "this is what it
+  // costs", which is the one thing this tool must not say. The client's own
+  // figure still steers which tier the advisor recommends.
+  const [monthlyBudget, setMonthlyBudget] = useState<string>('');
   const [currentTools, setCurrentTools] = useState<string>('HubSpot, Slack, Google Workspace, Stripe, Zendesk, QuickBooks');
   const [painPoints, setPainPoints] = useState<string>('Lead response delay of 6+ hours, manual PDF invoice OCR and reconciliation taking 15 hours/week, tier-1 repetitive support tickets.');
   const [targetAutonomyGoal, setTargetAutonomyGoal] = useState<string>('Autonomous department workflows with Human-in-the-Loop oversight on transactions > $200');
@@ -67,7 +70,7 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlue
 ${blueprint.summary}
 
 ## The five layers
-${blueprint.stackLayers.map(l => `### ${l.layer}\n- **Component:** ${l.component}\n- **Role:** ${l.role}\n- **Cost:** ${l.estimatedCost}\n- **Status:** ${l.status}`).join('\n\n')}
+${blueprint.stackLayers.map(l => `### ${l.layer}\n- **Component:** ${l.component}\n- **Role:** ${l.role}\n- **Status:** ${l.status}`).join('\n\n')}
 
 ## Rollout in phases
 ${blueprint.phasedDeployment.map(p => `### ${p.phase}\n*Impact:* ${p.impact}\n${p.actions.map(a => `- ${a}`).join('\n')}`).join('\n\n')}
@@ -79,7 +82,6 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
 - Monthly Hours Reclaimed: ${blueprint.projectedMetrics.monthlyHoursSaved} hours
 - Team Headcount Leverage: ${blueprint.projectedMetrics.headcountEquivalentLeverage}
 - Monthly Savings: ${blueprint.projectedMetrics.projectedMonthlySavings}
-- Payback Timeline: ${blueprint.projectedMetrics.paybackWeeks} weeks
 `;
     navigator.clipboard.writeText(md);
     setCopied(true);
@@ -163,6 +165,7 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
                   id="advisor-budget"
                   type="text"
                   value={monthlyBudget}
+                  placeholder="Optional — if you have one in mind"
                   onChange={(e) => setMonthlyBudget(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-blue-500"
                 />
@@ -273,10 +276,6 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
                   <div className="text-[10px] text-slate-500">LEVERAGE</div>
                   <div className="text-sm font-bold text-indigo-600 mt-0.5">{blueprint.projectedMetrics.headcountEquivalentLeverage}</div>
                 </div>
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                  <div className="text-[10px] text-slate-500">PAYBACK</div>
-                  <div className="text-sm font-bold text-amber-600 mt-0.5">{blueprint.projectedMetrics.paybackWeeks} weeks</div>
-                </div>
               </div>
 
               {/* 5-Layer Recommended Stack */}
@@ -290,7 +289,6 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
                     <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-blue-700 font-bold">{layer.layer}</span>
-                        <span className="font-mono text-emerald-600 text-[11px]">{layer.estimatedCost}</span>
                       </div>
                       <div className="text-slate-900 font-semibold mt-0.5">{layer.component}</div>
                       <p className="text-slate-500 text-[11px] mt-1">{layer.role}</p>

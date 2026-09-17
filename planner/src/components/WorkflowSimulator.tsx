@@ -420,9 +420,6 @@ export const WorkflowSimulator: React.FC<WorkflowSimulatorProps> = ({ aiLive }) 
                   Execution Time: 1.4s
                 </span>
                 <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200">
-                  Token Cost: $0.0031
-                </span>
-                <span className="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200">
                   Human Oversight: 1 Gate Approved
                 </span>
               </div>

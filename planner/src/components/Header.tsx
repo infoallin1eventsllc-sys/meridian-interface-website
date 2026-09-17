@@ -17,7 +17,7 @@ export const NAV_ITEMS = [
   { id: 'builder', label: 'Build your stack', icon: Cpu },
   { id: 'simulator', label: 'Watch a workflow run', icon: PlayCircle },
   { id: 'departments', label: 'Department playbooks', icon: Briefcase },
-  { id: 'roi', label: 'Return on the spend', icon: Calculator },
+  { id: 'roi', label: 'What it frees up', icon: Calculator },
   { id: 'enterprise', label: 'Governance', icon: ShieldCheck },
   { id: 'advisor', label: 'AI advisor', icon: Sparkles },
 ] as const;

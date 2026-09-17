@@ -1,5 +1,6 @@
 import React from 'react';
 import { RoiInputs, RoiPresetKey, ROI_PRESETS, computeRoi } from '../lib/roi';
+import { MERIDIAN } from '../lib/brand';
 import { 
   Calculator, 
   DollarSign, 
@@ -8,6 +9,7 @@ import {
   TrendingUp, 
   Sparkles, 
   ShieldCheck,
+  ArrowRight,
   CheckCircle2,
   HelpCircle
 } from 'lucide-react';
@@ -24,15 +26,14 @@ interface RoiCalculatorProps {
 export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => {
   const {
     teamSize, avgSalary, hoursPerWeekRepetitive,
-    automationRate, monthlyStackCost, buildCost, realisationRate,
+    automationRate, realisationRate,
   } = inputs;
 
   const applyRoiPreset = (preset: RoiPresetKey) => set(ROI_PRESETS[preset]);
 
   const {
     hourlyRate, weeklyHoursFreed, annualHoursFreed, annualValue,
-    annualStackCost, firstYearNet, ongoingAnnualNet, paybackMonths,
-    paybackLabel, headcountLeverage,
+    headcountLeverage,
   } = computeRoi(inputs);
 
   return (
@@ -41,16 +42,17 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
       <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
-            Estimate, not a quote
+            Your numbers, not a quote
           </span>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-            What it costs, and when it pays for itself
+            What this frees up
           </h2>
         </div>
         <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
-          Move the sliders to your own numbers. This counts the build as a real one-off cost and only counts freed time
-          as money to the degree you actually use it — which is why the payback here is months rather than the days a
-          vendor calculator will tell you. Everything is an estimate for a conversation.
+          Move the sliders to your own numbers. Every figure here is yours — your team, your salaries, your hours —
+          and freed time only counts as money to the degree you actually use it, which is why these numbers are
+          smaller than a vendor calculator will tell you. What the build and the running services cost is not on this
+          page: those depend on what you actually need, so we work them out with you.
         </p>
       </div>
 
@@ -223,65 +225,6 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
             </div>
           </div>
 
-          {/* Monthly Agentic Stack Infra Budget */}
-          <div className="space-y-2 pt-2 border-t border-slate-200">
-            <div className="flex items-center justify-between text-xs">
-              <label className="text-slate-700 font-medium flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-slate-500" />
-                Running cost of the stack
-              </label>
-              <span className="font-mono text-slate-800 font-bold bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200">
-                ${monthlyStackCost} / mo
-              </span>
-            </div>
-            <input
-              id="roi-input-stack-cost"
-              type="range"
-              min="80"
-              max="30000"
-              step="50"
-              value={monthlyStackCost}
-              onChange={(e) => set({ monthlyStackCost: Number(e.target.value) })}
-              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-400"
-            />
-            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>$80</span>
-              <span>$500</span>
-              <span>$2,500</span>
-              <span>$30k</span>
-            </div>
-          </div>
-
-          {/* One-off build cost. Meridian's published tech stack rate is $7,500,
-              range $4,500 - $15,000, so the default is the real number. */}
-          <div className="space-y-2 pt-2 border-t border-slate-200">
-            <div className="flex items-center justify-between text-xs">
-              <label className="text-slate-700 font-medium flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-slate-500" />
-                One-off cost to design and build it
-              </label>
-              <span className="font-mono text-slate-800 font-bold bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200">
-                ${buildCost.toLocaleString()}
-              </span>
-            </div>
-            <input
-              id="roi-input-build-cost"
-              type="range"
-              min="2000"
-              max="40000"
-              step="500"
-              value={buildCost}
-              onChange={(e) => set({ buildCost: Number(e.target.value) })}
-              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-400"
-            />
-            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>$2k</span>
-              <span>$7.5k (Meridian)</span>
-              <span>$20k</span>
-              <span>$40k</span>
-            </div>
-          </div>
-
           {/* The honest discount. Without it the model assumes every freed
               minute becomes billable, which is how you get a 10,000% return. */}
           <div className="space-y-2 pt-2 border-t border-slate-200">
@@ -327,31 +270,33 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
               </div>
             </div>
 
-            <div className={`rounded-2xl p-4 border ${ongoingAnnualNet > 0 ? 'bg-emerald-50 border-emerald-400' : 'bg-slate-50 border-slate-300'}`}>
-              <div className={`text-xs font-mono font-semibold mb-1 ${ongoingAnnualNet > 0 ? 'text-emerald-600' : 'text-slate-500'}`}>
-                WORTH PER YEAR, AFTER RUNNING COSTS
+            <div className="bg-emerald-50 border border-emerald-400 rounded-2xl p-4">
+              <div className="text-xs font-mono text-emerald-600 font-semibold mb-1">
+                WHAT THAT TIME IS WORTH
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">
-                ${Math.round(ongoingAnnualNet).toLocaleString()}
+                ${Math.round(annualValue).toLocaleString()}
               </div>
-              <div className={`text-[11px] mt-1 ${ongoingAnnualNet > 0 ? 'text-emerald-700' : 'text-slate-500'}`}>
-                Year one is ${Math.round(firstYearNet).toLocaleString()} after the build
+              <div className="text-[11px] text-emerald-700 mt-1">
+                A year, at your own salary figures, counting {realisationRate}% of it
               </div>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-300 rounded-2xl p-4">
+            <a
+              href={MERIDIAN.book}
+              className="bg-indigo-50 border border-indigo-300 rounded-2xl p-4 block hover:bg-indigo-100 hover:border-indigo-400 transition-colors group"
+            >
               <div className="text-xs font-mono text-indigo-600 font-semibold mb-1">
-                PAYS THE BUILD BACK IN
+                WHAT IT WOULD COST
               </div>
-              <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-mono tabular-nums">
-                {paybackLabel}
+              <div className="text-lg sm:text-xl font-bold text-slate-900 leading-tight flex items-center gap-1.5">
+                Let us price it
+                <ArrowRight className="w-4 h-4 text-indigo-500 group-hover:translate-x-0.5 transition-transform" />
               </div>
               <div className="text-[11px] text-indigo-700 mt-1">
-                {isFinite(paybackMonths)
-                  ? 'Then it is the running cost only'
-                  : 'At these numbers the running cost is more than the time is worth'}
+                Both the build and the monthly services depend on what you actually need. We will go through them with you.
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Governance value note (large teams only): named, not counted */}
@@ -398,24 +343,11 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
                   value: `+ $${Math.round(annualValue).toLocaleString()} / yr`,
                   tone: 'good' as const,
                 },
-                {
-                  label: 'Running the stack',
-                  detail: 'Model usage, vector database, orchestration, MCP tools',
-                  value: `- $${annualStackCost.toLocaleString()} / yr`,
-                  tone: 'cost' as const,
-                },
-                {
-                  label: 'Designing and building it',
-                  detail: 'One-off. Not repeated in later years.',
-                  value: `- $${buildCost.toLocaleString()} once`,
-                  tone: 'cost' as const,
-                },
               ].map((row) => (
                 <div
                   key={row.label}
                   className={`p-3 rounded-xl border flex items-center justify-between gap-4 ${
                     row.tone === 'good' ? 'bg-emerald-50 border-emerald-200'
-                      : row.tone === 'cost' ? 'bg-rose-50 border-rose-200'
                       : 'bg-slate-50 border-slate-200'
                   }`}
                 >
@@ -424,7 +356,7 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
                     <div className="text-[11px] text-slate-500">{row.detail}</div>
                   </div>
                   <div className={`text-right font-mono font-bold tabular-nums whitespace-nowrap ${
-                    row.tone === 'good' ? 'text-emerald-700' : row.tone === 'cost' ? 'text-rose-700' : 'text-slate-700'
+                    row.tone === 'good' ? 'text-emerald-700' : 'text-slate-700'
                   }`}>
                     {row.value}
                   </div>
@@ -433,22 +365,11 @@ export const RoiCalculator: React.FC<RoiCalculatorProps> = ({ inputs, set }) => 
             </div>
 
             <div className="border-t border-slate-200 pt-3 space-y-2 text-xs">
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-semibold text-slate-800">First year, everything counted</span>
-                <span className={`font-mono font-bold tabular-nums ${firstYearNet >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
-                  {firstYearNet >= 0 ? '+' : '-'}${Math.abs(Math.round(firstYearNet)).toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-semibold text-slate-800">Every year after that</span>
-                <span className={`font-mono font-bold tabular-nums ${ongoingAnnualNet >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
-                  {ongoingAnnualNet >= 0 ? '+' : '-'}${Math.abs(Math.round(ongoingAnnualNet)).toLocaleString()}
-                </span>
-              </div>
               <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
-                Not counted here: the enquiries answered in minutes that would otherwise have gone elsewhere, and the
-                mistakes that do not happen because nothing is re-typed. Both are real and neither is safe to put a
-                number on before we know your business.
+                What is not on this page: what the build costs, and what the monthly services cost. Both depend on
+                what you actually need, and quoting either before we have talked would be a guess dressed up as a
+                price. Also not counted above: the enquiries answered in minutes that would otherwise have gone
+                elsewhere, and the mistakes that do not happen because nothing is re-typed.
               </p>
             </div>
           </div>
