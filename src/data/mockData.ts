@@ -19,7 +19,11 @@ export const HOTLINK_IMAGES = {
   // screenshots the portfolio uses — not concept renders. A service card that
   // shows a fictional client's dashboard says less than one that shows FinSight.
   webDesign: '/images/portfolio/modern-street.jpg',
-  appDesign: '/images/portfolio/aurora-banking.jpg',
+  // Was the private-banking concept, removed 17 Sep. The studio has no
+  // app-design PRODUCT to show, so this is the nearest true thing: the frame
+  // shop's own site photographed on a phone, which is real work and really is
+  // a mobile interface. Swap it the day an actual app ships.
+  appDesign: '/images/portfolio/frame-shop-mobile.jpg',
   dashboardDesign: '/images/portfolio/finsight-bi.jpg',
   techStack: '/images/portfolio/agentic-tech-stack.jpg',
   // No real logo product to show yet, so this one stays a rendered scene.
@@ -237,19 +241,20 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p2',
-    title: 'Aurora Reserve — Private Banking Interface',
-    category: 'app_design',
-    categoryLabel: 'Financial App Design',
-    client: 'Private Wealth',
+    title: 'The Frame Shop — Motorcycle Frame & Alignment',
+    category: 'web_design',
+    categoryLabel: 'Trade Business Website',
+    client: 'Motorcycle Service',
     year: '2026',
-    demo: '/demos/aurora/',
-    image: '/images/portfolio/aurora-banking.jpg',
+    demo: '/demos/frame-shop/',
+    image: '/images/portfolio/frame-shop.jpg',
     gallery: [
-      { src: '/images/portfolio/aurora-banking.jpg', caption: 'Two devices driven side by side from one console — vault and portfolio' },
-      { src: '/images/portfolio/aurora-banking-decks.jpg', caption: 'Telemetry decks and the transaction ledger' },
+      { src: '/images/portfolio/frame-shop.jpg', caption: 'The shop front page \u2014 what it does, and one way in' },
+      { src: '/images/portfolio/frame-shop-booking.jpg', caption: 'Booking an inspection: the bike, the symptom, a time slot' },
+      { src: '/images/portfolio/frame-shop-work.jpg', caption: 'Case studies, each with the measurement before and after' },
     ],
-    summary: 'A private banking interface shown as two phones side by side, driven from one screen: balances and holdings on one, the transaction ledger and a concierge line on the other, with multi-currency switching and an approval step before anything moves.',
-    highlights: ['Two devices, one console', 'Multi-currency switching', 'Approval before money moves']
+    summary: 'A working site for a motorcycle frame and alignment shop: services explained in the trade\u2019s own terms, case studies carrying the laser measurement before and after, a booking form that issues a ticket number, and a back-office side where the shop tracks the job and takes payment at the counter.',
+    highlights: ['Booking issues a real ticket number', 'Case studies show the measurement', 'Counter till and job tracking']
   },
   {
     id: 'p4',

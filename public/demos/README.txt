@@ -6,7 +6,7 @@ of its own:
 
   /demos/stack-planner/  -> planner/            (this repo)
   /demos/finsight/       -> FinSight BI dashboard
-  /demos/aurora/         -> Aurora Reserve interface
+  /demos/frame-shop/     -> frame-shop/          (this repo)
   /demos/orchestra/      -> ORCHESTRA cloud console
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
   /demos/analytics-hub/  -> Data Analytics Intelligence Hub

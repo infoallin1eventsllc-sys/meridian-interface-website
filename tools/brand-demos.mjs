@@ -1,9 +1,9 @@
 /**
  * Stamps every hosted demo with a Meridian Interface bar across the top.
  *
- * The demos carry client-facing product names — Aurora Reserve, FinSight,
- * ORCHESTRA — because that is the demonstration: a bank interface has to look
- * like a bank, not like its agency. The risk Otis spotted is that a visitor who
+ * The demos carry client-facing product names — The Frame Shop, FinSight,
+ * ORCHESTRA — because that is the demonstration: a motorcycle shop has to look
+ * like a motorcycle shop, not like its agency. The risk Otis spotted is that a visitor who
  * clicks through from the portfolio then believes they have left Meridian's
  * site. So every demo opens with a bar naming Meridian as the studio that built
  * it, saying plainly that it is a demonstration, and offering the way back.
@@ -21,7 +21,7 @@ const BAR_H = 46;
 const LABEL = {
   'stack-planner': 'Stack Planner',
   finsight: 'FinSight — financial dashboard',
-  aurora: 'Aurora Reserve — private banking interface',
+  'frame-shop': 'The Frame Shop — motorcycle frame & alignment',
   orchestra: 'ORCHESTRA — cloud console',
   'meridian-crm': 'Meridian CRM — operations hub',
   'analytics-hub': 'Analytics Intelligence Hub — BI dashboard',
@@ -66,8 +66,24 @@ const styles = `
     background: #2563eb; padding: 7px 12px; border-radius: 8px; }
   #meridian-demo-bar a.mb-home:hover { background: #1d4ed8; }
   #meridian-demo-bar a.mb-home:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  #meridian-demo-bar .mb-short { display: none; }
   @media (max-width: 720px) {
     #meridian-demo-bar .mb-what, #meridian-demo-bar .mb-sep { display: none; }
+  }
+  /* Below this the bar ran wider than the screen and pushed the way back off
+     the right edge entirely — 274px out of reach on a 320px phone, on every
+     demo. A visitor arriving from the portfolio on a phone could see the bar
+     but never use it, which is the one thing it exists to do. So the pieces
+     that can go, go: the Demonstration pill (the bar already says this is a
+     demo), and the full domain in favour of a short label. */
+  @media (max-width: 560px) {
+    #meridian-demo-bar { gap: 9px; padding: 0 10px; }
+    #meridian-demo-bar .mb-tag { display: none; }
+    #meridian-demo-bar .mb-built { font-size: 12px; min-width: 0; overflow: hidden;
+      text-overflow: ellipsis; }
+    #meridian-demo-bar .mb-long { display: none; }
+    #meridian-demo-bar .mb-short { display: inline; }
+    #meridian-demo-bar a.mb-home { padding: 7px 10px; }
   }
 </style>`;
 
@@ -78,7 +94,7 @@ const bar = (slug) => `
   <span class="mb-sep">·</span>
   <span class="mb-what">${LABEL[slug] ?? slug}</span>
   <span class="mb-tag">Demonstration</span>
-  <a class="mb-home" href="/">meridianinterface.com &rarr;</a>
+  <a class="mb-home" href="/"><span class="mb-long">meridianinterface.com &rarr;</span><span class="mb-short">Meridian &rarr;</span></a>
 </div>`;
 
 /**
