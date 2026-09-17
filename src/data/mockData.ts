@@ -36,6 +36,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'web_design',
     title: 'Custom Web Design & Development',
     categoryName: 'Web Development',
+    explainerId: 'exp_web_business',
     duration: '1 - 3 Weeks',
     icon: 'language',
     summary: 'High-converting, responsive websites engineered with tailored UX, swift loading speeds, and SEO optimization.',
@@ -53,6 +54,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'app_design',
     title: 'Mobile App Design & Development',
     categoryName: 'iOS & Android Apps',
+    explainerId: 'exp_bundle_enterprise',
     duration: '2 - 4 Weeks',
     icon: 'phone_iphone',
     summary: 'Native and cross-platform mobile apps with intuitive touch interfaces and sleek design systems.',
@@ -70,6 +72,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'dashboards',
     title: 'Data Analyst, CRM & Financial Dashboards',
     categoryName: 'Analytics & CRM Dashboards',
+    explainerId: 'exp_web_app',
     duration: '1 - 3 Weeks',
     icon: 'analytics',
     summary: 'Bespoke Data Analyst BI dashboards, high-converting CRM sales portals, and executive Financial KPI dashboards.',
@@ -87,6 +90,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'tech_stack',
     title: 'Your Business Tech Stack, Chosen and Connected',
     categoryName: 'Systems & Integration',
+    explainerId: 'exp_tech_stack',
     duration: '3 - 8 Weeks',
     icon: 'account_tree',
     summary: 'The set of tools your business runs on — website, bookings, payments, CRM, email — picked for how you actually work and wired together so information moves by itself.',
@@ -104,6 +108,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'logo_brand',
     title: 'Logo Design & Visual Identity',
     categoryName: 'Branding & Graphics',
+    explainerId: 'exp_logo_suite',
     duration: '3 - 7 Days',
     icon: 'draw',
     summary: 'Distinctive vector logos, typographic systems, and comprehensive brand identity guidelines.',
@@ -121,6 +126,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'full_package',
     title: 'Full Studio Design Bundle',
     categoryName: 'Web + App + Dashboard + Brand',
+    explainerId: null,
     duration: '3 - 5 Weeks',
     icon: 'workspace_premium',
     summary: 'Complete digital transformation: Custom Web, Mobile App UI, Analytics Dashboards & Complete Brand Identity.',
@@ -150,6 +156,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p10',
     title: 'Agentic Tech Stack for Growing Businesses',
+    explainerId: 'exp_tech_stack',
     category: 'systems',
     categoryLabel: 'Agentic Systems',
     client: 'Meridian Interface',
@@ -168,6 +175,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p7',
     title: 'FinSight — Financial & Revenue Dashboard',
+    explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'Financial Dashboard',
     client: 'Finance',
@@ -186,6 +194,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p8',
     title: 'Meridian CRM — Operations Hub',
+    explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'CRM Dashboard',
     client: 'Meridian Interface',
@@ -206,6 +215,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p9',
     title: 'Data Analytics Intelligence Hub',
+    explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'Analytics Dashboard',
     client: 'Data & Analytics',
@@ -224,6 +234,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p1',
     title: 'ORCHESTRA — Enterprise Cloud Console',
+    explainerId: 'exp_bundle_enterprise',
     category: 'web_design',
     categoryLabel: 'Cloud Platform',
     client: 'Enterprise SaaS',
@@ -242,6 +253,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p2',
     title: 'The Frame Shop — Motorcycle Frame & Alignment',
+    explainerId: 'exp_web_business',
     category: 'web_design',
     categoryLabel: 'Trade Business Website',
     client: 'Motorcycle Service',
@@ -259,6 +271,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p4',
     title: 'Big Boy Subs — Restaurant Ordering Site',
+    explainerId: 'exp_web_business',
     category: 'web_design',
     categoryLabel: 'Restaurant Website',
     client: 'Food & Beverage',
@@ -277,6 +290,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p5',
     title: 'Fog City Roasters — Coffee Brand Identity',
+    explainerId: 'exp_brand_full',
     category: 'logo_brand',
     categoryLabel: 'Logo & Branding',
     client: 'Consumer / Retail',
@@ -296,6 +310,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p6',
     title: 'MODERN_STREET — Streetwear Storefront',
+    explainerId: null,
     category: 'web_design',
     categoryLabel: 'E-Commerce',
     client: 'Retail / DTC',

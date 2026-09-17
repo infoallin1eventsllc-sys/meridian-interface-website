@@ -73,7 +73,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           <SaveToListButton
             variant="compact"
             className="absolute top-3 right-3 z-10"
-            item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, image: resolveImage(item.id, item.image) }}
+            item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, explainerId: item.explainerId, image: resolveImage(item.id, item.image) }}
           />
           <button
             type="button"
@@ -226,6 +226,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
                     kind: 'work',
                     title: activeItem.title,
                     subtitle: activeItem.categoryLabel,
+                    explainerId: activeItem.explainerId,
                     image: resolveImage(activeItem.id, activeItem.image),
                   }}
                 />

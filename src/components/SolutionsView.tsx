@@ -118,6 +118,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 kind: 'service',
                 title: currentService.title,
                 subtitle: currentService.categoryName,
+                explainerId: currentService.explainerId,
               }}
             />
             <button

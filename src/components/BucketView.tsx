@@ -73,6 +73,16 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
       budgetRange: NOT_DISCUSSED,
       notes: [bucketAsNote(items), note.trim() ? `\nWhat they said:\n${note.trim()}` : '']
         .filter(Boolean).join('\n'),
+      // The same list as data. The note above is for people; this is what the
+      // back end builds the reply from, so it never has to work out which
+      // Client Answer a product title meant.
+      items: items.map((i) => ({
+        id: i.id,
+        kind: i.kind,
+        title: i.title,
+        subtitle: i.subtitle,
+        explainerId: i.explainerId ?? null,
+      })),
       status: 'In Review',
       createdAt: new Date().toISOString().split('T')[0],
     };

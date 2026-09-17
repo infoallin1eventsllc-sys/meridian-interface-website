@@ -32,6 +32,14 @@ export interface SavedItem {
   /** Category label, or the client's name for a piece of work. */
   subtitle: string;
   image?: string;
+  /**
+   * The Client Answer this product declares as its own, carried from
+   * mockData rather than worked out later from the title. Matching by text
+   * found 4 of the 15 things a client can save, because the site sells under
+   * product names and the answers are filed under invoice-line names.
+   * `null` means none is written yet, and the drafted reply says so.
+   */
+  explainerId?: string | null;
   /** ISO timestamp, so the list reads in the order they chose things. */
   addedAt: string;
 }

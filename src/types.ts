@@ -51,6 +51,21 @@ export interface ServiceDetail {
   title: string;
   categoryName: string;
   /**
+   * Which Client Answer belongs to this product.
+   *
+   * Declared, never guessed. The reply a client gets when they save this item
+   * is built from the answer named here, so the link has to be stated rather
+   * than inferred from the words in the title — the titles on this site are
+   * product names, and the answers are filed under invoice-line names, and
+   * matching one to the other by text found 4 of 15.
+   *
+   * `null` means no answer is written for it yet. That is deliberate and
+   * visible: the drafted reply says so out loud rather than describing the
+   * product with the nearest thing that happened to match.
+   */
+  explainerId: string | null;
+
+  /**
    * Deliberately absent. Prices are quoted on an invoice, not published — and
    * anything in this file ships to every visitor's browser whether a page
    * renders it or not.
@@ -66,6 +81,21 @@ export interface ServiceDetail {
 export interface PortfolioItem {
   id: string;
   title: string;
+  /**
+   * Which Client Answer belongs to this product.
+   *
+   * Declared, never guessed. The reply a client gets when they save this item
+   * is built from the answer named here, so the link has to be stated rather
+   * than inferred from the words in the title — the titles on this site are
+   * product names, and the answers are filed under invoice-line names, and
+   * matching one to the other by text found 4 of 15.
+   *
+   * `null` means no answer is written for it yet. That is deliberate and
+   * visible: the drafted reply says so out loud rather than describing the
+   * product with the nearest thing that happened to match.
+   */
+  explainerId: string | null;
+
   category: 'web_design' | 'app_design' | 'dashboards' | 'logo_brand' | 'systems';
   categoryLabel: string;
   client: string;
@@ -94,8 +124,27 @@ export interface Appointment {
   preferredTimeSlot: string;
   budgetRange: string;
   notes: string;
+  /**
+   * The saved list as data, not prose.
+   *
+   * `notes` carries the same items as readable text, because a human reads
+   * that in the CRM and in the booking alert. This is the machine's copy: the
+   * back end builds the client's reply from `explainerId` here rather than
+   * parsing the note and guessing which answer a title meant. Absent on an
+   * ordinary booking that did not come from a saved list.
+   */
+  items?: SavedListLine[];
   status: 'Scheduled' | 'Confirmed' | 'Completed' | 'In Review';
   createdAt: string;
+}
+
+/** One product a client picked, with the Client Answer it declares. */
+export interface SavedListLine {
+  id: string;
+  kind: 'work' | 'service';
+  title: string;
+  subtitle: string;
+  explainerId: string | null;
 }
 
 export interface Testimonial {
