@@ -64,6 +64,9 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
       companyName: company.trim() || undefined,
       serviceType: dominantService(items),
       serviceTitle: `Saved list — ${items.length} item${items.length === 1 ? '' : 's'}`,
+      // Empty, not a date. Sent as an empty string this used to reach the CRM
+      // as "" and fail the deal insert outright; the server now coerces it,
+      // and the intent is clearer stated here too.
       preferredDate: '',
       preferredTimeSlot: 'To be arranged',
       // Never guessed at. The quote decides the money, after the conversation.
