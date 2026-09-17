@@ -198,7 +198,7 @@ Figures above are planning estimates, not a quote.
             <div className="flex items-start gap-2.5 text-sm text-emerald-800">
               <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
               <div>
-                <div className="font-semibold">Sent. Otis has your plan.</div>
+                <div className="font-semibold">Sent. A Meridian Interface agent has your plan.</div>
                 <div className="text-xs text-emerald-900/80 mt-0.5">
                   You will hear back within one business day. Keep your copy — download or copy it above.
                 </div>

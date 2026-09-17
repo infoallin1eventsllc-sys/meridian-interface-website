@@ -88,9 +88,9 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
           <span className="material-symbols-outlined text-5xl text-blue-600" aria-hidden="true">mark_email_read</span>
           <h1 className="font-display font-bold text-2xl text-slate-900 mt-3">Your list is with us</h1>
           <p className="font-body text-sm text-slate-600 mt-2 leading-relaxed">
-            Reference <span className="font-mono font-bold text-slate-900">{sent.id}</span>. Otis will go through what
-            you picked and come back with an itemised quote — every line saying what it is for, so you can see how the
-            figure is put together rather than being handed a total.
+            Reference <span className="font-mono font-bold text-slate-900">{sent.id}</span>. A Meridian Interface
+            agent will go through what you picked and come back with an itemised quote — every line saying what it is
+            for, so you can see how the figure is put together rather than being handed a total.
           </p>
           {!sent.delivered && (
             <p className="font-body text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4">
@@ -117,8 +117,8 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
           What you have picked out
         </h1>
         <p className="font-body text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
-          Send it over and Otis will talk it through with you, then put an itemised quote together — each line saying
-          what it covers. Nothing here is an order and nothing is charged.
+          Send it over and a Meridian Interface agent will talk it through with you, then put an itemised quote
+          together — each line saying what it covers. Nothing here is an order and nothing is charged.
         </p>
       </div>
 
