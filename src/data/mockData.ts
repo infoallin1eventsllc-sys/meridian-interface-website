@@ -319,7 +319,7 @@ export const INITIAL_APPOINTMENTS: Appointment[] = [
     serviceTitle: 'Custom Web Design & Development',
     preferredDate: '2026-08-04',
     preferredTimeSlot: '10:00 AM - 11:00 AM EST',
-    budgetRange: '$3,000 - $5,000',
+    budgetRange: 'Not discussed',
     notes: 'Looking to redesign our corporate agency website with modern interactive motion and client intake portal.',
     status: 'Confirmed',
     createdAt: '2026-07-28'
@@ -334,7 +334,7 @@ export const INITIAL_APPOINTMENTS: Appointment[] = [
     serviceTitle: 'Mobile App Design & Development',
     preferredDate: '2026-08-06',
     preferredTimeSlot: '02:00 PM - 03:00 PM EST',
-    budgetRange: '$5,000 - $10,000',
+    budgetRange: 'Not discussed',
     notes: 'Need iOS and Android UI/UX wireframes for our fintech SaaS product launch.',
     status: 'Scheduled',
     createdAt: '2026-07-30'

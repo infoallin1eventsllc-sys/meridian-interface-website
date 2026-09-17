@@ -1,3 +1,15 @@
+
+/**
+ * What goes in an appointment's budget field when nobody has named a figure.
+ *
+ * Which is always, at booking. The booking form asks what the client wants
+ * built and when they are free; it does not ask their budget, and a default
+ * that reads like a real answer ("$3,000 - $5,000") was being recorded against
+ * every enquiry and shown back on the appointments table as though they had
+ * said it. Money is settled in the itemised quote, after a conversation.
+ */
+export const NOT_DISCUSSED = 'Not discussed';
+
 import { Appointment } from '../types';
 import { attributionForSubmission } from './attribution';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
-import { submitAppointment, newAppointmentId } from '../lib/leads';
+import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 
 interface AppointmentBookingViewProps {
   onTabChange?: (tab: TabType) => void;
@@ -22,7 +22,11 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
   const [companyName, setCompanyName] = useState('');
   const [preferredDate, setPreferredDate] = useState('2026-08-05');
   const [preferredTimeSlot, setPreferredTimeSlot] = useState('10:00 AM - 11:00 AM EST');
-  const [budgetRange, setBudgetRange] = useState('$3,000 - $5,000');
+  // Not asked for, and not guessed at. This form has no budget field: the
+  // client never saw a number, so recording one as theirs invented a data
+  // point and then showed it back to them as a fact. Money is settled in the
+  // itemised quote Otis sends after the call, not assumed at booking.
+  const [budgetRange] = useState(NOT_DISCUSSED);
   const [notes, setNotes] = useState('');
 
   // Submission State

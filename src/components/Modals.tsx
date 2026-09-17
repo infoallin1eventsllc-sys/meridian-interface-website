@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { MeridianLogo } from './MeridianLogo';
-import { submitAppointment, newAppointmentId } from '../lib/leads';
+import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 
 interface ModalsProps {
   isConsultationOpen: boolean;
@@ -50,7 +50,7 @@ export const Modals: React.FC<ModalsProps> = ({
       serviceTitle: serviceObj.title,
       preferredDate: modalDate,
       preferredTimeSlot: modalTime,
-      budgetRange: '$3,000 - $5,000',
+      budgetRange: NOT_DISCUSSED,
       notes: 'Booked via Quick Modal',
       status: 'Scheduled',
       createdAt: new Date().toISOString().split('T')[0]
