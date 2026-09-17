@@ -4,6 +4,7 @@ import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
 import { CampaignLinks } from './CampaignLinks';
 import { SystemHealth } from './SystemHealth';
 import { MarketingQueue } from './MarketingQueue';
+import { SavedListInbox } from './SavedListInbox';
 import { TechStack } from './TechStack';
 import {
   fetchCatalogue,
@@ -47,7 +48,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'picks' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -722,6 +723,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       <div className="mb-8 flex flex-wrap gap-2">
         {([
           { id: 'invoices', label: 'Invoices & Pricing', icon: 'receipt_long' },
+          // shopping_cart: every letter is in the SUBSET font's cmap
+          // (' _abcdefghiklmnoprstuvwy'). See the note below before changing it.
+          { id: 'picks', label: 'Saved Lists', icon: 'shopping_cart' },
           { id: 'marketing', label: 'Marketing', icon: 'campaign' },
           // Icon names must use only letters the SUBSET font can map. Its cmap
           // covers ' _abcdefghiklmnoprstuvwy' — j, q, x and z are absent, so a
@@ -778,6 +782,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         </div>
       )}
 
+      {portalTab === 'picks' && (
+        <ErrorBoundary label="Saved Lists">
+          <SavedListInbox />
+        </ErrorBoundary>
+      )}
       {portalTab === 'photos' && <OwnerPhotoControl />}
 
       {portalTab === 'answers' && <ClientExplainers prices={cat.explainer_prices} />}

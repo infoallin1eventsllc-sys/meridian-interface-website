@@ -13,6 +13,7 @@ interface ImportMetaEnv {
   readonly VITE_LEAD_ENDPOINT?: string;
   /** The `owner` function: login, invoices, pricing, health. Defaults to production. */
   readonly VITE_OWNER_ENDPOINT?: string;
+  readonly VITE_LEADS_ENDPOINT?: string;
 }
 
 interface ImportMeta {
