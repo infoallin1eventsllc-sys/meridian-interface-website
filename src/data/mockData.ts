@@ -163,10 +163,10 @@ export const SERVICES: ServiceDetail[] = [
 export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p10',
-    title: 'Agentic Tech Stack for Growing Businesses',
+    title: 'Tech Stack for Growing Businesses',
     explainerId: 'exp_tech_stack',
     category: 'systems',
-    categoryLabel: 'Agentic Systems',
+    categoryLabel: 'Business Systems',
     client: 'Meridian Interface',
     // Built, running, and used with clients — so it says so, and the picture is
     // a screenshot of the real thing rather than an empty frame.

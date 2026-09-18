@@ -35,7 +35,7 @@ const SHOTS = [
 
 /* The main screen first, then the three details — the order they are shown in. */
 const GALLERY: LightboxItem[] = [
-  { src: '/images/portfolio/agentic-tech-stack.jpg', alt: 'The Meridian Stack Planner, showing the five layers of an agentic tech stack', caption: 'The Meridian Stack Planner — the five layers' },
+  { src: '/images/portfolio/agentic-tech-stack.jpg', alt: 'The Meridian Stack Planner, showing the five layers of a business tech stack', caption: 'The Meridian Stack Planner — the five layers' },
   ...SHOTS.map((s) => ({ src: s.src, alt: s.label, caption: s.label })),
 ];
 
@@ -61,7 +61,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               <ImageWithFallback
                 frame
                 src="/images/portfolio/agentic-tech-stack.jpg"
-                alt="The Meridian Stack Planner, showing the five layers of an agentic tech stack"
+                alt="The Meridian Stack Planner, showing the five layers of a business tech stack"
                 icon="hub"
                 label="Stack Planner"
                 className="w-full h-full object-cover"
