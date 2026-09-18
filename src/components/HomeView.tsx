@@ -8,6 +8,7 @@ import { StackPlannerFeature } from './StackPlannerFeature';
 import { Lightbox, type LightboxItem } from './Lightbox';
 import { StudioReelCard } from './StudioReelCard';
 import { SaveToListButton } from './SaveToListButton';
+import { ConceptModal } from './ConceptModal';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -21,6 +22,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onQuickBookService
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'web_design' | 'app_design' | 'dashboards' | 'logo_brand'>('all');
+  const [concept, setConcept] = useState<typeof PORTFOLIO[number] | null>(null);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
@@ -243,20 +245,40 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   ))}
                 </div>
 
-                {/* A picture shows what it looks like; this lets them use it. */}
-                {item.demo && (
-                  <a
-                    href={item.demo}
-                    className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0f172a] text-white font-body font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-colors"
+                {/* A picture shows what it looks like; the demo lets them use
+                    it; the concept panel is where the write-up, the highlights,
+                    Save and Book live. The front page used to offer only the
+                    middle one, so someone had to change page to read about a
+                    piece or book off the back of it. */}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {item.demo && (
+                    <a
+                      href={item.demo}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0f172a] text-white font-body font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">open_in_new</span>
+                      Open the working demo
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setConcept(item)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-50 text-slate-900 font-body font-bold text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-colors"
                   >
-                    <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">open_in_new</span>
-                    Open the working demo
-                  </a>
-                )}
+                    View concept
+                    <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">visibility</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+        <ConceptModal
+          item={concept}
+          onClose={() => setConcept(null)}
+          onBook={() => onTabChange('booking')}
+        />
 
         <Lightbox
           items={zoom?.items ?? []}

@@ -4,8 +4,7 @@ import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
-import { Lightbox, type LightboxItem } from './Lightbox';
-import { ReelPlayer } from './ReelPlayer';
+import { ConceptModal } from './ConceptModal';
 
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
@@ -16,7 +15,6 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
   // The detail panel's picture opens full screen; a concept with no picture stays inert.
-  const [zoomed, setZoomed] = useState<number | null>(null);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
@@ -85,7 +83,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           />
           <button
             type="button"
-            onClick={() => { setZoomed(null); setActiveItem(item); }}
+            onClick={() => setActiveItem(item)}
             aria-label={`View concept: ${item.title}`}
             className="text-left w-full flex-1"
           >
@@ -143,7 +141,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             )}
             <button
               type="button"
-              onClick={() => { setZoomed(null); setActiveItem(item); }}
+              onClick={() => setActiveItem(item)}
               className="w-full py-2.5 bg-slate-50 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
             >
               View concept
@@ -154,119 +152,11 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
         ))}
       </section>
 
-      {/* Case Study Modal */}
-      {activeItem && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setActiveItem(null)}
-              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 transition-colors"
-            >
-              <span className="material-symbols-outlined text-2xl">close</span>
-            </button>
-
-            <div className="space-y-4">
-              <div className="inline-block bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                {activeItem.categoryLabel}
-              </div>
-
-              <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-                {activeItem.title}
-              </h2>
-
-              {/* A piece with a film plays it here. Moving work makes its own
-                  case better than a screenshot of it does, and the still is
-                  still reachable through the grid behind this panel. */}
-              {activeItem.video ? (
-                <ReelPlayer src={activeItem.video} label={`Watch ${activeItem.title}`} />
-              ) : (
-                <div
-                  {...(resolveImage(activeItem.id, activeItem.image)
-                    ? {
-                        role: 'button' as const,
-                        tabIndex: 0,
-                        'aria-label': `View ${activeItem.title} full screen`,
-                        onClick: () => setZoomed(0),
-                        onKeyDown: (e: React.KeyboardEvent) => {
-                          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomed(0); }
-                        },
-                        className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900 cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600',
-                      }
-                    : { className: 'aspect-video w-full rounded-xl overflow-hidden bg-slate-900' })}
-                >
-                  <ImageWithFallback
-                    frame
-                    src={resolveImage(activeItem.id, activeItem.image)}
-                    alt={activeItem.title}
-                    icon="palette"
-                    label={activeItem.categoryLabel}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-
-              {activeItem.demo && (
-                <a
-                  href={activeItem.demo}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors self-start"
-                >
-                  <span className="material-symbols-outlined text-lg leading-none" aria-hidden="true">open_in_new</span>
-                  Open the working demo
-                </a>
-              )}
-
-              <div className="flex justify-between items-center text-xs text-slate-500 font-bold border-b border-slate-100 pb-3">
-                <span>Sector: {activeItem.client}</span>
-                <span>{activeItem.year}</span>
-              </div>
-
-              <p className="font-body text-slate-700 text-sm leading-relaxed">
-                {activeItem.summary} This concept demonstrates our approach — clean visual hierarchy, responsive layout, and scalable front-end architecture.
-              </p>
-
-              <div className="space-y-2">
-                <h4 className="font-display font-bold text-xs uppercase tracking-wider text-slate-900">
-                  Project Technical Highlights:
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {activeItem.highlights.map((h, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-slate-100 text-slate-800 text-xs font-semibold rounded-lg">
-                      • {h}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 flex flex-col sm:flex-row gap-3 border-t border-slate-100">
-                {/* Saving is the lower-commitment of the two, and the one most
-                    people want after looking at a single piece: keep it first
-                    and quiet, with booking beside it for anyone already sure. */}
-                <SaveToListButton
-                  className="w-full sm:flex-1"
-                  item={{
-                    id: activeItem.id,
-                    kind: 'work',
-                    title: activeItem.title,
-                    subtitle: activeItem.categoryLabel,
-                    explainerId: activeItem.explainerId,
-                    image: resolveImage(activeItem.id, activeItem.image),
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    setActiveItem(null);
-                    onTabChange('booking');
-                  }}
-                  className="w-full sm:flex-1 py-3 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">calendar_month</span>
-                  Book an appointment
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConceptModal
+        item={activeItem}
+        onClose={() => setActiveItem(null)}
+        onBook={() => onTabChange('booking')}
+      />
 
       {/* Banner CTA */}
       <section className="bg-[#0f172a] text-white rounded-2xl p-8 md:p-12 text-center space-y-6 shadow-xl">
@@ -284,18 +174,6 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           Book a Design Appointment
         </button>
       </section>
-      {activeItem && (
-        <Lightbox
-          items={
-            (activeItem.gallery?.length
-              ? activeItem.gallery.map((g) => ({ src: g.src, alt: `${activeItem.title} — ${g.caption}`, caption: `${activeItem.title} — ${g.caption}` }))
-              : [{ src: resolveImage(activeItem.id, activeItem.image), alt: activeItem.title, caption: `${activeItem.title} — ${activeItem.categoryLabel}` }]) as LightboxItem[]
-          }
-          index={zoomed}
-          onClose={() => setZoomed(null)}
-          onIndexChange={setZoomed}
-        />
-      )}
 
     </main>
   );
