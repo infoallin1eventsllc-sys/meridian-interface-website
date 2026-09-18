@@ -204,6 +204,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         <div className="lg:col-span-5 flex flex-col gap-4">
           <ReelPlayer
             src={REEL.local}
+            webm={REEL.localWebm}
             poster={currentService.image}
             label="Watch the studio reel"
           />

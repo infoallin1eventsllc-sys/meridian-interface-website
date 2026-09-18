@@ -32,6 +32,8 @@ interface ReelPlayerProps {
   caption?: React.ReactNode;
   /** A still to sit behind the play button instead of the plain CSS ground. */
   poster?: string;
+  /** A WebM of the same film, for browsers with no H.264 decoder. */
+  webm?: string;
 }
 
 export const ReelPlayer: React.FC<ReelPlayerProps> = ({
@@ -39,6 +41,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
   label = 'Play the reel',
   caption,
   poster,
+  webm,
 }) => {
   const [playing, setPlaying] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
@@ -61,12 +64,17 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full"
-            src={src}
+            {...(webm ? {} : { src })}
             controls
             autoPlay
             playsInline
             preload="metadata"
           >
+            {/* mp4 first on purpose: the devices that can play both decode
+                H.264 in hardware. The WebM is the safety net for the ones that
+                cannot play it at all, which would otherwise see a dead frame. */}
+            {webm && <source src={src} type="video/mp4" />}
+            {webm && <source src={webm} type="video/webm" />}
             Your browser cannot play this video. <a href={src}>Download it instead.</a>
           </video>
         ) : (

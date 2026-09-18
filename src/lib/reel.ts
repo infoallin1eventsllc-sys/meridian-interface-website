@@ -32,5 +32,10 @@ export const REEL = {
       picture and goes quiet partway, which is the fault Otis reported — so any
       NEW placement points here until that cut is re-rendered. */
   local: '/video/meridian-sizzle.mp4',
+  /** The same film as VP9/WebM. Not a nicety: a browser without an H.264
+      decoder — some Linux and Chromium builds ship without one — gets NOTHING
+      from the mp4 alone. Offered second, so devices that hardware-decode H.264
+      (every iPhone, iPad and Mac) still take the mp4 and spend less battery. */
+  localWebm: '/video/meridian-sizzle.webm',
   seconds: 47,
 };
