@@ -12,7 +12,8 @@ const PLANNER_URL = (import.meta.env.VITE_PLANNER_URL as string | undefined)?.tr
 const plannerLink = PLANNER_URL
   ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=services&utm_campaign=stack-planner`
   : '';
-import { ImageWithFallback } from './ImageWithFallback';
+import { ReelPlayer } from './ReelPlayer';
+import { REEL } from '../lib/reel';
 import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
@@ -194,17 +195,19 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           </div>
         </div>
 
-        <div className="lg:col-span-5 h-72 lg:h-full min-h-[320px] relative rounded-xl overflow-hidden bg-slate-900 shadow-md">
-          <ImageWithFallback
-                  frame
-            src={currentService.image}
-            alt={currentService.title}
-            icon={currentService.icon}
-            label={currentService.categoryName}
-            className="w-full h-full object-cover"
+        {/* The studio reel, with this service's own picture as the play
+            surface. It was a still here until Otis asked for the film on the
+            services page (18 Sep) — showing the work running beats showing a
+            cropped screenshot of it, and the per-service picture is kept rather
+            than thrown away. ReelPlayer mounts no <video> until it is clicked,
+            so this costs a visitor nothing until they want it. */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <ReelPlayer
+            src={REEL.local}
+            poster={currentService.image}
+            label="Watch the studio reel"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-          <div className="absolute bottom-4 left-4 right-4 text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
+          <div className="text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
             <p className="font-bold">Included on every project</p>
             <p className="text-slate-300 text-[11px] mt-0.5">Strategy consultation, interactive mockups, and post-launch support.</p>
           </div>

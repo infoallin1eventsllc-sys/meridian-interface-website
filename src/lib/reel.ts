@@ -26,5 +26,11 @@ export const REEL = {
   /** 9:16 — the social cut, for TikTok and Reels. Not used on the site: a
       portrait film in a landscape frame is letterboxed on both sides. */
   portrait: `${BUCKET}/81d51bdbc9438afdd253.mp4`,
+  /** The same 47s film, served from this site instead of the bucket.
+      Measured on 18 Sep: this copy carries unbroken sound from first second to
+      last. The bucket cut's soundtrack is a 16.41s loop against 46.9s of
+      picture and goes quiet partway, which is the fault Otis reported — so any
+      NEW placement points here until that cut is re-rendered. */
+  local: '/video/meridian-sizzle.mp4',
   seconds: 47,
 };

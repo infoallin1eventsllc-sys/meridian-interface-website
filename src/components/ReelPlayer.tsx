@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { REEL } from '../lib/reel';
 
 /**
@@ -16,7 +16,11 @@ import { REEL } from '../lib/reel';
  *      jumps when the player appears.
  *
  * The idle state is the reel's own ink ground and grid drawn in CSS, so no
- * poster image has to ship or be kept in step with the film.
+ * poster image has to ship or be kept in step with the film. A caller that
+ * already has a relevant picture — the services page shows a different one per
+ * service — can pass it as `poster` and it becomes the play surface, so that
+ * picture is not lost just because a video moved in. If it fails to load the
+ * CSS ground shows through, which is why it is a background and not a swap.
  */
 
 interface ReelPlayerProps {
@@ -26,20 +30,36 @@ interface ReelPlayerProps {
   label?: string;
   /** Caption under the frame. Omitted entirely when not given. */
   caption?: React.ReactNode;
+  /** A still to sit behind the play button instead of the plain CSS ground. */
+  poster?: string;
 }
 
 export const ReelPlayer: React.FC<ReelPlayerProps> = ({
   src = REEL.landscape,
   label = 'Play the reel',
   caption,
+  poster,
 }) => {
   const [playing, setPlaying] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // The `autoPlay` attribute alone is unreliable for a film with sound: it was
+  // mounting paused at 0:00, so the visitor had to press play a second time.
+  // Calling play() here is permitted because the click that mounted this IS
+  // the user gesture. A rejection is a browser policy decision, not an error —
+  // the controls are right there, so there is nothing to recover from.
+  useEffect(() => {
+    if (!playing) return;
+    void videoRef.current?.play().catch(() => undefined);
+  }, [playing]);
 
   return (
     <div>
       <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 bg-[#0f172a] shadow-sm">
         {playing ? (
           <video
+            ref={videoRef}
             className="absolute inset-0 h-full w-full"
             src={src}
             controls
@@ -56,6 +76,19 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
             className="group absolute inset-0 flex flex-col items-center justify-center gap-4 text-white transition-colors hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f172a]"
             aria-label={`${label}, ${REEL.seconds} seconds`}
           >
+            {poster && !posterFailed && (
+              <>
+                <img
+                  src={poster}
+                  alt=""
+                  aria-hidden="true"
+                  onError={() => setPosterFailed(true)}
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                />
+                {/* Dimmed, or white text on a pale product shot disappears. */}
+                <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-slate-950/55" />
+              </>
+            )}
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 opacity-[0.07]"
