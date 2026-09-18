@@ -24,7 +24,9 @@ import { REEL } from '../lib/reel';
  */
 
 interface ReelPlayerProps {
-  /** Which cut to play. Defaults to the landscape web cut. */
+  /** Which cut to play. Defaults to the copy served from this site, which is
+      measured to carry unbroken sound; the bucket cut goes quiet a third of
+      the way in, so it is not something to fall back to by accident. */
   src?: string;
   /** What the button announces to a screen reader. */
   label?: string;
@@ -37,7 +39,7 @@ interface ReelPlayerProps {
 }
 
 export const ReelPlayer: React.FC<ReelPlayerProps> = ({
-  src = REEL.landscape,
+  src = REEL.local,
   label = 'Play the reel',
   caption,
   poster,
