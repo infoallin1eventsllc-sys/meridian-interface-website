@@ -128,93 +128,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Services Showcase Section */}
-      <section className="mt-16 px-4 md:px-12 max-w-[1440px] mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="space-y-1">
-            <p className="font-body text-xs font-bold uppercase tracking-widest text-slate-500">
-              Core Capabilities
-            </p>
-            <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              What We Design & Develop
-            </h2>
-          </div>
-          <button
-            onClick={() => onTabChange('services')}
-            className="text-xs font-bold text-[#0f172a] hover:underline uppercase tracking-wider flex items-center gap-1"
-          >
-            Explore All Services <span className="material-symbols-outlined text-sm">chevron_right</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SERVICES.map((service) => (
-            <div
-              key={service.id}
-              className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
-            >
-              <div>
-                <div className="h-48 relative overflow-hidden bg-slate-900">
-                  <ImageWithFallback
-                  frame
-                    src={service.image}
-                    alt={service.title}
-                    icon={service.icon}
-                    label={service.categoryName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
-                  />
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-base text-[#0f172a]">{service.icon}</span>
-                    {service.categoryName}
-                  </div>
-                  <h3 className="font-display font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="font-body text-xs text-slate-600 leading-relaxed line-clamp-3">
-                    {service.summary}
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <button
-                  onClick={() => {
-                    if (onQuickBookService) onQuickBookService(service.id);
-                    else onTabChange('booking');
-                  }}
-                  className="w-full py-2.5 bg-slate-100 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#0f172a] hover:text-white transition-all flex items-center justify-center gap-1.5"
-                >
-                  <span className="material-symbols-outlined text-sm">event</span>
-                  Book Appointment
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {/* Six services leave two empty cells on a large screen. The reel
-              closes the row, and says in half a minute what the cards above
-              describe in words. */}
-          <StudioReelCard onTabChange={onTabChange} />
-        </div>
-      </section>
-
-      <StackPlannerFeature onTabChange={onTabChange} />
-
       {/* Portfolio Showcase Grid (Selected Works) */}
       <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1.5 max-w-xl">
             <p className="font-body text-xs font-bold uppercase tracking-widest text-blue-600">
-              Concept &amp; Sample Work
+              Working demos — open any of them
             </p>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              Web, app, dashboard &amp; brand concepts
+              See what we build, before you ask for anything
             </h2>
             <p className="font-body text-sm text-slate-500 leading-relaxed">
-              Representative concepts across our disciplines. Client case studies are shared on request.
+              Every piece below is a real, working demo you can click into and use.
+              They show what we can build — yours is built to your brief, at your size,
+              in your colours. Save the ones close to what you need and send them over.
             </p>
           </div>
 
@@ -330,7 +257,82 @@ export const HomeView: React.FC<HomeViewProps> = ({
         />
       </section>
 
-      {/* Quick Interactive Appointment Scheduler Banner - Relocated under Selected Works */}
+      {/* Services Showcase Section */}
+      <section className="mt-16 px-4 md:px-12 max-w-[1440px] mx-auto space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-1">
+            <p className="font-body text-xs font-bold uppercase tracking-widest text-slate-500">
+              Core Capabilities
+            </p>
+            <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
+              What We Design & Develop
+            </h2>
+          </div>
+          <button
+            onClick={() => onTabChange('services')}
+            className="text-xs font-bold text-[#0f172a] hover:underline uppercase tracking-wider flex items-center gap-1"
+          >
+            Explore All Services <span className="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {SERVICES.map((service) => (
+            <div
+              key={service.id}
+              className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+            >
+              <div>
+                <div className="h-48 relative overflow-hidden bg-slate-900">
+                  <ImageWithFallback
+                  frame
+                    src={service.image}
+                    alt={service.title}
+                    icon={service.icon}
+                    label={service.categoryName}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                  />
+                </div>
+
+                <div className="p-6 space-y-3">
+                  <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-base text-[#0f172a]">{service.icon}</span>
+                    {service.categoryName}
+                  </div>
+                  <h3 className="font-display font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="font-body text-xs text-slate-600 leading-relaxed line-clamp-3">
+                    {service.summary}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 pt-0">
+                <button
+                  onClick={() => {
+                    if (onQuickBookService) onQuickBookService(service.id);
+                    else onTabChange('booking');
+                  }}
+                  className="w-full py-2.5 bg-slate-100 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#0f172a] hover:text-white transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-sm">event</span>
+                  Book Appointment
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Six services leave two empty cells on a large screen. The reel
+              closes the row, and says in half a minute what the cards above
+              describe in words. */}
+          <StudioReelCard onTabChange={onTabChange} />
+        </div>
+      </section>
+
+      {/* Quick appointment scheduler. Sits under the services grid: by this point a
+          visitor has seen the demos work and read what we build, so this is the
+          first moment asking for their time is a fair request. */}
       <section className="mt-20 relative z-20 px-4 md:px-12 max-w-[1440px] mx-auto">
         <div className="bg-white rounded-xl shadow-xl border border-slate-200/80 p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
@@ -477,6 +479,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </div>
       </section>
+
+      {/* The Stack Planner is the deepest thing on this page and the least
+          urgent for a first-time visitor, so it sits last: for someone still
+          reading after the demos, the services and the scheduler. */}
+      <StackPlannerFeature onTabChange={onTabChange} />
 
       {/* Final Call to Action */}
       <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto text-center space-y-6">
