@@ -69,7 +69,15 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
       {/* Portfolio Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
         {filteredPortfolio.map((item) => (
-          <div key={item.id} className="relative">
+          /* One card, three things a visitor can do: save it, open the real
+             thing, or read the concept. Those used to be split across two
+             pages — the demo only on the home page, saving only here — so
+             someone had to leave the page they were on to do the other half.
+             The card body is no longer the <button> it was: a link cannot be
+             nested inside a button, which is exactly why the demo could not
+             live here before. The body is the concept trigger; the actions are
+             its siblings. */
+          <div key={item.id} className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all group flex flex-col">
           <SaveToListButton
             variant="compact"
             className="absolute top-3 right-3 z-10"
@@ -79,7 +87,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             type="button"
             onClick={() => { setZoomed(null); setActiveItem(item); }}
             aria-label={`View concept: ${item.title}`}
-            className="text-left w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all group flex flex-col justify-between"
+            className="text-left w-full flex-1"
           >
             <div>
               <div className="aspect-[16/10] relative overflow-hidden bg-slate-900">
@@ -119,15 +127,29 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
               </div>
             </div>
 
-            <div className="p-6 pt-0">
-              <span
-                className="w-full py-2.5 bg-slate-50 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg group-hover:bg-[#0f172a] group-hover:text-white transition-colors flex items-center justify-center gap-1.5"
-              >
-                View concept
-                <span className="material-symbols-outlined text-sm">visibility</span>
-              </span>
-            </div>
           </button>
+
+          {/* Stacked, not side by side: at three columns "Open the working
+              demo" and "View concept" side by side both wrap to two lines. */}
+          <div className="p-6 pt-0 space-y-2">
+            {item.demo && (
+              <a
+                href={item.demo}
+                className="w-full py-2.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
+                Open the working demo
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => { setZoomed(null); setActiveItem(item); }}
+              className="w-full py-2.5 bg-slate-50 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
+            >
+              View concept
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">visibility</span>
+            </button>
+          </div>
           </div>
         ))}
       </section>

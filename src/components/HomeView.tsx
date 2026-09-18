@@ -7,6 +7,7 @@ import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
 import { Lightbox, type LightboxItem } from './Lightbox';
 import { StudioReelCard } from './StudioReelCard';
+import { SaveToListButton } from './SaveToListButton';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -173,8 +174,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
           {filteredPortfolio.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
+              className="relative bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
             >
+              {/* Saving used to be possible only on the Portfolio page, and
+                  opening the demo only here, so a visitor had to cross pages to
+                  do both. Same control, same corner, on both. */}
+              <SaveToListButton
+                variant="compact"
+                className="absolute top-3 right-3 z-10"
+                item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, explainerId: item.explainerId, image: resolveImage(item.id, item.image) }}
+              />
               <div
                 {...(screensFor(item).length
                   ? {
