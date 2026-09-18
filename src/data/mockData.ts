@@ -1,5 +1,4 @@
 import { ServiceDetail, PortfolioItem, Appointment, Testimonial } from '../types';
-import { REEL } from '../lib/reel';
 
 /*
  * Images the app reaches for by name.
@@ -174,12 +173,13 @@ export const PORTFOLIO: PortfolioItem[] = [
     year: '2026',
     demo: '/demos/stack-planner/',
     image: '/images/portfolio/agentic-tech-stack.jpg',
-    // The reel plays here rather than the still: this entry is the one place
-    // on the site where a visitor is already asking what the stack actually
-    // does, and the film answers it in forty-seven seconds.
-    video: REEL.landscape,
-    summary: 'An always-on system a small business owns outright: an enquiry becomes a contact, the agent drafts the follow-up and the week\u2019s posts, a human approves, it publishes and measures, and a summary lands every Monday.',
-    highlights: ['Runs without a person watching', 'Nothing sends unapproved', 'One system, no per-seat fees']
+    // The studio showreel used to play here. It was removed on 18 Sep: it is a
+    // general reel across seven products, it never mentions the stack, and the
+    // cut in the bucket loses its music a third of the way in. A film that
+    // answers a different question than the one being asked is worse than no
+    // film - the demo below is the real answer, and it is interactive.
+    summary: 'Most growing businesses lose hours to the same few jobs \u2014 chasing the enquiry, writing the follow-up, keeping the posts going. This does them for you, sends nothing until you have approved it, and puts the whole week on one page every Monday.',
+    highlights: ['Works while you are on a job', 'Nothing goes out without your yes', 'You own it \u2014 no per-seat fee']
   },
   {
     id: 'p7',

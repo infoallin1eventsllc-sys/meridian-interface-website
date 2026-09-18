@@ -93,13 +93,18 @@ export const ConceptModal: React.FC<{
                 <span>{item.year}</span>
               </div>
 
+              {/* Just the piece's own words. This used to append "clean visual
+                  hierarchy, responsive layout, and scalable front-end
+                  architecture" to EVERY concept - true of none of them in
+                  particular, and plainly wrong under an agent system that has
+                  no front end to speak of. */}
               <p className="font-body text-slate-700 text-sm leading-relaxed">
-                {item.summary} This concept demonstrates our approach — clean visual hierarchy, responsive layout, and scalable front-end architecture.
+                {item.summary}
               </p>
 
               <div className="space-y-2">
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-slate-900">
-                  Project Technical Highlights:
+                  What it gives you:
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {item.highlights.map((h, idx) => (
