@@ -53,7 +53,9 @@ links back to the site. It is applied to the built HTML rather than each app's
 source, so every demo carries exactly the same bar and it cannot drift.
 
 Drone Command (all-in-1-events-2 repo, drone/) reads DEMO_BASE for its path and
-DEMO_URL for the absolute address its link-preview image uses:
+DEMO_URL for the absolute address its link-preview image uses. A DEMO_BASE under
+/demos/ also names it "Meridian Interface Drone Command" (the same source ships
+as "All in 1 Drone Command" on allin1events.com):
 
   cd drone && DEMO_BASE=/demos/drone-command/ DEMO_URL=https://meridianinterface.com/demos/drone-command/ npx vite build --outDir /tmp/drone-demo
   rm -rf public/demos/drone-command && cp -r /tmp/drone-demo public/demos/drone-command
