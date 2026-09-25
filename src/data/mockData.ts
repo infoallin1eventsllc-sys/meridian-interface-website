@@ -183,11 +183,11 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p11',
-    title: 'All in 1 Drone Command — Drone Operations Console',
+    title: 'Meridian Interface Drone Command — Drone Operations Console',
     explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'Operations Console',
-    client: 'All in 1 Events',
+    client: 'Meridian Interface',
     // A working product, not a mock-up: the hosted copy runs on sample data, and
     // the same build flies real ArduPilot and PX4 aircraft over Bluetooth, a
     // radio or the network. The guided tour (?tour) walks a visitor through it.

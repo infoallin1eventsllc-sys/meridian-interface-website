@@ -28,7 +28,7 @@ const LABEL = {
   'modern-street': 'MODERN_STREET — streetwear storefront',
   'fog-city': 'Fog City Roasters — coffee brand site',
   'big-boy-subs': 'Big Boy Subs — restaurant ordering site',
-  'drone-command': 'All in 1 Drone Command — drone operations console',
+  'drone-command': 'Meridian Interface Drone Command — drone operations console',
 };
 
 const styles = `
