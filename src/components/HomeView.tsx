@@ -3,6 +3,7 @@ import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
+import { HeroShowcase } from './HeroShowcase';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
 import { Lightbox, type LightboxItem } from './Lightbox';
@@ -71,63 +72,55 @@ export const HomeView: React.FC<HomeViewProps> = ({
   return (
     <main className="pt-16 pb-24 md:pb-16 animate-fadeIn bg-slate-50">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
+      <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-16 lg:py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
         {/* Full-bleed wireframe globe, drawn in the browser. It carries its own
             ground, so there is no hero photograph to resolve or wait on. */}
         <HeroBackdrop />
 
-        <div className="hero-stagger relative z-10 max-w-[1200px] mx-auto w-full space-y-7">
-          {/* Eyebrow — thin rule + label, no chips or pulsing dots */}
-          <div className="inline-flex items-center gap-3 text-blue-400">
-            <span className="h-px w-8 bg-blue-500" />
-            <span className="font-body text-xs font-bold uppercase tracking-[0.22em]">
-              Digital Design &amp; Development Studio
-            </span>
-          </div>
+        <div className="relative z-10 max-w-[1280px] mx-auto w-full grid gap-14 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] items-center">
+          <div className="hero-stagger space-y-7">
+            {/* Eyebrow — thin rule + label. The header already carries the name,
+                so the hero does not say "Meridian Interface" a second time. */}
+            <div className="inline-flex items-center gap-3 text-blue-400">
+              <span className="h-px w-8 bg-blue-500" />
+              <span className="font-body text-xs font-bold uppercase tracking-[0.22em]">
+                Design &amp; development studio
+              </span>
+            </div>
 
-          {/* Brand + headline — one sharp, specific claim */}
-          <div className="space-y-4 max-w-4xl">
-            <span className="block font-display font-black uppercase tracking-[0.28em] text-slate-400 text-sm sm:text-base">
-              Meridian Interface
-            </span>
-            <h1 className="font-display font-black leading-[1.05] tracking-tight text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
-              Custom websites, apps, and dashboards.
-              <span className="block text-blue-500">Designed and built end to end.</span>
+            {/* The same two lines the studio reel closes on, so the film and the
+                front door say one thing. */}
+            <h1 className="font-display font-black leading-[1.04] tracking-tight text-white text-[2.5rem] sm:text-5xl lg:text-[3.4rem] xl:text-[4rem]">
+              Websites, apps, and AI&nbsp;systems.
+              <span className="block mt-1 text-blue-500">We put the future in your&nbsp;hands.</span>
             </h1>
+
+            <p className="font-body text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+              One studio, start to finish: your brand, the website customers find, the app they order
+              from, the dashboard you run the business on, and the systems that follow up while you work.
+              Every project starts with a 1-on-1 consultation.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <button
+                onClick={() => onTabChange('booking')}
+                className="w-full sm:w-auto px-7 py-4 bg-blue-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-950/40 flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">calendar_month</span>
+                Book a consultation
+              </button>
+              <button
+                onClick={() => onTabChange('portfolio')}
+                className="group w-full sm:w-auto px-7 py-4 bg-transparent border border-slate-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-white/5 hover:border-slate-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              >
+                Try the working demos
+                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+              </button>
+            </div>
           </div>
 
-          <p className="font-body text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-            We design and develop bespoke web experiences, mobile app interfaces, analytics &amp; CRM
-            dashboards, and complete brand identities. Book a 1-on-1 consultation to start your project.
-          </p>
-
-          {/* Capability line — plain, no icon tiles */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            <span>Web Design</span>
-            <span className="text-slate-600">/</span>
-            <span>App Interfaces</span>
-            <span className="text-slate-600">/</span>
-            <span>Analytics &amp; CRM Dashboards</span>
-            <span className="text-slate-600">/</span>
-            <span>Brand &amp; Logo</span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 pt-2 max-w-lg">
-            <button
-              onClick={() => onTabChange('booking')}
-              className="w-full sm:w-auto px-7 py-4 bg-blue-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-lg">calendar_month</span>
-              Book a Design Appointment
-            </button>
-            <button
-              onClick={() => onTabChange('portfolio')}
-              className="w-full sm:w-auto px-7 py-4 bg-transparent border border-slate-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-white/5 hover:border-slate-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-lg">palette</span>
-              View Our Work
-            </button>
-          </div>
+          {/* Real work, not a stock picture: three of the demos, each opening its concept panel. */}
+          <HeroShowcase onOpen={setConcept} />
         </div>
       </section>
 

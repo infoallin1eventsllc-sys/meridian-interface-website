@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PortfolioItem } from '../types';
 import { resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
@@ -25,14 +25,24 @@ export const ConceptModal: React.FC<{
 }> = ({ item, onClose, onBook }) => {
   const [zoomed, setZoomed] = useState<number | null>(null);
 
+  // Escape closes the panel, unless the full-screen view is open on top of it,
+  // in which case the Lightbox handles Escape and the panel stays.
+  useEffect(() => {
+    if (!item) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && zoomed === null) onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [item, zoomed, onClose]);
+
   if (!item) return null;
 
   return (
     <>
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div role="dialog" aria-modal="true" aria-label={item.title} className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={onClose}
+              aria-label="Close"
               className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 transition-colors"
             >
               <span className="material-symbols-outlined text-2xl">close</span>

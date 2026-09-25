@@ -28,6 +28,20 @@ The previous `hero-earth.jpg` was a CG render that arrived with the Google AI
 Studio export. Its provenance was never established, which is why it was
 replaced rather than kept as a fallback.
 
+## Hero — the studio's own work
+
+| | |
+|---|---|
+| Files | `images/hero/hero-dashboard.webp`, `images/hero/hero-website.webp`, `images/hero/hero-mobile.webp` |
+| Source | Screenshots of this site's own demos: `demos/analytics-hub/`, `demos/frame-shop/`, `demos/big-boy-subs/` |
+| Captured | 2026-09-25, headless Chromium. Desktop at 1280x800 (1.5x), phone at 390x844 (2x). The "Built by Meridian Interface" banner is trimmed off because the hero draws its own browser and phone frames. |
+
+These carry whatever the demos carry: any photograph visible in a capture
+(the Big Boy Subs sandwich, the Frame Shop workshop) is the same file the demo
+already ships, so the hero adds no new licensing exposure. If a demo changes
+enough that the hero misrepresents it, re-capture at the sizes above and export
+to WebP at quality 80 (1200px wide for the browsers, 480px for the phone).
+
 ## Everything else
 
 The portfolio and section imagery is currently hotlinked from
