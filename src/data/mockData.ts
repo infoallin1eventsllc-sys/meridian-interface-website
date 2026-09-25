@@ -182,6 +182,30 @@ export const PORTFOLIO: PortfolioItem[] = [
     highlights: ['Works while you are on a job', 'Nothing goes out without your yes', 'You own it \u2014 no per-seat fee']
   },
   {
+    id: 'p11',
+    title: 'All in 1 Drone Command — Drone Operations Console',
+    explainerId: 'exp_web_app',
+    category: 'dashboards',
+    categoryLabel: 'Operations Console',
+    client: 'All in 1 Events',
+    // A working product, not a mock-up: the hosted copy runs on sample data, and
+    // the same build flies real ArduPilot and PX4 aircraft over Bluetooth, a
+    // radio or the network. The guided tour (?tour) walks a visitor through it.
+    year: '2026',
+    demo: '/demos/drone-command/?tour',
+    image: '/images/portfolio/drone-command.jpg',
+    gallery: [
+      { src: '/images/portfolio/drone-command.jpg', caption: 'Overview — the fleet rendered live in 3D' },
+      { src: '/images/portfolio/drone-command-show.jpg', caption: 'Light show conductor for 100 to 500 aircraft' },
+      { src: '/images/portfolio/drone-command-survey.jpg', caption: 'Site survey — volumes, grades and cross-sections from the map' },
+      { src: '/images/portfolio/drone-command-health.jpg', caption: 'Aircraft health that names the failing part' },
+      { src: '/images/portfolio/drone-command-control.jpg', caption: 'Control one aircraft or the whole fleet' },
+      { src: '/images/portfolio/drone-command-compliance.jpg', caption: 'FAA compliance: certificates, waivers and Remote ID in one place' },
+    ],
+    summary: 'One console for drone light shows, site surveys and overnight security. It flies real ArduPilot and PX4 aircraft, names the failing part before a flight goes wrong, and keeps a tamper-evident record of every flight — on a laptop, tablet or phone.',
+    highlights: ['Live 3D show conductor for 100–500 aircraft', 'Survey measurements from the map', 'Aircraft health that names the failing part']
+  },
+  {
     id: 'p7',
     title: 'FinSight — Financial & Revenue Dashboard',
     explainerId: 'exp_web_app',

@@ -13,6 +13,7 @@ of its own:
   /demos/modern-street/  -> storefront/          (this repo)
   /demos/fog-city/       -> fog-city/            (this repo)
   /demos/big-boy-subs/   -> big-boy-subs/        (this repo)
+  /demos/drone-command/  -> all-in-1-events-2/drone (built with DEMO_BASE and DEMO_URL, below)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
 from, then copy the build here. For the planner, which lives in this repo:
@@ -50,3 +51,13 @@ Meridian can build a brand for a client. The bar makes sure nobody mistakes
 whose work it is: it names Meridian, says the page is a demonstration, and
 links back to the site. It is applied to the built HTML rather than each app's
 source, so every demo carries exactly the same bar and it cannot drift.
+
+Drone Command (all-in-1-events-2 repo, drone/) reads DEMO_BASE for its path and
+DEMO_URL for the absolute address its link-preview image uses:
+
+  cd drone && DEMO_BASE=/demos/drone-command/ DEMO_URL=https://meridianinterface.com/demos/drone-command/ npx vite build --outDir /tmp/drone-demo
+  rm -rf public/demos/drone-command && cp -r /tmp/drone-demo public/demos/drone-command
+  cp public/brand/meridian-mark.png public/demos/drone-command/brand/
+  node tools/brand-demos.mjs
+
+It has its own Content-Security-Policy in vercel.json (see VERCEL-CONFIG.md).

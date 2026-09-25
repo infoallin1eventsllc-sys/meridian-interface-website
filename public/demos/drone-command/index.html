@@ -1,39 +1,43 @@
-/**
- * Stamps every hosted demo with a Meridian Interface bar across the top.
- *
- * The demos carry client-facing product names — The Frame Shop, FinSight,
- * ORCHESTRA — because that is the demonstration: a motorcycle shop has to look
- * like a motorcycle shop, not like its agency. The risk Otis spotted is that a visitor who
- * clicks through from the portfolio then believes they have left Meridian's
- * site. So every demo opens with a bar naming Meridian as the studio that built
- * it, saying plainly that it is a demonstration, and offering the way back.
- *
- * This runs over the BUILT output rather than each app's source, so all four
- * carry exactly the same bar and it cannot drift app by app. Run it after
- * copying a fresh build into public/demos/<slug>/.
- */
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
-
-const DEMOS = join(process.cwd(), 'public', 'demos');
-const BAR_H = 46;
-
-const LABEL = {
-  'stack-planner': 'Stack Planner',
-  finsight: 'FinSight — financial dashboard',
-  'frame-shop': 'The Frame Shop — motorcycle frame & alignment',
-  orchestra: 'ORCHESTRA — cloud console',
-  'meridian-crm': 'Meridian CRM — operations hub',
-  'analytics-hub': 'Analytics Intelligence Hub — BI dashboard',
-  'modern-street': 'MODERN_STREET — streetwear storefront',
-  'fog-city': 'Fog City Roasters — coffee brand site',
-  'big-boy-subs': 'Big Boy Subs — restaurant ordering site',
-  'drone-command': 'All in 1 Drone Command — drone operations console',
-};
-
-const styles = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All in 1 Drone Command</title>
+    <!-- Installable app: home screen on iPhone / iPad / Android, app window on desktop -->
+    <link rel="manifest" href="/demos/drone-command/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/demos/drone-command/icons/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/demos/drone-command/icons/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/demos/drone-command/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0f14" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Drone Command" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="All in 1 Drone Command: light shows, site surveys and overnight security flown from one screen, with live aircraft health. A working demo designed and engineered by Meridian Interface." />
+    <meta property="og:title" content="All in 1 Drone Command" />
+    <meta property="og:description" content="All in 1 Drone Command: light shows, site surveys and overnight security flown from one screen, with live aircraft health. A working demo designed and engineered by Meridian Interface." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Social preview: absolute URL of the deployed demo (update if it moves) -->
+    <meta property="og:image" content="https://meridianinterface.com/demos/drone-command/demo/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image" content="https://meridianinterface.com/demos/drone-command/demo/og.jpg" />
+    <meta name="author" content="Meridian Interface" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="/demos/drone-command/assets/index-99-fdPHH.js"></script>
+    <link rel="modulepreload" crossorigin href="/demos/drone-command/assets/jsx-runtime-CFnbOTzc.js">
+    <link rel="modulepreload" crossorigin href="/demos/drone-command/assets/operator-BNLZaRC7.js">
+    <link rel="modulepreload" crossorigin href="/demos/drone-command/assets/three-CBuGVnnl.js">
+    <link rel="stylesheet" crossorigin href="/demos/drone-command/assets/index-DEh20JPY.css">
+  
 <style id="meridian-demo-bar-style">
-  :root { --meridian-bar: ${BAR_H}px; }
+  :root { --meridian-bar: 46px; }
   body { padding-top: var(--meridian-bar) !important; }
   /* These apps size themselves to the viewport; leave room for the bar so the
      demo is not pushed off the bottom of the screen. */
@@ -86,51 +90,18 @@ const styles = `
     #meridian-demo-bar .mb-short { display: inline; }
     #meridian-demo-bar a.mb-home { padding: 7px 10px; }
   }
-</style>`;
-
-const bar = (slug) => `
+</style>
+</head>
+  <body>
 <div id="meridian-demo-bar">
   <img src="brand/meridian-mark.png" alt="Meridian Interface" />
   <span class="mb-built">Built by Meridian Interface</span>
   <span class="mb-sep">·</span>
-  <span class="mb-what">${LABEL[slug] ?? slug}</span>
+  <span class="mb-what">All in 1 Drone Command — drone operations console</span>
   <span class="mb-tag">Demonstration</span>
   <a class="mb-home" href="/"><span class="mb-long">meridianinterface.com &rarr;</span><span class="mb-short">Meridian &rarr;</span></a>
-</div>`;
+</div>
+    <div id="root"></div>
+  </body>
+</html>
 
-/**
- * Remove a previously stamped bar so it can be replaced with the current one.
- *
- * Both patterns are anchored to the bar's own markup and end at its own closing
- * tag — the style block at </style>, the bar at the </a></div> that only the
- * bar has. An earlier attempt matched the bar's opening div and then any later
- * </div>, which quietly ate the app's own <div id="root"> and left every demo
- * a blank page. Do not loosen these.
- */
-const unstamp = (html) => html
-  .replace(/\n?<style id="meridian-demo-bar-style">[\s\S]*?<\/style>\n?/, '')
-  .replace(/\n?<div id="meridian-demo-bar">[\s\S]*?<\/a>\s*<\/div>/, '');
-
-let done = 0, updated = 0;
-for (const slug of readdirSync(DEMOS)) {
-  const file = join(DEMOS, slug, 'index.html');
-  if (!existsSync(file)) continue;
-  const before = readFileSync(file, 'utf8');
-  const had = before.includes('meridian-demo-bar');
-  let html = unstamp(before);
-
-  if (!html.includes('id="root"')) {
-    console.error(`${slug}: ABORTED — stripping the old bar would have removed the app root`);
-    process.exitCode = 1;
-    continue;
-  }
-
-  html = html.replace('</head>', `${styles}\n</head>`);
-  html = html.replace(/(<body[^>]*>)/, `$1${bar(slug)}`);
-
-  if (html === before) { console.log(`${slug}: unchanged`); continue; }
-  writeFileSync(file, html);
-  console.log(`${slug}: ${had ? 'bar updated' : 'stamped'}`);
-  had ? updated++ : done++;
-}
-console.log(`${done} stamped, ${updated} updated`);

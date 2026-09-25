@@ -36,6 +36,19 @@ export default function App() {
   }, [isUnsubscribe]);
   const [preselectedService, setPreselectedService] = useState<ServiceCategory>('web_design');
 
+  // `?book=<service>` opens the booking form directly, with that service chosen:
+  // the hosted demos link here ("Book an appointment"), and a visitor who has
+  // just clicked through one should land on the form, not the homepage.
+  useEffect(() => {
+    if (isUnsubscribe) return;
+    const want = new URLSearchParams(window.location.search).get('book');
+    if (want === null) return;
+    const services: ServiceCategory[] = ['web_design', 'app_design', 'dashboards', 'logo_brand', 'systems', 'tech_stack', 'full_package'];
+    if (services.includes(want as ServiceCategory)) setPreselectedService(want as ServiceCategory);
+    setCurrentTab('booking');
+    trackPage('booking');
+  }, [isUnsubscribe]);
+
   // Modal States
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);

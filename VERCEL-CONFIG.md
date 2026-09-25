@@ -14,3 +14,9 @@ PostHog needs three exceptions, and they are the only third-party origins on thi
 ## The `/unsubscribe` rewrite
 
 The app owns exactly two paths. Everything else falls through to the filesystem, and Vercel answers an unmatched path with 404.html and a real 404 status. A catch-all rewrite used to sit here, which meant a mistyped URL silently returned the homepage with status 200 - a soft 404, which search engines index as a real page and which tells a visitor nothing went wrong when it did.
+
+## The drone demo's own policy (`/demos/drone-command/`)
+
+The Content-Security-Policy and Permissions-Policy are split in two: one rule for every path except the drone demo, and one for the demo. It cannot be a second rule layered on top, because a browser that receives two CSP headers enforces both, so the stricter site-wide one would still win.
+
+The demo needs more than the site does. It streams recorded drone footage from Pexels (media-src). It connects to an aircraft link the pilot chooses: a bridge or video streamer on the local network, over https/wss, or localhost (connect-src). And it uses geolocation (walking a survey boundary), the microphone (push-to-talk), and Web Bluetooth and Web Serial (flying a real aircraft) (Permissions-Policy). None of this applies to the rest of the site, whose policy is unchanged. `/demos/drone-command` without the slash redirects to the slash form, so the page always gets the demo's own policy and the service worker scope.
