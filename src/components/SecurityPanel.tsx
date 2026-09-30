@@ -6,6 +6,7 @@ import {
   twoStepBegin,
   twoStepConfirm,
   twoStepOff,
+  type AgentRun,
   type SecurityEvent,
   type SecurityStatus,
 } from '../lib/ownerStore';
@@ -29,6 +30,7 @@ const EVENT_LABEL: Record<string, { text: string; tone: 'ok' | 'warn' | 'bad' | 
   twostep_on: { text: 'Two-step sign-in turned on', tone: 'ok' },
   twostep_off: { text: 'Two-step sign-in turned off', tone: 'bad' },
   signout_all: { text: 'Signed out every other device', tone: 'info' },
+  agent_alert: { text: 'Security agent emailed an alert', tone: 'warn' },
 };
 
 const TONE: Record<string, string> = {
@@ -71,6 +73,42 @@ const CodeInput: React.FC<{ value: string; onChange: (v: string) => void; id: st
     />
   </div>
 );
+
+/** "4 minutes ago", "3 hours ago": how fresh an agent's last look is. */
+const ago = (iso: string) => {
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m} minute${m === 1 ? '' : 's'} ago`;
+  const h = Math.round(m / 60);
+  if (h < 48) return `${h} hour${h === 1 ? '' : 's'} ago`;
+  return `${Math.round(h / 24)} days ago`;
+};
+
+/** One agent's line: what it watches, when it last looked, what it found. */
+const AgentRow: React.FC<{ name: string; does: string; every: string; run?: AgentRun; staleAfterMin: number }> = ({ name, does, every, run, staleAfterMin }) => {
+  const stale = !run || Date.now() - Date.parse(run.at) > staleAfterMin * 60000;
+  const worst = run?.findings.some((f) => f.severity === 'critical') ? 'bad' : run?.findings.length ? 'warn' : 'ok';
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-start gap-3 py-4 border-b border-slate-100 last:border-0">
+      <div className="sm:w-56 shrink-0">
+        <div className="font-display font-bold text-slate-900">{name}</div>
+        <div className="text-[11px] text-slate-500">{every}</div>
+      </div>
+      <div className="flex-1 space-y-1.5">
+        <p className="text-sm text-slate-600">{does}</p>
+        {stale ? (
+          <span className={`inline-block px-2 py-0.5 rounded-md border text-xs font-semibold ${TONE.warn}`}>
+            {run ? `Last checked ${ago(run.at)}: later than it should be` : 'Not run yet: starts after the next backend deploy'}
+          </span>
+        ) : (
+          <span className={`inline-block px-2 py-0.5 rounded-md border text-xs font-semibold ${TONE[worst]}`}>
+            Checked {ago(run!.at)}: {run!.findings.length === 0 ? 'all clear' : run!.findings.map((f) => f.title).join('; ')}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const SecurityPanel: React.FC = () => {
   const [status, setStatus] = useState<SecurityStatus | null>(null);
@@ -194,6 +232,43 @@ export const SecurityPanel: React.FC = () => {
           <div className="mt-2 font-mono font-bold text-slate-900">{status.thisDevice}</div>
           <div className="text-[11px] text-slate-500 mt-1">A label from a scrambled network address, not your IP.</div>
         </div>
+      </section>
+
+      {/* The agents */}
+      <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <h3 className="font-display font-bold text-lg text-slate-900">Security agents</h3>
+        <p className="text-sm text-slate-600 mt-1 max-w-2xl">
+          Two agents keep watch and email you when something needs you. Fixed rules decide what counts
+          as an attack; the agent explains it in plain English.
+        </p>
+        <div className="mt-2">
+          <AgentRow
+            name="Watch agent"
+            every="Every 15 minutes"
+            does="Looks for passcode guessing, lockouts, anyone hammering the site's forms and services, and form submissions that look like hacking tools."
+            run={status.agents?.watch}
+            staleAfterMin={45}
+          />
+          <AgentRow
+            name="Audit agent"
+            every="Every morning at 8:05"
+            does="Checks the locks are still on: every table protected, nothing open to the public, last night's backup taken, two-step sign-in on."
+            run={status.agents?.audit}
+            staleAfterMin={26 * 60}
+          />
+        </div>
+        {(status.openAlerts?.length ?? 0) > 0 && (
+          <div className="mt-4 space-y-2">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Open now</div>
+            {status.openAlerts!.map((a) => (
+              <div key={a.code} className={`rounded-xl border px-4 py-3 text-sm ${a.severity === 'critical' ? TONE.bad : TONE.warn}`}>
+                <div className="font-bold">{a.title}</div>
+                {a.detail && <div className="text-xs mt-0.5 opacity-90">{a.detail}</div>}
+                <div className="text-[11px] mt-1 opacity-75">First seen {when(a.first_seen)}, last seen {ago(a.last_seen)}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {(error || notice) && (

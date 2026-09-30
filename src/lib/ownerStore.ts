@@ -324,11 +324,27 @@ export async function publishImageFile(
 /* ----------------------------------------------------------- security ---- */
 
 export type SecurityEvent = { kind: string; device: string; thisDevice: boolean; at: string };
+export type AgentRun = {
+  at: string;
+  findings: { code: string; severity: 'critical' | 'warning'; title: string }[];
+  emailed: boolean;
+};
+export type OpenSecurityAlert = {
+  code: string;
+  severity: string;
+  title: string;
+  detail: string | null;
+  first_seen: string;
+  last_seen: string;
+};
 export type SecurityStatus = {
   twoStep: boolean;
   thisDevice: string;
   failedSignInsLast24h: number;
   events: SecurityEvent[];
+  /** Absent on a backend deployed before the agents existed. */
+  agents?: { watch?: AgentRun; audit?: AgentRun };
+  openAlerts?: OpenSecurityAlert[];
 };
 
 /** The backend answering is older than the Security tab: it has no such action yet. */
