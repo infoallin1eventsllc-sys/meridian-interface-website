@@ -20,8 +20,9 @@ import {
 import { INITIAL_OWNER_INVOICES } from '../data/mockData';
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import { ErrorBoundary } from './ErrorBoundary';
+import { SecurityPanel } from './SecurityPanel';
 import {
-  backendConfigured,
+  portalStatus,
   deleteInvoice as deleteInvoiceRemote,
   isSignedIn,
   listInvoices,
@@ -41,6 +42,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   // held in sessionStorage — it dies with the tab and carries no secret.
   const [isUnlocked, setIsUnlocked] = useState<boolean>(() => isSignedIn());
   const [pinInput, setPinInput] = useState('');
+  // Shown only when the server says two-step sign-in is on.
+  const [twoStep, setTwoStep] = useState(false);
+  const [codeInput, setCodeInput] = useState('');
   const [pinError, setPinError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   // null = still asking the server whether a passcode is configured.
@@ -49,7 +53,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'picks' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'picks' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos' | 'security'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -117,8 +121,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   // screen instead of a form that might be impossible to satisfy.
   useEffect(() => {
     let cancelled = false;
-    backendConfigured().then((ok) => {
-      if (!cancelled) setPasscodeConfigured(ok);
+    portalStatus().then((s) => {
+      if (cancelled) return;
+      setPasscodeConfigured(s.configured);
+      setTwoStep(s.twoStep);
     });
     return () => { cancelled = true; };
   }, []);
@@ -180,8 +186,10 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     if (checking) return;
     setChecking(true);
     setPinError(null);
-    const result = await ownerLogin(pinInput.trim());
+    const result = await ownerLogin(pinInput.trim(), twoStep ? codeInput : undefined);
     setChecking(false);
+    // A code is single use, so clear it either way; a retry needs the next one.
+    setCodeInput('');
     if (result.ok) {
       setIsUnlocked(true);
       setPinInput('');
@@ -695,9 +703,32 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               )}
             </div>
 
+            {twoStep && (
+              <div>
+                <label htmlFor="owner-code" className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  6-digit code from your authenticator app
+                </label>
+                <input
+                  id="owner-code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={codeInput}
+                  onChange={(e) => {
+                    setCodeInput(e.target.value.replace(/\D/g, '').slice(0, 6));
+                    setPinError(null);
+                  }}
+                  disabled={checking}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 focus:border-slate-900 rounded-xl text-sm font-mono font-bold tracking-[0.3em] text-slate-900 outline-none transition-colors"
+                />
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={checking || !pinInput.trim()}
+              disabled={checking || !pinInput.trim() || (twoStep && codeInput.length !== 6)}
               className="w-full py-3 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-base">key</span>
@@ -786,7 +817,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           { id: 'links', label: 'Campaign Links', icon: 'link' },
           { id: 'health', label: 'System Health', icon: 'monitor_heart' },
           { id: 'stack', label: 'Tech Stack', icon: 'account_tree' },
-          { id: 'photos', label: 'Photo Control', icon: 'photo_camera' }
+          { id: 'photos', label: 'Photo Control', icon: 'photo_camera' },
+          // "shield" checked against the subset font's ligature table (30 Sep).
+          { id: 'security', label: 'Security', icon: 'shield' }
         ] as const).map((t) => (
           <button
             key={t.id}
@@ -848,6 +881,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       )}
       {portalTab === 'health' && <SystemHealth />}
       {portalTab === 'stack' && <TechStack />}
+      {portalTab === 'security' && (
+        <ErrorBoundary label="Security">
+          <SecurityPanel />
+        </ErrorBoundary>
+      )}
 
       {portalTab === 'invoices' && (
       <>

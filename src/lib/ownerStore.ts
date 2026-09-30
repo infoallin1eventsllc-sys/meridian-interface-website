@@ -135,22 +135,33 @@ function writeLocal(list: OwnerInvoice[]): void {
 
 /* --------------------------------------------------------------- api ----- */
 
-/** Is a server-side passcode configured? Decides which gate screen to show. */
-export async function backendConfigured(): Promise<boolean> {
+export type PortalStatus = { configured: boolean; twoStep: boolean };
+
+/**
+ * Is a server-side passcode configured, and does sign-in also need a two-step
+ * code? Decides which gate screen to show and whether it has a code box. A
+ * backend from before two-step sign-in simply omits `twoStep`, which reads as
+ * off, so this works against either.
+ */
+export async function portalStatus(): Promise<PortalStatus> {
   try {
-    const r = await call<{ configured: boolean }>({ action: 'status' });
-    return !!r.configured;
+    const r = await call<{ configured: boolean; twoStep?: boolean }>({ action: 'status' });
+    return { configured: !!r.configured, twoStep: !!r.twoStep };
   } catch {
-    return false;
+    return { configured: false, twoStep: false };
   }
 }
 
-export async function login(passcode: string): Promise<LoginResult> {
+export async function backendConfigured(): Promise<boolean> {
+  return (await portalStatus()).configured;
+}
+
+export async function login(passcode: string, code?: string): Promise<LoginResult> {
   try {
     const res = await fetch(OWNER_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', passcode }),
+      body: JSON.stringify({ action: 'login', passcode, ...(code ? { code } : {}) }),
     });
     const body = await res.json().catch(() => ({}));
 
@@ -163,23 +174,35 @@ export async function login(passcode: string): Promise<LoginResult> {
       return {
         ok: false,
         reason: 'throttled',
-        message: `Too many attempts. Try again in about ${body?.retryAfterMinutes ?? 15} minutes.`,
+        message: body?.error === 'locked'
+          ? 'Sign-in is closed for about an hour after repeated wrong attempts from several devices. A security alert has been emailed to the owner.'
+          : `Too many attempts. Try again in about ${body?.retryAfterMinutes ?? 15} minutes.`,
       };
     }
-    if (res.status === 503 || body?.error === 'not_configured') {
+    if (body?.error === 'not_configured') {
       return {
         ok: false,
         reason: 'not_configured',
         message: 'No passcode is set on the server yet.',
       };
     }
+    if (res.status === 503) {
+      return {
+        ok: false,
+        reason: 'offline',
+        message: 'The server could not check sign-in just now. Try again in a minute.',
+      };
+    }
+    // With two-step on, the server gives one answer for a wrong passcode and a
+    // wrong code, so a guesser cannot tell which half was right. Say the same.
+    const what = body?.error === 'invalid_credentials' ? 'Incorrect passcode or code.' : 'Incorrect passcode.';
     return {
       ok: false,
       reason: 'invalid',
       message:
         typeof body?.remaining === 'number' && body.remaining >= 0 && body.remaining <= 3
-          ? `Incorrect passcode. ${body.remaining} attempt${body.remaining === 1 ? '' : 's'} left.`
-          : 'Incorrect passcode.',
+          ? `${what} ${body.remaining} attempt${body.remaining === 1 ? '' : 's'} left.`
+          : what,
     };
   } catch {
     return {
@@ -297,3 +320,52 @@ export async function publishImageFile(
     action: 'upload', id, data: base64, content_type: contentType,
   });
 }
+
+/* ----------------------------------------------------------- security ---- */
+
+export type SecurityEvent = { kind: string; device: string; thisDevice: boolean; at: string };
+export type SecurityStatus = {
+  twoStep: boolean;
+  thisDevice: string;
+  failedSignInsLast24h: number;
+  events: SecurityEvent[];
+};
+
+/** The backend answering is older than the Security tab: it has no such action yet. */
+export class NotDeployedError extends Error {
+  constructor() {
+    super('not_deployed');
+    this.name = 'NotDeployedError';
+  }
+}
+
+async function securityCall<T>(payload: Record<string, unknown>): Promise<T> {
+  try {
+    return await call<T>(payload);
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith('unknown action')) throw new NotDeployedError();
+    throw err;
+  }
+}
+
+export function securityStatus(): Promise<SecurityStatus> {
+  return securityCall<SecurityStatus>({ action: 'security_status' });
+}
+
+/** Start two-step setup. Returns the secret for the authenticator app, once. */
+export function twoStepBegin(): Promise<{ secret: string; uri: string; expiresInMinutes: number }> {
+  return securityCall({ action: 'twostep_begin' });
+}
+
+/**
+ * The actions below raise the session epoch, which signs out every device.
+ * Each hands back a fresh token so the device that asked stays signed in.
+ */
+async function withNewSession(payload: Record<string, unknown>): Promise<void> {
+  const r = await securityCall<{ token: string }>(payload);
+  if (r?.token) setToken(r.token);
+}
+
+export const twoStepConfirm = (code: string) => withNewSession({ action: 'twostep_confirm', code });
+export const twoStepOff = (code: string) => withNewSession({ action: 'twostep_off', code });
+export const signOutOtherDevices = () => withNewSession({ action: 'signout_all' });
