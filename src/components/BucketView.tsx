@@ -63,7 +63,7 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
       clientPhone: phone.trim(),
       companyName: company.trim() || undefined,
       serviceType: dominantService(items),
-      serviceTitle: `Saved list — ${items.length} item${items.length === 1 ? '' : 's'}`,
+      serviceTitle: `Saved list (${items.length} item${items.length === 1 ? '' : 's'})`,
       // Empty, not a date. Sent as an empty string this used to reach the CRM
       // as "" and fail the deal insert outright; the server now coerces it,
       // and the intent is clearer stated here too.
@@ -102,13 +102,13 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
           <h1 className="font-display font-bold text-2xl text-slate-900 mt-3">Your list is with us</h1>
           <p className="font-body text-sm text-slate-600 mt-2 leading-relaxed">
             Reference <span className="font-mono font-bold text-slate-900">{sent.id}</span>. A Meridian Interface
-            agent will go through what you picked and come back with an itemised quote — every line saying what it is
+            agent will go through what you picked and come back with an itemised quote. Every line says what it is
             for, so you can see how the figure is put together rather than being handed a total.
           </p>
           {!sent.delivered && (
             <p className="font-body text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4">
               We could not reach the studio's system just now, so your list is saved on this device only. If you do not
-              hear back within a day, email <a className="underline font-semibold" href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a> and it will not be lost.
+              hear back within one business day, email <a className="underline font-semibold" href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a> and it will not be lost.
             </p>
           )}
           <button
@@ -131,7 +131,7 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
         </h1>
         <p className="font-body text-sm text-slate-600 mt-2 max-w-2xl leading-relaxed">
           Send it over and a Meridian Interface agent will talk it through with you, then put an itemised quote
-          together — each line saying what it covers. Nothing here is an order and nothing is charged.
+          together, with each line saying what it covers. Nothing here is an order and nothing is charged.
         </p>
       </div>
 

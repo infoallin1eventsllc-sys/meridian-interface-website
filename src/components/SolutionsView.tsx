@@ -147,7 +147,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 })}
               </div>
               <p className="font-body text-xs text-slate-500 mt-2">
-                Not sure? Pick the closest — we settle the exact size in the conversation,
+                Not sure? Pick the closest. We settle the exact size in the conversation,
                 and nothing is priced until then.
               </p>
             </div>
@@ -166,7 +166,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 id: chosenSize ? `${currentService.id}:${chosenSize.id}` : currentService.id,
                 kind: 'service',
                 title: chosenSize
-                  ? `${currentService.title} — ${chosenSize.label}`
+                  ? `${currentService.title} (${chosenSize.label})`
                   : currentService.title,
                 subtitle: currentService.categoryName,
                 explainerId: chosenSize ? chosenSize.explainerId : currentService.explainerId,
@@ -189,7 +189,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-lg">explore</span>
-                Plan your stack first — free
+                Plan your stack first (free)
               </a>
             )}
           </div>
@@ -317,7 +317,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           </h2>
           <p className="text-xs text-slate-300 max-w-xl mt-1 leading-relaxed">
             Pick the scope and the pieces that matter to you. We'll come back with a written quote
-            that itemises exactly what each part costs — no guessing, and no number invented before
+            that itemises exactly what each part costs. No guessing, and no number invented before
             we understand the job.
           </p>
         </div>
@@ -328,7 +328,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
             {chosenExtras.length + 1}
           </div>
           <div className="text-[11px] text-slate-400 font-semibold">
-            {chosenExtras.length === 0 ? 'scope chosen' : `choices — ${scopeLabel.toLowerCase()} scope`}
+            {chosenExtras.length === 0 ? 'scope chosen' : `choices, ${scopeLabel.toLowerCase()} scope`}
           </div>
         </div>
       </div>
@@ -477,7 +477,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                 type="checkbox"
                 checked={isRush}
                 onChange={(e) => setIsRush(e.target.checked)}
-                aria-label="Priority Rush Delivery — 2-week turnaround"
+                aria-label="Priority Rush Delivery, 2-week turnaround"
                 className="sr-only peer"
               />
               <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -496,7 +496,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-blue-400 text-sm mt-0.5" aria-hidden="true">check</span>
-                <span><span className="text-white font-semibold">{scopeLabel} scope</span> — we'll confirm exactly what that covers before quoting.</span>
+                <span><span className="text-white font-semibold">{scopeLabel} scope</span>. We'll confirm exactly what that covers before quoting.</span>
               </div>
               {chosenExtras.map((extra) => (
                 <div key={extra} className="flex items-start gap-2">

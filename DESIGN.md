@@ -45,3 +45,19 @@ described.
 | H1 | 40px, then 48px from sm, 54px from lg, 64px from xl. Hanken Grotesk 900, leading 1.04 |
 | Body | 16px, then 18px from sm. Inter, slate-300, measure max-w-xl |
 | Caption | 11-12px Inter, slate-400 |
+
+## Copy rules (30 Sep 2026)
+
+- **No long dashes (—) in anything a visitor reads.** They are the most-cited
+  sign of AI-written copy. Use a full stop, a comma, a colon, or brackets.
+  Product titles take a colon ("FinSight: Financial & Revenue Dashboard").
+  Code comments and the owner portal are exempt; visitors never see them.
+- **Reply promise: one business day.** Stated on the booking confirmation,
+  the booking page, the saved-list fallback, the closing call to action and
+  the FAQ. Change it everywhere or nowhere.
+- **FAQ answers restate commitments made elsewhere on the site** (the quote
+  on the booking page, ownership in "How we work", timelines on the service
+  cards). If one of those changes, change the FAQ too.
+- **The `<noscript>` block in `index.html` mirrors the hero and the FAQ word
+  for word.** It is the only text crawlers and AI search read; if it says
+  something the page does not, search engines treat that as cloaking.

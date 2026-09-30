@@ -158,8 +158,8 @@ export const ConceptModal: React.FC<{
               <Lightbox
           items={
             (item.gallery?.length
-              ? item.gallery.map((g) => ({ src: g.src, alt: `${item.title} — ${g.caption}`, caption: `${item.title} — ${g.caption}` }))
-              : [{ src: resolveImage(item.id, item.image), alt: item.title, caption: `${item.title} — ${item.categoryLabel}` }]) as LightboxItem[]
+              ? item.gallery.map((g) => ({ src: g.src, alt: `${item.title}. ${g.caption}`, caption: `${item.title}. ${g.caption}` }))
+              : [{ src: resolveImage(item.id, item.image), alt: item.title, caption: `${item.title} (${item.categoryLabel})` }]) as LightboxItem[]
           }
           index={zoomed}
           onClose={() => setZoomed(null)}

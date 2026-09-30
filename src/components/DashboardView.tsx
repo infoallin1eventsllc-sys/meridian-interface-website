@@ -89,7 +89,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
               <p className="font-body text-[12px] text-amber-900 leading-relaxed">
                 <span className="font-bold">Sample data.</span>{' '}
                 {realCount > 0
-                  ? 'The rows marked "Example" are here to show how this page works — they are not real clients. Your own bookings appear alongside them.'
+                  ? 'The rows marked "Example" are here to show how this page works. They are not real clients. Your own bookings appear alongside them.'
                   : 'The rows below are examples showing how this page works once you book. They are not real clients, and nobody else can see your appointments here.'}
               </p>
             </div>

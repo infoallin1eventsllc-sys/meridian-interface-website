@@ -103,7 +103,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
           <LI>Keep a record of the enquiry in our own customer database so nothing gets lost.</LI>
           <LI>
             Draft a reply. We use an AI assistant (Anthropic's Claude) to help write follow-up
-            emails. <strong>Nothing it writes is sent automatically</strong> — a person reads and
+            emails. <strong>Nothing it writes is sent automatically</strong>: a person reads and
             approves every message before it goes out, and your details are not used to train
             anyone's AI model.
           </LI>
@@ -206,7 +206,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
         <H>The demonstrations</H>
         <P>
           The working demos on this site are examples we built to show what we can do. The
-          businesses in them — the shops, the restaurants, the banks — are <strong>fictional</strong>.
+          businesses in them, including the shops, restaurants and banks, are <strong>fictional</strong>.
           Nothing in them is a real product, a real price, or a real offer, and no demo takes a real
           payment.
         </P>

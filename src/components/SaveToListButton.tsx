@@ -40,7 +40,7 @@ export const SaveToListButton: React.FC<{
         onClick={click}
         aria-pressed={saved}
         aria-label={saved ? `Remove ${item.title} from your list` : `Save ${item.title} to your list`}
-        title={saved ? 'Saved — click to remove' : 'Save to your list'}
+        title={saved ? 'Saved. Click to remove' : 'Save to your list'}
         className={`w-9 h-9 grid place-items-center rounded-full backdrop-blur transition-colors shadow-sm ${
           saved
             ? 'bg-blue-600 text-white hover:bg-blue-700'

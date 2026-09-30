@@ -35,7 +35,7 @@ export const BuiltBy: React.FC<BuiltByProps> = ({
     <a
       href="https://meridianinterface.com"
       className="mt-4 inline-flex items-center justify-center rounded-xl bg-slate-100 px-7 py-6 transition-colors hover:bg-white"
-      aria-label="Meridian Interface — visit meridianinterface.com"
+      aria-label="Meridian Interface: visit meridianinterface.com"
     >
       {/* The complete lockup file, not a mark plus typed text. The plate is
           always light, so his near-black wordmark works here — and using his

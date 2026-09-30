@@ -35,7 +35,7 @@ const SHOTS = [
 
 /* The main screen first, then the three details — the order they are shown in. */
 const GALLERY: LightboxItem[] = [
-  { src: '/images/portfolio/agentic-tech-stack.jpg', alt: 'The Meridian Stack Planner, showing the five layers of a business tech stack', caption: 'The Meridian Stack Planner — the five layers' },
+  { src: '/images/portfolio/agentic-tech-stack.jpg', alt: 'The Meridian Stack Planner, showing the five layers of a business tech stack', caption: 'The Meridian Stack Planner: the five layers' },
   ...SHOTS.map((s) => ({ src: s.src, alt: s.label, caption: s.label })),
 ];
 
@@ -88,7 +88,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               Before we build a business its AI system, we plan it together in this. It lays out the five layers such a
               system needs, how a job runs with a person approving anything that matters, and how much time the whole
               thing would give a team back. You leave with a written proposal. What it costs we go through with you on
-              the call — it depends on what you actually need, and a number quoted before that is a guess.
+              the call. It depends on what you actually need, and a number quoted before that is a guess.
             </p>
           </div>
 

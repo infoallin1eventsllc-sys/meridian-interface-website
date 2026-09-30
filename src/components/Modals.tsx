@@ -96,7 +96,7 @@ export const Modals: React.FC<ModalsProps> = ({
                   Appointment Scheduled!
                 </h3>
                 <p className="font-body text-xs text-slate-600 max-w-sm mx-auto">
-                  Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal.
+                  Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal. We'll reply within one business day to confirm it.
                 </p>
               </div>
             ) : (

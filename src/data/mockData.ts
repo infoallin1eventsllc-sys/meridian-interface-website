@@ -101,11 +101,11 @@ export const SERVICES: ServiceDetail[] = [
     explainerId: 'exp_tech_stack',
     duration: '3 - 8 Weeks',
     icon: 'account_tree',
-    summary: 'The set of tools your business runs on — website, bookings, payments, CRM, email — picked for how you actually work and wired together so information moves by itself.',
-    description: 'A "tech stack" just means the tools your business runs on and how they talk to each other. Most small businesses end up with four or five that do not, so the same customer detail gets typed in three times and something always gets missed. We map how you actually work, choose tools that fit that, and connect them so a booking becomes a calendar entry, an invoice, and a follow-up without anyone re-keying it. You own the setup — no monthly fee that grows every time you hire.',
+    summary: 'The set of tools your business runs on (website, bookings, payments, CRM, email), picked for how you actually work and wired together so information moves by itself.',
+    description: 'A "tech stack" just means the tools your business runs on and how they talk to each other. Most small businesses end up with four or five that do not, so the same customer detail gets typed in three times and something always gets missed. We map how you actually work, choose tools that fit that, and connect them so a booking becomes a calendar entry, an invoice, and a follow-up without anyone re-keying it. You own the setup, so there is no monthly fee that grows every time you hire.',
     features: [
       'A map of how work moves through your business today, before anything is bought',
-      'Tools chosen to fit that — not the other way round',
+      'Tools chosen to fit how you work, not the other way round',
       'Website, bookings, payments, CRM and email connected so nothing is typed twice',
       'One dashboard for the numbers you check daily',
       'Written down, so the next person you hire can follow it'
@@ -178,12 +178,12 @@ export const PORTFOLIO: PortfolioItem[] = [
     // cut in the bucket loses its music a third of the way in. A film that
     // answers a different question than the one being asked is worse than no
     // film - the demo below is the real answer, and it is interactive.
-    summary: 'Most growing businesses lose hours to the same few jobs \u2014 chasing the enquiry, writing the follow-up, keeping the posts going. This does them for you, sends nothing until you have approved it, and puts the whole week on one page every Monday.',
-    highlights: ['Works while you are on a job', 'Nothing goes out without your yes', 'You own it \u2014 no per-seat fee']
+    summary: 'Most growing businesses lose hours to the same few jobs: chasing the enquiry, writing the follow-up, keeping the posts going. This does them for you, sends nothing until you have approved it, and puts the whole week on one page every Monday.',
+    highlights: ['Works while you are on a job', 'Nothing goes out without your yes', 'You own it, with no per-seat fee']
   },
   {
     id: 'p11',
-    title: 'Meridian Interface Drone Command — Drone Operations Console',
+    title: 'Meridian Interface Drone Command: Drone Operations Console',
     explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'Operations Console',
@@ -195,19 +195,19 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/drone-command/?tour',
     image: '/images/portfolio/drone-command.jpg',
     gallery: [
-      { src: '/images/portfolio/drone-command.jpg', caption: 'Overview — the fleet rendered live in 3D' },
+      { src: '/images/portfolio/drone-command.jpg', caption: 'Overview: the fleet rendered live in 3D' },
       { src: '/images/portfolio/drone-command-show.jpg', caption: 'Light show conductor for 100 to 500 aircraft' },
-      { src: '/images/portfolio/drone-command-survey.jpg', caption: 'Site survey — volumes, grades and cross-sections from the map' },
+      { src: '/images/portfolio/drone-command-survey.jpg', caption: 'Site survey: volumes, grades and cross-sections from the map' },
       { src: '/images/portfolio/drone-command-health.jpg', caption: 'Aircraft health that names the failing part' },
       { src: '/images/portfolio/drone-command-control.jpg', caption: 'Control one aircraft or the whole fleet' },
       { src: '/images/portfolio/drone-command-compliance.jpg', caption: 'FAA compliance: certificates, waivers and Remote ID in one place' },
     ],
-    summary: 'One console for drone light shows, site surveys and overnight security. It flies real ArduPilot and PX4 aircraft, names the failing part before a flight goes wrong, and keeps a tamper-evident record of every flight — on a laptop, tablet or phone.',
+    summary: 'One console for drone light shows, site surveys and overnight security. It flies real ArduPilot and PX4 aircraft, names the failing part before a flight goes wrong, and keeps a tamper-evident record of every flight. It runs on a laptop, tablet or phone.',
     highlights: ['Live 3D show conductor for 100–500 aircraft', 'Survey measurements from the map', 'Aircraft health that names the failing part']
   },
   {
     id: 'p7',
-    title: 'FinSight — Financial & Revenue Dashboard',
+    title: 'FinSight: Financial & Revenue Dashboard',
     explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'Financial Dashboard',
@@ -216,7 +216,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/finsight/',
     image: '/images/portfolio/finsight-bi.jpg',
     gallery: [
-      { src: '/images/portfolio/finsight-bi.jpg', caption: 'Executive summary — every figure against its target' },
+      { src: '/images/portfolio/finsight-bi.jpg', caption: 'Executive summary: every figure against its target' },
       { src: '/images/portfolio/finsight-bi-revenue.jpg', caption: 'Revenue, with the forecast separated from what actually happened' },
       { src: '/images/portfolio/finsight-bi-forecast.jpg', caption: 'Profit and loss, with forecasts' },
       { src: '/images/portfolio/finsight-bi-treasury.jpg', caption: 'Treasury and currency exposure' },
@@ -226,7 +226,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p8',
-    title: 'Meridian CRM — Operations Hub',
+    title: 'Meridian CRM: Operations Hub',
     explainerId: 'exp_web_app',
     category: 'dashboards',
     categoryLabel: 'CRM Dashboard',
@@ -237,10 +237,10 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/meridian-crm/',
     image: '/images/portfolio/meridian-crm.jpg',
     gallery: [
-      { src: '/images/portfolio/meridian-crm.jpg', caption: 'Overview — pipeline, money in and out, and what happened today' },
-      { src: '/images/portfolio/meridian-crm-leads.jpg', caption: 'Leads funnel — every enquiry with its value and stage' },
-      { src: '/images/portfolio/meridian-crm-invoices.jpg', caption: 'Invoices — sent, paid, overdue, and a receipt on mark-paid' },
-      { src: '/images/portfolio/meridian-crm-kanban.jpg', caption: 'Kanban board — the week’s work, dragged between columns' },
+      { src: '/images/portfolio/meridian-crm.jpg', caption: 'Overview: pipeline, money in and out, and what happened today' },
+      { src: '/images/portfolio/meridian-crm-leads.jpg', caption: 'Leads funnel: every enquiry with its value and stage' },
+      { src: '/images/portfolio/meridian-crm-invoices.jpg', caption: 'Invoices: sent, paid, overdue, and a receipt on mark-paid' },
+      { src: '/images/portfolio/meridian-crm-kanban.jpg', caption: 'Kanban board: the week’s work, dragged between columns' },
     ],
     summary: 'The desk a small studio runs on: leads, clients, projects, invoices and software costs in one place, a copilot that reads the live figures before it answers, and a privacy switch that blurs every name and number the moment a screen is shared.',
     highlights: ['Privacy mode for screen sharing', 'Copilot reads the live figures', 'One owner, signed in with Google']
@@ -256,17 +256,17 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/analytics-hub/',
     image: '/images/portfolio/analytics-hub.jpg',
     gallery: [
-      { src: '/images/portfolio/analytics-hub.jpg', caption: 'Dashboard — every metric against its target, with a confidence range' },
-      { src: '/images/portfolio/analytics-hub-trends.jpg', caption: 'Trend models — four forecasts and what-if sliders' },
-      { src: '/images/portfolio/analytics-hub-cohorts.jpg', caption: 'Cohorts — retention and net revenue retention by month joined' },
-      { src: '/images/portfolio/analytics-hub-anomalies.jpg', caption: 'Anomalies — what moved, why, and what to do' },
+      { src: '/images/portfolio/analytics-hub.jpg', caption: 'Dashboard: every metric against its target, with a confidence range' },
+      { src: '/images/portfolio/analytics-hub-trends.jpg', caption: 'Trend models: four forecasts and what-if sliders' },
+      { src: '/images/portfolio/analytics-hub-cohorts.jpg', caption: 'Cohorts: retention and net revenue retention by month joined' },
+      { src: '/images/portfolio/analytics-hub-anomalies.jpg', caption: 'Anomalies: what moved, why, and what to do' },
     ],
     summary: 'A BI desk for a subscription business: every metric against its target with a confidence range, a live stream of what customers are doing, four forecasting models with what-if sliders, cohort retention tables, and an assistant that answers questions about the numbers in plain English.',
     highlights: ['Four forecast models, what-if sliders', 'Cohort retention and NRR', 'Ask the numbers a question']
   },
   {
     id: 'p1',
-    title: 'ORCHESTRA — Enterprise Cloud Console',
+    title: 'ORCHESTRA: Enterprise Cloud Console',
     explainerId: 'exp_bundle_enterprise',
     category: 'web_design',
     categoryLabel: 'Cloud Platform',
@@ -275,17 +275,17 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/orchestra/',
     image: '/images/portfolio/orchestra-cloud.jpg',
     gallery: [
-      { src: '/images/portfolio/orchestra-cloud.jpg', caption: 'Cluster overview — multi-region topology with live inter-region latency' },
+      { src: '/images/portfolio/orchestra-cloud.jpg', caption: 'Cluster overview: multi-region topology with live inter-region latency' },
       { src: '/images/portfolio/orchestra-cloud-telemetry.jpg', caption: 'Telemetry stream' },
       { src: '/images/portfolio/orchestra-cloud-clusters.jpg', caption: 'Compute clusters' },
-      { src: '/images/portfolio/orchestra-cloud-finops.jpg', caption: 'FinOps cost engine — spend by provider, with right-sizing recommendations' },
+      { src: '/images/portfolio/orchestra-cloud-finops.jpg', caption: 'FinOps cost engine: spend by provider, with right-sizing recommendations' },
     ],
     summary: 'A console for running services across several clouds at once: a live map of regions and the latency between them, telemetry, staged deployments you can roll back, and a cost engine that shows where the money goes and what to do about it.',
     highlights: ['Multi-region topology', 'Canary deploy and rollback', 'FinOps cost engine']
   },
   {
     id: 'p2',
-    title: 'The Frame Shop — Motorcycle Frame & Alignment',
+    title: 'The Frame Shop: Motorcycle Frame & Alignment',
     explainerId: 'exp_web_business',
     category: 'web_design',
     categoryLabel: 'Trade Business Website',
@@ -294,7 +294,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/frame-shop/',
     image: '/images/portfolio/frame-shop.jpg',
     gallery: [
-      { src: '/images/portfolio/frame-shop.jpg', caption: 'The shop front page \u2014 what it does, and one way in' },
+      { src: '/images/portfolio/frame-shop.jpg', caption: 'The shop front page: what it does, and one way in' },
       { src: '/images/portfolio/frame-shop-booking.jpg', caption: 'Booking an inspection: the bike, the symptom, a time slot' },
       { src: '/images/portfolio/frame-shop-work.jpg', caption: 'Case studies, each with the measurement before and after' },
     ],
@@ -303,7 +303,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   },
   {
     id: 'p4',
-    title: 'Big Boy Subs — Restaurant Ordering Site',
+    title: 'Big Boy Subs: Restaurant Ordering Site',
     explainerId: 'exp_web_business',
     category: 'web_design',
     categoryLabel: 'Restaurant Website',
@@ -312,17 +312,17 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/big-boy-subs/',
     image: '/images/portfolio/big-boy-subs.jpg',
     gallery: [
-      { src: '/images/portfolio/big-boy-subs.jpg', caption: 'The ordering home screen — hero sub, the day\'s specials and the seaside patio' },
+      { src: '/images/portfolio/big-boy-subs.jpg', caption: 'The ordering home screen: hero sub, the day\'s specials and the seaside patio' },
       { src: '/images/portfolio/big-boy-subs-menu.jpg', caption: 'The menu, every sub photographed' },
       { src: '/images/portfolio/big-boy-subs-locations.jpg', caption: 'Locations across the Monterey Peninsula' },
       { src: '/images/portfolio/big-boy-subs-merch.jpg', caption: 'The merch shop' },
     ],
-    summary: 'A sandwich shop\'s ordering site for the Monterey Peninsula: a photographed menu with a sub customiser, a bag that remembers the order, catering packages by headcount, three locations with hours, a merch shop and a loyalty card — all working, nothing charged.',
+    summary: 'A sandwich shop\'s ordering site for the Monterey Peninsula: a photographed menu with a sub customiser, a bag that remembers the order, catering packages by headcount, three locations with hours, a merch shop and a loyalty card. All of it works, and nothing is charged.',
     highlights: ['Sub customiser and bag', 'Catering by headcount', 'Locations, loyalty and merch']
   },
   {
     id: 'p5',
-    title: 'Fog City Roasters — Coffee Brand Identity',
+    title: 'Fog City Roasters: Coffee Brand Identity',
     explainerId: 'exp_brand_full',
     category: 'logo_brand',
     categoryLabel: 'Logo & Branding',
@@ -331,18 +331,18 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/fog-city/',
     image: '/images/portfolio/fog-city-roasters.jpg',
     gallery: [
-      { src: '/images/portfolio/fog-city-roasters.jpg', caption: 'The promotional piece — wordmark, packaging line and the city it belongs to' },
+      { src: '/images/portfolio/fog-city-roasters.jpg', caption: 'The promotional piece: wordmark, packaging line and the city it belongs to' },
       { src: '/images/portfolio/fog-city-roasters-cafe.jpg', caption: 'In the café, with the single-origin range' },
       { src: '/images/portfolio/fog-city-roasters-beans.jpg', caption: 'Fresh roast' },
       { src: '/images/portfolio/fog-city-roasters-latte.jpg', caption: 'The pour' },
       { src: '/images/portfolio/fog-city-roasters-iced.jpg', caption: 'Signature iced' },
     ],
-    summary: 'Brand identity for a San Francisco roaster: a gold-on-fog wordmark, a three-roast packaging line — Morning Fog, Sutro Sunset — and promotional photography that puts the bags in the city they are named for.',
+    summary: 'Brand identity for a San Francisco roaster: a gold-on-fog wordmark, a three-roast packaging line that includes Morning Fog and Sutro Sunset, and promotional photography that puts the bags in the city they are named for.',
     highlights: ['Custom wordmark', 'Packaging line', 'Promotional photography']
   },
   {
     id: 'p6',
-    title: 'MODERN_STREET — Streetwear Storefront',
+    title: 'MODERN_STREET: Streetwear Storefront',
     explainerId: null,
     category: 'web_design',
     categoryLabel: 'E-Commerce',
@@ -351,10 +351,10 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/modern-street/',
     image: '/images/portfolio/modern-street.jpg',
     gallery: [
-      { src: '/images/portfolio/modern-street.jpg', caption: 'The catalogue — every garment photographed on the same ground' },
+      { src: '/images/portfolio/modern-street.jpg', caption: 'The catalogue: every garment photographed on the same ground' },
       { src: '/images/portfolio/modern-street-product.jpg', caption: 'A product, with a second view, colourway and size' },
       { src: '/images/portfolio/modern-street-cart.jpg', caption: 'The bag, with quantities and a promo code' },
-      { src: '/images/portfolio/modern-street-checkout.jpg', caption: 'Checkout — a demonstration, so no card is asked for and nothing is charged' },
+      { src: '/images/portfolio/modern-street-checkout.jpg', caption: 'Checkout: a demonstration, so no card is asked for and nothing is charged' },
     ],
     summary: 'A high-contrast streetwear storefront with an editorial feel: curated essentials, seasonal collections, a product page with colour and size, a cart that remembers what was chosen, and a checkout that gets out of the way.',
     highlights: ['Editorial layout and type', 'Colour and size variants', 'Cart to checkout in three steps']

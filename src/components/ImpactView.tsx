@@ -165,7 +165,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
         </h2>
         <p className="text-slate-300 text-sm max-w-xl mx-auto">
           Book a one-to-one call and we'll turn your web, app, dashboard, or brand goals into a
-          written quote that itemises every line — once we understand what the work actually is.
+          written quote that itemises every line, once we understand what the work actually is.
         </p>
         <button
           onClick={() => onTabChange('booking')}

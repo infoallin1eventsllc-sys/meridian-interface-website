@@ -76,6 +76,24 @@ export default function App() {
   // only decides which heading it opens at.
   const [legalDoc, setLegalDoc] = useState<'privacy' | 'terms'>('privacy');
 
+  // Each section gets its own browser-tab title. The site is one address with
+  // no router, so this is for people (tabs, history, bookmarks) and analytics
+  // rather than Google, which only ever sees the homepage title in index.html.
+  useEffect(() => {
+    if (isUnsubscribe) { document.title = 'Unsubscribe | Meridian Interface'; return; }
+    const titles: Record<TabType, string> = {
+      home: 'Meridian Interface | Custom Web Design, Mobile Apps & Data Dashboards',
+      services: 'Services | Meridian Interface',
+      portfolio: 'Portfolio: Working Demos | Meridian Interface',
+      booking: 'Book a Consultation | Meridian Interface',
+      bucket: 'Your Saved List | Meridian Interface',
+      appointments: 'My Appointments | Meridian Interface',
+      owner_invoice: 'Studio Portal | Meridian Interface',
+      legal: legalDoc === 'terms' ? 'Terms of Use | Meridian Interface' : 'Privacy Policy | Meridian Interface',
+    };
+    document.title = titles[currentTab];
+  }, [currentTab, legalDoc, isUnsubscribe]);
+
   const handleOpenLegal = (doc: 'privacy' | 'terms') => {
     setLegalDoc(doc);
     handleTabChange('legal');

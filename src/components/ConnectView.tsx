@@ -151,7 +151,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               What happens next
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              We'll be in touch to confirm the details. Once we understand exactly what you need,
+              We'll reply within one business day to confirm the details. Once we understand exactly what you need,
               you'll get a written quote that itemises every line and says plainly what it does and
               doesn't include. Nothing is owed until you've seen that and agreed to it.
             </p>

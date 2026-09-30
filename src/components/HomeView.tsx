@@ -51,8 +51,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const screensFor = (item: typeof PORTFOLIO[number]): LightboxItem[] => {
     const cover = resolveImage(item.id, item.image);
     if (!cover) return [];
-    if (!item.gallery?.length) return [{ src: cover, alt: item.title, caption: `${item.title} — ${item.categoryLabel}` }];
-    return item.gallery.map((g) => ({ src: g.src, alt: `${item.title} — ${g.caption}`, caption: `${item.title} — ${g.caption}` }));
+    if (!item.gallery?.length) return [{ src: cover, alt: item.title, caption: `${item.title} (${item.categoryLabel})` }];
+    return item.gallery.map((g) => ({ src: g.src, alt: `${item.title}. ${g.caption}`, caption: `${item.title}. ${g.caption}` }));
   };
   const [zoom, setZoom] = useState<{ items: LightboxItem[]; index: number } | null>(null);
   const openZoom = (item: typeof PORTFOLIO[number]) => {
@@ -106,7 +106,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => onTabChange('booking')}
                 className="w-full sm:w-auto px-7 py-4 bg-blue-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-950/40 flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined text-lg">calendar_month</span>
+                <span className="material-symbols-outlined text-lg" aria-hidden="true">calendar_month</span>
                 Book a consultation
               </button>
               <button
@@ -114,7 +114,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="group w-full sm:w-auto px-7 py-4 bg-transparent border border-slate-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-white/5 hover:border-slate-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 Try the working demos
-                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-0.5" aria-hidden="true">arrow_forward</span>
               </button>
             </div>
           </div>
@@ -129,14 +129,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1.5 max-w-xl">
             <p className="font-body text-xs font-bold uppercase tracking-widest text-blue-600">
-              Working demos — open any of them
+              Working demos: open any of them
             </p>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
               See what we build, before you ask for anything
             </h2>
             <p className="font-body text-sm text-slate-500 leading-relaxed">
               Every piece below is a real, working demo you can click into and use.
-              They show what we can build — yours is built to your brief, at your size,
+              They show what we can build. Yours is built to your brief, at your size,
               in your colours. Save the ones close to what you need and send them over.
             </p>
           </div>
@@ -481,7 +481,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               What every engagement includes
             </h2>
             <p className="font-body text-sm text-slate-300 leading-relaxed">
-              A consistent, transparent process on every project — no surprises, no lock-in.
+              The same process on every project. No surprises, and nothing that locks you in.
             </p>
           </div>
 
@@ -509,6 +509,50 @@ export const HomeView: React.FC<HomeViewProps> = ({
           reading after the demos, the services and the scheduler. */}
       <StackPlannerFeature onTabChange={onTabChange} />
 
+      {/* Questions people ask before they book. Every answer restates something
+          the site already commits to elsewhere (the quote on the booking page,
+          ownership in "How we work", timelines on the service cards), so this
+          cannot drift into promising more than the studio does. Native
+          details/summary: keyboard and screen-reader support for free, no JS. */}
+      <section id="faq" className="mt-20 px-4 md:px-12 max-w-3xl mx-auto space-y-6">
+        <div className="text-center space-y-2">
+          <span className="font-body text-xs font-bold uppercase tracking-[0.2em] text-blue-600">Questions</span>
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">Before you book</h2>
+        </div>
+        <div className="divide-y divide-slate-200 border-y border-slate-200">
+          {[
+            {
+              q: 'How much will my project cost?',
+              a: 'Every project gets a written quote that itemises each line and says what it does and does not include. We write it after we understand what you need, because a price given before that is a guess. Nothing is owed until you have seen the quote and agreed to it.',
+            },
+            {
+              q: 'How long does it take?',
+              a: 'A logo and visual identity takes 3 to 7 days. Websites and dashboards usually take 1 to 3 weeks, and mobile apps 2 to 4 weeks. Your quote gives the timeline for your project.',
+            },
+            {
+              q: 'Do I own what you build?',
+              a: 'Yes. You receive the source files and full rights to everything we make for you.',
+            },
+            {
+              q: 'Are the portfolio pieces client projects?',
+              a: 'No. They are working demos we built to show what we can make, and you can open and use every one. Your project is designed around your business, your brief and your brand.',
+            },
+            {
+              q: 'What happens after I book?',
+              a: 'We reply within one business day to confirm a time. On the call we go through your goals and any examples you like, then send a written proposal and quote.',
+            },
+          ].map((item) => (
+            <details key={item.q} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-bold text-base md:text-lg text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <span className="material-symbols-outlined text-slate-500 transition-transform group-open:rotate-45" aria-hidden="true">add</span>
+              </summary>
+              <p className="mt-3 font-body text-sm md:text-base text-slate-600 leading-relaxed">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* Final Call to Action */}
       <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto text-center space-y-6">
         <div className="max-w-2xl mx-auto space-y-3">
@@ -516,7 +560,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             Ready to build your web, app, or logo?
           </h2>
           <p className="font-body text-slate-600 text-sm md:text-base">
-            Book an appointment today. We'll discuss your goals, review visual references, and provide an actionable proposal.
+            Book an appointment today. We'll go through your goals and any examples you like, then send a written proposal. We reply to every booking within one business day.
           </p>
         </div>
 
