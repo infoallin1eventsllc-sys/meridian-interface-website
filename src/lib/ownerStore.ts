@@ -135,7 +135,12 @@ function writeLocal(list: OwnerInvoice[]): void {
 
 /* --------------------------------------------------------------- api ----- */
 
-export type PortalStatus = { configured: boolean; twoStep: boolean };
+/**
+ * `reachable: false` means the question could not be asked (offline, or the
+ * server errored). It is not the same as "no passcode": telling the owner to
+ * go set a secret during an outage would send them changing one that works.
+ */
+export type PortalStatus = { configured: boolean; twoStep: boolean; reachable: boolean };
 
 /**
  * Is a server-side passcode configured, and does sign-in also need a two-step
@@ -146,9 +151,9 @@ export type PortalStatus = { configured: boolean; twoStep: boolean };
 export async function portalStatus(): Promise<PortalStatus> {
   try {
     const r = await call<{ configured: boolean; twoStep?: boolean }>({ action: 'status' });
-    return { configured: !!r.configured, twoStep: !!r.twoStep };
+    return { configured: !!r.configured, twoStep: !!r.twoStep, reachable: true };
   } catch {
-    return { configured: false, twoStep: false };
+    return { configured: false, twoStep: false, reachable: false };
   }
 }
 

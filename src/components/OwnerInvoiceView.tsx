@@ -21,6 +21,7 @@ import { INITIAL_OWNER_INVOICES } from '../data/mockData';
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SecurityPanel } from './SecurityPanel';
+import { daysFromToday, todayISO } from '../lib/dates';
 import {
   portalStatus,
   deleteInvoice as deleteInvoiceRemote,
@@ -49,6 +50,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [checking, setChecking] = useState(false);
   // null = still asking the server whether a passcode is configured.
   const [passcodeConfigured, setPasscodeConfigured] = useState<boolean | null>(null);
+  const [portalReachable, setPortalReachable] = useState(true);
+  const [statusCheck, setStatusCheck] = useState(0);
   // True when the server could not be reached and we are on local copies.
   const [offline, setOffline] = useState(false);
 
@@ -81,8 +84,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [formClientCompany, setFormClientCompany] = useState('');
   const [formClientEmail, setFormClientEmail] = useState('');
   const [formClientPhone, setFormClientPhone] = useState('');
-  const [formIssueDate, setFormIssueDate] = useState('2026-07-31');
-  const [formDueDate, setFormDueDate] = useState('2026-08-15');
+  const [formIssueDate, setFormIssueDate] = useState(todayISO);
+  const [formDueDate, setFormDueDate] = useState(() => daysFromToday(14));
   const [formStatus, setFormStatus] = useState<'Draft' | 'Issued' | 'Paid' | 'Internal Audit'>('Issued');
   const [formNotes, setFormNotes] = useState('INTERNAL OWNER RECORD — Custom project invoice with industry benchmark rates.');
   const [formDiscount, setFormDiscount] = useState<number>(0);
@@ -123,11 +126,12 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     let cancelled = false;
     portalStatus().then((s) => {
       if (cancelled) return;
+      setPortalReachable(s.reachable);
       setPasscodeConfigured(s.configured);
       setTwoStep(s.twoStep);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [statusCheck]);
 
   // Put the gate back the moment the server refuses this session.
   //
@@ -218,8 +222,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setFormClientCompany('Meridian Interface');
     setFormClientEmail('otis@meridianinterface.com');
     setFormClientPhone('281-882-9198');
-    setFormIssueDate(new Date().toISOString().split('T')[0]);
-    setFormDueDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+    setFormIssueDate(todayISO());
+    setFormDueDate(daysFromToday(14));
     setFormStatus('Issued');
     setFormNotes('INTERNAL OWNER RECORD — Custom project invoice generated from industry standard pricing benchmarks.');
     setFormDiscount(0);
@@ -259,8 +263,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setFormClientCompany(lead.client.company ?? '');
     setFormClientEmail(lead.client.email ?? '');
     setFormClientPhone(lead.client.phone ?? '');
-    setFormIssueDate(new Date().toISOString().split('T')[0]);
-    setFormDueDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+    setFormIssueDate(todayISO());
+    setFormDueDate(daysFromToday(14));
     setFormStatus('Draft');
     setFormNotes(
       [
@@ -506,7 +510,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       status: formStatus,
       notes: formNotes,
       isOwnerOnly: true,
-      createdAt: new Date().toISOString().split('T')[0]
+      createdAt: todayISO()
     };
 
     let updatedList: OwnerInvoice[];
@@ -559,8 +563,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setFormClientCompany('Meridian Interface');
     setFormClientEmail('Meridianinterface@gmail.com');
     setFormClientPhone('281-882-9198');
-    setFormIssueDate(new Date().toISOString().split('T')[0]);
-    setFormDueDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+    setFormIssueDate(todayISO());
+    setFormDueDate(daysFromToday(14));
     setFormStatus('Issued');
     setFormNotes('INTERNAL OWNER RECORD — Custom web design, logo, mobile app, or dashboard invoice.');
     setFormDiscount(0);
@@ -594,6 +598,29 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         <div className="text-center space-y-3">
           <div className="w-10 h-10 mx-auto rounded-full border-2 border-slate-200 border-t-slate-900 animate-spin" />
           <p className="font-body text-sm text-slate-500">Checking the portal…</p>
+        </div>
+      </main>
+    );
+  }
+
+  // The server did not answer. Say that, not "set a passcode".
+  if (!isUnlocked && !portalReachable) {
+    return (
+      <main className="pt-28 pb-20 px-4 max-w-md mx-auto min-h-screen flex items-center justify-center animate-fadeIn">
+        <div role="alert" className="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 md:p-8 w-full space-y-4 text-center">
+          <span className="material-symbols-outlined text-3xl text-amber-600" aria-hidden="true">cloud_off</span>
+          <h1 className="font-display font-black text-xl text-slate-900">Can&rsquo;t reach the studio server</h1>
+          <p className="font-body text-sm text-slate-600 leading-relaxed">
+            Check your connection and try again. Nothing is wrong with your passcode,
+            and nothing needs changing in Supabase.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setPasscodeConfigured(null); setPortalReachable(true); setStatusCheck((n) => n + 1); }}
+            className="px-5 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors"
+          >
+            Try again
+          </button>
         </div>
       </main>
     );
@@ -647,7 +674,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             </p>
           </div>
 
-          <p className="text-[11px] text-slate-400 leading-relaxed pt-1 border-t border-slate-100">
+          <p className="text-[11px] text-slate-500 leading-relaxed pt-1 border-t border-slate-100">
             Invoices are stored in the Meridian database, not in this browser, so
             they survive a cleared cache and follow you between devices.
           </p>

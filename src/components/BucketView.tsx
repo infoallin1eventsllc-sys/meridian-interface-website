@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { TabType, Appointment, ServiceCategory } from '../types';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
+import { todayISO } from '../lib/dates';
 import {
   getBucket, removeSaved, clearBucket, onBucketChange, bucketAsNote, type SavedItem,
 } from '../lib/bucket';
@@ -84,7 +85,7 @@ export const BucketView: React.FC<{ onTabChange: (tab: TabType) => void }> = ({ 
         explainerId: i.explainerId ?? null,
       })),
       status: 'In Review',
-      createdAt: new Date().toISOString().split('T')[0],
+      createdAt: todayISO(),
     };
 
     const result = await submitAppointment(appointment);

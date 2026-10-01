@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from './types';
 import { BucketView } from './components/BucketView';
 import { initAnalytics, trackPage } from './lib/analytics';
@@ -10,11 +10,16 @@ import { SolutionsView } from './components/SolutionsView';
 import { ImpactView } from './components/ImpactView';
 import { ConnectView } from './components/ConnectView';
 import { DashboardView } from './components/DashboardView';
-import { OwnerInvoiceView } from './components/OwnerInvoiceView';
 import { LegalView } from './components/LegalView';
 import { UnsubscribeView } from './components/UnsubscribeView';
 import { Modals } from './components/Modals';
 import { MotionProvider } from './components/MotionProvider';
+
+// The studio portal is for one person. Loading it on demand keeps its invoice
+// editor, security tab and QR library out of what every visitor downloads.
+const OwnerInvoiceView = lazy(() =>
+  import('./components/OwnerInvoiceView').then((m) => ({ default: m.OwnerInvoiceView })),
+);
 
 export default function App() {
   // An unsubscribe link must work for someone who has never seen this site and
@@ -181,7 +186,15 @@ export default function App() {
         )}
 
         {currentTab === 'owner_invoice' && (
-          <OwnerInvoiceView onTabChange={handleTabChange} />
+          <Suspense
+            fallback={
+              <p role="status" className="py-24 text-center text-sm text-slate-500">
+                Loading the studio portal…
+              </p>
+            }
+          >
+            <OwnerInvoiceView onTabChange={handleTabChange} />
+          </Suspense>
         )}
 
         {currentTab === 'bucket' && <BucketView onTabChange={handleTabChange} />}

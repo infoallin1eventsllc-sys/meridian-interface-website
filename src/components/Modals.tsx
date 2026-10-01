@@ -3,6 +3,7 @@ import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { MeridianLogo } from './MeridianLogo';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
+import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface ModalsProps {
   isConsultationOpen: boolean;
@@ -30,7 +31,7 @@ export const Modals: React.FC<ModalsProps> = ({
   const [modalName, setModalName] = useState('');
   const [modalEmail, setModalEmail] = useState('');
   const [modalPhone, setModalPhone] = useState('');
-  const [modalDate, setModalDate] = useState('2026-08-05');
+  const [modalDate, setModalDate] = useState(nextBusinessDay);
   const [modalTime, setModalTime] = useState('10:00 AM - 11:00 AM EST');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -53,7 +54,7 @@ export const Modals: React.FC<ModalsProps> = ({
       budgetRange: NOT_DISCUSSED,
       notes: 'Booked via Quick Modal',
       status: 'Scheduled',
-      createdAt: new Date().toISOString().split('T')[0]
+      createdAt: todayISO()
     };
 
     // Single submission seam — persists locally and delivers to the backend when connected.
@@ -138,6 +139,7 @@ export const Modals: React.FC<ModalsProps> = ({
                         required
                         aria-label="Preferred date"
                         value={modalDate}
+                        min={todayISO()}
                         onChange={(e) => setModalDate(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
                       />

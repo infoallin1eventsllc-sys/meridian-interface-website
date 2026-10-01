@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
+import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface AppointmentBookingViewProps {
   onTabChange?: (tab: TabType) => void;
@@ -20,7 +21,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [preferredDate, setPreferredDate] = useState('2026-08-05');
+  const [preferredDate, setPreferredDate] = useState(nextBusinessDay);
   const [preferredTimeSlot, setPreferredTimeSlot] = useState('10:00 AM - 11:00 AM EST');
   // Not asked for, and not guessed at. This form has no budget field: the
   // client never saw a number, so recording one as theirs invented a data
@@ -51,7 +52,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
       budgetRange,
       notes,
       status: 'Scheduled',
-      createdAt: new Date().toISOString().split('T')[0]
+      createdAt: todayISO()
     };
 
     // Route through the single submission seam: persists locally and, when the
@@ -234,6 +235,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       required
                       aria-label="Consultation date"
                       value={preferredDate}
+                      min={todayISO()}
                       onChange={(e) => setPreferredDate(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
                     />

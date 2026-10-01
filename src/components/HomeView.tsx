@@ -10,6 +10,7 @@ import { Lightbox, type LightboxItem } from './Lightbox';
 import { StudioReelCard } from './StudioReelCard';
 import { SaveToListButton } from './SaveToListButton';
 import { ConceptModal } from './ConceptModal';
+import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
@@ -30,7 +31,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   // Quick Inline Appointment Widget State
   const [quickService, setQuickService] = useState<ServiceCategory>('web_design');
-  const [quickDate, setQuickDate] = useState('2026-08-05');
+  const [quickDate, setQuickDate] = useState(nextBusinessDay);
   const [quickTime, setQuickTime] = useState('10:00 AM - 11:00 AM EST');
 
   // The Stack Planner has its own section above this grid, because it is a
@@ -427,6 +428,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 id="quick-date"
                 type="date"
                 value={quickDate}
+                min={todayISO()}
                 onChange={(e) => setQuickDate(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
               />
