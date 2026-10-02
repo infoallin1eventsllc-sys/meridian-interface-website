@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="PP">
+  <rect width="200" height="200" fill="#708271"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#fdfcf9" stroke-opacity=".18" stroke-width="2"/>
+  <text x="100" y="100" dy=".35em" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-style="italic" font-weight="700" font-size="76" fill="#fdfcf9">PP</text>
+</svg>

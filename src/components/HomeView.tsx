@@ -47,7 +47,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // A piece with several screens contributes all of them, so a visitor can
   // arrow through the product rather than seeing one frame of it.
   // One set per piece, not one set for the whole grid: arrowing through
-  // ORCHESTRA should walk its four screens, not wander into the next product,
+  // CarePulse should walk its four screens, not wander into the next product,
   // and the counter should read "1 / 4" rather than "5 / 10".
   const screensFor = (item: typeof PORTFOLIO[number]): LightboxItem[] => {
     const cover = resolveImage(item.id, item.image);

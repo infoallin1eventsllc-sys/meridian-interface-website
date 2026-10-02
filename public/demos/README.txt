@@ -13,6 +13,7 @@ of its own:
   /demos/modern-street/  -> storefront/          (this repo)
   /demos/fog-city/       -> fog-city/            (this repo)
   /demos/big-boy-subs/   -> big-boy-subs/        (this repo)
+  /demos/healthcare/     -> healthcare/          (this repo, CarePulse; see below)
   /demos/drone-command/  -> all-in-1-events-2/drone (built with DEMO_BASE and DEMO_URL, below)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
@@ -63,3 +64,14 @@ as "All in 1 Drone Command" on allin1events.com):
   node tools/brand-demos.mjs
 
 It has its own Content-Security-Policy in vercel.json (see VERCEL-CONFIG.md).
+
+CarePulse (healthcare/) is the AI Studio "Doctor-Patient Healthcare Dashboard"
+made safe for a public static page: no Firebase (it saved to AI Studio's
+temporary project), no Google sign-in, fonts and avatars self-hosted, and the
+SOS screen says plainly that it contacts no one. With no server, every AI
+feature uses the app's built-in sample logic and says so. A practice build
+that runs its own Express server with a Gemini key sets VITE_AI_SERVER=1.
+
+  cd healthcare && DEMO_BASE=/demos/healthcare/ npm run build
+  rm -rf ../public/demos/healthcare && cp -r dist ../public/demos/healthcare
+  cd .. && node tools/brand-demos.mjs
