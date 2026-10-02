@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SHOP_INFO, FAQS } from '../data/shopData';
+import { IS_DEMO_COPY } from '../utils/demoCopy';
 import { Phone, MapPin, Clock, Instagram, Send, CheckCircle2, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 
 export const ContactSection: React.FC = () => {
@@ -100,19 +101,36 @@ export const ContactSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Embedded Google Map */}
-            <div className="rounded-none overflow-hidden border border-zinc-800 shadow-xl h-64 bg-zinc-900">
-              <iframe
-                title="The Frame Shop Spring TX Location Map"
-                src={SHOP_INFO.mapEmbedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+            {/* Location card. Not an embedded Google map: the page loads
+                nothing from Google, and a framed map is blocked by the
+                site's security policy anyway. One tap opens real directions. */}
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(SHOP_INFO.address)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative block h-64 overflow-hidden rounded-none border border-zinc-800 bg-zinc-900 shadow-xl hover:border-orange-600 transition-colors"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 opacity-40"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(rgba(234,88,12,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(234,88,12,.18) 1px, transparent 1px), linear-gradient(rgba(113,113,122,.25) 1px, transparent 1px), linear-gradient(90deg, rgba(113,113,122,.25) 1px, transparent 1px)',
+                  backgroundSize: '96px 96px, 96px 96px, 24px 24px, 24px 24px',
+                }}
               />
-            </div>
+              <div aria-hidden="true" className="absolute left-0 right-0 top-[58%] h-3 bg-zinc-700/60 -rotate-6" />
+              <div aria-hidden="true" className="absolute top-0 bottom-0 left-[38%] w-2.5 bg-zinc-700/50 rotate-3" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+                <span className="w-12 h-12 bg-orange-600 text-white flex items-center justify-center shadow-lg shadow-orange-600/30 group-hover:scale-110 transition-transform">
+                  <MapPin className="w-6 h-6" />
+                </span>
+                <span className="text-sm font-black uppercase tracking-wider text-zinc-100">{SHOP_INFO.address}</span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-950/90 border border-zinc-700 text-[11px] font-black uppercase tracking-widest text-orange-500 group-hover:text-white group-hover:border-orange-600 transition-colors">
+                  Get directions <Send className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </a>
 
           </div>
 
@@ -182,11 +200,19 @@ export const ContactSection: React.FC = () => {
               <div className="text-center py-12 space-y-4 bg-zinc-950 p-6 rounded-none border border-zinc-800">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
                 <h4 className="text-xl font-black text-zinc-100 uppercase italic">
-                  Message Sent To The Shop!
+                  {IS_DEMO_COPY ? 'Demonstration: Message Not Sent' : 'Message Sent To The Shop!'}
                 </h4>
-                <p className="text-xs text-zinc-400 max-w-md mx-auto font-normal">
-                  Thanks <strong className="text-zinc-100 font-bold">{formName}</strong>. Paul will review your message and reach back out promptly.
-                </p>
+                {IS_DEMO_COPY ? (
+                  <p className="text-xs text-zinc-300 max-w-md mx-auto font-normal">
+                    Thanks <strong className="text-zinc-100 font-bold">{formName}</strong>. This is a demonstration copy of the site, so
+                    nothing reached the shop. To reach Paul, call{' '}
+                    <a href={`tel:${SHOP_INFO.phoneRaw}`} className="text-orange-500 font-bold underline">{SHOP_INFO.phone}</a>.
+                  </p>
+                ) : (
+                  <p className="text-xs text-zinc-400 max-w-md mx-auto font-normal">
+                    Thanks <strong className="text-zinc-100 font-bold">{formName}</strong>. Paul will review your message and reach back out promptly.
+                  </p>
+                )}
                 <button
                   onClick={() => {
                     setFormSubmitted(false);

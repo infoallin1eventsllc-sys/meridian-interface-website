@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { MeridianLogo } from './MeridianLogo';
@@ -26,6 +26,21 @@ export const Modals: React.FC<ModalsProps> = ({
   onTabChange,
   onAppointmentCreated
 }) => {
+  // Escape closes whichever of these three is open, like the concept panel
+  // and the lightbox. Without it a keyboard user had no way out but Tab to
+  // the close button.
+  useEffect(() => {
+    if (!isConsultationOpen && !isSearchOpen && !isMobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (isSearchOpen) onCloseSearch();
+      else if (isConsultationOpen) onCloseConsultation();
+      else if (isMobileMenuOpen) onCloseMobileMenu();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isConsultationOpen, isSearchOpen, isMobileMenuOpen, onCloseConsultation, onCloseSearch, onCloseMobileMenu]);
+
   // Modal Appointment Form State
   const [modalService, setModalService] = useState<ServiceCategory>('web_design');
   const [modalName, setModalName] = useState('');

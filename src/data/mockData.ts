@@ -25,8 +25,9 @@ export const HOTLINK_IMAGES = {
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
   dashboardDesign: '/images/portfolio/finsight-bi.jpg',
   techStack: '/images/portfolio/agentic-tech-stack.jpg',
-  // No real logo product to show yet, so this one stays a rendered scene.
-  logoDesign: '/images/work/svc-logo.jpg',
+  // Fog City Roasters is the studio's brand-identity work: the wordmark and
+  // the packaging line. It replaced a rendered stationery scene on 2 Oct.
+  logoDesign: '/images/portfolio/fog-city-roasters.jpg',
   fullPackage: '/images/portfolio/meridian-crm.jpg',
 };
 
@@ -312,7 +313,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/big-boy-subs/',
     image: '/images/portfolio/big-boy-subs.jpg',
     gallery: [
-      { src: '/images/portfolio/big-boy-subs.jpg', caption: 'The ordering home screen: hero sub, the day\'s specials and the seaside patio' },
+      { src: '/images/portfolio/big-boy-subs.jpg', caption: 'Home, menu and bag: order ahead, build the sub your way, pick it up in about fifteen minutes' },
       { src: '/images/portfolio/big-boy-subs-menu.jpg', caption: 'The menu, every sub photographed' },
       { src: '/images/portfolio/big-boy-subs-locations.jpg', caption: 'Locations across the Monterey Peninsula' },
       { src: '/images/portfolio/big-boy-subs-merch.jpg', caption: 'The merch shop' },
@@ -349,8 +350,9 @@ export const PORTFOLIO: PortfolioItem[] = [
     client: 'Retail / DTC',
     year: '2026',
     demo: '/demos/modern-street/',
-    image: '/images/portfolio/modern-street.jpg',
+    image: '/images/portfolio/modern-street-hero.jpg',
     gallery: [
+      { src: '/images/portfolio/modern-street-hero.jpg', caption: 'The storefront opens on the season\'s editorial: one image, one line, one way in' },
       { src: '/images/portfolio/modern-street.jpg', caption: 'The catalogue: every garment photographed on the same ground' },
       { src: '/images/portfolio/modern-street-product.jpg', caption: 'A product, with a second view, colourway and size' },
       { src: '/images/portfolio/modern-street-cart.jpg', caption: 'The bag, with quantities and a promo code' },

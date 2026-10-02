@@ -607,6 +607,12 @@ export const MyBagDrawer: React.FC<MyBagDrawerProps> = ({
             </div>
           </div>
 
+          {/* A public demonstration: say so before anyone presses the button. */}
+          <p role="note" className="text-[11px] leading-snug text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <strong className="font-semibold">Demonstration.</strong> Placing an order here sends nothing to a
+            kitchen and charges nothing.
+          </p>
+
           {/* Place Order Button */}
           <button
             type="button"

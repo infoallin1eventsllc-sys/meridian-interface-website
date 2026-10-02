@@ -105,10 +105,10 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
             </li>
           </ul>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1">
             <button
               onClick={() => onTabChange('booking')}
-              className="px-6 py-3.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-xs flex items-center justify-center gap-2"
+              className="px-6 py-3.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-xs flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <span className="material-symbols-outlined text-lg" aria-hidden="true">event</span>
               Plan your stack with us
@@ -116,9 +116,9 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
             {plannerLink && (
               <a
                 href={plannerLink}
-                className="px-6 py-3.5 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                className="px-6 py-3.5 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
               >
-                <span className="material-symbols-outlined text-lg" aria-hidden="true">explore</span>
+                <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_outward</span>
                 Open it and try it
               </a>
             )}

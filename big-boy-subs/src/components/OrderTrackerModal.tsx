@@ -91,6 +91,10 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
 
         {/* Scrollable Tracker Body */}
         <div className="overflow-y-auto p-4 sm:p-5 space-y-5">
+          <p role="note" className="text-[11px] leading-snug text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <strong className="font-semibold">Demonstration order.</strong> No kitchen received it and nothing was
+            charged. The progress below is simulated.
+          </p>
           {/* Status Hero Card */}
           <div className="bg-slate-900 text-white rounded-xl p-4 shadow-xs border border-slate-800 flex flex-col gap-2">
             <div className="flex items-center justify-between">

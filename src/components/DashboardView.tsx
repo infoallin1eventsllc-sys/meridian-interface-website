@@ -180,7 +180,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600" tabIndex={0} role="region" aria-label="Your appointments">
+            {/* Focusable so a keyboard user can scroll it sideways on a phone. */}
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">

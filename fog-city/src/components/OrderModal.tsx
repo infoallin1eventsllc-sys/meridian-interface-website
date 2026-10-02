@@ -183,17 +183,22 @@ export function OrderModal({
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span>SMS Alert Sent To:</span>
+                    <span>SMS Alert To:</span>
                     <strong className="text-[#2C1B10]">{customerPhone || 'On File'}</strong>
                   </div>
 
                   <div className="flex justify-between items-center border-t border-[#D4A373]/20 pt-2.5">
-                    <span className="font-semibold">Total Charged:</span>
+                    <span className="font-semibold">Order Total:</span>
                     <strong className="text-[#6F4E37] font-serif text-lg">
                       ${total.toFixed(2)}
                     </strong>
                   </div>
                 </div>
+
+                <p role="note" className="w-full text-left text-[11px] leading-snug text-[#5C3A1E] bg-[#FBEFD9] border border-[#D4A373]/60 rounded-2xl px-3.5 py-2.5">
+                  <strong className="font-semibold">Demonstration.</strong> No order reached a caf&eacute;, no text was
+                  sent and nothing was charged.
+                </p>
 
                 <div className="p-3.5 bg-[#F2EDE4] rounded-2xl border border-[#D4A373]/25 w-full text-left flex items-start gap-2.5">
                   <MapPin className="w-4 h-4 text-[#6F4E37] flex-shrink-0 mt-0.5" />

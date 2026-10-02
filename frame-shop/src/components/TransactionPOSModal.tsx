@@ -297,7 +297,7 @@ export const TransactionPOSModal: React.FC<TransactionPOSModalProps> = ({
   const handleExportReceiptExcel = () => {
     if (!completedTxn) return;
     const wb = XLSX.utils.book_new();
-    const rows = [
+    const rows: (string | number)[][] = [
       ["THE FRAME SHOP - OFFICIAL CUSTOMER RECEIPT"],
       ["SPRING, TEXAS • 3D LASER FRAME & CHASSIS ALIGNMENT"],
       [""],

@@ -1,3 +1,4 @@
+import { IS_DEMO_COPY } from './demoCopy';
 /**
  * Where the app's /api calls go.
  *
@@ -24,7 +25,9 @@
 const DEMO_STORE = 'frame-shop-demo-v1';
 
 /** null until the first /api call tells us whether a server is there. */
-let liveBackend: boolean | null = null;
+// The hosted copy has no server by definition, so it never probes for one: the
+// probe was a guaranteed 404 in every visitor's console.
+let liveBackend: boolean | null = IS_DEMO_COPY ? false : null;
 
 export function getApiUrl(path: string): string {
   if (path.startsWith('http://') || path.startsWith('https://')) return path;

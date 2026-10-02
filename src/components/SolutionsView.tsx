@@ -188,7 +188,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 href={plannerLink}
                 className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined text-lg">explore</span>
+                <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_outward</span>
                 Plan your stack first (free)
               </a>
             )}

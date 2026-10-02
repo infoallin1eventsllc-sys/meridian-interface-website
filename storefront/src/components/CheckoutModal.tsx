@@ -93,8 +93,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               #MS-2026-8849
             </h2>
             <p className="font-sans text-xs text-[#1A1A1A]/70 max-w-md mb-8 leading-relaxed">
-              Thank you, {formData.firstName}. Your requisition has been archived and confirmation has been dispatched to{' '}
-              <strong className="text-[#1A1A1A]">{formData.email}</strong>.
+              Thank you, {formData.firstName}. In a live store a confirmation would now go to{' '}
+              <strong className="text-[#1A1A1A]">{formData.email}</strong>. This is a demonstration: nothing was sent,
+              nothing was charged and nothing will ship.
             </p>
 
             <div className="w-full bg-[#F9F7F2] border border-[#1A1A1A]/15 p-6 text-left mb-8 space-y-3 font-sans text-xs">

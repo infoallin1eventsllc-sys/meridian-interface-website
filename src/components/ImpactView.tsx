@@ -85,9 +85,11 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             type="button"
             onClick={() => setActiveItem(item)}
             aria-label={`View concept: ${item.title}`}
-            className="text-left w-full flex-1"
+            className="text-left w-full flex-1 flex flex-col justify-start"
           >
-            <div>
+            {/* A <button> centres its content vertically; flex-col + justify-start
+                keeps the picture flush to the top of a card stretched by its row. */}
+            <div className="w-full">
               <div className="aspect-[16/10] relative overflow-hidden bg-slate-900">
                 <ImageWithFallback
                   frame

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SERVICES, SHOP_INFO } from '../data/shopData';
 import { X, Calendar, Clock, CheckCircle2, Phone, MapPin, Wrench, ShieldCheck, AlertCircle } from 'lucide-react';
 import { safeFetch } from '../utils/api';
+import { IS_DEMO_COPY } from '../utils/demoCopy';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -312,10 +313,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 Ticket #{bookingTicketNumber}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-zinc-100 uppercase italic tracking-tighter mt-3">
-                APPOINTMENT REQUEST RECEIVED!
+                {IS_DEMO_COPY ? 'DEMONSTRATION REQUEST (NOT SENT)' : 'APPOINTMENT REQUEST RECEIVED!'}
               </h2>
               <p className="text-zinc-400 text-sm max-w-md mx-auto font-normal mt-2">
-                Thank you, <strong className="text-zinc-100 font-bold">{name}</strong>. Paul has received your request for <strong className="text-orange-500">{currentServiceObj.title}</strong> on your <strong className="text-zinc-100">{bikeYear} {bikeMake} {bikeModel}</strong>.
+                {IS_DEMO_COPY ? (
+                  <>Thank you, <strong className="text-zinc-100 font-bold">{name}</strong>. This is how a request for <strong className="text-orange-500">{currentServiceObj.title}</strong> on your <strong className="text-zinc-100">{bikeYear} {bikeMake} {bikeModel}</strong> is confirmed.</>
+                ) : (
+                  <>Thank you, <strong className="text-zinc-100 font-bold">{name}</strong>. Paul has received your request for <strong className="text-orange-500">{currentServiceObj.title}</strong> on your <strong className="text-zinc-100">{bikeYear} {bikeMake} {bikeModel}</strong>.</>
+                )}
               </p>
             </div>
 
@@ -338,7 +343,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div className="p-4 rounded-none bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 text-left max-w-lg mx-auto flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="text-zinc-100 uppercase font-bold">Next Step:</strong> Paul will review your motorcycle details and call or text you at <strong className="text-zinc-100">{phone}</strong> to confirm your exact lift time slot.
+                {IS_DEMO_COPY ? (
+                  <><strong className="text-zinc-100 uppercase font-bold">Demonstration:</strong> this copy of the site is not connected to the shop, so the request was not sent and nobody will call. To book a real appointment, call Paul at <a href={`tel:${SHOP_INFO.phoneRaw}`} className="text-orange-500 font-bold underline">{SHOP_INFO.phone}</a>.</>
+                ) : (
+                  <><strong className="text-zinc-100 uppercase font-bold">Next Step:</strong> Paul will review your motorcycle details and call or text you at <strong className="text-zinc-100">{phone}</strong> to confirm your exact lift time slot.</>
+                )}
               </div>
             </div>
 
