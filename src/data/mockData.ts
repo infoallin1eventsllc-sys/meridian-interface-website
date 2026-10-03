@@ -199,7 +199,7 @@ export const PORTFOLIO: PortfolioItem[] = [
       { src: '/images/portfolio/drone-command.jpg', caption: 'Overview: the fleet rendered live in 3D' },
       { src: '/images/portfolio/drone-command-aircraft.jpg', caption: 'The aircraft, rendered live in the browser, its gimbal camera holding the horizon' },
       { src: '/images/portfolio/drone-command-show.jpg', caption: 'Light show conductor for 100 to 500 aircraft' },
-      { src: '/images/portfolio/drone-command-survey.jpg', caption: 'Site survey: volumes, grades and cross-sections from the map' },
+      { src: '/images/portfolio/drone-command-survey.jpg', caption: 'Site survey: the drone scans the venue in daylight, and its digital plan lights up on the ground' },
       { src: '/images/portfolio/drone-command-health.jpg', caption: 'Aircraft health that names the failing part' },
       { src: '/images/portfolio/drone-command-control.jpg', caption: 'Control one aircraft or the whole fleet' },
       { src: '/images/portfolio/drone-command-compliance.jpg', caption: 'FAA compliance: certificates, waivers and Remote ID in one place' },
