@@ -65,6 +65,13 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // A home-page service card opens the Services page on that service.
+  const [servicesFocus, setServicesFocus] = useState<ServiceCategory>('web_design');
+  const handleViewService = (serviceId: ServiceCategory) => {
+    setServicesFocus(serviceId);
+    handleTabChange('services');
+  };
+
   const handleQuickBookService = (serviceId: ServiceCategory) => {
     setPreselectedService(serviceId);
     setCurrentTab('booking');
@@ -152,14 +159,16 @@ export default function App() {
           <HomeView
             onTabChange={handleTabChange}
             onOpenBookModal={() => setIsBookModalOpen(true)}
-            onQuickBookService={handleQuickBookService}
+            onViewService={handleViewService}
           />
         )}
 
         {currentTab === 'services' && (
           <SolutionsView
+            key={servicesFocus}
             onTabChange={handleTabChange}
             onSelectServiceForBooking={handleQuickBookService}
+            initialServiceId={servicesFocus}
           />
         )}
 

@@ -75,3 +75,12 @@ that runs its own Express server with a Gemini key sets VITE_AI_SERVER=1.
   cd healthcare && DEMO_BASE=/demos/healthcare/ npm run build
   rm -rf ../public/demos/healthcare && cp -r dist ../public/demos/healthcare
   cd .. && node tools/brand-demos.mjs
+
+Edits made directly to built bundles (these demos have no source in either
+repo, so a rebuild cannot carry them; re-apply if the bundle is ever replaced):
+
+  analytics-hub  2 Oct 2026  chat badge "Gemini 3.8 Flash" -> "Sample answers"
+                 5 Oct 2026  fetch("/api/ai/query") and fetch("/api/ai/briefing")
+                             replaced by an immediate rejection, so the existing
+                             catch serves the local answers without a 404 per
+                             question (there is no server behind a static host).

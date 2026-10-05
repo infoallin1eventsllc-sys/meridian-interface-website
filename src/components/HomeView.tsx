@@ -10,37 +10,37 @@ import { Lightbox, type LightboxItem } from './Lightbox';
 import { StudioReelCard } from './StudioReelCard';
 import { SaveToListButton } from './SaveToListButton';
 import { ConceptModal } from './ConceptModal';
-import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface HomeViewProps {
   onTabChange: (tab: TabType) => void;
   onOpenBookModal: () => void;
-  onQuickBookService?: (serviceId: ServiceCategory) => void;
+  /** Open the Services page on this service. */
+  onViewService: (serviceId: ServiceCategory) => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onTabChange,
   onOpenBookModal,
-  onQuickBookService
+  onViewService
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'web_design' | 'app_design' | 'dashboards' | 'logo_brand'>('all');
   const [concept, setConcept] = useState<typeof PORTFOLIO[number] | null>(null);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
 
-  // Quick Inline Appointment Widget State
-  const [quickService, setQuickService] = useState<ServiceCategory>('web_design');
-  const [quickDate, setQuickDate] = useState(nextBusinessDay);
-  const [quickTime, setQuickTime] = useState('10:00 AM - 11:00 AM EST');
-
   // The Stack Planner has its own section above this grid, because it is a
   // finished product and everything in the grid is a concept. Showing it twice
   // would also put a real 2026 build under a heading that says "concepts".
-  const concepts = PORTFOLIO.filter(item => item.id !== 'p10');
-  const filteredPortfolio = selectedCategory === 'all'
-    ? concepts
-    : concepts.filter(item => item.category === selectedCategory);
+  //
+  // The home page shows three, not the whole portfolio: every card here used
+  // to appear word for word on the Portfolio page too. Three kinds of work,
+  // a console, a dashboard and a business website. Change the ids to change
+  // the picks; the Portfolio page always shows everything.
+  const FEATURED_IDS = ['p11', 'p1', 'p2'];
+  const featured = FEATURED_IDS
+    .map((id) => PORTFOLIO.find((item) => item.id === id))
+    .filter((item): item is typeof PORTFOLIO[number] => Boolean(item));
+  const portfolioCount = PORTFOLIO.length;
 
   // Only pieces that actually have a picture can be enlarged; an empty frame
   // opening to a bigger empty frame would be a worse experience than no zoom.
@@ -59,15 +59,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const openZoom = (item: typeof PORTFOLIO[number]) => {
     const items = screensFor(item);
     if (items.length) setZoom({ items, index: 0 });
-  };
-
-  const handleInlineBook = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (onQuickBookService) {
-      onQuickBookService(quickService);
-    } else {
-      onTabChange('booking');
-    }
   };
 
   return (
@@ -136,38 +127,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
               See what we build, before you ask for anything
             </h2>
             <p className="font-body text-sm text-slate-500 leading-relaxed">
-              Every piece below is a real, working demo you can click into and use.
-              They show what we can build. Yours is built to your brief, at your size,
-              in your colours. Save the ones close to what you need and send them over.
+              Three of our working demos. Every one is real: click in and use it.
+              Yours is built to your brief, at your size, in your colours. Save the
+              ones close to what you need and send them over.
             </p>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-2">
-            {[
-              { id: 'all', label: 'All Projects' },
-              { id: 'web_design', label: 'Web Design' },
-              { id: 'app_design', label: 'App Design' },
-              { id: 'dashboards', label: 'Dashboards (BI, CRM, Financial)' },
-              { id: 'logo_brand', label: 'Logos & Brand' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedCategory(tab.id as any)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  selectedCategory === tab.id
-                    ? 'bg-[#0f172a] text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => onTabChange('portfolio')}
+            className="self-start md:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest hover:bg-slate-100 transition-colors whitespace-nowrap"
+          >
+            See all {portfolioCount} projects
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_forward</span>
+          </button>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPortfolio.map((item) => (
+          {featured.map((item) => (
             <div
               key={item.id}
               className="relative bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all group"
@@ -334,15 +312,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
 
               <div className="p-6 pt-0">
+                {/* Opens this service on the Services page. It used to be a
+                    sixth identical "Book appointment" button in one row. */}
                 <button
-                  onClick={() => {
-                    if (onQuickBookService) onQuickBookService(service.id);
-                    else onTabChange('booking');
-                  }}
+                  type="button"
+                  onClick={() => onViewService(service.id)}
+                  aria-label={`See ${service.title}`}
                   className="w-full py-2.5 bg-slate-100 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#0f172a] hover:text-white transition-all flex items-center justify-center gap-1.5"
                 >
-                  <span className="material-symbols-outlined text-sm">event</span>
-                  Book Appointment
+                  See this service
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_forward</span>
                 </button>
               </div>
             </div>
@@ -355,154 +334,26 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Quick appointment scheduler. Sits under the services grid: by this point a
-          visitor has seen the demos work and read what we build, so this is the
-          first moment asking for their time is a fair request. */}
-      <section className="mt-20 relative z-20 px-4 md:px-12 max-w-[1440px] mx-auto">
-        <div className="bg-white rounded-xl shadow-xl border border-slate-200/80 p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">
-                <span className="material-symbols-outlined text-sm">schedule</span>
-                Instant Scheduling
-              </div>
-              <h2 className="font-display font-bold text-xl md:text-2xl text-slate-900">
-                Book Your Design Consultation
-              </h2>
-            </div>
-            <p className="text-xs text-slate-500 max-w-md">
-              Select your required service, date, and preferred time slot to lock in a dedicated strategy session with our lead design directors.
-            </p>
-          </div>
-
-          <form onSubmit={handleInlineBook} className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            {/* Every label carries htmlFor and every control the matching id.
-                These read as labelled on screen because the text sits directly
-                above the field, but without the pairing a screen reader
-                announces three unnamed fields in a row — on the form that is
-                the site's main way of getting in touch. */}
-            <div>
-              <label
-                htmlFor="quick-service"
-                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-              >
-                Design Service Needed
-              </label>
-              <div className="relative">
-                <select
-                  id="quick-service"
-                  value={quickService}
-                  onChange={(e) => setQuickService(e.target.value as ServiceCategory)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors appearance-none"
-                >
-                  <option value="web_design">Web Design & Development</option>
-                  <option value="app_design">Mobile App UI/UX Design</option>
-                  <option value="dashboards">Data Analyst, CRM & Financial Dashboards</option>
-                  <option value="logo_brand">Logo & Brand Identity</option>
-                  <option value="full_package">Full Studio Package (Web+App+Dashboards+Logo)</option>
-                </select>
-                {/* Inline SVG rather than a Material Symbol. The self-hosted
-                    subset font's cmap omits j, q, x and z, so the ligature
-                    "e(x)pand_more" can never form and the browser painted the
-                    literal word across the field. A drawn chevron cannot fail
-                    that way. */}
-                <svg
-                  className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"
-                  viewBox="0 0 20 20" fill="none" stroke="currentColor"
-                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M5 7.5 10 12.5 15 7.5" />
-                </svg>
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="quick-date"
-                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-              >
-                Preferred Date
-              </label>
-              <input
-                id="quick-date"
-                type="date"
-                value={quickDate}
-                min={todayISO()}
-                onChange={(e) => setQuickDate(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="quick-time"
-                className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5"
-              >
-                Time Slot
-              </label>
-              <div className="relative">
-                <select
-                  id="quick-time"
-                  value={quickTime}
-                  onChange={(e) => setQuickTime(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors appearance-none"
-                >
-                  <option>10:00 AM - 11:00 AM EST</option>
-                  <option>01:00 PM - 02:00 PM EST</option>
-                  <option>03:30 PM - 04:30 PM EST</option>
-                  <option>06:00 PM - 07:00 PM EST</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-xl">
-                  schedule
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="w-full bg-[#0f172a] text-white py-3 px-4 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2"
-              >
-                <span>Continue Booking</span>
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      {/* What Every Engagement Includes */}
-      <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto">
-        <div className="bg-[#0f172a] text-white rounded-2xl p-8 md:p-12 space-y-10 shadow-xl">
-          <div className="max-w-2xl space-y-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-400">
-              How We Work
-            </span>
-            <h2 className="font-display font-bold text-2xl md:text-3xl text-white">
-              What every engagement includes
-            </h2>
-            <p className="font-body text-sm text-slate-300 leading-relaxed">
-              The same process on every project. No surprises, and nothing that locks you in.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: 'forum', title: '1-on-1 discovery', desc: 'A dedicated consultation to align on goals, references, and scope before any work begins.' },
-              { icon: 'design_services', title: 'Prototypes first', desc: 'High-fidelity, interactive designs to review and refine before a line of code is written.' },
-              { icon: 'folder_shared', title: 'Full ownership', desc: 'You receive the source files and complete rights to everything we produce for you.' },
-              { icon: 'support_agent', title: 'Post-launch support', desc: 'We stay on after handover to make sure your site, app, or brand lands cleanly.' }
-            ].map((item) => (
-              <div key={item.title} className="space-y-3">
-                <div className="w-11 h-11 rounded-lg bg-blue-600/15 text-blue-400 flex items-center justify-center">
-                  <span className="material-symbols-outlined">{item.icon}</span>
-                </div>
-                <h3 className="font-display font-bold text-base text-white">{item.title}</h3>
-                <p className="font-body text-xs text-slate-300 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* How we work, in one line. The full version is the 4-step process on
+          the Services page; this used to be a second version of it with its
+          own wording, and a third sat in the Services sidebar. */}
+      <section className="mt-16 px-4 md:px-12 max-w-[1440px] mx-auto">
+        <div className="bg-[#0f172a] text-white rounded-2xl px-6 py-6 md:px-10 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+          <p className="font-body text-sm md:text-base text-slate-200 leading-relaxed">
+            <span className="font-display font-bold text-white">Every project runs the same four steps:</span>{' '}
+            consultation, design you review, build, then launch with support after.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              onTabChange('services');
+              window.setTimeout(() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 450);
+            }}
+            className="self-start md:self-auto inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-blue-300 hover:text-white whitespace-nowrap"
+          >
+            How we work
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">arrow_forward</span>
+          </button>
         </div>
       </section>
 
@@ -513,8 +364,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Questions people ask before they book. Every answer restates something
           the site already commits to elsewhere (the quote on the booking page,
-          ownership in "How we work", timelines on the service cards), so this
-          cannot drift into promising more than the studio does. Native
+          the 4-step process on Services, timelines on the service cards), so
+          it cannot drift into promising more than the studio does. Ownership is
+          stated here and nowhere else on the page. Native
           details/summary: keyboard and screen-reader support for free, no JS. */}
       <section id="faq" className="mt-20 px-4 md:px-12 max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
@@ -541,7 +393,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             },
             {
               q: 'What happens after I book?',
-              a: 'We reply within one business day to confirm a time. On the call we go through your goals and any examples you like, then send a written proposal and quote.',
+              a: 'Once we confirm a time, we go through your goals and any examples you like on the call, then send a written proposal and quote.',
             },
           ].map((item) => (
             <details key={item.q} className="group py-5">

@@ -13,7 +13,6 @@ export const SHOP_INFO = {
   hours: "Tuesday through Saturday by appointment only",
   instagramHandle: "@_theframeshop",
   instagramUrl: "https://www.instagram.com/_theframeshop/",
-  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3448.818!2d-95.5398!3d30.1084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864735c05c05c05c%3A0x0!2s7531+Root+Rd+Unit+C%2C+Spring%2C+TX+77389!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"
 };
 
 export const CORE_VALUES = [

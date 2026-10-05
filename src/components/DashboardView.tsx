@@ -78,7 +78,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
             My Appointments & Consultations
           </h1>
           <p className="font-body text-sm text-slate-600">
-            Track, review, or modify your web design, app interface, and logo branding appointments.
+            Review your web design, app interface, and logo branding appointments. To change one, email otis@meridianinterface.com or call 281-882-9198.
           </p>
 
           {showingExamples && (

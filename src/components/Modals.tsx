@@ -267,10 +267,9 @@ export const Modals: React.FC<ModalsProps> = ({
                   { title: 'Data Analyst & Financial Dashboards', desc: 'CRM, business metrics, financial charts & analytics UI', tab: 'services', category: 'Services' },
                   { title: 'Logo Design & Brand Identity', desc: 'Custom vector logos, brand guidelines & style guides', tab: 'services', category: 'Services' },
                   { title: 'Schedule 1-on-1 Discovery Session', desc: 'Lock in an appointment time slot with lead designers', tab: 'booking', category: 'Booking' },
-                  { title: 'Client Appointments Portal', desc: 'Track, review, or modify your scheduled sessions & passes', tab: 'appointments', category: 'Portal' },
-                  { title: 'Financial & Revenue BI Dashboard', desc: 'Concept: real-time financial analytics dashboard', tab: 'portfolio', category: 'Concept' },
-                  { title: 'Mobile Banking & Wealth App', desc: 'Concept: fintech iOS & Android UI', tab: 'portfolio', category: 'Concept' },
-                  { title: 'Artisan Coffee Brand Identity', desc: 'Concept: logo, packaging & brand system', tab: 'portfolio', category: 'Concept' },
+                  { title: 'My Appointments', desc: 'See the sessions you have booked', tab: 'appointments', category: 'Appointments' },
+                  { title: 'FinSight: Financial & Revenue Dashboard', desc: 'Working demo: revenue, P&L, cash and forecasts on one screen', tab: 'portfolio', category: 'Portfolio' },
+                                    { title: 'Fog City Roasters: Coffee Brand Identity', desc: 'Working demo: wordmark, packaging and brand system', tab: 'portfolio', category: 'Portfolio' },
                   { title: 'Interactive Project Cost Estimator', desc: 'Scope calculator for web, app, dashboard & logo quotes', tab: 'services', category: 'Tool' }
                 ];
 

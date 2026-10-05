@@ -19,13 +19,16 @@ import { useMeridianMotion, m as motion } from '../lib/motion';
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
   onSelectServiceForBooking: (serviceId: ServiceCategory) => void;
+  /** Which service to open on; a home-page service card passes its own. */
+  initialServiceId?: ServiceCategory;
 }
 
 export const SolutionsView: React.FC<ServicesViewProps> = ({
   onTabChange,
-  onSelectServiceForBooking
+  onSelectServiceForBooking,
+  initialServiceId = 'web_design'
 }) => {
-  const [selectedServiceId, setSelectedServiceId] = useState<ServiceCategory>('web_design');
+  const [selectedServiceId, setSelectedServiceId] = useState<ServiceCategory>(initialServiceId);
   // Which size of this service the client wants. Keyed by service id so
   // switching away and back does not silently keep an answer from another
   // service, which would put the wrong tier on their reply.
@@ -209,8 +212,8 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             label="Watch the studio reel"
           />
           <div className="text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
-            <p className="font-bold">Included on every project</p>
-            <p className="text-slate-300 text-[11px] mt-0.5">Strategy consultation, interactive mockups, and post-launch support.</p>
+            <p className="font-bold">Every project, the same four steps</p>
+            <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 inline-block underline underline-offset-2">See how we work, below</a>
           </div>
         </div>
       </section>
@@ -218,8 +221,9 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
       {/* Interactive Project Cost & Scope Estimator */}
       <ProjectScopeCalculator onSelectServiceForBooking={onSelectServiceForBooking} />
 
-      {/* Workflow Process */}
-      <section className="space-y-8">
+      {/* Workflow Process. The one statement of how every project runs; the
+          home page and the sidebar above link here instead of restating it. */}
+      <section id="process" className="space-y-8 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500">How It Works</p>
           <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
@@ -241,9 +245,9 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         >
           {[
             { step: '01', title: 'Appointment Booking', icon: 'calendar_today', desc: 'Schedule a 1-on-1 discovery session to share your goals, brand reference, and features.' },
-            { step: '02', title: 'Design & Wireframing', icon: 'draw', desc: 'We craft high-fidelity Figma designs, logo vector concepts, or app UX flows for your review.' },
+            { step: '02', title: 'Design & Wireframing', icon: 'draw', desc: 'We craft high-fidelity Figma designs, logo vector concepts, or app UX flows for you to review and change before a line of code is written.' },
             { step: '03', title: 'Development & Build', icon: 'code', desc: 'Our engineers transform designs into clean, responsive web code or cross-platform mobile apps.' },
-            { step: '04', title: 'Launch & Handover', icon: 'rocket_launch', desc: 'We deploy your website, submit your mobile app to stores, and deliver vector logo master files.' }
+            { step: '04', title: 'Launch & Handover', icon: 'rocket_launch', desc: 'We deploy your website, submit your mobile app to stores, and deliver vector logo master files, then stay on after launch to make sure it lands cleanly.' }
           ].map((item, index) => (
             <motion.div key={index} variants={m.rise} className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 relative shadow-xs">
               <div className="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">

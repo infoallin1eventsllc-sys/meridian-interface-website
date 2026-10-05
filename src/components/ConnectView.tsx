@@ -164,7 +164,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               className="flex-1 py-3.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-base">dashboard</span>
-              View in My Appointments Portal
+              View in My Appointments
             </button>
             <button
               onClick={handleReset}
@@ -384,7 +384,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                   <span className="material-symbols-outlined text-sm">lock</span>
                   Zero Commitment Consultation
                 </div>
-                <p>You can reschedule or modify your appointment details anytime through your client portal.</p>
+                <p>To change or cancel, email otis@meridianinterface.com or call 281-882-9198. My Appointments shows what you have booked.</p>
               </div>
             </div>
 

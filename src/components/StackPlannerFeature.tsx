@@ -92,18 +92,12 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
             </p>
           </div>
 
-          <ul className="space-y-2">
-            {SHOTS.map((s) => (
-              <li key={s.src} className="flex items-start gap-2.5 font-body text-xs text-slate-700">
-                <span className="material-symbols-outlined text-blue-600 text-base leading-none mt-0.5" aria-hidden="true">check_circle</span>
-                <span>{s.label}</span>
-              </li>
-            ))}
-            <li className="flex items-start gap-2.5 font-body text-xs text-slate-700">
-              <span className="material-symbols-outlined text-blue-600 text-base leading-none mt-0.5" aria-hidden="true">check_circle</span>
-              <span>Every figure is yours to change, with the working shown</span>
-            </li>
-          </ul>
+          {/* One line, not a checklist: the three screenshots below already
+              carry their own captions, and a list that repeated them read twice. */}
+          <p className="flex items-start gap-2.5 font-body text-xs text-slate-700">
+            <span className="material-symbols-outlined text-blue-600 text-base leading-none mt-0.5" aria-hidden="true">check_circle</span>
+            <span>Every figure is yours to change, with the working shown.</span>
+          </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1">
             <button

@@ -24,7 +24,10 @@ export const HOTLINK_IMAGES = {
   // a mobile interface. Swap it the day an actual app ships.
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
   dashboardDesign: '/images/portfolio/finsight-bi.jpg',
-  techStack: '/images/portfolio/agentic-tech-stack.jpg',
+  // Not agentic-tech-stack.jpg: that is the Stack Planner section's own
+  // picture on the home page, and the card sat directly above it. A workflow
+  // running is also the truer picture of "tools wired together".
+  techStack: '/images/portfolio/agentic-tech-stack-workflow.jpg',
   // Fog City Roasters is the studio's brand-identity work: the wordmark and
   // the packaging line. It replaced a rendered stationery scene on 2 Oct.
   logoDesign: '/images/portfolio/fog-city-roasters.jpg',

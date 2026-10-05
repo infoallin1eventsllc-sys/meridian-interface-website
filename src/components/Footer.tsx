@@ -1,7 +1,6 @@
 import React from 'react';
 import { TabType } from '../types';
 import { MeridianLogo } from './MeridianLogo';
-import { BuiltBy } from './BuiltBy';
 
 interface FooterProps {
   onTabChange: (tab: TabType) => void;
@@ -61,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
             Book Appointment
           </button>
           <button onClick={() => onTabChange('appointments')} className="py-1 hover:text-white transition-colors">
-            Client Portal
+            My Appointments
           </button>
           {/* A visitor hands over a name, an email and a phone number on the
               booking form. Where that goes has to be reachable from every page,
@@ -96,12 +95,6 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
         </div>
       </div>
 
-      {/* The studio plate, below the working part of the footer and separated
-          from it. On Meridian's own site the default "this website built by"
-          line is redundant, so it carries the studio line instead. */}
-      <div className="max-w-[1440px] mx-auto mt-12 pt-10 border-t border-slate-800">
-        <BuiltBy kicker="A MERIDIAN INTERFACE BUILD" />
-      </div>
     </footer>
   );
 };
