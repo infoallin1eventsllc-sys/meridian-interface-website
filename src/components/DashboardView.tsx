@@ -75,7 +75,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
             Client Appointment Portal
           </div>
           <h1 className="font-display text-3xl sm:text-4xl text-slate-900 font-black tracking-tight">
-            My Appointments & Consultations
+            My Appointments
           </h1>
           <p className="font-body text-sm text-slate-600">
             Review your web design, app interface, and logo branding appointments. To change one, email otis@meridianinterface.com or call 281-882-9198.

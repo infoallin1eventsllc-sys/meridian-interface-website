@@ -90,7 +90,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <p className="font-body text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
               One studio, start to finish: your brand, the website customers find, the app they order
               from, the dashboard you run the business on, and the systems that follow up while you work.
-              Every project starts with a 1-on-1 consultation.
+              Every project starts with a 1-on-1 appointment.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
@@ -99,7 +99,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="w-full sm:w-auto px-7 py-4 bg-blue-600 text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg text-center hover:bg-blue-500 active:scale-[0.98] transition-all shadow-lg shadow-blue-950/40 flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-lg" aria-hidden="true">calendar_month</span>
-                Book a consultation
+                Book an appointment
               </button>
               <button
                 onClick={() => onTabChange('portfolio')}
@@ -341,7 +341,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="bg-[#0f172a] text-white rounded-2xl px-6 py-6 md:px-10 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
           <p className="font-body text-sm md:text-base text-slate-200 leading-relaxed">
             <span className="font-display font-bold text-white">Every project runs the same four steps:</span>{' '}
-            consultation, design you review, build, then launch with support after.
+            an appointment, design you review, build, then launch with support after.
           </p>
           <button
             type="button"

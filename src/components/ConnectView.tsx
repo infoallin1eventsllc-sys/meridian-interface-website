@@ -87,7 +87,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
           Schedule Your Design Appointment
         </h1>
         <p className="font-body text-base md:text-lg text-slate-600 leading-relaxed">
-          Book a dedicated 1-on-1 discovery consultation for your website design, mobile application interface, or brand logo identity project.
+          Book a 1-on-1 appointment for your website, mobile app, dashboard, or logo project.
         </p>
       </section>
 
@@ -106,7 +106,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               Appointment Successfully Booked!
             </h2>
             <p className="text-slate-600 text-sm max-w-md mx-auto">
-              Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>. Your design consultation has been scheduled.
+              Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>. Your appointment is booked.
             </p>
           </div>
 
@@ -228,12 +228,12 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                      Consultation Date
+                      Appointment Date
                     </label>
                     <input
                       type="date"
                       required
-                      aria-label="Consultation date"
+                      aria-label="Appointment date"
                       value={preferredDate}
                       min={todayISO()}
                       onChange={(e) => setPreferredDate(e.target.value)}
@@ -382,7 +382,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               <div className="pt-4 border-t border-slate-800 space-y-2 text-[11px] text-slate-400">
                 <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
                   <span className="material-symbols-outlined text-sm">lock</span>
-                  Zero Commitment Consultation
+                  No commitment to book
                 </div>
                 <p>To change or cancel, email otis@meridianinterface.com or call 281-882-9198. My Appointments shows what you have booked.</p>
               </div>

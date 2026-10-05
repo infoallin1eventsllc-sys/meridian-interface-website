@@ -97,7 +97,7 @@ export default function App() {
       home: 'Meridian Interface | Custom Web Design, Mobile Apps & Data Dashboards',
       services: 'Services | Meridian Interface',
       portfolio: 'Portfolio: Working Demos | Meridian Interface',
-      booking: 'Book a Consultation | Meridian Interface',
+      booking: 'Book an Appointment | Meridian Interface',
       bucket: 'Your Saved List | Meridian Interface',
       appointments: 'My Appointments | Meridian Interface',
       owner_invoice: 'Studio Portal | Meridian Interface',

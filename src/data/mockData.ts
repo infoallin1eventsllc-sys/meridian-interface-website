@@ -148,7 +148,7 @@ export const SERVICES: ServiceDetail[] = [
       'Full Mobile App UI/UX & Prototype',
       'Custom CRM, Data Analyst & Financial Dashboard',
       'Custom Vector Logo & Brand Suite',
-      'Priority Appointment Consultations'
+      'Priority appointments'
     ],
     image: HOTLINK_IMAGES.fullPackage
   }
