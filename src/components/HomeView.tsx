@@ -112,7 +112,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           {/* Real work, not a stock picture: three of the demos, each opening its concept panel. */}
-          <HeroShowcase onOpen={setConcept} />
+          <div data-hero-cards><HeroShowcase onOpen={setConcept} /></div>
         </div>
       </section>
 

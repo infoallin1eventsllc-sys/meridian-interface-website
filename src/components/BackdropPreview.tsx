@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HeroBackdrop } from './HeroBackdrop';
 
 /**
@@ -22,6 +22,8 @@ interface Sample {
   scrim?: string;
   /** Extra classes that place the footage on wide screens. */
   frame?: string;
+  /** The footage shows the products itself, so the hero's demo cards start hidden. */
+  hidesCards?: boolean;
 }
 
 const SAMPLES: Sample[] = [
@@ -51,9 +53,21 @@ const SAMPLES: Sample[] = [
       'linear-gradient(0deg, rgba(11,17,31,0.8) 0%, rgba(11,17,31,0) 24%),' +
       'linear-gradient(90deg, rgba(11,17,31,0.6) 0%, rgba(11,17,31,0.45) 40%, rgba(11,17,31,0) 62%)',
   },
+  {
+    /* Otis's glass-panes clip rebuilt from real screens: the large pane holds
+       the website (it held a car interior), the phone and tablet panes cut
+       through every product. Rendered, not generated, so the screens are
+       sharp. Its left third is already near-black. */
+    id: 'showcase',
+    label: 'Showcase',
+    src: '/backdrop-samples/showcase.mp4',
+    poster: '/backdrop-samples/showcase.jpg',
+    scrim: 'linear-gradient(90deg, rgba(11,17,31,0.55) 0%, rgba(11,17,31,0.25) 38%, rgba(11,17,31,0) 55%)',
+    hidesCards: true,
+  },
 ];
 
-const DEFAULT_ID = 'globe';
+const DEFAULT_ID = 'showcase';
 
 function initialChoice(): string {
   if (typeof window === 'undefined') return DEFAULT_ID;
@@ -70,6 +84,13 @@ export const BackdropPreview: React.FC = () => {
   const [choice, setChoice] = useState(initialChoice);
   const [still] = useState(prefersStill);
   const sample = SAMPLES.find((s) => s.id === choice);
+  const [showCards, setShowCards] = useState(false);
+  const cardsHidden = !!sample?.hidesCards && !showCards;
+  // HomeView wraps the demo cards in [data-hero-cards]; hide them without moving the layout.
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-hide-cards', cardsHidden);
+    return () => document.documentElement.removeAttribute('data-hide-cards');
+  }, [cardsHidden]);
 
   return (
     <>
@@ -99,10 +120,11 @@ export const BackdropPreview: React.FC = () => {
         <HeroBackdrop />
       )}
 
+      <div className="fixed left-1/2 -translate-x-1/2 top-[76px] md:top-auto md:bottom-6 z-[60] flex flex-col items-center gap-1.5">
       <div
         role="radiogroup"
         aria-label="Backdrop sample"
-        className="fixed left-1/2 -translate-x-1/2 top-[76px] md:top-auto md:bottom-6 z-[60] flex gap-1 rounded-full bg-slate-900/90 backdrop-blur p-1 ring-1 ring-white/15 shadow-xl"
+        className="flex gap-0.5 min-[400px]:gap-1 rounded-full bg-slate-900/90 backdrop-blur p-1 ring-1 ring-white/15 shadow-xl"
       >
         {SAMPLES.map((s) => (
           <button
@@ -110,7 +132,7 @@ export const BackdropPreview: React.FC = () => {
             role="radio"
             aria-checked={choice === s.id}
             onClick={() => setChoice(s.id)}
-            className={`px-3 min-[400px]:px-4 py-2 rounded-full font-body text-[11px] min-[400px]:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400 ${
+            className={`px-2.5 min-[400px]:px-4 py-2 rounded-full font-body text-[10px] min-[400px]:text-xs font-bold uppercase tracking-wide min-[400px]:tracking-wider transition-colors whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400 ${
               choice === s.id ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'
             }`}
           >
@@ -118,6 +140,18 @@ export const BackdropPreview: React.FC = () => {
           </button>
         ))}
       </div>
+        {/* Cards sit beside the headline only on wide screens, so the choice only matters there. */}
+        {sample?.hidesCards && (
+          <button
+            onClick={() => setShowCards((v) => !v)}
+            aria-pressed={showCards}
+            className="hidden lg:inline-flex px-4 py-1.5 rounded-full bg-slate-900/90 backdrop-blur ring-1 ring-white/15 shadow-xl font-body text-[10px] min-[400px]:text-[11px] font-bold uppercase tracking-wider whitespace-nowrap text-slate-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400"
+          >
+            {showCards ? 'Hide cards' : 'Show cards'}
+          </button>
+        )}
+      </div>
+      <style>{'@media (min-width:1024px){[data-hide-cards] [data-hero-cards]{visibility:hidden}}'}</style>
     </>
   );
 };
