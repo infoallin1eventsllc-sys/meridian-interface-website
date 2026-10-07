@@ -4,13 +4,14 @@ import { HeroBackdrop } from './HeroBackdrop';
 /**
  * PREVIEW BRANCH ONLY (preview/backdrop-samples). Never merge to main.
  *
- * Lets Otis compare the current globe with his Higgsfield clip behind the real
- * hero. Clips are self-hosted in public/backdrop-samples and re-encoded from
- * Higgsfield's HEVC to H.264 so Chrome and Firefox can play them.
+ * Lets Otis compare the live globe with two Higgsfield clips behind the real
+ * hero. Clips are self-hosted in public/backdrop-samples, re-encoded from
+ * Higgsfield's HEVC to H.264 so Chrome and Firefox can play them, and played
+ * forward then backward so neither loop jumps back to its first frame.
  *
- * "Polished" is the same clip graded into the site's navy, with the highlights
- * held back so the mid-clip flash never washes out the headline, a soft glow on
- * the lines, and played forward then backward so the loop has no jump.
+ * Video 2 is graded into the site's navy with its highlights held back, so the
+ * mid-clip flash never washes out the headline. The globe clip was already in
+ * the palette; only its blacks were lifted to meet the hero's navy.
  */
 interface Sample {
   id: string;
@@ -19,6 +20,8 @@ interface Sample {
   poster?: string;
   /** Darkening behind the headline column, as a CSS background. */
   scrim?: string;
+  /** Extra classes that place the footage on wide screens. */
+  frame?: string;
 }
 
 const SAMPLES: Sample[] = [
@@ -26,27 +29,31 @@ const SAMPLES: Sample[] = [
   {
     id: '2',
     label: 'Video 2',
-    src: '/backdrop-samples/video2.mp4',
-    poster: '/backdrop-samples/video2.jpg',
-    scrim: 'linear-gradient(90deg, rgba(11,17,31,0.9) 0%, rgba(11,17,31,0.55) 50%, rgba(11,17,31,0.1) 100%)',
-  },
-  {
-    id: '2p',
-    label: 'Video 2 polished',
     src: '/backdrop-samples/video2-polished.mp4',
     poster: '/backdrop-samples/video2-polished.jpg',
     /* Holds at 75% across the text column, then lets go over the gap so the
        square's lines fade out before they reach any words. */
     scrim: 'linear-gradient(90deg, rgba(11,17,31,0.82) 0%, rgba(11,17,31,0.75) 42%, rgba(11,17,31,0.2) 62%, rgba(11,17,31,0) 80%)',
+    /* On wide screens the clip slides right so its square settles behind the
+       three demo cards instead of where the headline ends. The left edge
+       feathers into the hero's navy so the shift never shows as a seam. */
+    frame: 'lg:left-[20%] lg:[mask-image:linear-gradient(90deg,transparent,black_14%)]',
+  },
+  {
+    id: 'globe',
+    label: 'Globe',
+    src: '/backdrop-samples/globe.mp4',
+    poster: '/backdrop-samples/globe.jpg',
+    /* The globe already sits on the right with dark space on the left, so it
+       needs no shift and only a light hold behind the headline. The bottom
+       fade keeps the caption under the demo cards off the globe's grid. */
+    scrim:
+      'linear-gradient(0deg, rgba(11,17,31,0.8) 0%, rgba(11,17,31,0) 24%),' +
+      'linear-gradient(90deg, rgba(11,17,31,0.6) 0%, rgba(11,17,31,0.45) 40%, rgba(11,17,31,0) 62%)',
   },
 ];
 
-const DEFAULT_ID = '2p';
-
-/* On wide screens the clip slides right so its square settles behind the three
-   demo cards and frames them, instead of sitting where the headline ends. The
-   left edge feathers into the hero's navy so the shift never shows as a seam. */
-const FRAME = 'lg:left-[20%] lg:[mask-image:linear-gradient(90deg,transparent,black_14%)]';
+const DEFAULT_ID = 'globe';
 
 function initialChoice(): string {
   if (typeof window === 'undefined') return DEFAULT_ID;
@@ -69,11 +76,11 @@ export const BackdropPreview: React.FC = () => {
       {sample?.src ? (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#0B111F]">
           {still ? (
-            <img className={`${FRAME} absolute inset-0 w-full h-full object-cover`} src={sample.poster} alt="" />
+            <img className={`${sample.frame ?? ''} absolute inset-0 w-full h-full object-cover`} src={sample.poster} alt="" />
           ) : (
             <video
               key={sample.src}
-              className={`${FRAME} absolute inset-0 w-full h-full object-cover`}
+              className={`${sample.frame ?? ''} absolute inset-0 w-full h-full object-cover`}
               src={sample.src}
               poster={sample.poster}
               autoPlay
@@ -84,6 +91,9 @@ export const BackdropPreview: React.FC = () => {
             />
           )}
           <div className="absolute inset-0" style={{ background: sample.scrim }} />
+          {/* Below lg the copy runs the full width, so the footage sits behind
+              every line of it; hold it further back there. */}
+          <div className="absolute inset-0 lg:hidden bg-[#0B111F]/60" />
         </div>
       ) : (
         <HeroBackdrop />
