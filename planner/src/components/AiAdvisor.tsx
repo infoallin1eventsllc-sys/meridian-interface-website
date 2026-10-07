@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { copyText } from '../lib/copy';
 import { AdvisorBlueprint } from '../types';
 import { 
   Sparkles, 
@@ -63,7 +64,7 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlue
     }
   };
 
-  const handleCopyMarkdown = () => {
+  const handleCopyMarkdown = async () => {
     if (!blueprint) return;
     const md = `# Agentic tech stack plan for ${companyName}\nPrepared with the Meridian Stack Planner (${MERIDIAN.siteLabel}). Figures are estimates, not a quote.
 ## Where to start
@@ -83,7 +84,7 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
 - Team Headcount Leverage: ${blueprint.projectedMetrics.headcountEquivalentLeverage}
 - Monthly Savings: ${blueprint.projectedMetrics.projectedMonthlySavings}
 `;
-    navigator.clipboard.writeText(md);
+    if (!(await copyText(md))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

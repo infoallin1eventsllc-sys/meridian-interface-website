@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { copyText } from '../lib/copy';
 import {
   ShieldCheck, Lock, KeyRound, FileCheck, AlertTriangle, CheckCircle2, ShieldAlert,
   Search, Fingerprint, Download, Copy, Check, RefreshCw, Terminal, Users, ScrollText,
@@ -83,8 +84,8 @@ export const EnterpriseGovernance: React.FC<EnterpriseGovernanceProps> = ({ onOp
     }, 1100);
   };
 
-  const handleCopyHash = (hash: string) => {
-    navigator.clipboard.writeText(hash);
+  const handleCopyHash = async (hash: string) => {
+    if (!(await copyText(hash))) return;
     setCopiedHash(hash);
     setTimeout(() => setCopiedHash(null), 2000);
   };
@@ -128,8 +129,8 @@ evidence those audits ask for exists from day one.
 
 Contact: ${MERIDIAN.email} · ${MERIDIAN.phone}`;
 
-  const handleCopyPacket = () => {
-    navigator.clipboard.writeText(packetText);
+  const handleCopyPacket = async () => {
+    if (!(await copyText(packetText))) return;
     setCopiedPacket(true);
     setTimeout(() => setCopiedPacket(false), 2500);
   };

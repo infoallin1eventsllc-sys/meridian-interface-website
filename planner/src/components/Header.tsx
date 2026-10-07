@@ -29,15 +29,18 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenE
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Brand: Otis's mark beside live text, then the product name. */}
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-            <a href={MERIDIAN.site} className="shrink-0" title="Meridian Interface">
-              <MeridianLogo size={34} />
+            {/* Below lg the wordmark, the product name and the buttons cannot share
+                one row, so the mark stands alone there. */}
+            <a href={MERIDIAN.site} className="shrink-0" title="Meridian Interface" aria-label="Meridian Interface">
+              <span className="lg:hidden"><MeridianLogo size={32} iconOnly /></span>
+              <span className="hidden lg:inline"><MeridianLogo size={34} /></span>
             </a>
             <span className="hidden sm:block w-px h-8 bg-[#e2e8f0]" aria-hidden="true" />
             <div className="min-w-0">
-              <h1 className="text-sm sm:text-lg font-extrabold tracking-tight text-[#0f172a] leading-tight whitespace-nowrap" style={{ fontFamily: 'var(--font-display)' }}>
+              <h1 className="text-sm sm:text-lg font-extrabold tracking-tight text-[#0f172a] leading-tight whitespace-nowrap truncate" style={{ fontFamily: 'var(--font-display)' }}>
                 Stack Planner
               </h1>
-              <p className="text-[11px] text-[#475569] hidden sm:block leading-tight">
+              <p className="text-[11px] text-[#475569] hidden lg:block leading-tight">
                 An agentic tech stack for a growing business, planned before it is built.
               </p>
             </div>
@@ -77,10 +80,11 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenE
             <a
               id="book-call-btn"
               href={MERIDIAN.book}
+              aria-label="Book a call"
               className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#2563eb] hover:bg-[#1d4ed8] text-white transition-colors"
             >
               <CalendarCheck className="w-3.5 h-3.5" />
-              <span>Book<span className="hidden sm:inline"> a call</span></span>
+              <span className="hidden min-[360px]:inline">Book<span className="hidden sm:inline"> a call</span></span>
             </a>
           </div>
         </div>

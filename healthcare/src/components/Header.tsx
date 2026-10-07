@@ -67,7 +67,8 @@ export default function Header({
             <div className="bg-natural-sage text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-natural-sage/20">
               <Activity className="h-5 w-5 stroke-[2.5]" />
             </div>
-            <div>
+            {/* Below 360px the name gives way to the controls; the mark still leads home. */}
+            <div className="hidden min-[360px]:block">
               <span className="font-serif font-bold text-lg text-natural-dark-sage tracking-tight block leading-none">
                 CarePulse
               </span>
@@ -78,24 +79,24 @@ export default function Header({
           </div>
 
           {/* Quick Controls & Navigation */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             
             {/* Quick SOS Trigger Button */}
             <button 
               id="sos-trigger-button"
               onClick={onTriggerSOS}
-              className="relative px-3.5 py-1.5 bg-natural-terracotta/10 border border-natural-terracotta/30 text-natural-terracotta hover:bg-natural-terracotta/20 active:scale-95 transition-all text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow-xs overflow-hidden group"
+              className="relative px-2.5 sm:px-3.5 py-1.5 bg-natural-terracotta/10 border border-natural-terracotta/30 text-natural-terracotta hover:bg-natural-terracotta/20 active:scale-95 transition-all text-xs font-semibold rounded-lg flex items-center space-x-1.5 shadow-xs overflow-hidden group"
             >
               <div className="absolute inset-0 bg-natural-terracotta/10 animate-ping rounded-lg pointer-events-none" />
               <AlertTriangle className="h-3.5 w-3.5 stroke-[2.5] animate-pulse" />
-              <span>SOS Emergency</span>
+              <span><span className="sm:hidden">SOS</span><span className="hidden sm:inline">SOS Emergency</span></span>
             </button>
 
             {/* Role Switcher Toggle */}
             <button
               id="role-switch-button"
               onClick={toggleRole}
-              className="px-3.5 py-1.5 bg-natural-beige border border-natural-border text-natural-text hover:bg-natural-cream transition-all text-xs font-semibold rounded-lg flex items-center space-x-2"
+              className="px-2.5 sm:px-3.5 py-1.5 bg-natural-beige border border-natural-border text-natural-text hover:bg-natural-cream transition-all text-xs font-semibold rounded-lg flex items-center space-x-2"
               title={`Switch to ${activeUserRole === "patient" ? "Doctor" : "Patient"} View`}
             >
               <RefreshCw className="h-3.5 w-3.5 text-natural-sage" />
@@ -105,7 +106,8 @@ export default function Header({
                   ? "bg-natural-sage/20 text-natural-dark-sage" 
                   : "bg-natural-clay/20 text-natural-forest"
               }`}>
-                {activeUserRole === "patient" ? "Patient (Sarah)" : "Doctor (Dr. Vance)"}
+                {activeUserRole === "patient" ? "Patient" : "Doctor"}
+                <span className="hidden sm:inline">{activeUserRole === "patient" ? " (Sarah)" : " (Dr. Vance)"}</span>
               </span>
             </button>
 
@@ -114,6 +116,7 @@ export default function Header({
               <button
                 id="notifications-dropdown-button"
                 onClick={() => setShowNotifications(!showNotifications)}
+                aria-label={`Notifications${unreadNotifications.length ? `, ${unreadNotifications.length} unread` : ""}`}
                 className="p-2 text-natural-muted hover:text-natural-text hover:bg-natural-beige rounded-lg relative transition-colors"
               >
                 <Bell className="h-5 w-5" />
@@ -126,7 +129,7 @@ export default function Header({
 
               {showNotifications && (
                 <div 
-                  className="absolute right-0 mt-2 w-80 bg-white border border-natural-border rounded-xl shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2"
+                  className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-natural-border rounded-xl shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2"
                   id="notifications-panel"
                 >
                   <div className="p-3 border-b border-natural-border-light bg-natural-beige flex justify-between items-center">
@@ -163,7 +166,7 @@ export default function Header({
             </div>
 
             {/* User Profile Summary */}
-            <div className="flex items-center space-x-2 pl-2 border-l border-natural-border">
+            <div className="hidden sm:flex items-center space-x-2 pl-2 border-l border-natural-border">
               <div className="h-8 w-8 rounded-full bg-natural-cream overflow-hidden ring-2 ring-natural-sage/20">
                 <img 
                   src={

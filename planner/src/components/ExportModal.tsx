@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { copyText } from '../lib/copy';
 import { SelectedStack, BusinessStage, BusinessModel } from '../types';
 import { STACK_LAYERS, STAGE_PRESETS } from '../data/stackComponents';
 import { X, Copy, Check, Download, FileText, Code2, Send, Loader2, CheckCircle2 } from 'lucide-react';
@@ -127,8 +128,8 @@ Figures above are planning estimates, not a quote.
 
   const activeContent = format === 'markdown' ? markdownContent : jsonContent;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(activeContent);
+  const handleCopy = async () => {
+    if (!(await copyText(activeContent))) return;
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

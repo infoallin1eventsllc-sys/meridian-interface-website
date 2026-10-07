@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { shareLink } from '../utils/copy';
 import { Eye, Sparkles, Filter, Check, Download, Share2 } from 'lucide-react';
 import { ASSETS } from '../data/coffeeData';
 
@@ -19,6 +20,7 @@ interface GalleryItem {
 export function PromoGallery({ onViewImageModal }: PromoGalleryProps) {
   const [filter, setFilter] = useState<'all' | 'coffee' | 'roasting' | 'atmosphere' | 'bakery'>('all');
   const [copiedNotice, setCopiedNotice] = useState<string | null>(null);
+  const [shareFailed, setShareFailed] = useState(false);
 
   const galleryItems: GalleryItem[] = [
     {
@@ -113,8 +115,10 @@ export function PromoGallery({ onViewImageModal }: PromoGalleryProps) {
         return item.category === filter;
       });
 
-  const handleShare = (item: GalleryItem) => {
-    navigator.clipboard.writeText(window.location.href);
+  const handleShare = async (item: GalleryItem) => {
+    const result = await shareLink(item.title, window.location.href);
+    if (result === 'shared') return;
+    setShareFailed(result === 'failed');
     setCopiedNotice(item.id);
     setTimeout(() => setCopiedNotice(null), 2000);
   };
@@ -255,9 +259,13 @@ export function PromoGallery({ onViewImageModal }: PromoGalleryProps) {
                       title="Share link"
                     >
                       {isCopied ? (
-                        <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
-                          <Check className="w-3.5 h-3.5" /> Link Copied
-                        </span>
+                        shareFailed ? (
+                          <span className="text-[#8C4A2F] font-semibold">Copy blocked</span>
+                        ) : (
+                          <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
+                            <Check className="w-3.5 h-3.5" /> Link Copied
+                          </span>
+                        )
                       ) : (
                         <>
                           <Share2 className="w-3 h-3" />

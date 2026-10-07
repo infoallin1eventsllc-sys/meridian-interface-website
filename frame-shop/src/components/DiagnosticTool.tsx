@@ -203,10 +203,11 @@ export const DiagnosticTool: React.FC<DiagnosticToolProps> = ({ onOpenBookingWit
 
         {/* Tab Selection */}
         <div className="flex justify-center mb-8">
-          <div className="bg-zinc-900 border border-zinc-800 p-1 inline-flex gap-1">
+          {/* Stacked on a phone: side by side the two tabs are wider than a 320px screen. */}
+          <div className="bg-zinc-900 border border-zinc-800 p-1 flex flex-col sm:flex-row w-full sm:w-auto gap-1">
             <button
               onClick={() => setActiveTab('guided')}
-              className={`px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 ${
                 activeTab === 'guided'
                   ? 'bg-orange-600 text-white shadow-lg'
                   : 'text-zinc-400 hover:text-zinc-200'
@@ -218,7 +219,7 @@ export const DiagnosticTool: React.FC<DiagnosticToolProps> = ({ onOpenBookingWit
 
             <button
               onClick={() => setActiveTab('ai')}
-              className={`px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-4 sm:px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 ${
                 activeTab === 'ai'
                   ? 'bg-orange-600 text-white shadow-lg'
                   : 'text-zinc-400 hover:text-zinc-200'

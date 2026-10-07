@@ -188,6 +188,7 @@ export function HeroSection({
                       id={`btn-hero-perspective-${idx}`}
                       key={vis.id}
                       onClick={() => setActiveVisual(idx)}
+                      aria-pressed={activeVisual === idx}
                       className={`px-3.5 py-1.5 rounded-full text-xs font-sans font-bold uppercase tracking-wider transition-all text-center truncate ${
                         activeVisual === idx
                           ? 'bg-[#6F4E37] text-white shadow-md'
