@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
-import { HeroBackdrop } from './HeroBackdrop';
+import { BackdropPreview } from './BackdropPreview';
 import { HeroShowcase } from './HeroShowcase';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
@@ -67,7 +67,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-16 lg:py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
         {/* Full-bleed wireframe globe, drawn in the browser. It carries its own
             ground, so there is no hero photograph to resolve or wait on. */}
-        <HeroBackdrop />
+        <BackdropPreview />
 
         <div className="relative z-10 max-w-[1280px] mx-auto w-full grid gap-14 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] items-center">
           <div className="hero-stagger space-y-7">
