@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Cpu, PlayCircle, Briefcase, Calculator, Sparkles, Download, ShieldCheck, CalendarCheck, FileText } from 'lucide-react';
+import { Layers, Cpu, PlayCircle, Briefcase, Calculator, Sparkles, Send, ShieldCheck, CalendarCheck, FileText } from 'lucide-react';
 import { MeridianLogo } from './MeridianLogo';
 import { MERIDIAN } from '../lib/brand';
 
@@ -70,11 +70,11 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenE
             <button
               id="export-blueprint-btn"
               onClick={onOpenExport}
-              aria-label="Export plan"
+              aria-label="Send my plan to Meridian"
               className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg bg-white hover:bg-slate-50 text-[#0f172a] border border-slate-300 transition-colors"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Export plan</span>
+              <Send className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Send my plan</span>
             </button>
 
             <a

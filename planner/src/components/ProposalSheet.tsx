@@ -137,7 +137,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
         </h1>
         <p className="text-sm text-[#475569] mt-2 leading-relaxed max-w-[62ch]">
           This is the plan you built in the Meridian Stack Planner, written out. Every figure below comes from the numbers
-          you set. They are planning estimates for a conversation, not a quote — the quote comes after we have looked at
+          you set. They are planning estimates for a conversation, not a quote. The quote comes after we have looked at
           how your business actually runs.
         </p>
 
@@ -158,13 +158,13 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5 sm:gap-4">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">{title}</div>
                 </div>
-                <div className="text-sm font-bold text-[#0f172a] mt-0.5">{item.name}</div>
-                <p className="text-xs text-[#475569] mt-1 leading-relaxed">{item.plain ?? item.description}</p>
+                <p className="text-sm text-[#191c1f] mt-1 leading-relaxed">{item.plain ?? title}</p>
               </div>
             ))}
           </div>
           <p className="text-[11px] text-[#475569] mt-3 leading-relaxed">
-            Typical build time at this stage: {stage.implementationTime}.
+            Typical build time at this stage: {stage.implementationTime}. The specific tools for each step are chosen with
+            you at the appointment, against what you already use and pay for.
           </p>
         </Section>
 
@@ -211,8 +211,8 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
 
         <Section title={`${n()}. What it costs`}>
           <p className="text-sm text-[#191c1f] leading-relaxed">
-            Deliberately not filled in here. There are two numbers — a one-off to design and build the system, and
-            the monthly cost of the services it runs on — and both depend on which pieces you actually need, how much
+            Deliberately not filled in here. There are two numbers, a one-off to design and build the system and
+            the monthly cost of the services it runs on, and both depend on which pieces you actually need, how much
             you put through them, and what you already pay for. A figure printed before that conversation would be a
             guess, and you would be entitled to hold us to it.
           </p>
@@ -232,7 +232,7 @@ export const ProposalSheet: React.FC<ProposalSheetProps> = ({
               // What the advisor recommended for this business, first, then the
               // rules that hold on every build regardless.
               ...(blueprint?.guardrailRecommendations ?? []).slice(0, 3),
-              'Each agent has its own login with the least access it needs — never yours.',
+              'Each agent has its own login with the least access it needs, never yours.',
               'Nothing reaches a customer, and no money moves, without a person approving it.',
               'Personal details are masked before any text reaches a model.',
               'Every action and every approval is written to a log that cannot be quietly edited.',

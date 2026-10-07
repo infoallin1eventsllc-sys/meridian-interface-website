@@ -89,7 +89,7 @@ export default function App() {
             <motion.div key="enterprise" {...fade}><EnterpriseGovernance onOpenExport={() => setIsExportOpen(true)} /></motion.div>
           )}
           {activeTab === 'advisor' && (
-            <motion.div key="advisor" {...fade}><AiAdvisor aiLive={aiLive} blueprint={blueprint} setBlueprint={setBlueprint} onCompanyName={setCompanyName} /></motion.div>
+            <motion.div key="advisor" {...fade}><AiAdvisor aiLive={aiLive} blueprint={blueprint} setBlueprint={setBlueprint} onCompanyName={setCompanyName} onSendPlan={() => setIsExportOpen(true)} /></motion.div>
           )}
         </AnimatePresence>
 
@@ -105,6 +105,8 @@ export default function App() {
         businessStage={businessStage}
         businessModel={businessModel}
         onOpenProposal={() => { setIsExportOpen(false); setIsProposalOpen(true); }}
+        blueprint={blueprint}
+        companyName={companyName}
       />
 
       <ProposalSheet
