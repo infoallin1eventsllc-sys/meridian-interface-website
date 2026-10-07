@@ -380,7 +380,7 @@ export default function LiveEmergencyMonitor({ state, onChangeState }: LiveEmerg
 
                 <a 
                   href="#secure-chat" 
-                  onClick={() => alert("Connecting live VOIP link to clinic staff desk...")}
+                  onClick={() => alert("Demonstration: in a live deployment this button calls the clinic staff desk. No call is placed here.")}
                   className="px-4 py-2 bg-natural-sage hover:bg-natural-dark-sage text-white font-bold text-[10px] rounded-full flex items-center space-x-1 shadow-sm transition-all uppercase tracking-wider cursor-pointer"
                 >
                   <MessageSquare className="h-3.5 w-3.5" />

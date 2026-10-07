@@ -84,3 +84,19 @@ repo, so a rebuild cannot carry them; re-apply if the bundle is ever replaced):
                              replaced by an immediate rejection, so the existing
                              catch serves the local answers without a 404 per
                              question (there is no server behind a static host).
+  meridian-crm   7 Oct 2026  Quick Capture card: dropped "h-full" from its class
+                             (it stretched past its column, so on a phone the
+                             Operations Log sat on top of Register Event and the
+                             Quick Workspace Links); tab row "grid-cols-4" ->
+                             "grid-cols-4 lg:grid-cols-2" so the labels fit the
+                             narrow desktop column; aria-label on the four tabs
+                             and on the header search button.
+                 7 Oct 2026  header controls row: added "flex-wrap" so Privacy
+                             wraps instead of running off a 320px screen.
+                 7 Oct 2026  the three "... copied to clipboard." alerts now
+                             wait for the copy and say so when the browser
+                             blocks it, instead of claiming success.
+  orchestra      7 Oct 2026  "Download Report" alerted "report generated" and
+                             produced nothing; it now downloads
+                             orchestra-diagnostic-report.txt (demonstration data,
+                             labelled as such).

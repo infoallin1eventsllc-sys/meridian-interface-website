@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { copyText } from '../utils/copy';
 import {
   X,
   Trash2,
@@ -90,14 +91,13 @@ export function OrderModal({
     onClose();
   };
 
-  const handleCopyOrder = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(
-        `Fog City Roasters Order #${orderNumber} • ${customerName || 'Guest'} • Pickup at 1420 Vallejo St.`
-      );
-      setCopiedOrder(true);
-      setTimeout(() => setCopiedOrder(false), 2000);
-    }
+  const handleCopyOrder = async () => {
+    const ok = await copyText(
+      `Fog City Roasters Order #${orderNumber} • ${customerName || 'Guest'} • Pickup at 1420 Vallejo St.`
+    );
+    if (!ok) return;
+    setCopiedOrder(true);
+    setTimeout(() => setCopiedOrder(false), 2000);
   };
 
   return (

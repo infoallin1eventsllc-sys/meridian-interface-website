@@ -32,7 +32,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Foundation',
       tagline: 'For the steps where being right matters more than being quick',
       description: 'The strongest reasoning tier: contract review, multi-step financial checks, deciding what to do with an unusual case. Costs materially more per step than the everyday tier, which is why it is used for a minority of steps and not the whole workflow.',
-      plain: 'A stronger, slower model kept for the hard calls — the unusual case a junior person would escalate.',
+      plain: 'A stronger, slower model kept for the hard calls: the unusual case a junior person would escalate.',
       bestFor: 'Escalations, exceptions, planning, anything that would otherwise go to a senior person.',
       tradeOffs: {
         pros: ['Best accuracy on complex, multi-step reasoning', 'Handles long, messy inputs well'],
@@ -228,7 +228,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Tools & Protocols',
       tagline: 'Open standard for secure, modular agent tool discovery and execution',
       description: 'Universal protocol supported by Anthropic, Google, and open-source tooling. Standardizes how agents read files, query databases, invoke APIs, and discover server capabilities.',
-      plain: 'The standard way agents reach your other tools — the CRM, the calendar, the accounting package.',
+      plain: 'The standard way agents reach your other tools: the CRM, the calendar, the accounting package.',
       bestFor: 'Future-proofing agent toolchains and decoupling tool code from specific agent frameworks.',
       tradeOffs: {
         pros: ['Standardized JSON-RPC protocol', 'Growing ecosystem of pre-built MCP connectors (HubSpot, GitHub, Slack, Postgres, Jira)', 'Sandboxed security boundaries'],
@@ -299,7 +299,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Comprehensive observability, latency tracing, token billing, and prompt versioning',
       description: 'Tracks every agent thought step, tool call, token cost, and user feedback with complete visual flamegraphs and automated CI/CD eval assertions.',
-      plain: 'The record of what every agent did, what it cost, and whether it was any good — so you can check rather than hope.',
+      plain: 'The record of what every agent did, what it cost, and whether it was any good, so you can check rather than hope.',
       bestFor: 'Production visibility, auditing agent failure points, and tracking unit economics.',
       tradeOffs: {
         pros: ['Open source and cloud options', 'Detailed flamegraphs of multi-agent traces', 'Automated accuracy scores'],
@@ -350,7 +350,7 @@ export const STACK_LAYERS: Record<string, StackLayerItem[]> = {
       category: 'Governance & Evals',
       tagline: 'Autonomous machine identity governance, prompt injection defense, and immutable SHA-256 ledger',
       description: 'Complete enterprise compliance suite. Treats every AI agent as a distinct Non-Human Identity (NHI) with short-lived tokens, real-time prompt armor against jailbreaks, automated PII/PHI tokenization, and WORM (Write-Once-Read-Many) audit logging complying with EU AI Act Art. 14 and SOC 2 Type II.',
-      plain: 'Gives each agent its own identity and keeps a record nobody can quietly edit — what a security review asks for.',
+      plain: 'Gives each agent its own identity and keeps a record nobody can quietly edit, which is what a security review asks for.',
       bestFor: 'Large companies whose security team needs a named identity and a durable record for every agent.',
       tradeOffs: {
         pros: ['Gives a security team the identity and change records their audits ask for', 'Append-only, hashed audit log', 'Kill switch that isolates one agent at a time'],

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { copyText } from '../lib/copy';
 import {
   ShieldCheck, Lock, KeyRound, FileCheck, AlertTriangle, CheckCircle2, ShieldAlert,
-  Search, Fingerprint, Download, Copy, Check, RefreshCw, Terminal, Users, ScrollText,
+  Search, Fingerprint, Send, Copy, Check, RefreshCw, Terminal, Users, ScrollText,
 } from 'lucide-react';
 import { ENTERPRISE_COMPLIANCE_STANDARDS, ENTERPRISE_IAM_PERMISSIONS, INITIAL_AUDIT_LEDGER } from '../data/stackComponents';
 import { AuditLedgerRecord } from '../types';
@@ -83,8 +84,8 @@ export const EnterpriseGovernance: React.FC<EnterpriseGovernanceProps> = ({ onOp
     }, 1100);
   };
 
-  const handleCopyHash = (hash: string) => {
-    navigator.clipboard.writeText(hash);
+  const handleCopyHash = async (hash: string) => {
+    if (!(await copyText(hash))) return;
     setCopiedHash(hash);
     setTimeout(() => setCopiedHash(null), 2000);
   };
@@ -128,8 +129,8 @@ evidence those audits ask for exists from day one.
 
 Contact: ${MERIDIAN.email} · ${MERIDIAN.phone}`;
 
-  const handleCopyPacket = () => {
-    navigator.clipboard.writeText(packetText);
+  const handleCopyPacket = async () => {
+    if (!(await copyText(packetText))) return;
     setCopiedPacket(true);
     setTimeout(() => setCopiedPacket(false), 2500);
   };
@@ -423,7 +424,7 @@ Contact: ${MERIDIAN.email} · ${MERIDIAN.phone}`;
                 </button>
                 {onOpenExport && (
                   <button onClick={onOpenExport} className="px-3.5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2">
-                    <Download className="w-3.5 h-3.5" />Export the full plan
+                    <Send className="w-3.5 h-3.5" />Send the full plan to Meridian
                   </button>
                 )}
               </div>

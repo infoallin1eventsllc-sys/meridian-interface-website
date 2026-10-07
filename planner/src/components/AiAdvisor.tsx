@@ -8,8 +8,6 @@ import {
   Layers, 
   Clock, 
   DollarSign, 
-  Copy, 
-  Check, 
   FileText,
   TrendingUp,
   Cpu
@@ -26,9 +24,11 @@ interface AiAdvisorProps {
   setBlueprint: (b: AdvisorBlueprint | null) => void;
   /** The company name the plan was written for, for the proposal's header. */
   onCompanyName: (name: string) => void;
+  /** Opens "Send your plan": the advisor's plan goes to Meridian, not to the clipboard. */
+  onSendPlan?: () => void;
 }
 
-export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlueprint, onCompanyName }) => {
+export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlueprint, onCompanyName, onSendPlan }) => {
   const [companyName, setCompanyName] = useState<string>('Apex Logistics');
   const [industry, setIndustry] = useState<string>('B2B Freight & Supply Chain SaaS');
   const [stage, setStage] = useState<string>('Growth ($1M - $10M ARR)');
@@ -43,7 +43,6 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlue
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState<boolean>(false);
 
   const handleGenerateBlueprint = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -61,31 +60,6 @@ export const AiAdvisor: React.FC<AiAdvisorProps> = ({ aiLive, blueprint, setBlue
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleCopyMarkdown = () => {
-    if (!blueprint) return;
-    const md = `# Agentic tech stack plan for ${companyName}\nPrepared with the Meridian Stack Planner (${MERIDIAN.siteLabel}). Figures are estimates, not a quote.
-## Where to start
-${blueprint.summary}
-
-## The five layers
-${blueprint.stackLayers.map(l => `### ${l.layer}\n- **Component:** ${l.component}\n- **Role:** ${l.role}\n- **Status:** ${l.status}`).join('\n\n')}
-
-## Rollout in phases
-${blueprint.phasedDeployment.map(p => `### ${p.phase}\n*Impact:* ${p.impact}\n${p.actions.map(a => `- ${a}`).join('\n')}`).join('\n\n')}
-
-## Rules the agents run under
-${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
-
-## Estimated impact
-- Monthly Hours Reclaimed: ${blueprint.projectedMetrics.monthlyHoursSaved} hours
-- Team Headcount Leverage: ${blueprint.projectedMetrics.headcountEquivalentLeverage}
-- Monthly Savings: ${blueprint.projectedMetrics.projectedMonthlySavings}
-`;
-    navigator.clipboard.writeText(md);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -246,14 +220,16 @@ ${blueprint.guardrailRecommendations.map(g => `- ${g}`).join('\n')}
                   </h4>
                 </div>
 
-                <button
-                  id="copy-blueprint-markdown-btn"
-                  onClick={handleCopyMarkdown}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 flex items-center gap-1.5 transition-colors"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copied' : 'Copy plan'}</span>
-                </button>
+                {onSendPlan && (
+                  <button
+                    id="send-blueprint-btn"
+                    onClick={onSendPlan}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#0f172a] hover:bg-slate-800 text-white flex items-center gap-1.5 transition-colors"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Send this plan</span>
+                  </button>
+                )}
               </div>
 
               {/* Executive Summary */}
