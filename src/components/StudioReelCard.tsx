@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { shouldStayStill } from '../lib/stillness';
 
 /**
  * The studio reel, sitting in the gap at the end of the services grid.
@@ -16,8 +17,8 @@ import React, { useEffect, useRef, useState } from 'react';
  *      film that insists on audio simply never starts. This one starts silent
  *      and offers the narration on a button — one press, no reload.
  *   2. **Still when asked.** prefers-reduced-motion, Save-Data and 2G all mean
- *      the poster frame and a play button instead, matching HeroBackdrop's
- *      rule (see shouldStayStill there — the same test, kept in step).
+ *      the poster frame and a play button instead: the same test the hero
+ *      backdrop uses (lib/stillness.ts).
  *   3. **Cheap.** 2.6 MB, self-hosted next to the hero loop, with a poster so
  *      the frame is painted before a byte of video arrives.
  *
@@ -27,16 +28,6 @@ import React, { useEffect, useRef, useState } from 'react';
  * copy rather than being stretched into a shape it was never composed for.
  */
 
-/** True when the visitor has asked for less movement or less data. Mirrors
-    HeroBackdrop.shouldStayStill — if one changes, change both. */
-function shouldStayStill(): boolean {
-  if (typeof window === 'undefined') return true;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-  if (conn?.saveData) return true;
-  if (conn?.effectiveType && /(^|\W)(slow-)?2g$/.test(conn.effectiveType)) return true;
-  return false;
-}
 
 interface StudioReelCardProps {
   onTabChange?: (tab: 'portfolio') => void;

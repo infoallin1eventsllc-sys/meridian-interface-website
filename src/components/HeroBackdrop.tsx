@@ -1,590 +1,99 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { shouldStayStill } from '../lib/stillness';
 
 /**
- * Motion layer behind the homepage hero.
+ * The homepage hero's ground: Otis's own Higgsfield clip, three aluminium-rimmed
+ * glass panes on dark navy joined by threads of light, with real screen captures
+ * composited into the glass. The large pane is this website; the phone and
+ * tablet panes cut through every product the studio has built, one every 0.8 s.
+ * The 8 s clip plays forward then back, so the 16 s loop never jumps.
  *
- * A wireframe globe drawn on a canvas: latitude rings and meridians broken into
- * dashes at varying density, a scatter of nodes, a few trailing whiskers, and an
- * atmospheric glow standing in for the blue limb light. It assembles on load,
- * then breathes — the hemisphere facing the viewer opens outward at the same
- * moment the far side closes in, so it is never simply pulsing.
+ * Nothing in the clip is redrawn; only what shows inside the glass is ours, so
+ * every screen in it is true. Source and the steps to re-render it (do that
+ * whenever the homepage or a demo changes) are in the backend repo at
+ * system/media/showcase/.
  *
- * This replaced a 16-second Earth clip (1.0 MB of MP4, 353 KB of WebM and a
- * 38 KB poster) with roughly 9 KB of code. Three things came with that trade,
- * and only two are wins: it is far lighter, and it is drawn at the device's own
- * pixel ratio so it never softens on a retina screen. The cost is that a canvas
- * redrawing every frame spends processor time where video spent hardware decode.
- * The visibility checks below exist to keep that bill honest — nothing is drawn
- * while the hero is scrolled away or the tab is in the background.
+ * Rules that keep it from costing the page anything:
+ *   - Only wide screens (lg and up) show it. Below lg the copy runs the full
+ *     width and the demo cards carry the imagery, so the footage would only sit
+ *     behind the words: those screens get a quiet navy ground in the video's
+ *     own palette, and download neither the video nor its still frame.
+ *   - On wide screens, reduced motion, Save-Data and 2G get the 51 KB still
+ *     frame instead of the video (shouldStayStill, shared with the studio reel).
+ *   - It pauses while scrolled out of view or while the tab is hidden.
+ *   - The still frame paints first, so there is never an empty hero while the
+ *     video loads, and it stays if the video fails.
  *
- * `shouldStayStill` is unchanged from the footage version and does more work
- * here: with reduced motion, Save-Data, or a 2G connection, the globe is drawn
- * once as a still frame and the loop never starts. The composition is identical
- * either way, so nobody gets a lesser-looking page for having asked for less
- * movement — they just get it holding still.
- *
- * Geometry is seeded, so the same lattice is drawn on every visit and every
- * device. That is deliberate: this is the studio's front door, not a generative
- * toy, and it should look like a designed thing rather than a different accident
- * each time.
+ * The panes keep to the right half of the frame; the left side is near-black in
+ * the clip itself, which is where the headline sits.
  */
 
-const SEED = 20260908;
-const TILT = -0.28;
-
-/** Colours read off the live palette, as `r,g,b` for use inside rgba(). */
-const LINE = '148,170,205';
-const ACCENT = '74,133,255';
-const GLINT = '226,236,255';
-
-/** True when the visitor has asked for less movement or less data. */
-function shouldStayStill(): boolean {
-  if (typeof window === 'undefined') return true;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-  // Save-Data is a direct request not to spend the visitor's bandwidth on decoration.
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-  if (conn?.saveData) return true;
-  if (conn?.effectiveType && /(^|\W)(slow-)?2g$/.test(conn.effectiveType)) return true;
-  return false;
-}
-
-interface Segment { lat1: number; lon1: number; lat2: number; lon2: number; w: number; accent: boolean; order: number; core: boolean; key: number }
-interface LatticeNode { lat: number; lon: number; r: number; ring: boolean; accent: boolean; order: number; core: boolean; key: number }
-interface Whisker { pts: { lat: number; lon: number; k: number }[]; order: number }
-
-/** Deterministic PRNG, so the lattice is the same drawing every time. */
-function rng(seed: number) {
-  return () => {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** Where the lattice is dense and where it thins out to nothing. */
-function density(lat: number, lon: number): number {
-  const band = Math.cos(lon - 3.5) * 0.5 + 0.5;
-  const low = 1 - Math.abs(lat + 0.35) / 1.7;
-  return Math.max(0.06, Math.min(1, band * 0.72 + low * 0.5));
-}
-
-/* Which of the dense lattice's rings and meridians also belonged to the sparse one.
-   The hero that ran until 9 Sep drew 10 rings and 18 meridians; this one draws 16 and
-   30. Picking the old counts as an evenly spread subset of the new is what lets the
-   two be the same globe: the old lattice is never rebuilt or cross-faded, it is just
-   the part that stays lit while the rest comes and goes. */
-function subset(total: number, keep: number): Set<number> {
-  const s = new Set<number>();
-  for (let k = 0; k < keep; k++) s.add(Math.round((k * (total - 1)) / (keep - 1)));
-  return s;
-}
-const RING_KEEP = subset(16, 10);
-const MER_KEEP = subset(30, 18);
-
-function buildLattice() {
-  const rand = rng(SEED);
-  const segments: Segment[] = [];
-  const nodes: LatticeNode[] = [];
-  const whiskers: Whisker[] = [];
-
-  /* Density, chosen 9 Sep after comparing four geometries side by side.
-     Sixteen rings and thirty meridians against the previous ten and eighteen,
-     with longer unbroken runs, so the sphere carries more structure.
-
-     The rings are generated rather than listed: the old hand-written array ran
-     -72 to +58, which is not symmetric, so the lattice sat slightly low without
-     anyone deciding it should. */
-  const RING_COUNT = 16;
-  const RINGS = Array.from({ length: RING_COUNT }, (_, i) => -76 + (152 * i) / (RING_COUNT - 1));
-  const MERIDIANS = 30;
-  const D2R = Math.PI / 180;
-
-  RINGS.forEach((deg, ri) => {
-    const lat = deg * D2R;
-    const core = RING_KEEP.has(ri);
-    const steps = 128;
-    let on = rand() > 0.4;
-    let run = 2 + Math.floor(rand() * 11);
-    for (let s = 0; s < steps; s++) {
-      const lon1 = (s / steps) * Math.PI * 2;
-      const lon2 = ((s + 1) / steps) * Math.PI * 2;
-      const d = density(lat, lon1);
-      if (run-- <= 0) {
-        on = rand() < 0.5 + d * 0.5;
-        run = on ? 2 + Math.floor(rand() * 11) : 1 + Math.floor(rand() * 6);
-      }
-      if (!on) continue;
-      const heavy = rand() < d * 0.08;
-      segments.push({
-        lat1: lat, lon1, lat2: lat, lon2,
-        w: heavy ? 2.6 + rand() * 1.8 : 0.7,
-        accent: !heavy && rand() < 0.07,
-        order: 0.08 + (ri / RINGS.length) * 0.5 + rand() * 0.3,
-        core, key: lon1 / (Math.PI * 2),
-      });
-      if (rand() < d * 0.05) {
-        nodes.push({ lat, lon: lon1, r: 1 + rand() * 2.2, ring: rand() < 0.3, accent: rand() < 0.2,
-                     order: 0.3 + rand() * 0.55, core, key: lon1 / (Math.PI * 2) });
-      }
-    }
-  });
-
-  for (let m = 0; m < MERIDIANS; m++) {
-    const lon = (m / MERIDIANS) * Math.PI * 2;
-    const core = MER_KEEP.has(m);
-    const steps = 90;
-    let on = rand() > 0.35;
-    let run = 3 + Math.floor(rand() * 6);
-    for (let s = 0; s < steps; s++) {
-      const lat1 = -Math.PI / 2 + (s / steps) * Math.PI;
-      const lat2 = -Math.PI / 2 + ((s + 1) / steps) * Math.PI;
-      const d = density(lat1, lon);
-      if (run-- <= 0) {
-        on = rand() < 0.55 + d * 0.45;
-        run = on ? 3 + Math.floor(rand() * 8) : 2 + Math.floor(rand() * 7);
-      }
-      if (!on) continue;
-      const heavy = rand() < d * 0.045;
-      segments.push({
-        lat1, lon1: lon, lat2, lon2: lon,
-        w: heavy ? 2.4 + rand() * 1.5 : 0.65,
-        accent: !heavy && rand() < 0.055,
-        order: 0.05 + (m / MERIDIANS) * 0.45 + rand() * 0.3,
-        core, key: lon / (Math.PI * 2),
-      });
-      if (rand() < d * 0.035) {
-        nodes.push({ lat: lat1, lon, r: 1 + rand() * 1.9, ring: rand() < 0.34, accent: rand() < 0.18,
-                     order: 0.3 + rand() * 0.55, core, key: lon / (Math.PI * 2) });
-      }
-    }
-  }
-
-  for (let w = 0; w < 8; w++) {
-    const baseLat = (rand() - 0.5) * 1.9;
-    const baseLon = rand() * Math.PI * 2;
-    const sweep = (0.9 + rand() * 1.7) * (rand() < 0.5 ? -1 : 1);
-    const climb = (rand() - 0.4) * 0.8;
-    const pts = [];
-    const N = 44;
-    for (let t = 0; t <= N; t++) {
-      const u = t / N;
-      pts.push({ lat: baseLat + climb * u, lon: baseLon + sweep * u, k: 1 + Math.pow(u, 1.7) * 0.3 });
-    }
-    whiskers.push({ pts, order: 0.55 + rand() * 0.3 });
-  }
-
-  return { segments, nodes, whiskers };
-}
+const POSTER = '/images/hero/showcase-poster.webp';
+const WIDE = '(min-width: 1024px)';
 
 export const HeroBackdrop: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(WIDE).matches);
+  const [still] = useState(shouldStayStill);
+  const play = wide && !still;
 
+  // Follow the window across the lg breakpoint.
   useEffect(() => {
-    const wrap = wrapRef.current;
-    const canvas = canvasRef.current;
-    if (!wrap || !canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const { segments, nodes, whiskers } = buildLattice();
-
-    /* The hairlines are batched by depth; the heavy strokes and accents are
-       drawn one at a time on top. Splitting them here means the draw loop is
-       not re-testing every segment's weight on every frame. */
-    const fine = segments.filter((s) => s.w <= 1.4 && !s.accent);
-    const bold = segments.filter((s) => s.w > 1.4 || s.accent);
-
-    /* Scratch for one frame of hairlines, allocated once so no frame has to ask
-       for memory. Each fine segment is projected a single time per frame and
-       its two endpoints parked here; the depth buckets then read these numbers.
-       Before this, the bucket loop ran the projection over the whole lattice
-       once per bucket — five times the trigonometry for one frame's worth of
-       lines, which is what the denser geometry could no longer afford. */
-    const BUCKETS = 5;
-    /* Lines mid-sweep are drawn dimmer than lines fully arrived, so the wave has a
-       soft edge instead of a hard front. Quantising that into four steps keeps the
-       batching intact: twenty strokes a frame instead of five, still nothing like
-       one stroke per line. */
-    const GROWTH_STEPS = 4;
-    const NBATCH = BUCKETS * GROWTH_STEPS;
-    const fx1 = new Float64Array(fine.length);
-    const fy1 = new Float64Array(fine.length);
-    const fx2 = new Float64Array(fine.length);
-    const fy2 = new Float64Array(fine.length);
-    const bucketIdx = Array.from({ length: NBATCH }, () => new Int32Array(fine.length));
-    const bucketLen = new Int32Array(NBATCH);
-
-    let W = 0, H = 0, cx = 0, cy = 0, R = 0;
-    let yaw = 0, T = 0, amp = 0, reveal = 0;
-    let pointerX = -9999, pointerY = -9999, pointerLive = false;
-    const pings: { lat: number; lon: number; t: number }[] = [];
-    let nextPing = 1.4;
-    let still = shouldStayStill();
-
-    const scratch = { k: 1, lon: 0 };
-
-    /* The front hemisphere opens outward exactly as the back closes in, so the
-       globe reads as breathing rather than throbbing. */
-    function deform(lon: number) {
-      scratch.k = 1;
-      scratch.lon = lon;
-      if (amp <= 0.001) return;
-      const facing = Math.cos(lon + yaw);
-      scratch.k = 1 + amp * 0.22 * facing * Math.sin(T * 0.62);
-      scratch.lon = lon + amp * 0.09 * facing * Math.cos(T * 0.62);
-    }
-
-    interface Pt { x: number; y: number; z: number }
-    const scratchA: Pt = { x: 0, y: 0, z: 0 };
-    const scratchB: Pt = { x: 0, y: 0, z: 0 };
-
-    /* Writes into a point the caller owns. The hot loop hands in one of the two
-       scratch points above rather than allocating a few thousand short-lived
-       objects every frame; `project` below is the same maths for the call sites
-       where one more object costs nothing. */
-    function projectInto(out: Pt, lat: number, lon: number, k?: number) {
-      deform(lon);
-      const a = scratch.lon + yaw;
-      const x = Math.cos(lat) * Math.sin(a);
-      const y = Math.sin(lat);
-      const z = Math.cos(lat) * Math.cos(a);
-      const y2 = y * Math.cos(TILT) - z * Math.sin(TILT);
-      const z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
-      const rr = R * (k || 1) * scratch.k;
-      const persp = 1 / (1 - z2 * 0.24);
-      let px = cx + x * rr * persp;
-      let py = cy + y2 * rr * persp;
-
-      if (pointerLive) {
-        const dx = pointerX - px;
-        const dy = pointerY - py;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const reach = Math.min(W, H) * 0.4;
-        if (dist < reach) {
-          let pull = 1 - dist / reach;
-          pull = pull * pull * 0.18;
-          px += dx * pull;
-          py += dy * pull;
-        }
-      }
-      out.x = px;
-      out.y = py;
-      out.z = z2;
-      return out;
-    }
-
-    const project = (lat: number, lon: number, k?: number): Pt =>
-      projectInto({ x: 0, y: 0, z: 0 }, lat, lon, k);
-
-    /* The detail wave.
-       Core lines are lit at all times. Every other line is absent at the start of a
-       cycle, sweeps in around the globe, holds at full detail, then sweeps back out —
-       so the lattice reads as the old hero becoming the new one and back again, with
-       no cut and no cross-fade. The front always travels the same direction, in both
-       halves, so it never looks like footage being rewound.
-
-       Eighteen seconds a cycle, agreed 10 Sep after watching it at several speeds. */
-    const CYCLE_SECONDS = 18;
-    const FEATHER = 0.38;
-    let phase = 0;
-
-    function growth(key: number): number {
-      if (still) return 1;
-      const growing = phase < 0.5;
-      const local = (phase % 0.5) / 0.5;
-      const front = -FEATHER + local * (1 + FEATHER);
-      let g = (front - key) / FEATHER;
-      g = g < 0 ? 0 : g > 1 ? 1 : g;
-      return growing ? g : 1 - g;
-    }
-
-    const alphaFor = (z: number, base: number) => {
-      const depth = (z + 1) / 2;
-      return base * (0.12 + 0.88 * depth * depth);
-    };
-    const fade = (order: number) => Math.max(0, Math.min(1, (reveal - order) / 0.16));
-
-    function size() {
-      const r = wrap!.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = r.width;
-      H = r.height;
-      canvas!.width = Math.round(W * dpr);
-      canvas!.height = Math.round(H * dpr);
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cx = W / 2;
-      cy = H / 2;
-      R = Math.min(W, H) * 0.38;
-    }
-
-    function draw() {
-      if (!W) return;
-      const c = ctx!;
-      c.clearRect(0, 0, W, H);
-      c.lineCap = 'round';
-
-      // Atmosphere — the blue limb light the photograph used to supply.
-      const glow = c.createRadialGradient(cx, cy, R * 0.62, cx, cy, R * 1.28);
-      glow.addColorStop(0, 'rgba(32,74,158,0.30)');
-      glow.addColorStop(0.62, 'rgba(38,90,190,0.16)');
-      glow.addColorStop(1, 'rgba(38,90,190,0)');
-      c.fillStyle = glow;
-      c.globalAlpha = Math.min(1, reveal * 1.6);
-      c.beginPath();
-      c.arc(cx, cy, R * 1.28, 0, Math.PI * 2);
-      c.fill();
-      c.globalAlpha = 1;
-
-      c.beginPath();
-      c.arc(cx, cy, R * 1.005, 0, Math.PI * 2);
-      c.strokeStyle = `rgba(120,170,255,${(0.22 * Math.min(1, reveal * 1.6)).toFixed(3)})`;
-      c.lineWidth = 1.4;
-      c.stroke();
-
-      /* Fine lines are batched into five depth buckets: one path and one stroke
-         per bucket rather than per segment, which is what keeps a few thousand
-         dashes affordable every frame.
-
-         Project once, then sort into buckets by the depth of the midpoint — the
-         same test as before, written as an index rather than a range scan, so a
-         segment's position is worked out once instead of being recomputed for
-         every bucket it does not belong to. */
-      bucketLen.fill(0);
-      for (let i = 0; i < fine.length; i++) {
-        const s = fine[i];
-        if (fade(s.order) <= 0) continue;
-        const g = s.core ? 1 : growth(s.key);
-        if (g <= 0.02) continue;
-        const p1 = projectInto(scratchA, s.lat1, s.lon1);
-        const p2 = projectInto(scratchB, s.lat2, s.lon2);
-        const b = Math.floor(((((p1.z + p2.z) / 2) + 1) / 2) * BUCKETS);
-        if (b < 0 || b >= BUCKETS) continue;
-        const gi = g >= 1 ? GROWTH_STEPS - 1 : Math.floor(g * GROWTH_STEPS);
-        fx1[i] = p1.x; fy1[i] = p1.y;
-        fx2[i] = p2.x; fy2[i] = p2.y;
-        const k = b * GROWTH_STEPS + gi;
-        bucketIdx[k][bucketLen[k]++] = i;
-      }
-
-      for (let b = 0; b < BUCKETS; b++) {
-        const mid = -1 + ((b + 0.5) / BUCKETS) * 2;
-        const aInk = alphaFor(mid, 0.46);
-        if (aInk < 0.012) continue;
-        c.lineWidth = 0.55 + ((mid + 1) / 2) * 0.5;
-
-        for (let gs = 0; gs < GROWTH_STEPS; gs++) {
-          const k = b * GROWTH_STEPS + gs;
-          const n = bucketLen[k];
-          if (!n) continue;
-          const idx = bucketIdx[k];
-          c.beginPath();
-          for (let j = 0; j < n; j++) {
-            const i = idx[j];
-            c.moveTo(fx1[i], fy1[i]);
-            c.lineTo(fx2[i], fy2[i]);
-          }
-          const a = aInk * ((gs + 1) / GROWTH_STEPS) * Math.min(1, reveal * 1.4);
-          c.strokeStyle = `rgba(${LINE},${a.toFixed(3)})`;
-          c.stroke();
-        }
-      }
-
-      for (const wk of whiskers) {
-        const f = fade(wk.order);
-        if (f <= 0) continue;
-        const last = Math.floor(wk.pts.length * f);
-        c.beginPath();
-        let started = false, zAcc = 0, zN = 0;
-        for (let t = 0; t < last; t++) {
-          const pp = project(wk.pts[t].lat, wk.pts[t].lon, wk.pts[t].k);
-          zAcc += pp.z;
-          zN++;
-          if (!started) { c.moveTo(pp.x, pp.y); started = true; } else c.lineTo(pp.x, pp.y);
-        }
-        if (!started) continue;
-        c.strokeStyle = `rgba(${LINE},${alphaFor(zN ? zAcc / zN : 0, 0.26).toFixed(3)})`;
-        c.lineWidth = 0.6;
-        c.stroke();
-      }
-
-      for (const sg of bold) {
-        const f = fade(sg.order);
-        if (f <= 0) continue;
-        const g = sg.core ? 1 : growth(sg.key);
-        if (g <= 0.02) continue;
-        const q1 = project(sg.lat1, sg.lon1);
-        const q2 = project(sg.lat2, sg.lon2);
-        const zq = (q1.z + q2.z) / 2;
-        if (zq < -0.25) continue;
-        const a = alphaFor(zq, sg.accent ? 0.95 : 0.8) * f * g;
-        c.strokeStyle = `rgba(${sg.accent ? ACCENT : GLINT},${a.toFixed(3)})`;
-        c.lineWidth = sg.accent ? 1.7 : sg.w;
-        c.beginPath();
-        c.moveTo(q1.x, q1.y);
-        c.lineTo(q2.x, q2.y);
-        c.stroke();
-      }
-
-      for (const nd of nodes) {
-        const f = fade(nd.order);
-        if (f <= 0) continue;
-        const g = nd.core ? 1 : growth(nd.key);
-        if (g <= 0.02) continue;
-        const np = project(nd.lat, nd.lon);
-        if (np.z < -0.2) continue;
-        const a = alphaFor(np.z, 0.9) * f * g;
-        const col = nd.accent ? ACCENT : GLINT;
-        c.beginPath();
-        // Scaled as well as faded, so a node grows into place rather than blinking on.
-        c.arc(np.x, np.y, nd.r * (0.7 + ((np.z + 1) / 2) * 0.5) * (0.4 + 0.6 * g), 0, Math.PI * 2);
-        if (nd.ring) {
-          c.strokeStyle = `rgba(${col},${a.toFixed(3)})`;
-          c.lineWidth = 0.9;
-          c.stroke();
-        } else {
-          c.fillStyle = `rgba(${col},${a.toFixed(3)})`;
-          c.fill();
-        }
-      }
-
-      for (let i = pings.length - 1; i >= 0; i--) {
-        const pg = pings[i];
-        pg.t += 0.016;
-        if (pg.t > 1) { pings.splice(i, 1); continue; }
-        const pt = project(pg.lat, pg.lon);
-        if (pt.z < 0) continue;
-        const e = 1 - Math.pow(1 - pg.t, 3);
-        c.beginPath();
-        c.arc(pt.x, pt.y, 3 + e * 32, 0, Math.PI * 2);
-        c.strokeStyle = `rgba(${ACCENT},${((1 - pg.t) * 0.45).toFixed(3)})`;
-        c.lineWidth = 1;
-        c.stroke();
-      }
-    }
-
-    size();
-
-    // Held so every listener and observer below comes back off on unmount.
-    const cleanups: (() => void)[] = [];
-
-    const ro = new ResizeObserver(() => { size(); if (still) draw(); });
-    ro.observe(wrap);
-    cleanups.push(() => ro.disconnect());
-
-    if (still) {
-      reveal = 1;
-      amp = 0;
-      draw();
-    } else {
-      // The hero section is the pointer surface; this layer is pointer-events:none.
-      const surface = wrap.parentElement;
-      if (surface) {
-        const onMove = (e: PointerEvent) => {
-          const r = wrap.getBoundingClientRect();
-          pointerX = e.clientX - r.left;
-          pointerY = e.clientY - r.top;
-          pointerLive = true;
-        };
-        const onLeave = () => { pointerLive = false; };
-        surface.addEventListener('pointermove', onMove, { passive: true });
-        surface.addEventListener('pointerleave', onLeave);
-        cleanups.push(() => {
-          surface.removeEventListener('pointermove', onMove);
-          surface.removeEventListener('pointerleave', onLeave);
-        });
-      }
-
-      let onScreen = true;
-      const io = new IntersectionObserver(
-        (entries) => entries.forEach((e) => { onScreen = e.isIntersecting; }),
-        { threshold: 0.02 },
-      );
-      io.observe(wrap);
-      cleanups.push(() => io.disconnect());
-
-      // Drawing into a tab nobody is looking at is pure battery drain.
-      let tabVisible = document.visibilityState !== 'hidden';
-      const onVisibility = () => { tabVisible = document.visibilityState !== 'hidden'; };
-      document.addEventListener('visibilitychange', onVisibility);
-      cleanups.push(() => document.removeEventListener('visibilitychange', onVisibility));
-
-      let frame = 0;
-      const t0 = performance.now();
-      const loop = (now: number) => {
-        frame = requestAnimationFrame(loop);
-        if (still || !onScreen || !tabVisible) return;
-        T = (now - t0) / 1000;
-
-        // The lattice assembles first; it only starts breathing once whole.
-        if (reveal < 1) {
-          const u = Math.min(1, T / 2.2);
-          reveal = 1 - Math.pow(1 - u, 3);
-        } else if (amp < 1) {
-          amp = Math.min(1, amp + 0.005);
-        }
-
-        yaw += 0.00075;
-
-        /* The cycle starts once the assemble is done, so the globe arrives sparse and
-           the detail sweeps in as its first move rather than fighting the reveal. */
-        phase = (Math.max(0, T - 2.2) % CYCLE_SECONDS) / CYCLE_SECONDS;
-
-        nextPing -= 0.016;
-        if (nextPing <= 0 && nodes.length) {
-          const pick = nodes[Math.floor(Math.random() * nodes.length)];
-          pings.push({ lat: pick.lat, lon: pick.lon, t: 0 });
-          nextPing = 1.6 + Math.random() * 2.4;
-        }
-
-        draw();
-      };
-      frame = requestAnimationFrame(loop);
-      cleanups.push(() => cancelAnimationFrame(frame));
-    }
-
-    // Someone can turn reduced motion on while the page is open. Honour it at
-    // once rather than at the next reload: stop the loop and hold the frame.
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const onPrefChange = () => {
-      if (media.matches && !still) {
-        still = true;
-        reveal = 1;
-        amp = 0;
-        draw();
-      }
-    };
-    media.addEventListener('change', onPrefChange);
-    cleanups.push(() => media.removeEventListener('change', onPrefChange));
-
-    return () => cleanups.forEach((fn) => fn());
+    const mq = window.matchMedia(WIDE);
+    const update = () => setWide(mq.matches);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
   }, []);
 
+  // Play only while the hero is on screen and the tab is visible.
+  useEffect(() => {
+    const video = videoRef.current, wrap = wrapRef.current;
+    if (!play || !video || !wrap) return;
+    let onScreen = true;
+    const sync = () => {
+      if (onScreen && document.visibilityState === 'visible') video.play().catch(() => {});
+      else video.pause();
+    };
+    const io = new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; sync(); }, { threshold: 0.05 });
+    io.observe(wrap);
+    document.addEventListener('visibilitychange', sync);
+    return () => { io.disconnect(); document.removeEventListener('visibilitychange', sync); };
+  }, [play]);
+
   return (
-    <div className="hero-backdrop absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      {/* The ground the lattice sits on. This used to be a photograph; it is now
-          a gradient, so there is nothing left to load before the hero paints. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 90% 70% at 78% 52%, rgba(30,58,110,0.55), transparent 62%),' +
-            'linear-gradient(160deg, #0B111F 0%, #0E1526 46%, #121C30 100%)',
-        }}
-      />
-
-      <div ref={wrapRef} className="hero-lattice absolute">
-        <canvas ref={canvasRef} className="block h-full w-full" aria-hidden="true" />
-      </div>
-
-      {/* Legibility scrims, unchanged: dark where the copy sits, clearing to
-          reveal the scene. These stay above the lattice so no frame of the
-          animation can wash the headline out. */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0f172a] via-[#0f172a]/70 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/70 via-transparent to-[#0f172a]/25" />
+    <div ref={wrapRef} className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#04070e]" aria-hidden="true">
+      {!wide && (
+        // The video's own palette with nothing in it: near-black, deep navy, a glow on the right.
+        <div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse 85% 55% at 88% 38%, rgba(34,82,160,0.32), transparent 62%), linear-gradient(165deg, #04070e 0%, #071226 55%, #0b1e3c 100%)' }}
+        />
+      )}
+      {wide && <img src={POSTER} alt="" className="absolute inset-0 w-full h-full object-cover" decoding="async" fetchPriority="high" />}
+      {play && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          poster={POSTER}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+        >
+          <source src="/video/hero-showcase.webm" type="video/webm" />
+          <source src="/video/hero-showcase.mp4" type="video/mp4" />
+        </video>
+      )}
+      {/* A light hold behind the headline column; the footage is already dark there. */}
+      {wide && (
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(90deg, rgba(11,17,31,0.55) 0%, rgba(11,17,31,0.25) 38%, rgba(11,17,31,0) 55%)' }}
+        />
+      )}
     </div>
   );
 };

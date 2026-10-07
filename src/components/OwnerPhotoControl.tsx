@@ -163,12 +163,10 @@ export const OwnerPhotoControl: React.FC = () => {
   useImageOverrides();
   const overrides = getImageOverrides();
 
-  /* The homepage hero used to be listed here. It was removed on 9 Sep when the
-     hero backdrop became a drawn lattice rather than a photograph: there is no
-     longer an image behind the headline to swap. Leaving the row in place would
-     have been worse than removing it — a control that accepts an upload and
-     changes nothing is a lie the owner only discovers after trusting it.
-     To bring it back, restore the photo path in HeroBackdrop.tsx first. */
+  /* The homepage hero is not listed here. Its backdrop is a composited video
+     (HeroBackdrop.tsx; source in the backend repo, system/media/showcase/), not
+     a photograph an upload could replace. A control that accepts an upload and
+     changes nothing is a lie the owner only discovers after trusting it. */
   const managed: ManagedImage[] = [
     ...PORTFOLIO.map((p) => ({
       id: p.id,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
@@ -24,6 +24,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onViewService
 }) => {
   const [concept, setConcept] = useState<typeof PORTFOLIO[number] | null>(null);
+  // lg and up: the hero video carries the product imagery, so the cards step aside.
+  const [wideHero, setWideHero] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setWideHero(mq.matches);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
   useImageOverrides();
@@ -65,8 +73,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <main className="pt-16 pb-24 md:pb-16 animate-fadeIn bg-slate-50">
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-16 lg:py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
-        {/* Full-bleed wireframe globe, drawn in the browser. It carries its own
-            ground, so there is no hero photograph to resolve or wait on. */}
+        {/* Full-bleed showcase: Otis's Higgsfield glass panes with the website and
+            every product inside them, playing on wide screens only. */}
         <HeroBackdrop />
 
         <div className="relative z-10 max-w-[1280px] mx-auto w-full grid gap-14 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] items-center">
@@ -111,8 +119,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
 
-          {/* Real work, not a stock picture: three of the demos, each opening its concept panel. */}
-          <HeroShowcase onOpen={setConcept} />
+          {/* Real work, not a stock picture: three of the demos, each opening its
+              concept panel. On wide screens the backdrop shows the products
+              itself, so the cards are not rendered there (nor their images fetched). */}
+          {!wideHero && <HeroShowcase onOpen={setConcept} />}
         </div>
       </section>
 

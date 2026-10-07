@@ -3,7 +3,16 @@
 Provenance for every image shipped in this repository. Keep this current — a
 studio site is the last place to be unsure whether an asset is cleared.
 
-## Hero — Earth from orbit
+## Hero: the showcase (7 Oct 2026)
+
+| | |
+|---|---|
+| Files | `images/hero/showcase-poster.webp`, `video/hero-showcase.webm`, `video/hero-showcase.mp4` |
+| Source | A Higgsfield clip generated on Otis's own account (job 3cdc7ab7, 7 Oct 2026), with screen captures of meridianinterface.com and its hosted demos composited into its three glass faces. Everything outside the glass is the clip as generated |
+| Licence | Otis's Higgsfield output, under his plan's commercial terms; the screens are the studio's own work |
+| Re-render | Backend repo, `system/media/showcase/README.md`. Do it whenever the homepage or a demo changes, since the panes show them |
+
+## Hero (retired): Earth from orbit
 
 | | |
 |---|---|

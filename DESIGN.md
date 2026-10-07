@@ -20,22 +20,34 @@ described.
   it. The eyebrow is one line, "Design & development studio", short enough not
   to wrap on a phone.
 - **Body copy is specific**, naming the five things built (brand, website, app,
-  dashboard, follow-up systems) and the first step (a 1-on-1 consultation).
+  dashboard, follow-up systems) and the first step (a 1-on-1 appointment).
   The old slash-separated capability line was removed because it repeated the
   paragraph.
-- **Two CTAs, each naming its action**: "Book a consultation" (primary, blue)
+- **Two CTAs, each naming its action**: "Book an appointment" (primary, blue)
   and "Try the working demos" (secondary, outline, trailing arrow).
-- **Imagery is real work, not stock.** `HeroShowcase.tsx` layers three demo
-  captures (dashboard at back, website in front, phone foremost) over the
-  globe. Each frame opens that piece's concept panel. Provenance and
-  re-capture sizes are in `public/images/CREDITS.md`.
+- **Imagery is real work, not stock.** On wide screens (lg and up) the
+  backdrop is the showcase (7 Oct 2026): Otis's own Higgsfield clip, three
+  aluminium-rimmed glass panes on dark navy joined by threads of light, with
+  real screen captures composited into the glass; the large pane is this
+  website, the phone and tablet panes cut through every product every 0.8 s.
+  Nothing in the clip is redrawn, so it looks exactly as he approved it, and
+  every screen in it is true. The panes keep to the right half. Below lg, `HeroShowcase.tsx`
+  layers three demo captures under the buttons, each opening its concept
+  panel; on wide screens it is not rendered, since the backdrop shows the
+  products. Provenance and re-render steps: `public/images/CREDITS.md`.
 - **Frames**: dark chrome `#0b1220`, neutral dots (not traffic-light colours),
   a real address in the bar. Elevation is a navy-tinted drop shadow, used
   here because the frames genuinely overlap.
 - **Motion**: copy rises first, then frames arrive back to front (0.35s, 0.5s,
   0.65s). Pointer hover lifts a frame 6px. All of it is off under
   `prefers-reduced-motion`.
-- **The globe** (`HeroBackdrop.tsx`) stays as the ground, not the subject.
+- **The backdrop** (`HeroBackdrop.tsx`) is shown only on wide screens. It
+  pauses off screen and in a hidden tab; reduced motion, Save-Data and 2G get
+  its 51 KB still frame (`lib/stillness.ts`, shared with the studio reel), which
+  `index.html` preloads for wide screens. Below lg the copy runs full width and
+  the cards carry the imagery, so the ground is the video's palette with
+  nothing in it: footage behind running text is clutter. When the homepage
+  changes, re-render the video: the large pane shows the homepage.
 
 ## Type scale in the hero
 
