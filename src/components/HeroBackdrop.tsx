@@ -5,8 +5,11 @@ import { shouldStayStill } from '../lib/stillness';
  * The homepage hero's ground: Otis's own Higgsfield clip, three aluminium-rimmed
  * glass panes on dark navy joined by threads of light, with real screen captures
  * composited into the glass. The large pane is this website; the phone and
- * tablet panes cut through every product the studio has built, one every 0.8 s.
- * The 8 s clip plays forward then back, so the 16 s loop never jumps.
+ * tablet panes scroll through every product the studio has built, each rising
+ * into the next as one continuous scroll; the large pane scrolls down the
+ * homepage and back. The 8 s clip plays forward then back, gliding to a stop at
+ * each end, so the 20 s loop never jumps or bounces. Nothing Higgsfield printed
+ * on the glass (a car interior) shows through the screens.
  *
  * Nothing in the clip is redrawn; only what shows inside the glass is ours, so
  * every screen in it is true. Source and the steps to re-render it (do that

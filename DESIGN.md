@@ -29,7 +29,8 @@ described.
   backdrop is the showcase (7 Oct 2026): Otis's own Higgsfield clip, three
   aluminium-rimmed glass panes on dark navy joined by threads of light, with
   real screen captures composited into the glass; the large pane is this
-  website, the phone and tablet panes cut through every product every 0.8 s.
+  website, the phone and tablet panes scroll through every product, each
+  rising into the next; the camera eases to a stop at each end of the loop.
   Nothing in the clip is redrawn, so it looks exactly as he approved it, and
   every screen in it is true. The panes keep to the right half. Below lg, `HeroShowcase.tsx`
   layers three demo captures under the buttons, each opening its concept
