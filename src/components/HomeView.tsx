@@ -120,8 +120,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
 
           {/* Real work, not a stock picture: three of the demos, each opening its
-              concept panel. On wide screens the backdrop shows the products
-              itself, so the cards are not rendered there (nor their images fetched). */}
+              concept panel. On wide screens the light square of the backdrop holds
+              the right half on its own, so the cards are not rendered there. */}
           {!wideHero && <HeroShowcase onOpen={setConcept} />}
         </div>
       </section>

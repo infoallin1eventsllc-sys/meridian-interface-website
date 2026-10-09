@@ -28,7 +28,10 @@ import { shouldStayStill } from '../lib/stillness';
  * the clip itself, which is where the headline sits.
  */
 
-const POSTER = '/images/hero/showcase-poster.webp';
+// PREVIEW (preview/hero-video2): Otis's Higgsfield clip 7a0a3c5a, the light square settled
+// on the floor grid (source frames 79-121, after the clip's last hard cut), graded into the
+// site's navy, half speed, forward then back with eased turnarounds: a 9 s seamless loop.
+const POSTER = '/images/hero/hero-video2-poster.webp';
 const WIDE = '(min-width: 1024px)';
 
 export const HeroBackdrop: React.FC = () => {
@@ -70,11 +73,13 @@ export const HeroBackdrop: React.FC = () => {
           style={{ background: 'radial-gradient(ellipse 85% 55% at 88% 38%, rgba(34,82,160,0.32), transparent 62%), linear-gradient(165deg, #04070e 0%, #071226 55%, #0b1e3c 100%)' }}
         />
       )}
-      {wide && <img src={POSTER} alt="" className="absolute inset-0 w-full h-full object-cover" decoding="async" fetchPriority="high" />}
+      {/* On wide screens the clip sits 20% to the right, so its square settles behind the
+          demo cards instead of the headline; its left edge feathers into the navy. */}
+      {wide && <img src={POSTER} alt="" className="absolute inset-y-0 left-[20%] w-full h-full object-cover [mask-image:linear-gradient(90deg,transparent,black_14%)]" decoding="async" fetchPriority="high" />}
       {play && (
         <video
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-y-0 left-[20%] w-full h-full object-cover [mask-image:linear-gradient(90deg,transparent,black_14%)]"
           poster={POSTER}
           autoPlay
           muted
@@ -83,15 +88,15 @@ export const HeroBackdrop: React.FC = () => {
           preload="auto"
           disablePictureInPicture
         >
-          <source src="/video/hero-showcase.webm" type="video/webm" />
-          <source src="/video/hero-showcase.mp4" type="video/mp4" />
+          <source src="/video/hero-video2.webm" type="video/webm" />
+          <source src="/video/hero-video2.mp4" type="video/mp4" />
         </video>
       )}
       {/* A light hold behind the headline column; the footage is already dark there. */}
       {wide && (
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(90deg, rgba(11,17,31,0.55) 0%, rgba(11,17,31,0.25) 38%, rgba(11,17,31,0) 55%)' }}
+          style={{ background: 'linear-gradient(90deg, rgba(11,17,31,0.82) 0%, rgba(11,17,31,0.75) 42%, rgba(11,17,31,0.2) 62%, rgba(11,17,31,0) 80%)' }}
         />
       )}
     </div>
