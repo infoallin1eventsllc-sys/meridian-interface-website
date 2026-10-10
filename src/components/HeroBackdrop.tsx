@@ -9,8 +9,10 @@ import { shouldStayStill } from '../lib/stillness';
  * into the next as one continuous scroll; the large pane scrolls down the
  * homepage and back. The 8 s clip plays forward then back, gliding to a stop at
  * each end, so the 20 s loop never jumps or bounces. The clip's glowing threads
- * are erased, nothing Higgsfield printed on the glass (a car interior) shows, and
- * each screen sits in its frame like a real display, with a thin dark bezel.
+ * are erased (and the stubs they lit on the aluminium), nothing Higgsfield printed
+ * on the glass (a car interior) shows, each screen sits in its frame like a real
+ * display with a thin dark bezel, the fourth pane carries the Meridian lockup, and
+ * every screen's scroll is keyed to the camera's travel, resting when it rests.
  *
  * Nothing in the clip is redrawn; only what shows inside the glass is ours, so
  * every screen in it is true. Source and the steps to re-render it (do that
