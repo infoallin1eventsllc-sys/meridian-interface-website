@@ -89,13 +89,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             {/* The same two lines the studio reel closes on, so the film and the
-                front door say one thing. */}
-            <h1 className="font-display font-black leading-[1.04] tracking-tight text-white text-[2.5rem] sm:text-5xl lg:text-[3.4rem] xl:text-[4rem]">
+                front door say one thing. On wide screens the copy carries a soft dark
+                halo: for a few seconds of each loop the tablet pane passes edge-on
+                behind the line ends, and the halo keeps every letter clear of it. */}
+            <h1 className="font-display font-black leading-[1.04] tracking-tight text-white text-[2.5rem] sm:text-5xl lg:text-[3.4rem] xl:text-[4rem] lg:[text-shadow:0_2px_18px_rgba(4,7,14,0.85)]">
               Websites, apps, and AI&nbsp;systems.
               <span className="block mt-1 text-blue-500">We put the future in your&nbsp;hands.</span>
             </h1>
 
-            <p className="font-body text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+            <p className="font-body text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed lg:[text-shadow:0_2px_18px_rgba(4,7,14,0.85)]">
               One studio, start to finish: your brand, the website customers find, the app they order
               from, the dashboard you run the business on, and the systems that follow up while you work.
               Every project starts with a 1-on-1 appointment.

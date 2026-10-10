@@ -27,7 +27,7 @@ described.
   and "Try the working demos" (secondary, outline, trailing arrow).
 - **Imagery is real work, not stock.** On wide screens (lg and up) the
   backdrop is the showcase (7 Oct 2026): Otis's own Higgsfield clip, three
-  aluminium-rimmed glass panes on dark navy joined by threads of light, with
+  aluminium-rimmed glass panes on dark navy (the clip's threads of light erased), with
   real screen captures composited into the glass; the large pane is this
   website, the phone and tablet panes scroll through every product, each
   rising into the next; the camera eases to a stop at each end of the loop.
@@ -44,7 +44,7 @@ described.
   `prefers-reduced-motion`.
 - **The backdrop** (`HeroBackdrop.tsx`) is shown only on wide screens. It
   pauses off screen and in a hidden tab; reduced motion, Save-Data and 2G get
-  its 51 KB still frame (`lib/stillness.ts`, shared with the studio reel), which
+  its 92 KB still frame (`lib/stillness.ts`, shared with the studio reel), which
   `index.html` preloads for wide screens. Below lg the copy runs full width and
   the cards carry the imagery, so the ground is the video's palette with
   nothing in it: footage behind running text is clutter. When the homepage

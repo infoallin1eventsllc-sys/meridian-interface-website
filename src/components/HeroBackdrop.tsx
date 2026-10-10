@@ -3,7 +3,7 @@ import { shouldStayStill } from '../lib/stillness';
 
 /**
  * The homepage hero's ground: Otis's own Higgsfield clip, three aluminium-rimmed
- * glass panes on dark navy joined by threads of light, with real screen captures
+ * glass panes on dark navy (and a fourth carrying the Meridian lockup), with real screen captures
  * composited into the glass. The large pane is this website; the phone and
  * tablet panes scroll through every product the studio has built, each rising
  * into the next as one continuous scroll; the large pane scrolls down the
@@ -24,7 +24,7 @@ import { shouldStayStill } from '../lib/stillness';
  *     width and the demo cards carry the imagery, so the footage would only sit
  *     behind the words: those screens get a quiet navy ground in the video's
  *     own palette, and download neither the video nor its still frame.
- *   - On wide screens, reduced motion, Save-Data and 2G get the 51 KB still
+ *   - On wide screens, reduced motion, Save-Data and 2G get the 92 KB still
  *     frame instead of the video (shouldStayStill, shared with the studio reel).
  *   - It pauses while scrolled out of view or while the tab is hidden.
  *   - The still frame paints first, so there is never an empty hero while the
