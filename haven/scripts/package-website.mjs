@@ -120,7 +120,42 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
   .nav { top: calc(var(--meridian-bar, 0px) + env(safe-area-inset-top, 0px)); }
   .faq-wrap .head { top: calc(var(--meridian-bar, 0px) + var(--nav-h) + 24px); }
 </style>
+<style id="haven-panel-bezel">
+  /* The live demo's panel as hardware: a dark glass bezel with a slim brushed-aluminium rim and a
+     sensor at the top. The screen sits inside it; before the visitor starts it, the bezel holds
+     the dimmed picture of that screen, and starting it wakes the screen in the same place.
+     haven-frame.js runs the panel at its designed width and scales it to fit. */
+  #live .frame {
+    --bz: clamp(12px, 1.6vw, 24px); --r: 12px; --s: 1;
+    padding: var(--bz); border: 0; border-radius: calc(var(--r) + var(--bz));
+    background: radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
+      linear-gradient(160deg, #23272e 0%, #0b0d11 45%, #15181d 100%);
+    box-shadow: 0 0 0 1.5px #b4bbc5, 0 0 0 3px #6d747e, 0 0 0 3.5px rgba(15, 28, 46, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+      0 36px 70px -28px rgba(15, 28, 46, 0.55), 0 14px 28px -14px rgba(15, 28, 46, 0.35);
+  }
+  #live .frame::after {
+    content: ""; position: absolute; z-index: 2; pointer-events: none;
+    top: calc(var(--bz) / 2 - 3px); left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #4a5160, #0b0d11 70%); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+  #live .frame > .start, #live .frame > iframe {
+    inset: auto; top: var(--bz); left: var(--bz); border-radius: var(--r);
+    width: calc(100% - 2 * var(--bz)); height: calc(100% - 2 * var(--bz));
+  }
+  #live .frame > iframe {
+    max-width: none; max-height: none; /* the site caps media at its container; this one is scaled instead */
+    transform: scale(var(--s)); transform-origin: 0 0; border-radius: calc(var(--r) / var(--s));
+    background: #0b0d11; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+    animation: haven-screen-on 0.7s ease-out both;
+  }
+  @keyframes haven-screen-on { from { opacity: 0; filter: brightness(1.7) saturate(0.6); } 45% { opacity: 1; } to { opacity: 1; filter: none; } }
+  @media (max-width: 720px) { #live .frame { --bz: 10px; --r: 14px; } }
+  @media (prefers-reduced-motion: reduce) { #live .frame > iframe { animation: none; } }
+</style>
+<script src="js/haven-frame.js" defer></script>
 </head>`, f);
+    fs.copyFileSync(path.join(root, "site-edits/haven-frame.js"), path.join(out, "js/haven-frame.js"));
     html = html.replace(/(<body[^>]*>)/, '$1\n<div id="root">');
     html = once(html, "</body>", "</div>\n</body>", f);
   }
