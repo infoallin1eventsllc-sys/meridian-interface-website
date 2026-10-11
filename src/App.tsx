@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from './types';
 import { BucketView } from './components/BucketView';
 import { initAnalytics, trackPage } from './lib/analytics';

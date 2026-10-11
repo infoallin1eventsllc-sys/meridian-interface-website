@@ -29,17 +29,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
     }
   }, []);
 
-  const handleCancelAppointment = (id: string) => {
-    if (confirm(`Request a change to appointment #${id}? We'll mark it "In Review" and follow up with you.`)) {
-      const updated = appointments.map(a => a.id === id ? { ...a, status: 'In Review' as const } : a);
-      setAppointments(updated);
-      try {
-        localStorage.setItem('meridian_appointments', JSON.stringify(updated));
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
+  // Escape closes the details, as it does every other dialog on the site.
+  useEffect(() => {
+    if (!activeAppointment) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActiveAppointment(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeAppointment]);
+
+  const statusClass = (status: Appointment['status']) =>
+    status === 'Confirmed' ? 'bg-emerald-100 text-emerald-800'
+      : status === 'Scheduled' ? 'bg-blue-100 text-blue-800'
+      : 'bg-amber-100 text-amber-800';
 
   /* Which rows are the seeded examples.
      This page is headed "My Appointments" and says "your appointments", then
@@ -216,13 +217,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                     </td>
                     <td className="p-4 text-slate-700 font-medium">{apt.budgetRange}</td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        apt.status === 'Confirmed'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : apt.status === 'Scheduled'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass(apt.status)}`}>
                         {apt.status}
                       </span>
                     </td>
@@ -230,8 +225,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                       {/* The per-row invoice and receipt buttons opened the same
                           fabricated document as everywhere else. A real invoice
                           is sent by the studio; nothing here should imply one
-                          already exists. */}
-                      Quote sent separately
+                          already exists. The details panel below was built but
+                          had nothing that opened it; this button does. */}
+                      <button
+                        onClick={() => setActiveAppointment(apt)}
+                        aria-label={`View details of appointment ${apt.id}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-800 font-bold uppercase tracking-wider text-[10px] hover:bg-slate-100 whitespace-nowrap"
+                      >
+                        <span className="material-symbols-outlined text-sm" aria-hidden="true">visibility</span>
+                        View details
+                      </button>
+                      <div className="mt-1 whitespace-nowrap">Quote sent separately</div>
                     </td>
                   </tr>
                 ))}
@@ -243,13 +247,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
 
       {/* Appointment Detail Modal */}
       {activeAppointment && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={() => setActiveAppointment(null)}>
+          <div role="dialog" aria-modal="true" aria-label={`Appointment ${activeAppointment.id}`} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setActiveAppointment(null)}
+              aria-label="Close dialog"
+              autoFocus
               className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900"
             >
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <span className="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
             </button>
 
             <div className="space-y-4">
@@ -257,7 +263,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                 <span className="font-mono text-xs font-bold bg-slate-100 text-slate-800 px-2.5 py-1 rounded">
                   #{activeAppointment.id}
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
+                <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded ${statusClass(activeAppointment.status)}`}>
                   {activeAppointment.status}
                 </span>
               </div>
