@@ -31,7 +31,9 @@ fs.mkdirSync(path.join(out, "fonts"), { recursive: true });
 
 // 1. Everything that is not a page, as it is.
 const files = fs.readdirSync(src, { recursive: true }).filter((f) => fs.statSync(path.join(src, f)).isFile());
-for (const f of files.filter((f) => !f.endsWith(".html"))) {
+// Published but used by no page (the Meridian bar brings its own mark as brand/meridian-mark.png).
+const UNUSED = new Set(["img/meridian-mark.webp"]);
+for (const f of files.filter((f) => !f.endsWith(".html") && !UNUSED.has(f.split(path.sep).join("/")))) {
   fs.mkdirSync(path.dirname(path.join(out, f)), { recursive: true });
   fs.copyFileSync(path.join(src, f), path.join(out, f));
 }
@@ -103,6 +105,11 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
   for (const js of fs.readdirSync(path.join(out, "js"))) if (/data:(audio|video)\//.test(fs.readFileSync(path.join(out, "js", js), "utf8"))) throw new Error(`js/${js}: media as a data: URL`);
   if (/data:(audio|video)\//.test(html)) throw new Error(`${f}: media as a data: URL`);
   // Haven's Command screen on a phone (the panels carry styles.css inline)
+  // No dead ends, and the library's "Open live" links stay inside the tour (haven/site-edits/haven-nav.js).
+  if (f.startsWith("panel-") || f === "film.html" || f === "library.html") {
+    fs.copyFileSync(path.join(root, "site-edits/haven-nav.js"), path.join(out, "js/haven-nav.js"));
+    html = once(html, "</title>", '</title>\n<script src="js/haven-nav.js"></script>', f); // these pages have no </head>
+  }
   if (f.startsWith("panel-")) html = once(html, ".cm-main { display: grid; gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }",
     ".cm-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }", f);
   if (f === "privacy.html") html = once(html, "<li><strong>Fonts.</strong> The typefaces load from Google Fonts, so your browser asks Google for them.</li>",
