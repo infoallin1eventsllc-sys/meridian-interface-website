@@ -1,0 +1,116 @@
+# Haven: an AI Agent for the Whole House
+
+Haven runs a new home: lights, ceiling fans, heating and air conditioning, the water heater, the main water shutoff, the garage door and door locks, with motion, leak, door and light sensors. It talks to the homeowner on iPhone, iPad, Apple Watch and in the car, and sends short updates through the day.
+
+- **Full analysis** of integrating a home with AI agents, hardware choices, costs and a new-build checklist: [docs/ANALYSIS.md](docs/ANALYSIS.md)
+- **Prompts**, both the build spec and the agent's own system prompt: [PROMPT.md](PROMPT.md)
+- **iPhone, Apple Watch and car setup**: [docs/APPLE-SETUP.md](docs/APPLE-SETUP.md)
+- **Client demos** in two styles, Futuristic and Grounded, with shareable links, concept images and prompts: [docs/DEMOS.md](docs/DEMOS.md)
+- **Design system and screen library** (six screens, two finishes): [docs/DESIGN.md](docs/DESIGN.md)
+- **Agent stack**: how Haven talks, listens, learns and stays safe: [docs/AGENTS.md](docs/AGENTS.md)
+- **Enterprise readiness plan**: security, privacy, AI governance, fleet management, certifications and a phased roadmap: [docs/ENTERPRISE-PLAN.md](docs/ENTERPRISE-PLAN.md)
+- **Current status**, what's verified and what's next: [docs/STATUS.md](docs/STATUS.md)
+
+## Try it now (no hardware needed)
+
+Requires Node.js 20 or newer.
+
+```bash
+cd home-ai
+npm install
+npm start
+```
+
+Open `http://localhost:8787` and enter the owner token printed in the terminal. The **Simulator** panel at the bottom lets you trigger motion, a leak, a cold snap, arriving and leaving, and watch the house react.
+
+Try typing or tapping the mic: `turn on the kitchen lights`, `I'm cold`, `the kitchen is too bright`, `open the garage` (it waits for you to confirm), `I don't like the porch light on all night`, `what do you know about me`, `goodnight`.
+
+## Screen library
+
+Ten screens for different spots in the home, all on the same live house, each with a look of its own: Command, Glass, Everything Wall, Good Evening, Aurora, Security Console, Portrait Classic, Neon Frame, Lagoon, and Wallpaper (which also comes in three finishes: Grounded, Futuristic and Vivid). All controls, room by room, opens from any of them.
+
+## Check that everything works
+
+```bash
+npm run check   # all tests, the demo build, a browser run through every control, and WCAG 2.2 AA audits
+npm run live-check   # the real Claude agent against the simulated house (needs ANTHROPIC_API_KEY)
+```
+
+## Turn on the full AI
+
+Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. Haven then uses Claude (`claude-opus-5` by default; change `HAVEN_MODEL` / `HAVEN_EFFORT`) for conversation and for writing the daily briefings. Without a key, or if the internet is down, it uses a built-in command parser, and every automation keeps running.
+
+Refusal fallbacks are enabled (`fallbacks: "default"`): if the model declines a request, the API retries it on a fallback model automatically.
+
+## Give Haven a natural voice
+
+Set `ELEVENLABS_API_KEY` in `.env` and every panel speaks with an ElevenLabs voice instead of the browser's built-in one ("Lily D" by default, the guide's voice in the film; change it with `HAVEN_VOICE_ID`). The key stays on the home server; panels get audio from `/api/speech`. If ElevenLabs is unreachable or out of credits, panels fall back to the browser's voice. Samples: `docs/voice/`.
+
+## Weather
+
+Set `weather.latitude` and `weather.longitude` in `config/home.json` for free forecasts from Open-Meteo (no key), or, with Home Assistant, name its weather entity in `weather.ha_entity`. Haven then answers "what's the weather?", adds the forecast to briefings, and the Wallpaper screen shows it. Without either, it says weather isn't connected rather than guessing.
+
+## Connect real devices
+
+1. Set up a Home Assistant hub with your devices (see the analysis for recommended hardware).
+2. In `.env`: `HAVEN_ADAPTER=homeassistant`, `HA_URL`, and `HA_TOKEN` (a long-lived access token from your Home Assistant profile).
+3. In `config/home.json`, set each device's `ha_entity` to its Home Assistant entity id. Rename rooms and devices to match the house.
+
+## How it's built
+
+```
+src/
+  server.js            entry point
+  home.js              wires everything together
+  http.js              API for the app, Siri Shortcuts, geofences, car
+  safety.js            risk tiers, hard limits, who may do what
+  automations.js       motion, leak, arrival/away, garage, freeze, energy rules
+  briefings.js         morning / midday / evening / night updates
+  learning.js          the homeowner profile: comfort, habits, suggestions, routines
+  energy.js            live power, today's kWh and history (estimated, or from a meter)
+  weather.js           forecast from Home Assistant or Open-Meteo (never made up)
+  speech.js            Haven's ElevenLabs voice (the key stays on the server)
+  reflection.js        runs the daily reflection agent
+  notify.js            app feed, ntfy, Pushover, quiet hours
+  core/                event bus, device registry, controller, storage, time
+  adapters/            simulator, Home Assistant
+  agent/               Claude agent, tools, offline parser
+prompts/agent-system.md  the conversation agent's system prompt
+prompts/reflection.md    the reflection agent's system prompt
+config/home.json         rooms, devices, scenes, limits, schedule
+web/                     the wall panel / phone app (voice.js, map.js home model, energy-chart.js, wallpapers/)
+test/                    safety, automation and agent tests (npm test)
+```
+
+**The one rule that matters:** the AI never touches hardware. Every request, from the AI, an automation or a person, goes through `core/controller.js` and `safety.js`. The AI can adjust comfort on its own, but opening the garage, unlocking a door or turning the water back on always waits for the homeowner's tap.
+
+## API
+
+All routes need `Authorization: Bearer <owner token>` except `/api/health`.
+
+| Method | Path | Body | Use |
+|---|---|---|---|
+| GET | `/api/state` | | Everything the app shows |
+| GET | `/api/events?limit=100` | | Activity log |
+| GET | `/api/stream?token=` | | Live events (server-sent events) |
+| POST | `/api/devices/:id` | `{command}` | Control a device as the owner |
+| POST | `/api/scenes/:name` | | morning, away, home, goodnight, movie |
+| POST | `/api/chat` | `{text}` | Talk to Haven |
+| POST | `/api/confirm/:id` | `{approve}` | Confirm or cancel a pending action |
+| POST | `/api/presence` | `{person, kind}` | approaching / arrived / left |
+| POST | `/api/briefing` | | Send a briefing now |
+| GET | `/api/energy` | | Power now, kWh today, the day's 5-minute history, top consumers |
+| GET | `/api/weather` | | Current conditions, next 12 hours, next days, and the source (or `available: false`) |
+| POST | `/api/speech` | `{text}` | Haven's voice as MP3 (ElevenLabs); 503 means use the browser's voice |
+| GET | `/api/profile` | | What Haven has learned, and pending suggestions |
+| POST | `/api/feedback` | `{feeling, room?}` | too_cold, too_warm, too_bright, too_dark, just_right |
+| POST | `/api/suggestions/:id` | `{accept}` | Answer a suggestion |
+| POST | `/api/profile/forget` | `{id}` | Forget one item, or `"all"` |
+| POST | `/api/profile/reflect` | | Run the daily review now |
+| POST | `/api/shortcut/ask` | `{text}` | Siri: returns `{text}` to speak |
+| POST | `/api/shortcut/garage` | `{action}` | Car/watch button: open, close, toggle |
+| POST | `/api/sim/sensor` | `{device, state}` | Simulator only |
+
+## Run it in the house
+
+Use a small always-on computer (a mini PC, Raspberry Pi 5, or the same box as Home Assistant) on a UPS battery. Run it with a process manager such as systemd or pm2 so it restarts on boot. For access away from home use Tailscale; don't open ports on the router.

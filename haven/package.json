@@ -1,0 +1,41 @@
+{
+  "name": "haven-home-agent",
+  "version": "0.1.0",
+  "description": "Haven: an all-in-one AI agent for a new home. Controls lights, climate, water, garage and locks, and keeps the homeowner updated on phone, tablet and Apple Watch.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test --test-force-exit test/*.test.js",
+    "build:demo": "node scripts/build-demo.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "check": "npm test && npm run build:demo && npm run e2e",
+    "build:catalog": "node scripts/build-catalog.mjs",
+    "live-check": "node scripts/live-check.mjs",
+    "build:vendor": "node scripts/build-vendor.mjs",
+    "build:film": "node scripts/build-film.mjs",
+    "render:film": "node scripts/render-film.mjs",
+    "build:sites": "node scripts/build-sites.mjs",
+    "assemble:film": "node scripts/assemble-film.mjs",
+    "music:variants": "node scripts/music-variants.mjs",
+    "build:showroom": "node scripts/build-showroom.mjs",
+    "build:website": "node scripts/build-website.mjs",
+    "build:house-stills": "node scripts/build-house-stills.mjs",
+    "build:house-gallery": "node scripts/build-house-gallery.mjs",
+    "encode:film": "node scripts/encode-film.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "axe-core": "^4.13.0",
+    "esbuild": "^0.25.12",
+    "playwright": "^1.56.1",
+    "three": "^0.170.0"
+  }
+}

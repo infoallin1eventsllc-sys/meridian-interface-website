@@ -268,7 +268,7 @@ export const Modals: React.FC<ModalsProps> = ({
                   { title: 'Logo Design & Brand Identity', desc: 'Custom vector logos, brand guidelines & style guides', tab: 'services', category: 'Services' },
                   { title: 'Schedule 1-on-1 Discovery Session', desc: 'Lock in an appointment time slot with lead designers', tab: 'booking', category: 'Booking' },
                   { title: 'My Appointments', desc: 'See the sessions you have booked', tab: 'appointments', category: 'Appointments' },
-                  { title: 'FinSight: Financial & Revenue Dashboard', desc: 'Working demo: revenue, P&L, cash and forecasts on one screen', tab: 'portfolio', category: 'Portfolio' },
+                  { title: 'Haven: AI Home Integration System', desc: 'Working demo: lights, climate, water, garage and locks on a simulated house', tab: 'portfolio', category: 'Portfolio' },
                                     { title: 'Fog City Roasters: Coffee Brand Identity', desc: 'Working demo: wordmark, packaging and brand system', tab: 'portfolio', category: 'Portfolio' },
                   { title: 'Interactive Project Cost Estimator', desc: 'Scope calculator for web, app, dashboard & logo quotes', tab: 'services', category: 'Tool' }
                 ];

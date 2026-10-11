@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17130f">
+<meta name="description" content="Haven, an AI agent for the whole house, running on a simulated home: lights, climate, water, garage and locks, with briefings and a safety controller. A Meridian Interface demo.">
+<title>Haven: AI Home Integration Demo</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+<script src="boot.js"></script>
+
+<style id="meridian-demo-bar-style">
+  :root { --meridian-bar: 46px; }
+  body { padding-top: var(--meridian-bar) !important; }
+  /* These apps size themselves to the viewport; leave room for the bar so the
+     demo is not pushed off the bottom of the screen. */
+  .h-screen { height: calc(100vh - var(--meridian-bar)) !important; }
+  .min-h-screen { min-height: calc(100vh - var(--meridian-bar)) !important; }
+  /* An app's own sticky header pins to the top of the viewport, which is now
+     behind this bar. Push it down so both are readable. */
+  .sticky.top-0 { top: var(--meridian-bar) !important; }
+  /* Same problem for a fixed header (the storefront uses one): it ignores the
+     body padding above and pins under the bar, hiding its own logo and nav.
+     Targets the literal top-0 class, so full-screen inset-0 modal overlays,
+     which must keep covering the whole viewport, are left alone. */
+  .fixed.top-0 { top: var(--meridian-bar) !important; }
+  #meridian-demo-bar {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--meridian-bar); z-index: 2147483000;
+    display: flex; align-items: center; gap: 14px; padding: 0 16px;
+    background: #0f172a; color: #fff; box-sizing: border-box;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  #meridian-demo-bar img { height: 26px; width: auto; display: block; flex: none; }
+  #meridian-demo-bar .mb-built { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+  #meridian-demo-bar .mb-what { font-size: 12px; color: #cbd5e1; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  #meridian-demo-bar .mb-sep { color: #475569; }
+  #meridian-demo-bar .mb-tag { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: #cbd5e1; border: 1px solid rgba(255,255,255,.25); border-radius: 999px;
+    padding: 3px 9px; white-space: nowrap; flex: none; }
+  #meridian-demo-bar a.mb-home { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: #fff; text-decoration: none;
+    background: #2563eb; padding: 7px 12px; border-radius: 8px; }
+  #meridian-demo-bar a.mb-home:hover { background: #1d4ed8; }
+  #meridian-demo-bar a.mb-home:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  #meridian-demo-bar .mb-short { display: none; }
+  @media (max-width: 720px) {
+    #meridian-demo-bar .mb-what, #meridian-demo-bar .mb-sep { display: none; }
+  }
+  /* Below this the bar ran wider than the screen and pushed the way back off
+     the right edge entirely — 274px out of reach on a 320px phone, on every
+     demo. A visitor arriving from the portfolio on a phone could see the bar
+     but never use it, which is the one thing it exists to do. So the pieces
+     that can go, go: the Demonstration pill (the bar already says this is a
+     demo), and the full domain in favour of a short label. */
+  @media (max-width: 560px) {
+    #meridian-demo-bar { gap: 9px; padding: 0 10px; }
+    #meridian-demo-bar .mb-tag { display: none; }
+    #meridian-demo-bar .mb-built { font-size: 12px; min-width: 0; overflow: hidden;
+      text-overflow: ellipsis; }
+    #meridian-demo-bar .mb-long { display: none; }
+    #meridian-demo-bar .mb-short { display: inline; }
+    #meridian-demo-bar a.mb-home { padding: 7px 10px; }
+  }
+</style>
+</head>
+<body>
+<div id="meridian-demo-bar">
+  <img src="brand/meridian-mark.png" alt="Meridian Interface" />
+  <span class="mb-built">Built by Meridian Interface</span>
+  <span class="mb-sep">·</span>
+  <span class="mb-what">Haven — AI home integration system</span>
+  <span class="mb-tag">Demonstration</span>
+  <a class="mb-home" href="/"><span class="mb-long">meridianinterface.com &rarr;</span><span class="mb-short">Meridian &rarr;</span></a>
+</div>
+<div id="root">
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="glass-card">
+      <h1>Haven</h1>
+      <p class="muted">Enter the owner token printed when the home server first started.</p>
+      <input id="token-input" type="password" autocomplete="current-password" placeholder="Owner token" aria-label="Owner token" required>
+      <button type="submit" class="primary">Connect</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="app" class="panel" data-daypart="evening" hidden>
+    <!-- All controls (opened from any screen): the room, the greeting, the house status and
+         the time on the left; every device, Updates, About you and the simulator on the right. -->
+    <section class="stage" aria-label="Home status">
+      <div class="stage-top">
+        <button type="button" id="controls-close" class="controls-close">Back</button>
+        <nav id="rooms-nav" class="rooms-nav" aria-label="Rooms"></nav>
+      </div>
+      <div id="map" class="map"></div>
+      <div class="stage-body">
+        <p id="home-name" class="eyebrow">Haven</p>
+        <h1 id="room-title">Whole home</h1>
+        <p id="greeting" class="greeting"></p>
+        <div id="status" class="status" data-state="ok" aria-live="polite">
+          <span class="status-mark" aria-hidden="true"></span>
+          <div class="status-text">
+            <p id="status-headline" class="status-headline">All secure</p>
+            <ul id="issues" class="issues"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div>
+          <p id="clock" class="clock">--:--</p>
+          <p id="date" class="muted small"></p>
+        </div>
+        <div class="stage-tools">
+          <button type="button" class="screens-open" aria-haspopup="dialog">Screens</button>
+          <span id="conn" class="conn" role="img" aria-label="Live connection"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: controls on frosted glass -->
+    <section class="glass" aria-label="Controls">
+      <nav class="tabs" role="tablist" aria-label="Panel sections">
+        <button role="tab" id="t-home" aria-controls="tab-home" aria-selected="true" data-tab="home">Home</button>
+        <button role="tab" id="t-updates" aria-controls="tab-updates" aria-selected="false" data-tab="updates">Updates</button>
+        <button role="tab" id="t-you" aria-controls="tab-you" aria-selected="false" data-tab="you">About you <span id="you-badge" class="badge" hidden></span></button>
+        <button role="tab" id="t-sim" aria-controls="tab-sim" aria-selected="false" data-tab="sim" hidden>Simulator</button>
+      </nav>
+
+      <div id="tab-home" role="tabpanel" aria-labelledby="t-home" class="tabpanel">
+        <div id="suggestions" class="stack"></div>
+        <div id="pending" class="stack" aria-live="assertive"></div>
+        <section class="block">
+          <h2>Scenes</h2>
+          <div id="scenes" class="scenes"></div>
+        </section>
+        <section class="block">
+          <h2 id="devices-title">Devices</h2>
+          <div id="tiles" class="tiles"></div>
+          <p id="sensors" class="sensors"></p>
+        </section>
+        <section class="block">
+          <h2>How does it feel?</h2>
+          <div id="feel" class="feel" role="group" aria-label="Tell Haven how it feels"></div>
+        </section>
+      </div>
+
+      <div id="tab-updates" role="tabpanel" aria-labelledby="t-updates" class="tabpanel" hidden>
+        <div class="row-between">
+          <h2>Updates</h2>
+          <button id="brief-now" class="ghost">Brief me now</button>
+        </div>
+        <ol id="feed" class="feed"></ol>
+      </div>
+
+      <div id="tab-you" role="tabpanel" aria-labelledby="t-you" class="tabpanel" hidden>
+        <p class="muted small">Haven learns from what you tell it, what you change by hand, and what you undo. Nothing here acts on its own until you say yes, and you can forget anything.</p>
+        <div id="you-suggestions" class="stack"></div>
+        <div class="row-between">
+          <h2>What Haven knows about you</h2>
+          <button id="reflect-now" class="ghost">Review my day</button>
+        </div>
+        <ul id="profile" class="profile"></ul>
+        <button id="forget-all" class="ghost danger-text">Forget everything</button>
+      </div>
+
+      <div id="tab-sim" role="tabpanel" aria-labelledby="t-sim" class="tabpanel" hidden>
+        <p class="muted small" id="sim-note">No hardware is connected. Trigger a sensor and watch Haven respond.</p>
+        <div class="sim-grid" id="sim-buttons"></div>
+      </div>
+
+      <footer class="muted small" id="footer"></footer>
+      <p class="brand-mark">Meridian<span aria-hidden="true"> / </span>Interface</p>
+    </section>
+
+    <!-- The screen this panel shows, from the library -->
+    <main id="alt" class="alt" hidden></main>
+
+    <input type="file" id="night-file" accept="image/*" hidden aria-label="Bedroom photo">
+
+    <p id="showcase-banner" class="showcase-banner" role="status" hidden>Model home showcase · touch anywhere to take over</p>
+
+    <!-- Bottom: talk to Haven -->
+    <div class="voicebar">
+      <div id="chat-log" class="chat-log" role="log" aria-label="Conversation with Haven" tabindex="0" aria-live="polite" hidden></div>
+      <form id="chat-form" class="talk">
+        <span id="orb" class="orb" data-voice="idle" aria-hidden="true"></span>
+        <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <input id="chat-input" autocomplete="off" placeholder="Try &ldquo;I&rsquo;m cold&rdquo; or &ldquo;goodnight&rdquo;" aria-label="Talk to Haven">
+        <button type="button" id="mic" class="icon-btn" aria-label="Talk to Haven with your voice" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>
+        </button>
+        <button type="button" id="speak" class="icon-btn" aria-label="Haven speaks out loud" aria-pressed="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 4V6L7 10H3Zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12ZM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54Z"/></svg>
+        </button>
+        <button class="primary" type="submit">Send</button>
+      </form>
+      <p id="voice-hint" class="voice-hint" hidden></p>
+    </div>
+  </div>
+  <dialog id="explorer" class="explorer" aria-labelledby="explorer-title">
+    <div class="explorer-head">
+      <div>
+        <h2 id="explorer-title">The house</h2>
+        <p class="muted small" id="explorer-hint">Drag to look around from any angle, pinch or use + and &minus; to zoom, and tap a room for its controls.</p>
+      </div>
+      <button type="button" id="explorer-close" class="ghost">Close</button>
+    </div>
+    <div class="explorer-body">
+      <div id="explorer-map" class="map explorer-map">
+        <div class="explorer-views" role="toolbar" aria-label="House view angle">
+          <button type="button" data-hview="iso" aria-pressed="true">3D</button>
+          <button type="button" data-hview="top" aria-pressed="false">Top</button>
+          <button type="button" data-hview="front" aria-pressed="false">Front</button>
+          <button type="button" data-hview="side" aria-pressed="false">Side</button>
+          <button type="button" id="explorer-spin" aria-pressed="false">Auto-orbit</button>
+          <button type="button" id="explorer-roof" aria-pressed="true">Roof</button>
+        </div>
+        <div class="explorer-floors" id="explorer-floors" role="group" aria-label="Floors" hidden></div>
+      </div>
+      <aside id="explorer-room" class="explorer-room" aria-label="Room controls" hidden></aside>
+    </div>
+  </dialog>
+  <dialog id="camera-view" class="camera-view" aria-labelledby="camera-title">
+    <div class="cv-head">
+      <div>
+        <h2 id="camera-title">Camera</h2>
+        <p class="cv-state" id="camera-state"></p>
+      </div>
+      <button type="button" id="camera-close" class="ghost">Close</button>
+    </div>
+    <div class="cv-frame"><img id="camera-img" alt=""></div>
+    <p class="muted small" id="camera-note"></p>
+  </dialog>
+  <dialog id="library" class="library" aria-labelledby="library-title">
+    <div class="library-head">
+      <div>
+        <h2 id="library-title" class="library-title">Screen library</h2>
+        <p class="muted small">Pick the screen that suits each spot in the home. Every screen runs on the same live house, and All controls opens from any of them. Each screen has its own look; the finish below dresses Wallpaper and All controls.</p>
+      </div>
+      <button type="button" id="library-close" class="ghost" aria-label="Close the screen library">Close</button>
+    </div>
+    <div class="library-settings">
+      <label for="panel-room">This panel is in</label>
+      <select id="panel-room"></select>
+      <div class="look-switch library-look" role="group" aria-label="Finish">
+        <button type="button" data-look="grounded">Grounded</button>
+        <button type="button" data-look="futuristic">Futuristic</button>
+        <button type="button" data-look="vivid">Vivid</button>
+      </div>
+      <div class="look-switch library-look theme-switch" role="group" aria-label="Appearance">
+        <button type="button" data-theme-choice="auto">Auto</button>
+        <button type="button" data-theme-choice="light">Light</button>
+        <button type="button" data-theme-choice="dark">Dark</button>
+      </div>
+    </div>
+    <div class="library-settings library-house">
+      <p><strong>House view</strong> <span class="muted small">How the house appears on Command, the Security Console, Lagoon, All controls and full screen. Live 3D and the hologram turn and zoom; the photoreal renders are pictures of this home. Every view lights up rooms and opens them when tapped.</span></p>
+      <div class="house-gallery" id="house-gallery" role="group" aria-label="House view"></div>
+    </div>
+    <div class="library-settings library-home">
+      <p><strong>Home style</strong> <span class="muted small" id="home-preview-note"></span></p>
+      <label for="home-preview" class="visually-hidden">Home style</label>
+      <select id="home-preview"></select>
+    </div>
+    <div class="library-settings library-voice">
+      <p><strong>Haven's voice</strong> <span class="muted small" id="voice-choice-note"></span></p>
+      <label for="voice-choice" class="visually-hidden">Haven's voice</label>
+      <select id="voice-choice"></select>
+    </div>
+    <div class="library-settings library-showcase">
+      <p><strong>Model home showcase</strong> <span class="muted small">For a builder's model home. After a minute untouched, Haven gives a short live tour on the Glass screen: Welcome home, Movie night, Goodnight and Good morning, saying what it's doing. It pauses if anything needs attention. Any touch hands control back.</span></p>
+      <button type="button" id="showcase-toggle" class="switch" role="switch" aria-checked="false" aria-label="Model home showcase"></button>
+    </div>
+    <div class="library-settings library-photo">
+      <p><strong>Wallpaper photo</strong> <span class="muted small">For the Wallpaper screen. Haven's photos follow the time of day; a photo of your own stays on this panel.</span></p>
+      <label class="file-btn"><input type="file" id="wp-file" accept="image/*">Use my own photo</label>
+      <button type="button" id="wp-reset" class="ghost" hidden>Use Haven's photos</button>
+    </div>
+    <ul id="library-list" class="library-list"></ul>
+  </dialog>
+  
+</div>
+<script src="app.js"></script>
+</body>
+</html>

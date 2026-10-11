@@ -63,7 +63,7 @@ described.
 
 - **No long dashes (—) in anything a visitor reads.** They are the most-cited
   sign of AI-written copy. Use a full stop, a comma, a colon, or brackets.
-  Product titles take a colon ("FinSight: Financial & Revenue Dashboard").
+  Product titles take a colon ("Haven: AI Home Integration System").
   Code comments and the owner portal are exempt; visitors never see them.
 - **Reply promise: one business day.** Stated on the booking confirmation,
   the booking page, the saved-list fallback, the closing call to action and

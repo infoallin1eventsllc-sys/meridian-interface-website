@@ -1,0 +1,234 @@
+// Offline command parser. Used when no Claude API key is set or the internet
+// is down, so the essentials still work by text, Siri Shortcut, or watch:
+// "turn off the kitchen lights", "set the thermostat to 70", "close the
+// garage", "goodnight", "status".
+import { homeState } from "./tools.js";
+import { describeState } from "../core/controller.js";
+
+const ROOM_ALIASES = { bedroom: "primary", "master": "primary", "living room": "living", lounge: "living", outside: "exterior", porch: "exterior", driveway: "exterior", hall: "hallway" };
+
+export function createLocalAgent(home) {
+  return {
+    kind: "local",
+    async chat(text, { origin = "agent", panelRoom = null } = {}) {
+      const plan = parse(text.toLowerCase().trim(), home, { panelRoom });
+      if (!plan) {
+        return {
+          reply: "I didn't catch that. Try \"turn off the kitchen lights\", \"I'm cold\", \"close the garage\", \"goodnight\", or \"status\".",
+          actions: [],
+        };
+      }
+      if (plan.reply) return { reply: plan.reply, actions: [] };
+      const learner = home.learner;
+      if (plan.feedback) {
+        const r = await learner.feedback(plan.feedback.feeling, { room: plan.feedback.room, origin });
+        return { reply: r.message, actions: r.actions || [] };
+      }
+      if (plan.remember) return { reply: learner.remember(plan.remember.kind, plan.remember.text).message, actions: [] };
+      if (plan.profile) {
+        const summary = learner.summary();
+        return { reply: summary === "Nothing learned yet." ? "I'm still learning. Tell me when you're too warm, too cold, or when something's just right." : `Here's what I've learned:\n${summary}`, actions: [] };
+      }
+      if (plan.forgetAll) return { reply: learner.forget("all").message, actions: [] };
+      const actions = [];
+      for (const step of plan.steps) {
+        const r = step.scene
+          ? await home.controller.runScene(step.scene, origin, "Asked Haven")
+          : await home.controller.execute({ device: step.device, command: step.command, origin, reason: "Asked Haven" });
+        actions.push(r);
+      }
+      return { reply: actions.map((a) => a.message).join(" "), actions };
+    },
+    async briefing() {
+      return null; // falls back to the template briefing
+    },
+    // Offline reflection: plain pattern counting instead of reading the day.
+    async reflect(dayLog) {
+      return localReflect(dayLog);
+    },
+    reset() {},
+  };
+}
+
+// panelRoom: the room of the panel the homeowner is speaking to, used when
+// they don't name a room ("turn off the lights" at the bedroom panel).
+export function parse(t, home, { panelRoom = null } = {}) {
+  const here = (r) => r || panelRoom || null;
+  const reg = home.registry;
+  const step = (device, command) => ({ steps: [{ device, command }] });
+  const scene = (name) => ({ steps: [{ scene: name }] });
+
+  // Weather questions come first so "it's cold outside" is about the
+  // weather, not a request to turn up the heat.
+  const command = /\b(turn|switch|set|open|close|shut|lock|unlock|dim|brighten)\b/.test(t);
+  if (!command && /\b(weather|forecast|umbrella|jacket|coat)\b|\b(rain|snow|storm)(ing|y)?\b.*\b(today|tonight|tomorrow|later)\b|\b(will|is) it (going to )?(rain|snow|storm)\b|\boutside\b.*\b(cold|hot|warm|chilly|nice|like|temperature|temp)\b|\b(cold|hot|warm|chilly|nice|like|temperature|temp)\b.*\boutside\b|\bhow('?s| is) it outside\b/.test(t)) {
+    const summary = home.weather?.summary();
+    if (summary) return { reply: summary[0].toUpperCase() + summary.slice(1) };
+    const outdoor = reg.byType("temperature")[0];
+    return { reply: `${outdoor ? `The outdoor sensor reads ${outdoor.state.value}°F. ` : ""}I don't have a forecast yet: weather isn't connected. Your installer can add your location or a Home Assistant weather entity.` };
+  }
+
+  // What the homeowner feels and likes: Haven acts and remembers.
+  const hasNumber = /\d/.test(t);
+  const feeling = (words) => new RegExp(`\\b(i'?m|i am|it'?s|its|it is|feels?|getting|so|too|kind of|a bit)\\b.*\\b(${words})\\b`).test(t);
+  if (!hasNumber && feeling("cold|chilly|freezing")) return { feedback: { feeling: "too_cold" } };
+  if (!hasNumber && feeling("hot|warm|stuffy|sweating")) return { feedback: { feeling: "too_warm" } };
+  if (/\btoo bright\b|\bglare\b/.test(t)) return { feedback: { feeling: "too_bright", room: here(findRoom(t, home)) } };
+  if (/\btoo dark\b|\bcan'?t see\b/.test(t)) return { feedback: { feeling: "too_dark", room: here(findRoom(t, home)) } };
+  if (/\b(just right|perfect|feels (good|great|nice)|this is nice|i like (it|this) like this)\b/.test(t)) return { feedback: { feeling: "just_right", room: here(findRoom(t, home)) } };
+  if (/\bwhat (do you know|have you learned) about me\b|\bwhat do i like\b/.test(t)) return { profile: true };
+  if (/^forget (everything|all)\b/.test(t)) return { forgetAll: true };
+  let m;
+  if ((m = t.match(/^(?:please )?(?:remember|note) (?:that )?(.+)/))) return { remember: { kind: "note", text: m[1] } };
+  if ((m = t.match(/\bi (?:really )?(?:don'?t like|do not like|hate|dislike|can'?t stand) (.+)/))) return { remember: { kind: "dislike", text: m[1] } };
+  if ((m = t.match(/\bi (?:really )?(?:like|love|prefer|enjoy) (.+)/))) return { remember: { kind: "like", text: m[1] } };
+
+  // Scenes
+  if (/\bgood ?night\b|\bbedtime\b/.test(t)) return scene("goodnight");
+  if (/\bgood morning\b/.test(t)) return scene("morning");
+  if (/\bmovie\b/.test(t)) return scene("movie");
+  if (/\b(i'?m|we'?re) (leaving|heading out)\b|\baway mode\b/.test(t)) return scene("away");
+  if (/\b(i'?m|we'?re) home\b/.test(t)) return scene("home");
+
+  // Status
+  if (/\b(status|how'?s the house|what'?s (on|open)|everything ok)\b/.test(t)) {
+    return { reply: statusSummary(home) };
+  }
+  if (/\bis the (garage|front door|door)\b/.test(t)) {
+    const d = /garage/.test(t) && !/entry/.test(t) ? reg.get("garage.door") : reg.get("lock.front");
+    return { reply: `The ${d.name.toLowerCase()} is ${describeState(d)}.` };
+  }
+  if (/\b(temp|temperature)\b.*\?|\bhow (warm|cold|hot)\b|^(what'?s|what is|how'?s) (the |it )?(temp|temperature|inside)/.test(t)) {
+    const th = reg.byType("thermostat")[0];
+    return { reply: `It's ${th.state.current}°F inside. The thermostat is ${describeState(th)}.` };
+  }
+
+  // Garage
+  if (/\bgarage\b/.test(t) && !/\block|entry\b/.test(t) && !/lights?\b/.test(t)) {
+    if (/\bopen\b/.test(t)) return step("garage.door", { door: "open" });
+    if (/\b(close|shut)\b/.test(t)) return step("garage.door", { door: "closed" });
+  }
+
+  // Locks
+  if (/\block up\b|\block (all|everything|the doors)\b/.test(t)) {
+    return { steps: [...reg.byType("lock").map((l) => ({ device: l.id, command: { locked: true } })), { device: "garage.door", command: { door: "closed" } }] };
+  }
+  const lockMatch = t.match(/\b(unlock|lock)\b/);
+  if (lockMatch) {
+    const lock = /garage|entry/.test(t) ? "lock.garage_entry" : "lock.front";
+    return step(lock, { locked: lockMatch[1] === "lock" });
+  }
+
+  // Water
+  if (/\b(shut off|turn off|stop)\b.*\bwater\b(?! heater)/.test(t)) return step("valve.main_water", { open: false });
+  if (/\b(turn on|restore)\b.*\bwater\b(?! heater)|\bturn the (main )?water (back )?on\b/.test(t)) return step("valve.main_water", { open: true });
+  if (/\bwater heater\b/.test(t)) {
+    const n = number(t);
+    if (/vacation/.test(t)) return step("water_heater.main", { mode: "vacation" });
+    if (/\boff\b/.test(t)) return step("water_heater.main", { on: false });
+    if (n) return step("water_heater.main", { target: n });
+    if (/\bon\b/.test(t)) return step("water_heater.main", { on: true });
+  }
+
+  // Climate
+  const th = reg.byType("thermostat")[0];
+  if (/\b(thermostat|temp|temperature|heat|ac|a\/c|air)\b/.test(t) || /\b(warmer|cooler|colder)\b/.test(t)) {
+    const n = number(t);
+    if (/\b(turn off|off)\b/.test(t) && !n) return step(th.id, { mode: "off" });
+    if (/\b(turn on|start)\b/.test(t) && !n) {
+      if (/\bheat\b/.test(t)) return step(th.id, { mode: "heat" });
+      if (/\b(ac|a\/c|air|cool)\b/.test(t)) return step(th.id, { mode: "cool" });
+      return step(th.id, { mode: "auto" });
+    }
+    if (/\bwarmer\b/.test(t)) return step(th.id, { target: th.state.target + 2 });
+    if (/\b(cooler|colder)\b/.test(t)) return step(th.id, { target: th.state.target - 2 });
+    if (n) {
+      const mode = /\bheat\b/.test(t) ? "heat" : /\b(ac|a\/c|cool)\b/.test(t) ? "cool" : undefined;
+      return step(th.id, { ...(mode ? { mode } : {}), target: n });
+    }
+  }
+
+  // Lights and fans
+  const kind = /\bfans?\b/.test(t) ? "fan" : /\blights?\b|\blamps?\b|\bdim\b/.test(t) ? "light" : null;
+  if (kind) {
+    const on = /\b(off|kill)\b/.test(t) ? false : /\b(on|dim|brighten)\b|\bto \d+/.test(t) ? true : null;
+    if (on === null) return null;
+    const everywhere = /\b(all|every|everywhere|whole house)\b/.test(t);
+    let devices = reg.byType(kind);
+    // A device named outright ("porch lights", "bedroom fan") wins over a room.
+    const named = everywhere ? [] : devices.filter((d) => t.includes(d.name.toLowerCase().replace(/ (lights?|fan)$/, "")));
+    const room = everywhere || named.length ? null : findRoom(t, home);
+    if (named.length) devices = named;
+    else if (room) devices = devices.filter((d) => d.room === room);
+    else if (!everywhere && panelRoom && devices.some((d) => d.room === panelRoom)) devices = devices.filter((d) => d.room === panelRoom);
+    else if (!everywhere) {
+      // No room named and no panel room: use where motion was seen in the last 15 minutes.
+      const cutoff = new Date(Date.now() - 15 * 60_000).toISOString();
+      const recent = reg.byType("motion").filter((m) => m.state.lastMotion && m.state.lastMotion > cutoff)
+        .sort((a, b) => b.state.lastMotion.localeCompare(a.state.lastMotion))[0];
+      devices = recent ? devices.filter((d) => d.room === recent.room) : [];
+      if (!devices.length) {
+        const rooms = [...new Set(reg.byType(kind).map((d) => home.config.rooms.find((r) => r.id === d.room)?.name || d.room))];
+        return { reply: `Which room? I have ${kind}s in: ${rooms.join(", ")}.` };
+      }
+    }
+    const n = number(t);
+    const command = { on, ...(on && n !== null && kind === "light" ? { brightness: Math.min(100, n) } : {}), ...(on && n !== null && kind === "fan" ? { speed: Math.min(3, n) } : {}) };
+    return { steps: devices.map((d) => ({ device: d.id, command })) };
+  }
+
+  return null;
+}
+
+function findRoom(t, home) {
+  for (const [alias, id] of Object.entries(ROOM_ALIASES)) if (t.includes(alias)) return id;
+  for (const r of home.config.rooms) if (t.includes(r.id) || t.includes(r.name.toLowerCase())) return r.id;
+  return null;
+}
+
+function number(t) {
+  const m = t.match(/\b(\d{1,3})\b/);
+  return m ? Number(m[1]) : null;
+}
+
+export function statusSummary(home) {
+  const reg = home.registry;
+  const th = reg.byType("thermostat")[0];
+  const garage = reg.byType("garage")[0];
+  const unlocked = reg.byType("lock").filter((l) => !l.state.locked);
+  const lightsOn = reg.byType("light").filter((l) => l.state.on);
+  const wet = reg.byType("leak").filter((l) => l.state.wet);
+  const valve = reg.byType("water_valve")[0];
+  const parts = [];
+  if (wet.length) parts.push(`LEAK: ${wet.map((w) => w.name).join(", ")}.`);
+  if (valve && !valve.state.open) parts.push("Main water is off.");
+  parts.push(`It's ${th.state.current}°F inside (${th.state.mode}, set to ${th.state.target}°F).`);
+  parts.push(`Garage is ${garage.state.door}.`);
+  parts.push(unlocked.length ? `Unlocked: ${unlocked.map((l) => l.name).join(", ")}.` : "All doors locked.");
+  parts.push(lightsOn.length ? `Lights on: ${lightsOn.map((l) => l.name.replace(/ Lights$/, "")).join(", ")}.` : "All lights off.");
+  return parts.join(" ");
+}
+
+export { homeState };
+
+const FEELING_NOTES = {
+  too_cold: "often feels cold", too_warm: "often feels warm",
+  too_bright: "often finds the lights too bright", too_dark: "often finds it too dark",
+};
+const BLOCK_WORDS = { morning: "in the morning", day: "during the day", evening: "in the evening", night: "at night" };
+
+// Two or more of the same comfort complaint in the same part of the day
+// becomes a note, so briefings and the AI know about it.
+export function localReflect({ feedback = [], known = "" }) {
+  const counts = {};
+  for (const f of feedback) {
+    if (!FEELING_NOTES[f.feeling]) continue;
+    const k = `${f.feeling}|${f.block}`;
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  const notes = Object.entries(counts).filter(([, n]) => n >= 2).map(([k]) => {
+    const [feeling, block] = k.split("|");
+    return `${FEELING_NOTES[feeling][0].toUpperCase()}${FEELING_NOTES[feeling].slice(1)} ${BLOCK_WORDS[block] || ""}`.trim();
+  }).filter((n) => !known.includes(n));
+  return { notes, likes: [], dislikes: [], suggestions: [] };
+}

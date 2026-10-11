@@ -1,0 +1,77 @@
+// Builds the browser-only Haven demos: one self-contained page per look.
+//   npm run build:demo  ->  dist/demo/haven-futuristic.html, haven-grounded.html
+// Each page inlines the CSS and the bundled app, so it can be hosted anywhere
+// (or published as a shareable link) without the home server.
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { build } from "esbuild";
+
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const out = path.join(root, "dist/demo");
+fs.mkdirSync(out, { recursive: true });
+
+const shims = path.join(root, "web/demo/shims.js");
+const result = await build({
+  entryPoints: [path.join(root, "web/demo/entry.js")],
+  bundle: true,
+  format: "iife",
+  platform: "browser",
+  target: "es2022",
+  minify: true,
+  define: { "import.meta.url": JSON.stringify("https://haven.demo/") },
+  write: false,
+  loader: { ".webp": "dataurl" }, // the demo's sample camera pictures (web/demo/cameras)
+  alias: { "node:events": shims, "node:fs": shims, "node:path": shims, fs: shims, path: shims },
+  plugins: [{
+    // The Claude agent needs a server-side API key; the demo never loads it.
+    name: "no-claude-in-browser",
+    setup(b) {
+      b.onResolve({ filter: /claude\.js$/ }, () => ({ path: "claude-disabled", namespace: "stub" }));
+      b.onLoad({ filter: /.*/, namespace: "stub" }, () => ({ contents: "export async function createClaudeAgent() { throw new Error('Claude is not available in the demo.'); }" }));
+    },
+  }],
+});
+const js = result.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
+// The Wallpaper screen's photos go inline too, so the page needs no files.
+const css = fs.readFileSync(path.join(root, "web/styles.css"), "utf8").replace(/url\("(wallpapers\/[\w-]+\.webp)"\)/g, (_, rel) =>
+  `url("data:image/webp;base64,${fs.readFileSync(path.join(root, "web", rel)).toString("base64")}")`);
+const html = fs.readFileSync(path.join(root, "web/index.html"), "utf8");
+const body = html.split("<!--haven:body-->")[1].split("<!--/haven:body-->")[0];
+
+const looks = {
+  futuristic: { title: "Haven Futuristic Demo" },
+  grounded: { title: "Haven Grounded Demo" },
+  vivid: { title: "Haven Vivid Demo" },
+};
+for (const [look, { title }] of Object.entries(looks)) {
+  const page = `<title>${title}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&family=Exo+2:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Jost:wght@300;400;500;600&family=Lexend:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=Roboto:wght@400;500;700&family=Saira+Condensed:wght@600;700&family=Saira:wght@400;500;600;700&display=swap">
+<style>
+${css}
+</style>
+<script>
+(function () {
+  var look = "${look}", theme = null;
+  var screen = location.hash.replace("#", "");
+  // ?look= (the website and showroom set it on each panel they open) wins over the saved finish.
+  var asked = new URLSearchParams(location.search).get("look");
+  try { look = localStorage.getItem("haven.look") || look; theme = localStorage.getItem("haven.theme"); screen = screen || localStorage.getItem("haven.screen") || ""; } catch (e) {}
+  if (asked === "grounded" || asked === "futuristic" || asked === "vivid") look = asked;
+  // The finish dresses the Wallpaper screen; the panel keeps the choice for when it's shown.
+  document.documentElement.setAttribute("data-look", screen === "wallpaper" ? look : "grounded");
+  window.__havenLook = look;
+  if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+  if (!document.documentElement.lang) document.documentElement.lang = "en";
+})();
+</script>
+${body}
+<script>
+${js}
+</script>
+`;
+  fs.writeFileSync(path.join(out, `haven-${look}.html`), page);
+  console.log(`dist/demo/haven-${look}.html  ${(page.length / 1024).toFixed(0)} KB`);
+}

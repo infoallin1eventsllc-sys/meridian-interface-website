@@ -16,14 +16,16 @@ export const HOTLINK_IMAGES = {
   globalEarthBg: '/images/hero-earth.jpg',
   // The service cards show the products Meridian actually built — the same
   // screenshots the portfolio uses — not concept renders. A service card that
-  // shows a fictional client's dashboard says less than one that shows FinSight.
+  // shows a fictional client's dashboard says less than one that shows the
+  // studio's own. FinSight was the dashboard here until Haven replaced its tile
+  // (11 Oct); the Analytics Hub is the dashboard still on the site.
   webDesign: '/images/portfolio/modern-street.jpg',
   // Was the private-banking concept, removed 17 Sep. The studio has no
   // app-design PRODUCT to show, so this is the nearest true thing: the frame
   // shop's own site photographed on a phone, which is real work and really is
   // a mobile interface. Swap it the day an actual app ships.
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
-  dashboardDesign: '/images/portfolio/finsight-bi.jpg',
+  dashboardDesign: '/images/portfolio/analytics-hub.jpg',
   // Not agentic-tech-stack.jpg: that is the Stack Planner section's own
   // picture on the home page, and the card sat directly above it. A workflow
   // running is also the truer picture of "tools wired together".
@@ -211,23 +213,28 @@ export const PORTFOLIO: PortfolioItem[] = [
     highlights: ['Live 3D show conductor for 100–500 aircraft', 'Survey measurements from the map', 'Aircraft health that names the failing part']
   },
   {
-    id: 'p7',
-    title: 'FinSight: Financial & Revenue Dashboard',
+    // Haven replaced FinSight here on 11 Oct (Otis's call). A new id, not p7:
+    // p7 still carries a Photo Control upload of FinSight in
+    // settings.image_overrides, which would cover Haven's own pictures.
+    id: 'p12',
+    title: 'Haven: AI Home Integration System',
     explainerId: 'exp_web_app',
-    category: 'dashboards',
-    categoryLabel: 'Financial Dashboard',
-    client: 'Finance',
+    category: 'systems',
+    categoryLabel: 'AI Home System',
+    client: 'Meridian Interface',
     year: '2026',
-    demo: '/demos/finsight/',
-    image: '/images/portfolio/finsight-bi.jpg',
+    demo: '/demos/haven/',
+    image: '/images/portfolio/haven-ai-home.jpg',
     gallery: [
-      { src: '/images/portfolio/finsight-bi.jpg', caption: 'Executive summary: every figure against its target' },
-      { src: '/images/portfolio/finsight-bi-revenue.jpg', caption: 'Revenue, with the forecast separated from what actually happened' },
-      { src: '/images/portfolio/finsight-bi-forecast.jpg', caption: 'Profit and loss, with forecasts' },
-      { src: '/images/portfolio/finsight-bi-treasury.jpg', caption: 'Treasury and currency exposure' },
+      { src: '/images/portfolio/haven-ai-home.jpg', caption: 'Glass: the time, what Haven has noticed, the house, and a line to talk to it' },
+      { src: '/images/portfolio/haven-ai-home-wallpaper.jpg', caption: 'Wallpaper in the Vivid finish: every control, room by room, over a picture of the home' },
+      { src: '/images/portfolio/haven-ai-home-security.jpg', caption: 'Security console: doors, locks and the main water shutoff, with the cameras (sample pictures)' },
+      { src: '/images/portfolio/haven-ai-home-command.jpg', caption: 'Command: scenes, weather, the thermostat and a map of the house' },
+      { src: '/images/portfolio/haven-ai-home-lagoon.jpg', caption: 'Lagoon: the forecast, the house in 3D, and a choice of voices' },
+      { src: '/images/portfolio/haven-ai-home-evening.jpg', caption: 'Good Evening: climate, the water heater, the forecast and scenes on one screen' },
     ],
-    summary: 'The numbers a finance lead checks on a Monday, on one screen: revenue as it lands, each figure against its target, profit and loss with the forecast kept visibly separate from the actuals, cash runway, and currency exposure.',
-    highlights: ['Every figure against target', 'Forecast kept apart from actuals', 'Board presentation mode']
+    summary: 'An AI agent for the whole house: lights, fans, heating and cooling, the water heater, the main water shutoff, the garage and the locks, with motion, leak and door sensors. It asks before anything risky, sends short updates through the day, and learns how the household likes things. The demo runs on a simulated house in the browser and answers with Haven\'s built-in command reader; the full AI agent runs on the home\'s own server.',
+    highlights: ['Asks before anything risky, like opening the garage', 'Ten screens for different spots in the home', 'Try it: type "goodnight" or "I\'m cold"']
   },
   {
     id: 'p8',

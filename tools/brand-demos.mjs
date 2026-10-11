@@ -30,6 +30,7 @@ const LABEL = {
   'big-boy-subs': 'Big Boy Subs — restaurant ordering site',
   healthcare: 'CarePulse — doctor-patient healthcare dashboard',
   'drone-command': 'Meridian Interface Drone Command — drone operations console',
+  haven: 'Haven — AI home integration system',
 };
 
 const styles = `

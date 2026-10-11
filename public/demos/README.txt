@@ -5,7 +5,8 @@ this path so clients can click through it without a domain or a hosting project
 of its own:
 
   /demos/stack-planner/  -> planner/            (this repo)
-  /demos/finsight/       -> FinSight BI dashboard
+  /demos/finsight/       -> FinSight BI dashboard (no longer linked: its tile became Haven on 11 Oct; still hosted until Otis decides)
+  /demos/haven/          -> Haven, AI home integration system (source: haven/, build: node haven/scripts/build-meridian.mjs)
   /demos/frame-shop/     -> frame-shop/          (this repo)
   /demos/orchestra/      -> ORCHESTRA cloud console
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
