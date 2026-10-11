@@ -226,14 +226,14 @@ export const PORTFOLIO: PortfolioItem[] = [
     demo: '/demos/haven/',
     image: '/images/portfolio/haven-ai-home.jpg',
     gallery: [
-      { src: '/images/portfolio/haven-ai-home.jpg', caption: 'Glass: the time, what Haven has noticed, the house, and a line to talk to it' },
+      { src: '/images/portfolio/haven-ai-home.jpg', caption: 'The Haven website opens on its film: the home drawn in light before it is built' },
+      { src: '/images/portfolio/haven-ai-home-screens.jpg', caption: 'Ten panel screens, each made for a different room, with the live panel beside them' },
+      { src: '/images/portfolio/haven-ai-home-package.jpg', caption: 'The security package: cameras, doorbell, locks and sensors on one panel, phone and watch' },
+      { src: '/images/portfolio/haven-ai-home-glass.jpg', caption: 'The Glass screen: the time, what Haven has noticed, the house, and a line to talk to it' },
       { src: '/images/portfolio/haven-ai-home-wallpaper.jpg', caption: 'Wallpaper in the Vivid finish: every control, room by room, over a picture of the home' },
       { src: '/images/portfolio/haven-ai-home-security.jpg', caption: 'Security console: doors, locks and the main water shutoff, with the cameras (sample pictures)' },
-      { src: '/images/portfolio/haven-ai-home-command.jpg', caption: 'Command: scenes, weather, the thermostat and a map of the house' },
-      { src: '/images/portfolio/haven-ai-home-lagoon.jpg', caption: 'Lagoon: the forecast, the house in 3D, and a choice of voices' },
-      { src: '/images/portfolio/haven-ai-home-evening.jpg', caption: 'Good Evening: climate, the water heater, the forecast and scenes on one screen' },
     ],
-    summary: 'An AI agent for the whole house: lights, fans, heating and cooling, the water heater, the main water shutoff, the garage and the locks, with motion, leak and door sensors. It asks before anything risky, sends short updates through the day, and learns how the household likes things. The demo runs on a simulated house in the browser and answers with Haven\'s built-in command reader; the full AI agent runs on the home\'s own server.',
+    summary: 'The complete Haven website: a film of the home drawn in light, ten wall-panel screens to choose from, the live panel running on a simulated house, a guided tour, the security package, a sample home and a walkthrough booking form. Haven itself is an AI agent for the whole house that runs the lights, climate, water, garage and locks, asks before anything risky, and learns how the household likes things. The live panel answers with Haven\'s built-in command reader; the full AI agent runs on the home\'s own server.',
     highlights: ['Asks before anything risky, like opening the garage', 'Ten screens for different spots in the home', 'Try it: type "goodnight" or "I\'m cold"']
   },
   {

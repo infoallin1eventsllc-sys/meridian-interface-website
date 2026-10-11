@@ -3,13 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#17130f">
-<meta name="description" content="Haven, an AI agent for the whole house, running on a simulated home: lights, climate, water, garage and locks, with briefings and a safety controller. A Meridian Interface demo.">
-<title>Haven: AI Home Integration Demo</title>
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="styles.css">
-<script src="boot.js"></script>
+<title>Meridian Interface</title>
+<meta name="description" content="Meridian Interface designs homes in light and builds Haven into them: an AI home agent with a wall panel for every room, that runs the house, watches over it, and never unlocks a door without you.">
+<meta property="og:title" content="Meridian Interface">
+<meta property="og:description" content="Homes designed in light, with Haven, the AI home agent, built in.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="poster.jpg">
+<meta property="og:image:alt" content="A home drawn in light by the Meridian Interface film.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="author" content="Meridian Interface">
+<meta name="theme-color" content="#f4f5f7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1c2e'/%3E%3Cpath d='M7 23V9l9 8 9-8v14' fill='none' stroke='%23f4f5f7' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="site.css">
+<style id="haven-under-meridian-bar">
+  .nav { top: calc(var(--meridian-bar, 0px) + env(safe-area-inset-top, 0px)); }
+  .faq-wrap .head { top: calc(var(--meridian-bar, 0px) + var(--nav-h) + 24px); }
+</style>
 
 <style id="meridian-demo-bar-style">
   :root { --meridian-bar: 46px; }
@@ -77,213 +87,447 @@
   <a class="mb-home" href="/"><span class="mb-long">meridianinterface.com &rarr;</span><span class="mb-short">Meridian &rarr;</span></a>
 </div>
 <div id="root">
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <a class="brand" href="#top">Meridian<span>&nbsp;/&nbsp;</span>Interface</a>
+  <button class="btn quiet small menu" id="menu" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+  <nav aria-label="Main">
+    <ul id="nav-links">
+      <li><a href="#haven">Haven</a></li>
+      <li><a href="#screens">Screens</a></li>
+      <li><a href="#live">Live demo</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#homes">Homes</a></li>
+      <li><a href="#builders">Builders</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+  <a class="btn solid small" href="#contact">Book a walkthrough</a>
+</header>
 
-  <div id="login" class="login" hidden>
-    <form id="login-form" class="glass-card">
-      <h1>Haven</h1>
-      <p class="muted">Enter the owner token printed when the home server first started.</p>
-      <input id="token-input" type="password" autocomplete="current-password" placeholder="Owner token" aria-label="Owner token" required>
-      <button type="submit" class="primary">Connect</button>
-      <p id="login-error" class="error" role="alert"></p>
-    </form>
-  </div>
-
-  <div id="app" class="panel" data-daypart="evening" hidden>
-    <!-- All controls (opened from any screen): the room, the greeting, the house status and
-         the time on the left; every device, Updates, About you and the simulator on the right. -->
-    <section class="stage" aria-label="Home status">
-      <div class="stage-top">
-        <button type="button" id="controls-close" class="controls-close">Back</button>
-        <nav id="rooms-nav" class="rooms-nav" aria-label="Rooms"></nav>
+<main id="main">
+  <section class="hero" id="top" aria-label="The Meridian Interface film">
+    <video id="film" poster="poster.jpg" muted playsinline loop preload="metadata" aria-label="The Meridian Interface film: a home designs itself as a hologram, becomes real, and its guide walks the owners through to the wall panel">
+      <source src="meridian-film-hero.mp4" type="video/mp4">
+      <source src="meridian-film-hero.webm" type="video/webm">
+    </video>
+    <p class="cc-line" id="cc-line" hidden></p>
+    <div class="hero-copy">
+      <div class="hero-title">
+        <p class="eyebrow">A Meridian Interface build, with Haven inside</p>
+        <h1>We protect<br> <em>the ones you love.</em></h1>
       </div>
-      <div id="map" class="map"></div>
-      <div class="stage-body">
-        <p id="home-name" class="eyebrow">Haven</p>
-        <h1 id="room-title">Whole home</h1>
-        <p id="greeting" class="greeting"></p>
-        <div id="status" class="status" data-state="ok" aria-live="polite">
-          <span class="status-mark" aria-hidden="true"></span>
-          <div class="status-text">
-            <p id="status-headline" class="status-headline">All secure</p>
-            <ul id="issues" class="issues"></ul>
+      <div class="hero-act">
+        <p class="lede">Homes designed in light, with Haven built in from the first line of the plan. It runs the house, watches over it, and never unlocks a door without you.</p>
+        <div class="row">
+          <button class="btn solid" id="film-sound" type="button">Watch the full film with sound</button>
+          <a class="btn" href="#screens">Choose your screens</a>
+          <button class="btn quiet small" id="film-pause" type="button" aria-pressed="false">Pause</button>
+          <button class="btn quiet small" id="film-cc" type="button" aria-pressed="false" hidden>Captions</button>
+        </div>
+        <p class="film-note" id="film-note">This is a short cut of the film. The full film is 1:19, with the guide&rsquo;s voice.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="haven" aria-labelledby="haven-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Haven &middot; the AI home agent</p>
+        <h2 id="haven-h">Everything the guide promised is <em>something Haven does.</em></h2>
+        <p>Haven runs on a small server in the home and a wall panel in each room you choose. It talks with the family, watches the house and learns what each person likes.</p>
+      </div>
+      <figure class="shot-wide">
+        <img src="img/every-screen.webp" alt="Haven on an iPad showing the thermostat and lights, a laptop showing the front porch camera and every door and sensor, an Apple Watch showing the front door locked, and a phone showing a doorbell alert." width="1344" height="752" loading="lazy">
+        <figcaption>One house on every screen: the wall panels, a laptop, an iPad, an iPhone and an Apple Watch, in any browser.</figcaption>
+      </figure>
+      <ul class="features">
+        <li><h3>Talks and listens</h3><p>Push to talk on any panel. It answers in <a href="#voices">the voice you choose</a>.</p></li>
+        <li><h3>Watches the electricity</h3><p>Today&rsquo;s use on the panel, from an energy monitor or clearly marked as an estimate. On your way out, the Security Console shows what&rsquo;s still on.</p></li>
+        <li><h3>Learns your comfort</h3><p>Say &ldquo;I&rsquo;m cold&rdquo; and it warms the room now, and remembers it for that time of day.</p></li>
+        <li><h3>Briefs you</h3><p>A morning and evening summary: the house, the forecast once a weather source is connected, and anything that needs you.</p></li>
+        <li><h3>Goes where you go</h3><p>Talk to Haven, run scenes and hear its briefings from an iPhone, an Apple Watch or the car, through Siri.</p></li>
+        <li><h3>Shows off the model home</h3><p>On a model-home panel, Haven runs its scenes on its own between visitors, and stops the moment someone touches the screen.</p></li>
+      </ul>
+
+      <div class="voices" id="voices">
+        <div class="sub">
+          <h3>Choose Haven&rsquo;s voice</h3>
+          <p>Every Haven home speaks in the voice its family picks. Play each one and choose yours: we&rsquo;ll set it up in your home, and you can change it any time from the panel.</p>
+        </div>
+        <fieldset class="voice-pick">
+          <legend class="sr">Haven&rsquo;s voice</legend>
+          <div class="voice">
+            <input type="radio" name="voice" id="v-lily" value="Lily D">
+            <label for="v-lily"><b>Lily D</b><span>Clear, calm and warm &middot; American woman</span></label>
+            <button class="play" type="button" data-src="voices/lily.mp3" aria-label="Play Lily D" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+            <small>Haven speaking</small>
+          </div>
+          <div class="voice">
+            <input type="radio" name="voice" id="v-sia" value="Sia">
+            <label for="v-sia"><b>Sia</b><span>Warm and gentle &middot; American woman</span></label>
+            <button class="play" type="button" data-src="voices/sia.mp3" aria-label="Play Sia" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+            <small>Her own sample</small>
+          </div>
+          <div class="voice">
+            <input type="radio" name="voice" id="v-richard" value="Richard">
+            <label for="v-richard"><b>Richard</b><span>Deep and velvety &middot; American man</span></label>
+            <button class="play" type="button" data-src="voices/richard.mp3" aria-label="Play Richard" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+            <small>His own sample</small>
+          </div>
+          <div class="voice">
+            <input type="radio" name="voice" id="v-charlotte" value="Charlotte">
+            <label for="v-charlotte"><b>Charlotte</b><span>Smooth and relaxed &middot; British woman</span></label>
+            <button class="play" type="button" data-src="voices/charlotte.mp3" aria-label="Play Charlotte" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+            <small>Her own sample</small>
+          </div>
+        </fieldset>
+        <p class="voice-note" id="voice-note" role="status">Pick a voice and it goes with your walkthrough request.</p>
+        <p class="voice-fine">These natural voices come with Haven&rsquo;s premium voice. Without it, panels use the tablet&rsquo;s own voice.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens" aria-labelledby="screens-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Choose a screen for every room</p>
+        <h2 id="screens-h">Ten screens, each made for <em>a different room.</em></h2>
+        <p>Every Haven panel runs the same house and the same agent. What changes is what it shows first, and how it looks. Pick a room to see the screen we recommend for it.</p>
+      </div>
+      <div class="chooser">
+        <div class="rooms" role="tablist" aria-label="Rooms" aria-orientation="vertical" id="rooms"></div>
+        <div class="pick" role="tabpanel" id="pick" aria-live="polite">
+          <figure class="shot"><img id="pick-img" alt="" width="1440" height="900"></figure>
+          <div class="row spread">
+            <div class="finishes" role="group" aria-label="Finish" id="finishes"></div>
+            <div class="row">
+              <button class="btn small" id="pick-live" type="button">Try this screen live</button>
+            </div>
+          </div>
+          <div class="pick-info">
+            <div class="stack">
+              <h3 id="pick-name"></h3>
+              <p class="best" id="pick-best"></p>
+              <p id="pick-about"></p>
+            </div>
+            <ul id="pick-has"></ul>
           </div>
         </div>
       </div>
-      <div class="stage-foot">
-        <div>
-          <p id="clock" class="clock">--:--</p>
-          <p id="date" class="muted small"></p>
+      <noscript><p class="muted">The room chooser needs JavaScript. The <a href="library.html">screen library</a> shows every screen without it.</p></noscript>
+    </div>
+  </section>
+
+  <section id="live" aria-labelledby="live-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Live demo</p>
+        <h2 id="live-h">Use the wall panel <em>right here.</em></h2>
+        <p>This is the real panel software, running on a simulated house. Type &ldquo;I&rsquo;m cold&rdquo; or &ldquo;goodnight&rdquo;, tap a light, ask it to open the garage and watch it ask you first.</p>
+      </div>
+      <div class="live-bar">
+        <div class="chip-set"><span class="chip-label" id="live-finishes-l">Finish</span><div class="chips" role="group" aria-labelledby="live-finishes-l" id="live-finishes"></div></div>
+        <div class="chip-set"><span class="chip-label" id="live-screens-l">Screen</span><div class="chips" role="group" aria-labelledby="live-screens-l" id="live-screens"></div></div>
+      </div>
+      <div class="frame" id="frame">
+        <div class="start" id="frame-start">
+          <p>It runs right here in your browser, on a simulated house.</p>
+          <div class="row center">
+            <button class="btn solid" id="frame-load" type="button">Start the live panel</button>
+            <a class="btn quiet" href="tour.html">Take the guided tour instead</a>
+          </div>
         </div>
-        <div class="stage-tools">
-          <button type="button" class="screens-open" aria-haspopup="dialog">Screens</button>
-          <span id="conn" class="conn" role="img" aria-label="Live connection"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="security" class="protection" aria-labelledby="security-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Security</p>
+        <h2 id="security-h">Everything that protects the home, <em>on one panel.</em></h2>
+        <p class="lede">Cameras inside and out, the video doorbell, keypad locks, door, window and motion sensors, and leak protection. Installed with the home, and all on the same wall panel, phone and watch.</p>
+      </div>
+
+      <figure class="shot-wide">
+        <img src="img/package.webp" alt="The security package: a wall panel showing Meridian Interface above the house, outdoor and indoor cameras, a video doorbell, a keypad lock, a smoke and carbon monoxide alarm, door, motion and leak sensors, the home server, and a phone and watch showing an alert from the front door camera." width="1344" height="752">
+        <figcaption>One package, one design: every device answers to the same panel and the same app. Smoke and CO alerts are coming soon.</figcaption>
+      </figure>
+
+      <div class="orbit" id="orbit">
+        <div class="o-head">
+          <h3>Every piece, up close</h3>
+          <p>Pick a piece of the package to see it in the studio with the devices it works with.</p>
+        </div>
+        <div class="o-body">
+          <div class="studio" id="studio" role="img" aria-label="">
+            <span class="o-mark" aria-hidden="true">MERIDIAN</span><span class="o-count" id="o-count" aria-hidden="true"></span>
+            <figure class="dev m a"><img alt="" id="o-a"></figure>
+            <figure class="dev m b"><img alt="" id="o-b"></figure>
+            <figure class="dev m c"><img alt="" id="o-c"></figure>
+            <figure class="dev o-hero"><img alt="" id="o-hero"></figure>
+            <span class="plate l" aria-hidden="true"></span><span class="plate r" aria-hidden="true"></span>
+          </div>
+          <div class="o-info" id="o-info">
+            <div class="o-picker" role="tablist" aria-label="Pieces of the security package" id="o-picker"></div>
+            <div class="o-panel" id="o-panel" role="tabpanel" aria-live="polite">
+              <p class="kicker o-swap" id="o-kick"></p>
+              <p class="o-name o-swap" id="o-name"></p>
+              <p class="o-lede o-swap" id="o-lede"></p>
+              <ul class="o-does o-swap" id="o-does"></ul>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Right: controls on frosted glass -->
-    <section class="glass" aria-label="Controls">
-      <nav class="tabs" role="tablist" aria-label="Panel sections">
-        <button role="tab" id="t-home" aria-controls="tab-home" aria-selected="true" data-tab="home">Home</button>
-        <button role="tab" id="t-updates" aria-controls="tab-updates" aria-selected="false" data-tab="updates">Updates</button>
-        <button role="tab" id="t-you" aria-controls="tab-you" aria-selected="false" data-tab="you">About you <span id="you-badge" class="badge" hidden></span></button>
-        <button role="tab" id="t-sim" aria-controls="tab-sim" aria-selected="false" data-tab="sim" hidden>Simulator</button>
-      </nav>
-
-      <div id="tab-home" role="tabpanel" aria-labelledby="t-home" class="tabpanel">
-        <div id="suggestions" class="stack"></div>
-        <div id="pending" class="stack" aria-live="assertive"></div>
-        <section class="block">
-          <h2>Scenes</h2>
-          <div id="scenes" class="scenes"></div>
-        </section>
-        <section class="block">
-          <h2 id="devices-title">Devices</h2>
-          <div id="tiles" class="tiles"></div>
-          <p id="sensors" class="sensors"></p>
-        </section>
-        <section class="block">
-          <h2>How does it feel?</h2>
-          <div id="feel" class="feel" role="group" aria-label="Tell Haven how it feels"></div>
-        </section>
-      </div>
-
-      <div id="tab-updates" role="tabpanel" aria-labelledby="t-updates" class="tabpanel" hidden>
-        <div class="row-between">
-          <h2>Updates</h2>
-          <button id="brief-now" class="ghost">Brief me now</button>
+      <div class="rule">
+        <h3>A rule in the code, not the brochure</h3>
+        <div class="security">
+          <div class="stack wide">
+            <blockquote>&ldquo;I&rsquo;ll never unlock a door or open the garage unless you say so.&rdquo;</blockquote>
+            <pre>// The AI's tools have no way to set this
+<b>unlock</b>       &rarr; waits for a person's yes
+<b>garage open</b>  &rarr; waits for a person's yes
+<b>water on</b>     &rarr; waits for a person's yes
+<b>water heater</b> &rarr; never above 125&deg;F</pre>
+          </div>
+          <ul class="checks">
+            <li><h3>Ready, at a glance</h3><p>Every security card leads with one line: Ready, or exactly what&rsquo;s open, or where the leak is.</p></li>
+            <li><h3>Home, Night or Away</h3><p>The panel shows the mode the house is in, from who&rsquo;s home and the hour.</p></li>
+            <li><h3>Every zone, grouped</h3><p>Entry points, water and motion, each with a plain state word. Color is never the only signal.</p></li>
+          </ul>
         </div>
-        <ol id="feed" class="feed"></ol>
       </div>
 
-      <div id="tab-you" role="tabpanel" aria-labelledby="t-you" class="tabpanel" hidden>
-        <p class="muted small">Haven learns from what you tell it, what you change by hand, and what you undo. Nothing here acts on its own until you say yes, and you can forget anything.</p>
-        <div id="you-suggestions" class="stack"></div>
-        <div class="row-between">
-          <h2>What Haven knows about you</h2>
-          <button id="reflect-now" class="ghost">Review my day</button>
+      <div class="house-map">
+        <div class="sub">
+          <h3>One system covers the whole house</h3>
+          <p>Each part of the home has its own protection, and Haven sees all of it at once.</p>
         </div>
-        <ul id="profile" class="profile"></ul>
-        <button id="forget-all" class="ghost danger-text">Forget everything</button>
+        <figure class="map-fig" role="img" aria-label="A cutaway of the home with a numbered marker where each device goes; the list below names each one.">
+          <img src="img/house.webp" alt="" width="1600" height="905"><span class="mark" style="--x:49%;--y:79%" aria-hidden="true">1</span><span class="mark" style="--x:24%;--y:84%" aria-hidden="true">2</span><span class="mark" style="--x:45.5%;--y:56%" aria-hidden="true">3</span><span class="mark fire" style="--x:47%;--y:41%" aria-hidden="true">4</span><span class="mark" style="--x:23%;--y:24%" aria-hidden="true">5</span><span class="mark" style="--x:64%;--y:9%" aria-hidden="true">6</span><span class="mark" style="--x:73%;--y:29%" aria-hidden="true">7</span><span class="mark" style="--x:43%;--y:27%" aria-hidden="true">8</span><span class="mark" style="--x:88.5%;--y:54%" aria-hidden="true">9</span><span class="mark" style="--x:80%;--y:64%" aria-hidden="true">10</span><span class="mark" style="--x:36.5%;--y:43%" aria-hidden="true">11</span><span class="mark" style="--x:13%;--y:56%" aria-hidden="true">12</span>
+        </figure>
+        <ol class="legend"><li><b>Front door</b><span>A keypad lock and the video doorbell. A ring puts the picture on the panel, your phone and your watch.</span></li><li><b>Garage door</b><span>Open or close it from anywhere. If it&rsquo;s left open and nobody is home, it closes itself.</span></li><li><b>Wall panel</b><span>The whole house at a glance: one line says Ready, or exactly what&rsquo;s open.</span></li><li><b>Smoke and CO alarm</b><span>Coming soon: smoke and carbon monoxide alerts on every panel, phone and watch.</span></li><li><b>Leak sensor and water shutoff</b><span>A leak closes the main water and turns off the water heater before anyone reads a message.</span></li><li><b>Outdoor camera</b><span>Watches the garden and the back doors, live on the panel and any screen.</span></li><li><b>Motion sensor</b><span>Knows which rooms are in use, and turns the lights on after dark.</span></li><li><b>Thermostat</b><span>Learns what each person likes, and sets the house back when you leave.</span></li><li><b>Window sensors</b><span>Every window and door, in one status line. Home, Night or Away follows who&rsquo;s home and the hour.</span></li><li><b>Lights</b><span>Scenes for morning, night and leaving, by touch or by voice.</span></li><li><b>Home server</b><span>Runs Haven inside the home, and keeps working if the internet drops.</span></li><li><b>Energy</b><span>Today&rsquo;s electricity use, and what&rsquo;s still on when you head out.</span></li></ol>
       </div>
 
-      <div id="tab-sim" role="tabpanel" aria-labelledby="t-sim" class="tabpanel" hidden>
-        <p class="muted small" id="sim-note">No hardware is connected. Trigger a sensor and watch Haven respond.</p>
-        <div class="sim-grid" id="sim-buttons"></div>
+      <div class="feature-row">
+        <figure><img src="img/cameras.webp" alt="Outdoor security cameras with the home hub on a glowing blue horizon." width="1344" height="752"></figure>
+        <div class="txt">
+          <h3>See every corner. <em>Keep every picture at home.</em></h3>
+          <p>Cameras cover the yard, the drive and every door, and the pictures they take stay in the house.</p>
+          <ul>
+            <li><span><b>Live on any screen.</b> The wall panels, your phone, a tablet or a computer.</span></li>
+            <li><span><b>The doorbell shows who&rsquo;s there.</b> The panel by the door opens the camera, and your phone and Apple Watch get the picture, even in quiet hours.</span></li>
+            <li><span><b>Private by design.</b> Pictures are kept in the home and never go to the AI.</span></li>
+          </ul>
+        </div>
       </div>
 
-      <footer class="muted small" id="footer"></footer>
-      <p class="brand-mark">Meridian<span aria-hidden="true"> / </span>Interface</p>
-    </section>
+      <div class="feature-row flip">
+        <figure><img src="img/fire.webp" alt="A hallway at night with the smoke alarm glowing red and the wall panel reading Smoke detected, Hallway, and Lights on to light your way out." width="1344" height="752"></figure>
+        <div class="txt">
+          <p class="kicker">Coming soon</p>
+          <h3>Smoke or carbon monoxide: <em>the house will move first.</em></h3>
+          <p>We&rsquo;re adding smoke and carbon monoxide alarms to the package. The alarm sounds as it always does, and Haven will make sure everyone knows and can see the way out.</p>
+          <ul>
+            <li><span><b>Every panel, phone and watch,</b> at any hour, even during quiet hours.</span></li>
+            <li><span><b>Every light on,</b> so the way out is lit.</span></li>
+          </ul>
+        </div>
+      </div>
 
-    <!-- The screen this panel shows, from the library -->
-    <main id="alt" class="alt" hidden></main>
+      <div class="pkg-cta"><p>See the security package in a real home.</p><a class="btn solid" href="#contact">Book a walkthrough</a></div>
+    </div>
+  </section>
 
-    <input type="file" id="night-file" accept="image/*" hidden aria-label="Bedroom photo">
+  <section id="homes" aria-labelledby="homes-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Homes</p>
+        <h2 id="homes-h">See the home <em>before it&rsquo;s built.</em></h2>
+        <p>Two ways a client sees a Meridian home before anyone moves in.</p>
+      </div>
+      <div class="homes">
+        <a class="home-card" href="meridian.html">
+          <img src="build.jpg" alt="The ground floor plan of a Meridian home being drawn in light" loading="lazy" width="1600" height="900">
+          <div><h3>Watch a home build itself</h3><p>Scroll, and the plan draws itself, the walls rise, the rooms furnish and the lights come on.</p><span class="go">Open the walk-through</span></div>
+        </a>
+        <a class="home-card" href="residence.html">
+          <img src="linden.jpg" alt="The Linden House property site: the hologram of the house under its name and its numbers" loading="lazy" width="1600" height="900">
+          <div><h3>Linden House, a sample listing</h3><p>A property site made from one plan: the walk-through, specs, floor plans to scale, and a booking form for private previews.</p><span class="go">Open the property site</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
 
-    <p id="showcase-banner" class="showcase-banner" role="status" hidden>Model home showcase · touch anywhere to take over</p>
+  <section id="builders" aria-labelledby="builders-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">For builders and developers</p>
+        <h2 id="builders-h">Every plan you sell can ship with <em>its own hologram and its own AI.</em></h2>
+        <p>Describe a plan once: its style, its floors and the outline of each room. Every home built from it gets a hologram in that style and a Haven that already knows the house.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Plan</h3><p>We take your plan: style, floors, the outline of every room and the devices in each.</p></li>
+        <li><h3>3D model</h3><p>Haven builds the home in 3D: walls, windows, roof and furniture by room. It becomes the panel&rsquo;s map, in realistic 3D.</p></li>
+        <li><h3>Panels</h3><p>You choose a screen for each room. The model home gets the showpiece.</p></li>
+        <li><h3>Handover</h3><p>The owners move in to a house that already knows itself, and a guide that walks them through it.</p></li>
+      </ol>
+      <div class="head"><h3>Eight architectural styles today</h3></div>
+      <ul class="styles">
+        <li>Modern</li><li>Contemporary</li><li>Farmhouse</li><li>Craftsman</li><li>Colonial</li><li>Ranch</li><li>Mediterranean</li><li>Cabin</li>
+      </ul>
+      <div class="row"><a class="btn solid" href="#contact">Talk to us about a development</a></div>
+    </div>
+  </section>
 
-    <!-- Bottom: talk to Haven -->
-    <div class="voicebar">
-      <div id="chat-log" class="chat-log" role="log" aria-label="Conversation with Haven" tabindex="0" aria-live="polite" hidden></div>
-      <form id="chat-form" class="talk">
-        <span id="orb" class="orb" data-voice="idle" aria-hidden="true"></span>
-        <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-        <input id="chat-input" autocomplete="off" placeholder="Try &ldquo;I&rsquo;m cold&rdquo; or &ldquo;goodnight&rdquo;" aria-label="Talk to Haven">
-        <button type="button" id="mic" class="icon-btn" aria-label="Talk to Haven with your voice" aria-pressed="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>
-        </button>
-        <button type="button" id="speak" class="icon-btn" aria-label="Haven speaks out loud" aria-pressed="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 4V6L7 10H3Zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12ZM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54Z"/></svg>
-        </button>
-        <button class="primary" type="submit">Send</button>
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap faq-wrap">
+      <div class="head">
+        <p class="eyebrow">Questions</p>
+        <h2 id="faq-h">What people ask <em>before they buy.</em></h2>
+        <p>Anything else, ask us in the walkthrough request below.</p>
+      </div>
+      <div class="faq">
+        <details><summary>Does it need the internet?</summary><p>For conversation, yes. Without it, Haven keeps running its safety rules and automations on the server in the house, still stops a leak, and still understands simple commands like &ldquo;goodnight&rdquo;.</p></details>
+        <details><summary>What devices does it work with?</summary><p>Haven connects through a Home Assistant hub, so it works with the lights, locks, thermostats, garage doors, water valves and sensors that Home Assistant supports.</p></details>
+        <details><summary>What does it learn about us, and can we delete it?</summary><p>Comfort preferences by time of day, likes and dislikes, and routines you&rsquo;ve accepted. Habits it notices only become suggestions; nothing it learns runs until someone says yes. All of it is listed on the panel under About you, and you can forget one item or everything.</p></details>
+        <details><summary>What leaves the house?</summary><p>Conversations go to the AI service that powers Haven&rsquo;s understanding. If you choose the premium voice, the sentences Haven speaks go to the voice service. Weather requests send only the home&rsquo;s location. Nothing else leaves.</p></details>
+        <details><summary>Can we change a room&rsquo;s screen later?</summary><p>Yes. Every panel picks its own screen, and the family can change it at any time from the panel itself.</p></details>
+        <details><summary>Is the panel on this page the real software?</summary><p>Yes. It is the same panel software a home runs, working on a simulated house inside your browser. Nothing you press reaches a real device, and its weather, camera pictures and electricity use are samples, marked as such.</p></details>
+        <details><summary>Does it work with an iPhone and an Apple Watch?</summary><p>Yes. Talk to Haven, run scenes and hear its briefings through Siri on an iPhone, an Apple Watch or in the car. A ring at the door sends its picture to your phone and watch.</p></details>
+        <details><summary>Is it accessible?</summary><p>The panels are tested against WCAG 2.2 AA on every build, and the state of a door or a sensor is always said in words, never by color alone. See the <a href="accessibility.html">accessibility statement</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" aria-labelledby="contact-h">
+    <div class="wrap contact">
+      <div class="contact-side">
+        <div class="head">
+          <p class="eyebrow">Book a walkthrough</p>
+          <h2 id="contact-h">See Haven <em>in a real home.</em></h2>
+          <p>Tell us about your home or your development. We&rsquo;ll set up a walkthrough of the panel, the hologram and the film for your plan.</p>
+        </div>
+        <dl>
+          <div><dt>Homeowners</dt><dd>A walkthrough for the home you&rsquo;re building or buying.</dd></div>
+          <div><dt>Builders and developers</dt><dd>Haven for a plan, a model home or a whole community.</dd></div>
+          <div><dt>Architects and designers</dt><dd>The hologram and screens for a project you&rsquo;re presenting.</dd></div>
+        </dl>
+      </div>
+      <form id="contact-form" novalidate>
+        <label>Name<input id="f-name" name="name" autocomplete="name" required maxlength="80"></label>
+        <label>Email<input id="f-email" name="email" type="email" autocomplete="email" maxlength="120"></label>
+        <label>Phone <small>or email, either is fine</small><input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="30"></label>
+        <label>You are<select id="f-role" name="role"><option>A homeowner</option><option>A builder or developer</option><option>An architect or designer</option><option>Something else</option></select></label>
+        <label>Haven&rsquo;s voice<select id="f-voice" name="voice"><option value="">Not chosen yet</option><option>Lily D</option><option>Sia</option><option>Richard</option><option>Charlotte</option></select></label>
+        <label>Company <small>(optional)</small><input id="f-company" name="company" autocomplete="organization" maxlength="120"></label>
+        <label>Where is the project?<input id="f-where" name="where" autocomplete="address-level2" maxlength="120"></label>
+        <label class="full">Tell us about it<textarea id="f-note" name="note" maxlength="1500" placeholder="The home or development, how many homes, timing, the rooms you'd like panels in."></textarea></label>
+        <div class="trap" aria-hidden="true"><label>Leave this empty<input id="f-trap" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <div class="form-foot">
+          <button class="btn solid" type="submit" id="f-send">Request a walkthrough</button>
+          <p>We use your details only to reply about your project. <a href="privacy.html">Privacy</a></p>
+        </div>
+        <div class="result" id="f-result" role="status" hidden></div>
       </form>
-      <p id="voice-hint" class="voice-hint" hidden></p>
     </div>
+  </section>
+
+  <section id="built" class="built" aria-labelledby="built-h">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Built by Meridian Interface</p>
+        <h2 id="built-h">Want a website <em>like this one?</em></h2>
+        <p>Meridian Interface designed and built everything here: the film, this site, the live wall panel and the software behind it. We build the same kind of work for other businesses.</p>
+      </div>
+      <ul class="services">
+        <li><h3>Web design</h3><p>Sites like this one: a film for a landing page, a live product demo, and a booking form that lands in your CRM.</p></li>
+        <li><h3>Mobile app interfaces</h3><p>Screens that work on a phone, a tablet and a wall, like Haven&rsquo;s ten panel screens.</p></li>
+        <li><h3>Analytics &amp; CRM dashboards</h3><p>The numbers that matter at a glance, like the panel&rsquo;s electricity and security cards.</p></li>
+        <li><h3>Brand identity systems</h3><p>A mark, colors and type that hold together everywhere, from the film to the footer.</p></li>
+      </ul>
+      <div class="row">
+        <a class="btn solid" href="https://meridianinterface.com">Services and pricing</a>
+        <a class="btn" href="build.html">How this site was built</a>
+        <a class="btn quiet" href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="about">
+      <a class="brand" href="#top">Meridian<span>&nbsp;/&nbsp;</span>Interface</a>
+      <p>The hologram, the wall panels and Haven, all made from one plan.</p>
+      <a class="btn small" href="#contact">Book a walkthrough</a>
+    </div>
+    <div><h4>Haven</h4><ul><li><a href="#haven">What Haven does</a></li><li><a href="#screens">Screens</a></li><li><a href="#live">Live demo</a></li><li><a href="tour.html">Guided tour</a></li><li><a href="#security">Security</a></li><li><a href="#faq">Questions</a></li></ul></div>
+    <div><h4>Homes</h4><ul><li><a href="meridian.html">Watch a home build</a></li><li><a href="residence.html">Linden House</a></li><li><a href="#builders">For builders</a></li></ul></div>
+    <div><h4>This site</h4><ul><li><a href="build.html">How it was built</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
+    <div class="maker">
+      <img src="img/meridian-logo.webp" alt="Meridian Interface" width="511" height="300">
+      <div class="maker-text">
+        <p class="maker-k">Built by Meridian Interface</p>
+        <p>Web design, mobile app interfaces, analytics &amp; CRM dashboards, and brand identity systems.</p>
+        <p><a href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a><br><a href="https://meridianinterface.com">meridianinterface.com</a></p>
+      </div>
+    </div>
+    <small>&copy; 2026 Meridian Interface. The homes shown are sample plans. The live panel runs on a simulated house, with sample weather.</small>
   </div>
-  <dialog id="explorer" class="explorer" aria-labelledby="explorer-title">
-    <div class="explorer-head">
-      <div>
-        <h2 id="explorer-title">The house</h2>
-        <p class="muted small" id="explorer-hint">Drag to look around from any angle, pinch or use + and &minus; to zoom, and tap a room for its controls.</p>
-      </div>
-      <button type="button" id="explorer-close" class="ghost">Close</button>
-    </div>
-    <div class="explorer-body">
-      <div id="explorer-map" class="map explorer-map">
-        <div class="explorer-views" role="toolbar" aria-label="House view angle">
-          <button type="button" data-hview="iso" aria-pressed="true">3D</button>
-          <button type="button" data-hview="top" aria-pressed="false">Top</button>
-          <button type="button" data-hview="front" aria-pressed="false">Front</button>
-          <button type="button" data-hview="side" aria-pressed="false">Side</button>
-          <button type="button" id="explorer-spin" aria-pressed="false">Auto-orbit</button>
-          <button type="button" id="explorer-roof" aria-pressed="true">Roof</button>
-        </div>
-        <div class="explorer-floors" id="explorer-floors" role="group" aria-label="Floors" hidden></div>
-      </div>
-      <aside id="explorer-room" class="explorer-room" aria-label="Room controls" hidden></aside>
-    </div>
-  </dialog>
-  <dialog id="camera-view" class="camera-view" aria-labelledby="camera-title">
-    <div class="cv-head">
-      <div>
-        <h2 id="camera-title">Camera</h2>
-        <p class="cv-state" id="camera-state"></p>
-      </div>
-      <button type="button" id="camera-close" class="ghost">Close</button>
-    </div>
-    <div class="cv-frame"><img id="camera-img" alt=""></div>
-    <p class="muted small" id="camera-note"></p>
-  </dialog>
-  <dialog id="library" class="library" aria-labelledby="library-title">
-    <div class="library-head">
-      <div>
-        <h2 id="library-title" class="library-title">Screen library</h2>
-        <p class="muted small">Pick the screen that suits each spot in the home. Every screen runs on the same live house, and All controls opens from any of them. Each screen has its own look; the finish below dresses Wallpaper and All controls.</p>
-      </div>
-      <button type="button" id="library-close" class="ghost" aria-label="Close the screen library">Close</button>
-    </div>
-    <div class="library-settings">
-      <label for="panel-room">This panel is in</label>
-      <select id="panel-room"></select>
-      <div class="look-switch library-look" role="group" aria-label="Finish">
-        <button type="button" data-look="grounded">Grounded</button>
-        <button type="button" data-look="futuristic">Futuristic</button>
-        <button type="button" data-look="vivid">Vivid</button>
-      </div>
-      <div class="look-switch library-look theme-switch" role="group" aria-label="Appearance">
-        <button type="button" data-theme-choice="auto">Auto</button>
-        <button type="button" data-theme-choice="light">Light</button>
-        <button type="button" data-theme-choice="dark">Dark</button>
-      </div>
-    </div>
-    <div class="library-settings library-house">
-      <p><strong>House view</strong> <span class="muted small">How the house appears on Command, the Security Console, Lagoon, All controls and full screen. Live 3D and the hologram turn and zoom; the photoreal renders are pictures of this home. Every view lights up rooms and opens them when tapped.</span></p>
-      <div class="house-gallery" id="house-gallery" role="group" aria-label="House view"></div>
-    </div>
-    <div class="library-settings library-home">
-      <p><strong>Home style</strong> <span class="muted small" id="home-preview-note"></span></p>
-      <label for="home-preview" class="visually-hidden">Home style</label>
-      <select id="home-preview"></select>
-    </div>
-    <div class="library-settings library-voice">
-      <p><strong>Haven's voice</strong> <span class="muted small" id="voice-choice-note"></span></p>
-      <label for="voice-choice" class="visually-hidden">Haven's voice</label>
-      <select id="voice-choice"></select>
-    </div>
-    <div class="library-settings library-showcase">
-      <p><strong>Model home showcase</strong> <span class="muted small">For a builder's model home. After a minute untouched, Haven gives a short live tour on the Glass screen: Welcome home, Movie night, Goodnight and Good morning, saying what it's doing. It pauses if anything needs attention. Any touch hands control back.</span></p>
-      <button type="button" id="showcase-toggle" class="switch" role="switch" aria-checked="false" aria-label="Model home showcase"></button>
-    </div>
-    <div class="library-settings library-photo">
-      <p><strong>Wallpaper photo</strong> <span class="muted small">For the Wallpaper screen. Haven's photos follow the time of day; a photo of your own stays on this panel.</span></p>
-      <label class="file-btn"><input type="file" id="wp-file" accept="image/*">Use my own photo</label>
-      <button type="button" id="wp-reset" class="ghost" hidden>Use Haven's photos</button>
-    </div>
-    <ul id="library-list" class="library-list"></ul>
-  </dialog>
-  
+</footer>
+
+<!-- The guide's words, filled in by the build from the film's captions (dist/film/meridian-film-captions.vtt). -->
+<script type="text/vtt" id="film-captions">
+WEBVTT
+
+1
+00:00:41.982 --> 00:00:42.632
+Welcome home.
+
+2
+00:00:42.782 --> 00:00:43.382
+Come on in.
+
+3
+00:00:44.882 --> 00:00:46.982
+I was here from the first line of the sketch.
+
+4
+00:00:47.582 --> 00:00:50.882
+I know every wall, every window, every pipe.
+
+5
+00:00:53.782 --> 00:00:54.732
+This is where we’ll talk.
+
+6
+00:00:55.332 --> 00:01:00.982
+I watch the doors, the water, the heat and the air, day and night.
+
+7
+00:01:01.682 --> 00:01:03.882
+If something’s wrong, I’ll tell you right away.
+
+8
+00:01:04.682 --> 00:01:08.932
+And I’ll never unlock a door or open the garage unless you say so.
+
+9
+00:01:09.482 --> 00:01:10.982
+You’re not just living in a house.
+
+10
+00:01:10.982 --> 00:01:12.782
+You’re living with something that looks out for you.
+
+11
+00:01:13.982 --> 00:01:14.582
+Welcome home.
+</script>
+<script src="site.js" defer></script>
 </div>
-<script src="app.js"></script>
 </body>
 </html>

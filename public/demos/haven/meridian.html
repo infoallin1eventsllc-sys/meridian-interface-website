@@ -1,0 +1,188 @@
+<!doctype html>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1c2e'/%3E%3Cpath d='M7 23V9l9 8 9-8v14' fill='none' stroke='%23f4f5f7' stroke-width='2.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meridian Interface</title>
+<meta name="description" content="Meridian Interface designs homes as holograms and builds Haven into them: an AI home agent that talks with the family, watches the house and never acts on a lock, the garage or the water without you.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root {
+    color-scheme: dark;
+    --night: #05080e; --panel: #0b121c; --line: rgba(90, 210, 255, 0.22);
+    --cyan: #5ad2ff; --amber: #ffb35c; --paper: #e9f0f5; --muted: #8ca2b4;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --gutter: clamp(16px, 4vw, 56px);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--night); color: var(--paper); font: 400 17px/1.6 var(--body); }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  .top { position: fixed; inset: 0 0 auto 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) 14px; pointer-events: none;
+    background: linear-gradient(rgba(5, 8, 14, 0.92), rgba(5, 8, 14, 0.6) 55%, rgba(5, 8, 14, 0)); }
+  .top > * { pointer-events: auto; }
+  .brand { display: inline-flex; align-items: center; min-height: 32px; font: 700 13px/1 var(--display); font-stretch: 125%; letter-spacing: 0.32em; text-transform: uppercase; text-decoration: none; }
+  .brand span { color: var(--cyan); }
+  .top nav { display: flex; gap: 6px; }
+  .top nav a { font: 500 13px/1 var(--body); text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(5, 8, 14, 0.55); backdrop-filter: blur(8px); }
+  .top nav a:hover { border-color: var(--cyan); }
+
+  /* The film, pinned while the track scrolls past. */
+  .track { position: relative; height: 1000vh; }
+  .stage { position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage .fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+  .stage .vignette { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(5, 8, 14, 0.78) 0%, rgba(5, 8, 14, 0.25) 42%, rgba(5, 8, 14, 0) 60%); }
+  .sheet { position: absolute; left: var(--gutter); bottom: clamp(28px, 9vh, 96px); width: min(460px, calc(100% - 2 * var(--gutter)));
+    opacity: 0; transform: translateY(12px); transition: none; }
+  .sheet .block { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: baseline; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
+    font: 500 11px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .sheet .block b { color: var(--cyan); font-weight: 500; }
+  .sheet h2 { margin: 0 0 12px; font: 300 clamp(30px, 4.2vw, 56px)/1.04 var(--display); font-stretch: 112%; letter-spacing: -0.01em; text-wrap: balance; }
+  .sheet h2 em { font-style: normal; font-weight: 600; color: var(--cyan); }
+  .sheet p { margin: 0; color: #c9d6e0; max-width: 44ch; }
+  .sheet .dims { margin-top: 16px; font: 400 12px/1.7 var(--mono); color: var(--muted); }
+  .sheet .dims span { color: var(--paper); }
+  .sheet blockquote { margin: 18px 0 0; padding-left: 14px; border-left: 2px solid var(--amber); font: 500 19px/1.45 var(--body); color: #ffe2bd; }
+  .progress { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); display: grid; gap: 10px; }
+  .progress button { width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+  .progress button::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: rgba(233, 240, 245, 0.28); transition: background 0.2s, transform 0.2s; }
+  .progress button[aria-current="step"]::before { background: var(--cyan); transform: scale(1.5); box-shadow: 0 0 10px var(--cyan); }
+  .hint { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); font: 500 11px/1 var(--mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+  /* After the film. */
+  section.after { padding-block: clamp(72px, 12vw, 140px); padding-inline: var(--gutter); border-top: 1px solid var(--line); scroll-margin-top: 24px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); margin: 0 0 18px; }
+  h3 { margin: 0 0 20px; font: 300 clamp(30px, 4vw, 52px)/1.06 var(--display); font-stretch: 112%; text-wrap: balance; max-width: 22ch; }
+  .lede { color: #c9d6e0; max-width: 62ch; margin: 0 0 48px; }
+  .features { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 0; border-top: 1px solid var(--line); }
+  .features li { padding: 26px 32px 28px 0; border-bottom: 1px solid var(--line); display: grid; gap: 6px; align-content: start; }
+  .features h4 { margin: 0; font: 600 18px/1.35 var(--body); }
+  .features p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .rule { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+  .rule blockquote { margin: 0; font: 300 clamp(26px, 3.4vw, 42px)/1.2 var(--display); font-stretch: 112%; color: #ffe2bd; }
+  .rule .lede { font-size: 15.5px; max-width: 46ch; }
+  .rule pre { margin: 0; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font: 400 13px/1.7 var(--mono); color: #bcd3e3; overflow-x: auto; }
+  .rule pre b { color: var(--cyan); font-weight: 500; }
+  .styles { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .styles li { font: 500 13px/1 var(--mono); padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; color: #cfe6f5; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+  .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; font: 600 15px/1 var(--body); text-decoration: none; border: 1px solid var(--cyan); }
+  .btn.solid { background: var(--cyan); color: #04121c; }
+  .btn:hover { filter: brightness(1.1); }
+  footer { padding: 40px var(--gutter) calc(40px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  footer .wrap { display: grid; grid-template-columns: minmax(0, 1.4fr) auto; gap: 24px 48px; align-items: start; }
+  footer .brand { color: var(--paper); }
+  footer p { margin: 10px 0 0; max-width: 44ch; }
+  footer nav { display: grid; gap: 2px; justify-items: start; }
+  footer nav a { display: inline-flex; align-items: center; min-height: 28px; text-decoration: none; }
+  footer nav a:hover { color: var(--paper); }
+  footer small { grid-column: 1 / -1; font-size: 13px; }
+  @media (max-width: 760px) { footer .wrap { grid-template-columns: 1fr; } }
+  .loading { position: absolute; inset: 0; display: grid; place-items: center; font: 500 12px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+  .top .narrow { display: none; }
+  @media (max-width: 480px) { .top .wide { display: none; } .top .narrow { display: inline; } }
+  @media (max-width: 760px) {
+    .stage .vignette { background: linear-gradient(0deg, rgba(5, 8, 14, 0.92) 0%, rgba(5, 8, 14, 0.55) 45%, rgba(5, 8, 14, 0) 70%); }
+    .sheet { bottom: 22px; }
+    .sheet p { font-size: 15.5px; }
+    .progress { right: 6px; }
+    .rule { grid-template-columns: minmax(0, 1fr); }
+    .top nav a:not(:last-child) { display: none; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#top">Meridian<span>&nbsp;/&nbsp;</span>Interface</a>
+  <nav aria-label="Sections"><a href="index.html" aria-label="Back to the website"><span class="wide">Back to the website</span><span class="narrow">&larr; Website</span></a></nav>
+</header>
+
+<main id="top">
+  <div class="track" id="track">
+    <div class="stage">
+      <canvas id="canvas" aria-label="A home being designed and built as a hologram, driven by scrolling"></canvas>
+      <div class="vignette"></div>
+      <div class="fade" id="fade"></div>
+      <div class="loading" id="loading">Drawing the plan&hellip;</div>
+
+      <article class="sheet" data-from="0" data-to="0.13">
+        <div class="block"><b>A-01</b><span>Design &middot; ground floor plan</span></div>
+        <h2>Every home starts as a <em>line of light.</em></h2>
+        <p>Meridian&rsquo;s software lays out a home from a plan, a sketch, or just a list of rooms. This one is drawn room by room.</p>
+        <p class="dims">Garage <span>20 &times; 23 ft</span> &middot; Kitchen <span>20 &times; 15 ft</span> &middot; Living <span>23 &times; 18 ft</span></p>
+      </article>
+      <article class="sheet" data-from="0.13" data-to="0.29">
+        <div class="block"><b>A-02</b><span>Structure &middot; two floors</span></div>
+        <h2>Walls rise <em>where rooms meet.</em></h2>
+        <p>Inside walls get doorways. Outside walls get the windows the style calls for. The same engine draws Haven&rsquo;s live hologram of your own home.</p>
+        <p class="dims">Floors <span>2</span> &middot; Rooms <span>9</span> &middot; Interior <span>1,938 sq ft</span></p>
+      </article>
+      <article class="sheet" data-from="0.29" data-to="0.43">
+        <div class="block"><b>A-03</b><span>Detail &middot; the shell</span></div>
+        <h2>Glass, roof, <em>and the lot.</em></h2>
+        <p>Window frames and mullions, the terrace rail, the roof, the drive, the path, the planters and the trees, each drawn in light as it lands.</p>
+      </article>
+      <article class="sheet" data-from="0.43" data-to="0.57">
+        <div class="block"><b>A-04</b><span>Furnish &middot; interiors</span></div>
+        <h2>Room by room, <em>down to the furniture.</em></h2>
+        <p>The sofa, the fireplace wall, the kitchen and its island, the beds upstairs. Then the lights come on and the house glows warm.</p>
+      </article>
+      <article class="sheet" data-from="0.57" data-to="0.69">
+        <div class="block"><b>A-05</b><span>Handover</span></div>
+        <h2>When it&rsquo;s finished, <em>it greets you.</em></h2>
+        <p>Haven, the AI agent built into the home, meets its owners at the door. The door&rsquo;s light strip glows and the lock turns green.</p>
+      </article>
+      <article class="sheet" data-from="0.69" data-to="0.81">
+        <div class="block"><b>A-06</b><span>Systems &middot; sensors</span></div>
+        <h2>It knows every wall, <em>window and pipe.</em></h2>
+        <p>Doors, windows, water, heat and air report to one place, so the home notices a problem before you do.</p>
+      </article>
+      <article class="sheet" data-from="0.81" data-to="0.93">
+        <div class="block"><b>A-07</b><span>Control &middot; the wall panel</span></div>
+        <h2>One place to <em>talk to your home.</em></h2>
+        <p>The wall panel is where you ask, approve and see the whole house. Haven explains what it watches, and what it will never do on its own.</p>
+      </article>
+      <article class="sheet" data-from="0.93" data-to="1.01">
+        <div class="block"><b>A-08</b><span>Meridian Interface</span></div>
+        <h2>The future, <em>in your hands.</em></h2>
+        <p>That is the whole build. Below, where it leads.</p>
+      </article>
+
+      <div class="progress" id="progress" aria-label="Chapters"></div>
+      <div class="hint" id="hint">Scroll to build</div>
+    </div>
+  </div>
+
+  <section class="after" id="next">
+    <div class="wrap">
+      <p class="eyebrow">Next</p>
+      <h3>That&rsquo;s how every Meridian home begins.</h3>
+      <p class="lede">The same plan becomes the hologram on Haven&rsquo;s wall panel. Choose a screen for each room, or see it in your own home.</p>
+      <div class="cta"><a class="btn solid" href="index.html#screens">Choose a screen for every room</a><a class="btn" href="index.html#contact">Book a walkthrough</a></div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="brand" href="#top">Meridian<span>&nbsp;/&nbsp;</span>Interface</a>
+      <p>Homes designed in light, with an AI home agent built in from the first line of the plan.</p>
+    </div>
+    <nav aria-label="Footer"><a href="index.html">Meridian Interface</a><a href="index.html#screens">Screens</a><a href="index.html#contact">Book a walkthrough</a></nav>
+    <small>&copy; 2026 Meridian Interface. The home shown is a sample plan; Haven runs on a simulated house in these demos.</small>
+  </div>
+</footer>
+<script type="module" src="js/fd1529c751b7e284.js"></script>
+</body>
+</html>

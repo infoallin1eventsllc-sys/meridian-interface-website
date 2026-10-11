@@ -5,10 +5,6 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
@@ -23,7 +19,25 @@
       ]
     },
     {
-      "source": "/((?!demos/drone-command/).*)",
+      "source": "/((?!demos/haven/).*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
+    {
+      "source": "/demos/haven/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/((?!demos/drone-command/|demos/haven/).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
@@ -45,6 +59,19 @@
         {
           "key": "Permissions-Policy",
           "value": "geolocation=(self), microphone=(self), camera=(self), bluetooth=(self), serial=(self), payment=(), usb=(), interest-cohort=()"
+        }
+      ]
+    },
+    {
+      "source": "/demos/haven/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://us-assets.i.posthog.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://glzodwhyavexpuusbqjy.supabase.co; media-src 'self' blob: https://glzodwhyavexpuusbqjy.supabase.co; connect-src 'self' https://glzodwhyavexpuusbqjy.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
         }
       ]
     }

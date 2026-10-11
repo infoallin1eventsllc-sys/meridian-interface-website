@@ -6,7 +6,7 @@ of its own:
 
   /demos/stack-planner/  -> planner/            (this repo)
   /demos/finsight/       -> FinSight BI dashboard (no longer linked: its tile became Haven on 11 Oct; still hosted until Otis decides)
-  /demos/haven/          -> Haven, AI home integration system (source: haven/, build: node haven/scripts/build-meridian.mjs)
+  /demos/haven/          -> Haven: the complete Haven website (site, guided tour, screen library, three live panels, film), as published by the Haven session; packaged by node haven/scripts/package-website.mjs <download of the artifact> then node tools/brand-demos.mjs. The panel source is in haven/.
   /demos/frame-shop/     -> frame-shop/          (this repo)
   /demos/orchestra/      -> ORCHESTRA cloud console
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
