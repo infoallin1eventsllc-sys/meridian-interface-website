@@ -292,7 +292,7 @@
     if (!name) { show("warn", "<p>Add your name so we know who to reply to.</p>"); $("#f-name").focus(); return; }
     if (badEmail) { show("warn", "<p>That email address doesn&rsquo;t look complete. Check it and send again.</p>"); $("#f-email").focus(); return; }
     if (!email && !phone) { show("warn", "<p>Add an email address or a phone number so we can reach you.</p>"); $("#f-email").focus(); return; }
-    const message = [`Role: ${$("#f-role").value}`, $("#f-voice").value && `Haven's voice: ${$("#f-voice").value}`, field("#f-where") && `Project: ${field("#f-where")}`, field("#f-note")].filter(Boolean).join("\n");
+    const message = [`Role: ${$("#f-role").value}`, $("#f-plan")?.value && `Plan: ${$("#f-plan").value}`, $("#f-voice").value && `Haven's voice: ${$("#f-voice").value}`, field("#f-where") && `Project: ${field("#f-where")}`, field("#f-note")].filter(Boolean).join("\n");
     const body = { name, email: email || undefined, phone: phone || undefined, company: field("#f-company") || undefined, message, source: "meridian-website:haven" };
     send.disabled = true; send.textContent = "Sending…";
     try {

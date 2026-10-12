@@ -32,7 +32,7 @@ fs.mkdirSync(path.join(out, "fonts"), { recursive: true });
 // 1. Everything that is not a page, as it is.
 const files = fs.readdirSync(src, { recursive: true }).filter((f) => fs.statSync(path.join(src, f)).isFile());
 // Published but used by no page (the Meridian bar brings its own mark as brand/meridian-mark.png).
-const UNUSED = new Set(["img/meridian-mark.webp"]);
+const UNUSED = new Set(["img/meridian-mark.webp", "build.jpg", "linden.jpg"]); // the last two: the Homes cards, replaced by the plans
 for (const f of files.filter((f) => !f.endsWith(".html") && !UNUSED.has(f.split(path.sep).join("/")))) {
   fs.mkdirSync(path.dirname(path.join(out, f)), { recursive: true });
   fs.copyFileSync(path.join(src, f), path.join(out, f));
@@ -197,6 +197,48 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
 <script src="js/haven-frame.js" defer></script>
 </head>`, f);
     fs.copyFileSync(path.join(root, "site-edits/haven-frame.js"), path.join(out, "js/haven-frame.js"));
+    // Monitoring plans in place of "See the home before it's built" (Meridian doesn't build homes):
+    // three plans, each with "Get a free quote", which opens the request form with the plan chosen.
+    const homes = html.match(/  <section id="homes"[\s\S]*?\n  <\/section>\n/g);
+    if (homes?.length !== 1) throw new Error("index.html: expected one Homes section");
+    html = html.replace(homes[0], () => fs.readFileSync(path.join(root, "site-edits/plans.html"), "utf8"));
+    html = once(html, '<li><a href="#homes">Homes</a></li>', '<li><a href="#plans">Plans</a></li>', f);
+    html = once(html, '<p class="eyebrow">Book a walkthrough</p>', '<p class="eyebrow">Free quote and walkthrough</p>', f);
+    html = once(html, "<p>Tell us about your home or your development. We&rsquo;ll set up a walkthrough of the panel, the hologram and the film for your plan.</p>",
+      "<p>Tell us about your home and the plan you like. We&rsquo;ll send a free quote and set up a walkthrough of the panel.</p>", f);
+    html = once(html, '<label>Haven&rsquo;s voice<select id="f-voice"',
+      '<label>Plan<select id="f-plan" name="plan"><option value="">Not sure yet</option><option value="Secure">Secure, from $24.99/mo</option><option value="Smart">Smart, from $29.99/mo</option><option value="Complete">Complete, from $39.99/mo</option></select></label>\n        <label>Haven&rsquo;s voice<select id="f-voice"', f);
+    html = once(html, '<div><h4>Homes</h4><ul><li><a href="meridian.html">Watch a home build</a></li><li><a href="residence.html">Linden House</a></li><li><a href="#builders">For builders</a></li></ul></div>',
+      '<div><h4>Plans</h4><ul><li><a href="#plans">Monitoring plans</a></li><li><a href="#contact" data-plan="">Get a free quote</a></li><li><a href="#builders">For builders</a></li></ul></div>', f);
+    html = once(html, "<p>The hologram, the wall panels and Haven, all made from one plan.</p>",
+      "<p>Haven: the wall panels, the app and 24/7 monitoring for your home.</p>", f);
+    const siteJs = path.join(out, "site.js");
+    fs.writeFileSync(siteJs, once(fs.readFileSync(siteJs, "utf8"), '[`Role: ${$("#f-role").value}`, ',
+      '[`Role: ${$("#f-role").value}`, $("#f-plan")?.value && `Plan: ${$("#f-plan").value}`, ', "site.js"));
+    fs.copyFileSync(path.join(root, "site-edits/haven-plans.js"), path.join(out, "js/haven-plans.js"));
+    html = once(html, "</head>", `<style id="haven-plans">
+  .plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+  .plan { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 10px; padding: 28px 26px 26px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: 0 1px 2px rgba(15, 28, 46, 0.06); }
+  .plan h3 { margin: 0; font: 600 24px/1.2 var(--display); color: var(--cyan); }
+  .plan-for { margin: 0; color: var(--soft); }
+  .plan-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; margin: 6px 0 4px; padding-bottom: 18px; border-bottom: 1px solid var(--line-2); }
+  .plan-from { flex: 1 0 100%; font-size: 14px; color: var(--muted); }
+  .plan-price b { font: 700 46px/1 var(--display); letter-spacing: -0.02em; color: var(--paper); }
+  .plan-price span:last-child { color: var(--muted); }
+  .plan ul { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 12px; align-content: start; }
+  .plan li { position: relative; padding-left: 32px; color: var(--soft); font-size: 15.5px; line-height: 1.45; }
+  .plan li::before { content: ""; position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: var(--cyan)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 20px no-repeat; }
+  .plan li.plus::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 5.5v9M5.5 10h9' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .plan .btn { justify-self: stretch; }
+  .plan-best { border: 2px solid var(--cyan); box-shadow: 0 18px 40px -22px rgba(15, 28, 46, 0.45); }
+  .plan-badge { position: absolute; top: -1px; right: 22px; margin: 0; padding: 6px 12px; border-radius: 0 0 10px 10px; background: var(--cyan); color: var(--on-cyan); font: 600 13px/1 var(--body); letter-spacing: 0.02em; }
+  .plan-foot { display: grid; justify-items: center; gap: 12px; margin-top: 28px; text-align: center; }
+  .plan-foot p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  @media (max-width: 900px) { .plan-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
+</style>
+<script src="js/haven-plans.js" defer></script>
+</head>`, f);
     html = html.replace(/(<body[^>]*>)/, '$1\n<div id="root">');
     html = once(html, "</body>", "</div>\n</body>", f);
   }
