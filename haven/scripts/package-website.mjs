@@ -143,6 +143,30 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
     ".cm-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }", f);
   if (f === "privacy.html") html = once(html, "<li><strong>Fonts.</strong> The typefaces load from Google Fonts, so your browser asks Google for them.</li>",
     "<li><strong>Fonts.</strong> The typefaces are served from this site; your browser asks no one else for them.</li>", f);
+  // The maker, at the bottom of every page a visitor scrolls through (the home, privacy, accessibility
+  // and build pages already carry it in their footers): the logo, what Meridian does, how to reach us.
+  // The logo's wordmark is near-black, so the block is a light card that reads on dark pages too.
+  if (["library.html", "residence.html", "meridian.html"].includes(f)) {
+    html = once(html, "</footer>", `</footer>
+<aside class="mi-maker" aria-label="Built by Meridian Interface">
+  <img src="img/meridian-logo.webp" alt="Meridian Interface" width="511" height="300" loading="lazy">
+  <div>
+    <p class="mi-maker-k">Built by Meridian Interface</p>
+    <p>Web design, mobile app interfaces, analytics &amp; CRM dashboards, and brand identity systems.</p>
+    <p><a href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a><br><a href="https://meridianinterface.com">meridianinterface.com</a></p>
+  </div>
+</aside>
+<style id="mi-maker">
+  .mi-maker { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; box-sizing: border-box; width: min(1180px, calc(100% - 32px)); margin: 8px auto calc(32px + env(safe-area-inset-bottom, 0px)); padding: 24px 28px;
+    border-radius: 16px; background: #ffffff; border: 1px solid rgba(15, 23, 42, 0.12); color: #334155; font: 400 15px/1.55 "Instrument Sans", "Segoe UI", system-ui, sans-serif; text-align: left; }
+  .mi-maker img { width: 168px; max-width: 100%; height: auto; }
+  .mi-maker div { display: grid; gap: 8px; max-width: 56ch; }
+  .mi-maker p { margin: 0; color: #334155; }
+  .mi-maker .mi-maker-k { font: 500 12px/1.3 "JetBrains Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: #0f172a; }
+  .mi-maker a { color: #1d4a86; text-decoration: none; }
+  .mi-maker a:hover { text-decoration: underline; }
+</style>`, f);
+  }
   if (f === "library.html") html = once(html, "</title>", `</title>
 <style id="haven-panel-bezel">
   /* Each screen in the library, in the panel's bezel. */
