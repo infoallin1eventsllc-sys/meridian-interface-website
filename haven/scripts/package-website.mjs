@@ -110,6 +110,11 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
     fs.copyFileSync(path.join(root, "site-edits/haven-nav.js"), path.join(out, "js/haven-nav.js"));
     html = once(html, "</title>", '</title>\n<script src="js/haven-nav.js"></script>', f); // these pages have no </head>
   }
+  // Picking Haven's voice plays that voice's sample (haven/site-edits/haven-voice.js).
+  if (f.startsWith("panel-")) {
+    fs.copyFileSync(path.join(root, "site-edits/haven-voice.js"), path.join(out, "js/haven-voice.js"));
+    html = once(html, '<script src="js/haven-nav.js"></script>', '<script src="js/haven-nav.js"></script>\n<script src="js/haven-voice.js"></script>', f);
+  }
   if (f.startsWith("panel-")) html = once(html, ".cm-main { display: grid; gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }",
     ".cm-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }", f);
   if (f === "privacy.html") html = once(html, "<li><strong>Fonts.</strong> The typefaces load from Google Fonts, so your browser asks Google for them.</li>",
