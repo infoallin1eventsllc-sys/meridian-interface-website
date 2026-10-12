@@ -80,6 +80,34 @@
   }
   .vis { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
+<style id="haven-panel-bezel">
+  main:has(> #view-panel[data-on]) { background: radial-gradient(90% 70% at 50% 40%, #1a2230 0%, #070a10 70%); }
+  main > .haven-bezel { display: none; position: absolute; inset: auto; }
+  main > .haven-bezel[data-on] { display: block; }
+  
+  main > .haven-bezel {
+    --bz: clamp(12px, 1.6vw, 24px); --r: 12px;
+    padding: var(--bz); border: 0; border-radius: calc(var(--r) + var(--bz));
+    background: radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
+      linear-gradient(160deg, #23272e 0%, #0b0d11 45%, #15181d 100%);
+    box-shadow: 0 0 0 1.5px #b4bbc5, 0 0 0 3px #6d747e, 0 0 0 3.5px rgba(15, 28, 46, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+      0 36px 70px -28px rgba(15, 28, 46, 0.55), 0 14px 28px -14px rgba(15, 28, 46, 0.35);
+  }
+  main > .haven-bezel::after {
+    content: ""; position: absolute; z-index: 2; pointer-events: none;
+    top: calc(var(--bz) / 2 - 3px); left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #4a5160, #0b0d11 70%); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    opacity: 1; animation: none; transform: none;
+  }
+  @media (max-width: 720px) { main > .haven-bezel { --bz: 10px; --r: 14px; } }
+  main > .haven-bezel { box-shadow: 0 0 0 1.5px #8e959f, 0 0 0 3px #4d535c, 0 30px 60px -20px rgba(0, 0, 0, 0.8); }
+  main > #view-panel { border-radius: var(--haven-r, 12px); transform-origin: 0 0; background: #0b0d11; max-width: none; }
+  main > #view-panel[data-on] { animation: haven-screen-on 0.7s ease-out both; }
+  @keyframes haven-screen-on { from { opacity: 0; filter: brightness(1.7) saturate(0.6); } 45% { opacity: 1; } to { opacity: 1; filter: none; } }
+  @media (prefers-reduced-motion: reduce) { main > #view-panel[data-on] { animation: none; } }
+</style>
+<script src="js/haven-tour-frame.js" defer></script>
 </head>
 <body>
   <header class="bar">

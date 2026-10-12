@@ -65,6 +65,30 @@ const once = (html, from, to, where) => {
   if (n !== 1) throw new Error(`${where}: expected one "${from.slice(0, 70)}", found ${n}`);
   return html.replace(from, () => to);
 };
+// Every panel screen a visitor sees (the live demo, the room chooser, the screen library, the
+// tour's wall panel) sits in the same hardware: a dark glass bezel with a slim brushed-aluminium
+// rim and a sensor at the top. --bz is the bezel's width, --r the screen's corner.
+const bezel = (sel, dot) => `
+  ${sel} {
+    --bz: clamp(12px, 1.6vw, 24px); --r: 12px;
+    padding: var(--bz); border: 0; border-radius: calc(var(--r) + var(--bz));
+    background: radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
+      linear-gradient(160deg, #23272e 0%, #0b0d11 45%, #15181d 100%);
+    box-shadow: 0 0 0 1.5px #b4bbc5, 0 0 0 3px #6d747e, 0 0 0 3.5px rgba(15, 28, 46, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+      0 36px 70px -28px rgba(15, 28, 46, 0.55), 0 14px 28px -14px rgba(15, 28, 46, 0.35);
+  }
+  ${sel.split(",").map((x) => x.trim() + dot).join(", ")} {
+    content: ""; position: absolute; z-index: 2; pointer-events: none;
+    top: calc(var(--bz) / 2 - 3px); left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #4a5160, #0b0d11 70%); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    opacity: 1; animation: none; transform: none;
+  }
+  @media (max-width: 720px) { ${sel} { --bz: 10px; --r: 14px; } }`;
+// A picture of a screen in the bezel: the picture keeps the screen's 16:10 shape inside it.
+const bezelPicture = (sel, dot) => `${bezel(sel, dot)}
+  ${sel} { position: relative; overflow: visible; aspect-ratio: auto; }
+  ${sel.split(",").map((x) => x.trim() + " img").join(", ")} { height: auto; aspect-ratio: 16 / 10; border-radius: var(--r); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05); }`;
 const report = [];
 for (const f of files.filter((f) => f.endsWith(".html"))) {
   let html = fs.readFileSync(path.join(src, f), "utf8");
@@ -119,6 +143,28 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
     ".cm-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-content: start; min-width: 0; padding: 0 0 14px; }", f);
   if (f === "privacy.html") html = once(html, "<li><strong>Fonts.</strong> The typefaces load from Google Fonts, so your browser asks Google for them.</li>",
     "<li><strong>Fonts.</strong> The typefaces are served from this site; your browser asks no one else for them.</li>", f);
+  if (f === "library.html") html = once(html, "</title>", `</title>
+<style id="haven-panel-bezel">
+  /* Each screen in the library, in the panel's bezel. */
+  ${bezelPicture(".screen .shot", "::before")}
+</style>`, f);
+  if (f === "tour.html") {
+    // The tour's wall panel, in the bezel; haven-tour-frame.js places and scales it.
+    html = once(html, "</style>", `</style>
+<style id="haven-panel-bezel">
+  main:has(> #view-panel[data-on]) { background: radial-gradient(90% 70% at 50% 40%, #1a2230 0%, #070a10 70%); }
+  main > .haven-bezel { display: none; position: absolute; inset: auto; }
+  main > .haven-bezel[data-on] { display: block; }
+  ${bezel("main > .haven-bezel", "::after")}
+  main > .haven-bezel { box-shadow: 0 0 0 1.5px #8e959f, 0 0 0 3px #4d535c, 0 30px 60px -20px rgba(0, 0, 0, 0.8); }
+  main > #view-panel { border-radius: var(--haven-r, 12px); transform-origin: 0 0; background: #0b0d11; max-width: none; }
+  main > #view-panel[data-on] { animation: haven-screen-on 0.7s ease-out both; }
+  @keyframes haven-screen-on { from { opacity: 0; filter: brightness(1.7) saturate(0.6); } 45% { opacity: 1; } to { opacity: 1; filter: none; } }
+  @media (prefers-reduced-motion: reduce) { main > #view-panel[data-on] { animation: none; } }
+</style>
+<script src="js/haven-tour-frame.js" defer></script>`, f);
+    fs.copyFileSync(path.join(root, "site-edits/haven-tour-frame.js"), path.join(out, "js/haven-tour-frame.js"));
+  }
   if (f === "index.html") {
     // A root for tools/brand-demos.mjs, and the site's sticky header and FAQ heading below the bar.
     html = once(html, "</head>", `<style id="haven-under-meridian-bar">
@@ -126,24 +172,12 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
   .faq-wrap .head { top: calc(var(--meridian-bar, 0px) + var(--nav-h) + 24px); }
 </style>
 <style id="haven-panel-bezel">
-  /* The live demo's panel as hardware: a dark glass bezel with a slim brushed-aluminium rim and a
-     sensor at the top. The screen sits inside it; before the visitor starts it, the bezel holds
+  /* The live demo's panel as hardware (the shared bezel, see bezel() in the packager). The screen
+     sits inside it; before the visitor starts it, the bezel holds
      the dimmed picture of that screen, and starting it wakes the screen in the same place.
      haven-frame.js runs the panel at its designed width and scales it to fit. */
-  #live .frame {
-    --bz: clamp(12px, 1.6vw, 24px); --r: 12px; --s: 1;
-    padding: var(--bz); border: 0; border-radius: calc(var(--r) + var(--bz));
-    background: radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.08), transparent 55%),
-      linear-gradient(160deg, #23272e 0%, #0b0d11 45%, #15181d 100%);
-    box-shadow: 0 0 0 1.5px #b4bbc5, 0 0 0 3px #6d747e, 0 0 0 3.5px rgba(15, 28, 46, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.6),
-      0 36px 70px -28px rgba(15, 28, 46, 0.55), 0 14px 28px -14px rgba(15, 28, 46, 0.35);
-  }
-  #live .frame::after {
-    content: ""; position: absolute; z-index: 2; pointer-events: none;
-    top: calc(var(--bz) / 2 - 3px); left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #4a5160, #0b0d11 70%); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
-  }
+  ${bezel("#live .frame", "::after")}
+  #live .frame { --s: 1; }
   #live .frame > .start, #live .frame > iframe {
     inset: auto; top: var(--bz); left: var(--bz); border-radius: var(--r);
     width: calc(100% - 2 * var(--bz)); height: calc(100% - 2 * var(--bz));
@@ -155,8 +189,10 @@ for (const f of files.filter((f) => f.endsWith(".html"))) {
     animation: haven-screen-on 0.7s ease-out both;
   }
   @keyframes haven-screen-on { from { opacity: 0; filter: brightness(1.7) saturate(0.6); } 45% { opacity: 1; } to { opacity: 1; filter: none; } }
-  @media (max-width: 720px) { #live .frame { --bz: 10px; --r: 14px; } }
   @media (prefers-reduced-motion: reduce) { #live .frame > iframe { animation: none; } }
+  /* The room chooser's screen, in the same bezel (its ::after is the scan line, so the sensor is ::before). */
+  ${bezelPicture("#screens .pick .shot", "::before")}
+  #screens .pick .shot::after { left: var(--bz); right: var(--bz); top: var(--bz); border-radius: var(--r) var(--r) 0 0; }
 </style>
 <script src="js/haven-frame.js" defer></script>
 </head>`, f);
