@@ -18,6 +18,7 @@
 //   - the hero's captions file, which the build asks for but the artifact never carried, is
 //     written: the clip has no speech, so it describes the sound;
 //   - the booking and contact confirmations say it is a demonstration and nothing was sent;
+//   - the shop's legal pages open inside the demo (?page=privacy ...), and Home links stay in it;
 //   - the canonical link and og:url pointing at "/" (the Meridian home page) are dropped, and
 //     the icons and manifest the previous build carried are linked again.
 
@@ -91,6 +92,15 @@ const PATCHES = [
   ['". Paul will review your message and reach back out promptly."', '". This is a demonstration copy of the site, so your message was not sent. To reach the shop, call (832) 628-5226."'],
 ];
 for (const [from, to] of PATCHES) app = once(app, from, to, `js/${js[0]}`);
+// The shop's Privacy, Terms, Refunds and Cookies pages are chosen by the address path
+// (/privacy ...), and the Home links go to "/": on this host those land on the Meridian home
+// page. Here they are ?page=privacy ... inside the demo folder, and Home is the demo itself.
+app = once(app, "const Wx=Hj(window.location.pathname)", 'const Wx=Hj("/"+(new URLSearchParams(window.location.search).get("page")||""))', `js/${js[0]}`);
+for (const [from, to, n] of [['href:"/privacy"', 'href:"?page=privacy"', 4], ['href:"/terms"', 'href:"?page=terms"', 3], ['href:"/refunds"', 'href:"?page=refunds"', 3], ['href:"/cookies"', 'href:"?page=cookies"', 1], ['href:"/"', 'href:"./"', 3]]) {
+  const found = app.split(from).length - 1;
+  if (found !== n) throw new Error(`js/${js[0]}: expected ${n} of ${from}, found ${found}`);
+  app = app.split(from).join(to);
+}
 fs.writeFileSync(appJs, app);
 
 html = once(html, '<link rel="canonical" href="/" />', "", "index.html");
