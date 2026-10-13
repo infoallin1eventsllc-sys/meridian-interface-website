@@ -13,6 +13,7 @@ of its own:
   /demos/fog-city/       -> fog-city/            (this repo)
   /demos/big-boy-subs/   -> big-boy-subs/        (this repo)
   /demos/healthcare/     -> healthcare/          (this repo, CarePulse; see below)
+  /demos/secrets-of-cint/ -> Secrets of Cint, the client promotional site (static; source in all-in-1-events-2 branch claude/client-promo-website-5ct9i8); packaged by node tools/package-secrets-of-cint.mjs, see its header
   /demos/drone-command/  -> all-in-1-events-2/drone (built with DEMO_BASE and DEMO_URL, below)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served

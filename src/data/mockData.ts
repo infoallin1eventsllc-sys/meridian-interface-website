@@ -278,6 +278,28 @@ export const PORTFOLIO: PortfolioItem[] = [
     highlights: ['Patient and doctor views', 'Symptom triage and SOAP drafting', 'Vitals, records and billing in one place']
   },
   {
+    // Added 13 Oct in one of the two slots the Analytics Hub and FinSight left.
+    // Source: all-in-1-events-2, branch claude/client-promo-website-5ct9i8;
+    // packaged by tools/package-secrets-of-cint.mjs.
+    id: 'p13',
+    title: 'Secrets of Cint: Candle House Promotional Website',
+    explainerId: 'exp_web_landing',
+    category: 'web_design',
+    categoryLabel: 'Promotional Website',
+    client: 'Candles & Home Fragrance',
+    year: '2026',
+    demo: '/demos/secrets-of-cint/',
+    image: '/images/portfolio/secrets-of-cint.jpg',
+    gallery: [
+      { src: '/images/portfolio/secrets-of-cint.jpg', caption: 'The front page: a black-and-white film of the real candles behind the headline' },
+      { src: '/images/portfolio/secrets-of-cint-scents.jpg', caption: 'Shop by scroll: each scent drifts in on its own, with music and a narrated line' },
+      { src: '/images/portfolio/secrets-of-cint-collection.jpg', caption: 'The full collection: candles, room sprays and diffusers, with filters and a cart' },
+      { src: '/images/portfolio/secrets-of-cint-signature.jpg', caption: 'The signature candle, with its top, heart and base notes' },
+    ],
+    summary: 'A one-page promotional site for a San Francisco candle house: a hero film made from the brand\u2019s own product photos, a shop-by-scroll section where each scent arrives with music and a narrated line, the full collection with filters, a wishlist and a cart, and a private photo panel so the owner can swap product pictures without touching code.',
+    highlights: ['Shop by scroll, with narration', 'Hero film from the real products', 'Owner swaps photos without code']
+  },
+  {
     id: 'p2',
     title: 'The Frame Shop: Motorcycle Frame & Alignment',
     explainerId: 'exp_web_business',

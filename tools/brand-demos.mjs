@@ -27,6 +27,7 @@ const LABEL = {
   'fog-city': 'Fog City Roasters — coffee brand site',
   'big-boy-subs': 'Big Boy Subs — restaurant ordering site',
   healthcare: 'CarePulse — doctor-patient healthcare dashboard',
+  'secrets-of-cint': 'Secrets of Cint — candle house website',
   'drone-command': 'Meridian Interface Drone Command — drone operations console',
   haven: 'Haven — AI home integration system',
 };
