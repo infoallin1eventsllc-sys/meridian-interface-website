@@ -18,15 +18,15 @@ export const HOTLINK_IMAGES = {
   // screenshots the portfolio uses — not concept renders. A service card that
   // shows a fictional client's dashboard says less than one that shows the
   // studio's own. FinSight and then the Analytics Hub were the dashboard here;
-  // both were taken off the site (13 Oct), so it is CarePulse now (the doctor
-  // view, because the patient view is already its tile on the home page).
+  // both were taken off the site (13 Oct). The card reads "Data Analyst, CRM &
+  // Financial Dashboards", so it shows the Meridian CRM's invoices screen.
   webDesign: '/images/portfolio/modern-street.jpg',
   // Was the private-banking concept, removed 17 Sep. The studio has no
   // app-design PRODUCT to show, so this is the nearest true thing: the frame
   // shop's own site photographed on a phone, which is real work and really is
   // a mobile interface. Swap it the day an actual app ships.
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
-  dashboardDesign: '/images/portfolio/carepulse-doctor.jpg',
+  dashboardDesign: '/images/portfolio/meridian-crm-invoices.jpg',
   // Not agentic-tech-stack.jpg: that is the Stack Planner section's own
   // picture on the home page, and the card sat directly above it. A workflow
   // running is also the truer picture of "tools wired together".
@@ -234,7 +234,7 @@ export const PORTFOLIO: PortfolioItem[] = [
       { src: '/images/portfolio/haven-ai-home-wallpaper.jpg', caption: 'Wallpaper in the Vivid finish: every control, room by room, over a picture of the home' },
       { src: '/images/portfolio/haven-ai-home-security.jpg', caption: 'Security console: doors, locks and the main water shutoff, with the cameras (sample pictures)' },
     ],
-    summary: 'The complete Haven website: a film of the home drawn in light, ten wall-panel screens to choose from, the live panel running on a simulated house, a guided tour, the security package, a sample home and a walkthrough booking form. Haven itself is an AI agent for the whole house that runs the lights, climate, water, garage and locks, asks before anything risky, and learns how the household likes things. The live panel answers with Haven\'s built-in command reader; the full AI agent runs on the home\'s own server.',
+    summary: 'The complete Haven website: a film of the home drawn in light, ten wall-panel screens to choose from, the live panel running on a simulated house, a guided tour, the security package, monitoring plans with a free quote, and a walkthrough booking form. Haven itself is an AI agent for the whole house that runs the lights, climate, water, garage and locks, asks before anything risky, and learns how the household likes things. The live panel answers with Haven\'s built-in command reader; the full AI agent runs on the home\'s own server.',
     highlights: ['Asks before anything risky, like opening the garage', 'Ten screens for different spots in the home', 'Try it: type "goodnight" or "I\'m cold"']
   },
   {

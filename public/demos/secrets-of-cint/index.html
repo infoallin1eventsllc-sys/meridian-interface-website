@@ -25,6 +25,8 @@
   /* Below the Meridian demonstration bar (tools/brand-demos.mjs sets --meridian-bar). */
   .site-header { top: var(--meridian-bar, 0px); }
   .cart-drawer, .mobile-nav { top: var(--meridian-bar, 0px); }
+  /* The site's ivory frame: its top edge would sit under the bar, so it starts below it too. */
+  .page-frame { top: var(--meridian-bar, 0px); }
 </style>
 
 <style id="meridian-demo-bar-style">

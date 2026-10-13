@@ -15,7 +15,7 @@
 //   - The newsletter form says plainly that it is a demo: on this host nothing is sent,
 //     so "You're on the list" would tell a visitor something happened that did not.
 //   - The page is wrapped in <div id="root"> for tools/brand-demos.mjs, and the site's
-//     sticky header, cart drawer and phone menu start below the Meridian bar.
+//     sticky header, cart drawer, phone menu and ivory page frame start below the Meridian bar.
 // Everything else (the real products, prices, photos, film and the client's contact
 // details) is the client's site as built.
 
@@ -68,6 +68,8 @@ html = once(html, "</head>", `<style id="meridian-demo-fit">
   /* Below the Meridian demonstration bar (tools/brand-demos.mjs sets --meridian-bar). */
   .site-header { top: var(--meridian-bar, 0px); }
   .cart-drawer, .mobile-nav { top: var(--meridian-bar, 0px); }
+  /* The site's ivory frame: its top edge would sit under the bar, so it starts below it too. */
+  .page-frame { top: var(--meridian-bar, 0px); }
 </style>
 </head>`, "index.html");
 html = once(html, "<body>", '<body>\n<div id="root">', "index.html");
