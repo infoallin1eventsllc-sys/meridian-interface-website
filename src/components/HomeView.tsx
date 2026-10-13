@@ -41,10 +41,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // would also put a real 2026 build under a heading that says "concepts".
   //
   // The home page shows three, not the whole portfolio: every card here used
-  // to appear word for word on the Portfolio page too. Three kinds of work,
-  // a console, a dashboard and a business website. Change the ids to change
-  // the picks; the Portfolio page always shows everything.
-  const FEATURED_IDS = ['p11', 'p1', 'p2'];
+  // to appear word for word on the Portfolio page too. Change the ids to change
+  // the picks; the Portfolio page always shows everything. Otis, 13 Oct: Secrets
+  // of Cint (p13) and Haven (p12) here in place of Drone Command (p11) and
+  // CarePulse (p1), which stay on the Portfolio page.
+  const FEATURED_IDS = ['p13', 'p12', 'p2'];
   const featured = FEATURED_IDS
     .map((id) => PORTFOLIO.find((item) => item.id === id))
     .filter((item): item is typeof PORTFOLIO[number] => Boolean(item));
