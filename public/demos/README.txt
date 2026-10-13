@@ -6,7 +6,7 @@ of its own:
 
   /demos/stack-planner/  -> planner/            (this repo)
   /demos/haven/          -> Haven: the complete Haven website (site, guided tour, screen library, three live panels, film), as published by the Haven session; packaged by node haven/scripts/package-website.mjs <download of the artifact> then node tools/brand-demos.mjs. The panel source is in haven/.
-  /demos/frame-shop/     -> frame-shop/          (this repo)
+  /demos/frame-shop/     -> The Frame Shop, the 8 Oct version with the video hero, from its published build (artifact 6GNnNSJjNXPWXdLApS9NM6); packaged by node tools/package-frame-shop.mjs, see its header. frame-shop/ in this repo is the OLDER source (before the video hero).
   /demos/orchestra/      -> ORCHESTRA cloud console
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
   /demos/modern-street/  -> storefront/          (this repo)
