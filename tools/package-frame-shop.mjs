@@ -6,7 +6,8 @@
 // so frame-shop/ in this repo is the OLDER version (before the video hero); the demo now
 // comes from the published build.
 //
-//   node tools/package-frame-shop.mjs <artifact index.html> <folder holding video/hero-1080.mp4 and video/hero-poster.jpg>
+//   node tools/package-frame-shop.mjs <artifact index.html> <folder holding video/hero-1080.mp4, hero-1080.webm and hero-poster.jpg>
+//   (hero-1080.webm: ffmpeg -i hero-1080.mp4 -c:v libvpx-vp9 -b:v 0 -crf 32 -row-mt 1 -c:a libopus -b:a 96k hero-1080.webm)
 //   node tools/brand-demos.mjs
 //   cp public/brand/meridian-mark.png public/demos/frame-shop/brand/
 //
@@ -15,6 +16,7 @@
 //   - the inline app script moves to js/<hash>.js (the site's security policy runs no inline script);
 //   - the three Unsplash photos become the demo's own copies (frame-shop/public/images/),
 //     which is what the previous build did: the site loads no pictures from other hosts;
+//   - the hero film gets a VP9/WebM copy as a second source, for browsers without H.264;
 //   - the hero's captions file, which the build asks for but the artifact never carried, is
 //     written: the clip has no speech, so it describes the sound;
 //   - the booking and contact confirmations say it is a demonstration and nothing was sent;
@@ -28,8 +30,8 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const [srcHtml, srcMedia] = process.argv.slice(2).map((p) => p && path.resolve(p));
-if (!srcHtml || !fs.existsSync(srcHtml) || !srcMedia || !fs.existsSync(path.join(srcMedia, "video/hero-1080.mp4")))
-  throw new Error("usage: package-frame-shop.mjs <artifact index.html> <folder with video/hero-1080.mp4 and video/hero-poster.jpg>");
+if (!srcHtml || !fs.existsSync(srcHtml) || !srcMedia || !fs.existsSync(path.join(srcMedia, "video/hero-1080.mp4")) || !fs.existsSync(path.join(srcMedia, "video/hero-1080.webm")))
+  throw new Error("usage: package-frame-shop.mjs <artifact index.html> <folder with video/hero-1080.mp4, video/hero-1080.webm (VP9 copy) and video/hero-poster.jpg>");
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const out = path.join(root, "public/demos/frame-shop");
 const pub = path.join(root, "frame-shop/public");
@@ -92,6 +94,12 @@ const PATCHES = [
   ['". Paul will review your message and reach back out promptly."', '". This is a demonstration copy of the site, so your message was not sent. To reach the shop, call (832) 628-5226."'],
 ];
 for (const [from, to] of PATCHES) app = once(app, from, to, `js/${js[0]}`);
+// The hero film shipped as H.264 only, so a browser without that decoder (some Linux and
+// Chromium builds) showed a dead frame. It now offers the same film as VP9/WebM second,
+// the way the main site's videos do; the MP4 stays first for hardware decoding.
+app = once(app, 'i.jsx("video",{ref:h,src:A3,poster:r,', 'i.jsxs("video",{ref:h,poster:r,', `js/${js[0]}`);
+app = once(app, 'children:i.jsx("track",{kind:"captions",src:_3,srcLang:"en",label:"English"})})',
+  'children:[i.jsx("source",{src:A3,type:"video/mp4"}),i.jsx("source",{src:"video/hero-1080.webm",type:"video/webm"}),i.jsx("track",{kind:"captions",src:_3,srcLang:"en",label:"English"})]})', `js/${js[0]}`);
 // The shop's Privacy, Terms, Refunds and Cookies pages are chosen by the address path
 // (/privacy ...), and the Home links go to "/": on this host those land on the Meridian home
 // page. Here they are ?page=privacy ... inside the demo folder, and Home is the demo itself.
@@ -114,7 +122,7 @@ fs.writeFileSync(path.join(out, "index.html"), html);
 
 // Media, pictures, icons.
 fs.mkdirSync(path.join(out, "video"), { recursive: true });
-for (const f of ["hero-1080.mp4", "hero-poster.jpg"]) fs.copyFileSync(path.join(srcMedia, "video", f), path.join(out, "video", f));
+for (const f of ["hero-1080.mp4", "hero-1080.webm", "hero-poster.jpg"]) fs.copyFileSync(path.join(srcMedia, "video", f), path.join(out, "video", f));
 fs.writeFileSync(path.join(out, "video/hero-captions.vtt"), `WEBVTT
 
 00:00:00.000 --> 00:00:15.000
