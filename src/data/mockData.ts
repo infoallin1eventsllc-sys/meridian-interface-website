@@ -18,14 +18,15 @@ export const HOTLINK_IMAGES = {
   // screenshots the portfolio uses — not concept renders. A service card that
   // shows a fictional client's dashboard says less than one that shows the
   // studio's own. FinSight and then the Analytics Hub were the dashboard here;
-  // both were taken off the site (13 Oct), so it is CarePulse now.
+  // both were taken off the site (13 Oct), so it is CarePulse now (the doctor
+  // view, because the patient view is already its tile on the home page).
   webDesign: '/images/portfolio/modern-street.jpg',
   // Was the private-banking concept, removed 17 Sep. The studio has no
   // app-design PRODUCT to show, so this is the nearest true thing: the frame
   // shop's own site photographed on a phone, which is real work and really is
   // a mobile interface. Swap it the day an actual app ships.
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
-  dashboardDesign: '/images/portfolio/carepulse.jpg',
+  dashboardDesign: '/images/portfolio/carepulse-doctor.jpg',
   // Not agentic-tech-stack.jpg: that is the Stack Planner section's own
   // picture on the home page, and the card sat directly above it. A workflow
   // running is also the truer picture of "tools wired together".
