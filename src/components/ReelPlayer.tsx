@@ -36,6 +36,8 @@ interface ReelPlayerProps {
   poster?: string;
   /** A WebM of the same film, for browsers with no H.264 decoder. */
   webm?: string;
+  /** Length announced on the play surface; the studio reel's by default. */
+  seconds?: number;
 }
 
 export const ReelPlayer: React.FC<ReelPlayerProps> = ({
@@ -44,6 +46,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
   caption,
   poster,
   webm,
+  seconds = REEL.seconds,
 }) => {
   const [playing, setPlaying] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
@@ -84,7 +87,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
             type="button"
             onClick={() => setPlaying(true)}
             className="group absolute inset-0 flex flex-col items-center justify-center gap-4 text-white transition-colors hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f172a]"
-            aria-label={`${label}, ${REEL.seconds} seconds`}
+            aria-label={`${label}, ${seconds} seconds`}
           >
             {poster && !posterFailed && (
               <>
@@ -115,7 +118,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
               {label}
             </span>
             <span className="relative font-body text-xs text-slate-300">
-              {REEL.seconds} seconds
+              {seconds} seconds
             </span>
           </button>
         )}

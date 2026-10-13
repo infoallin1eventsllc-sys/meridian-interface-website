@@ -13,7 +13,7 @@ const plannerLink = PLANNER_URL
   ? `${PLANNER_URL}${PLANNER_URL.includes('?') ? '&' : '?'}utm_source=meridian-website&utm_medium=services&utm_campaign=stack-planner`
   : '';
 import { ReelPlayer } from './ReelPlayer';
-import { REEL } from '../lib/reel';
+import { BRAND_AD, REEL } from '../lib/reel';
 import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
@@ -203,14 +203,29 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             services page (18 Sep) — showing the work running beats showing a
             cropped screenshot of it, and the per-service picture is kept rather
             than thrown away. ReelPlayer mounts no <video> until it is clicked,
-            so this costs a visitor nothing until they want it. */}
+            so this costs a visitor nothing until they want it. Custom Web
+            Design plays the brand ad instead (13 Oct, see BRAND_AD). */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          <ReelPlayer
-            src={REEL.local}
-            webm={REEL.localWebm}
-            poster={currentService.image}
-            label="Watch the studio reel"
-          />
+          {currentService.id === 'web_design' ? (
+            // Keyed apart: in the same spot React would keep one player, so a
+            // film already playing would carry on into the other service.
+            <ReelPlayer
+              key="brand-ad"
+              src={BRAND_AD.local}
+              webm={BRAND_AD.localWebm}
+              poster={BRAND_AD.poster}
+              seconds={BRAND_AD.seconds}
+              label="Watch the Meridian ad"
+            />
+          ) : (
+            <ReelPlayer
+              key="reel"
+              src={REEL.local}
+              webm={REEL.localWebm}
+              poster={currentService.image}
+              label="Watch the studio reel"
+            />
+          )}
           <div className="text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
             <p className="font-bold">Every project, the same four steps</p>
             <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 inline-block underline underline-offset-2">See how we work, below</a>

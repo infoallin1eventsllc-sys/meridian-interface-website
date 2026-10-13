@@ -39,3 +39,19 @@ export const REEL = {
   localWebm: '/video/meridian-sizzle.webm',
   seconds: 47,
 };
+
+/**
+ * The studio's brand ad, on the Custom Web Design & Development panel of the
+ * services page in place of the reel (Otis, 13 Oct: "replace that video with a
+ * new ad generated through Higgsfield"). The copy came from Higgsfield Ads
+ * Studio's research of this site (concept "Custom, Not Off-the-Shelf"); Ads
+ * Studio makes stills only, so the film itself is Higgsfield Seedance 2.5,
+ * built from the site's own logo and real demo screens. Every other service
+ * still plays the reel above.
+ */
+export const BRAND_AD = {
+  local: '/video/meridian-brand-ad.mp4',
+  localWebm: '/video/meridian-brand-ad.webm',
+  poster: '/video/meridian-brand-ad-poster.jpg',
+  seconds: 12,
+};
