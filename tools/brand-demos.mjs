@@ -1,7 +1,7 @@
 /**
  * Stamps every hosted demo with a Meridian Interface bar across the top.
  *
- * The demos carry client-facing product names — The Frame Shop, FinSight,
+ * The demos carry client-facing product names — The Frame Shop, CarePulse,
  * ORCHESTRA — because that is the demonstration: a motorcycle shop has to look
  * like a motorcycle shop, not like its agency. The risk Otis spotted is that a visitor who
  * clicks through from the portfolio then believes they have left Meridian's
@@ -20,11 +20,9 @@ const BAR_H = 46;
 
 const LABEL = {
   'stack-planner': 'Stack Planner',
-  finsight: 'FinSight — financial dashboard',
   'frame-shop': 'The Frame Shop — motorcycle frame & alignment',
   orchestra: 'ORCHESTRA — cloud console',
   'meridian-crm': 'Meridian CRM — operations hub',
-  'analytics-hub': 'Analytics Intelligence Hub — BI dashboard',
   'modern-street': 'MODERN_STREET — streetwear storefront',
   'fog-city': 'Fog City Roasters — coffee brand site',
   'big-boy-subs': 'Big Boy Subs — restaurant ordering site',

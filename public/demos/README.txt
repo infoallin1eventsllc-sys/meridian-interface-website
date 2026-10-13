@@ -5,12 +5,10 @@ this path so clients can click through it without a domain or a hosting project
 of its own:
 
   /demos/stack-planner/  -> planner/            (this repo)
-  /demos/finsight/       -> FinSight BI dashboard (no longer linked: its tile became Haven on 11 Oct; still hosted until Otis decides)
   /demos/haven/          -> Haven: the complete Haven website (site, guided tour, screen library, three live panels, film), as published by the Haven session; packaged by node haven/scripts/package-website.mjs <download of the artifact> then node tools/brand-demos.mjs. The panel source is in haven/.
   /demos/frame-shop/     -> frame-shop/          (this repo)
   /demos/orchestra/      -> ORCHESTRA cloud console
   /demos/meridian-crm/   -> CRM-dashboard-operations-hub (built with VITE_DEMO_MODE=true)
-  /demos/analytics-hub/  -> Data Analytics Intelligence Hub
   /demos/modern-street/  -> storefront/          (this repo)
   /demos/fog-city/       -> fog-city/            (this repo)
   /demos/big-boy-subs/   -> big-boy-subs/        (this repo)
@@ -80,11 +78,6 @@ that runs its own Express server with a Gemini key sets VITE_AI_SERVER=1.
 Edits made directly to built bundles (these demos have no source in either
 repo, so a rebuild cannot carry them; re-apply if the bundle is ever replaced):
 
-  analytics-hub  2 Oct 2026  chat badge "Gemini 3.8 Flash" -> "Sample answers"
-                 5 Oct 2026  fetch("/api/ai/query") and fetch("/api/ai/briefing")
-                             replaced by an immediate rejection, so the existing
-                             catch serves the local answers without a 404 per
-                             question (there is no server behind a static host).
   meridian-crm   7 Oct 2026  Quick Capture card: dropped "h-full" from its class
                              (it stretched past its column, so on a phone the
                              Operations Log sat on top of Register Event and the

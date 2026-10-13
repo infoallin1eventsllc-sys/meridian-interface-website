@@ -42,7 +42,7 @@ replaced rather than kept as a fallback.
 | | |
 |---|---|
 | Files | `images/hero/hero-dashboard.webp`, `images/hero/hero-website.webp`, `images/hero/hero-mobile.webp` |
-| Source | Screenshots of this site's own demos: `demos/analytics-hub/`, `demos/frame-shop/`, `demos/big-boy-subs/` |
+| Source | Screenshots of this site's own demos: `demos/healthcare/` (CarePulse; was `demos/analytics-hub/` until it was taken off the site, 13 Oct 2026), `demos/frame-shop/`, `demos/big-boy-subs/` |
 | Captured | 2026-09-25, headless Chromium. Desktop at 1280x800 (1.5x), phone at 390x844 (2x). The "Built by Meridian Interface" banner is trimmed off because the hero draws its own browser and phone frames. |
 
 These carry whatever the demos carry: any photograph visible in a capture

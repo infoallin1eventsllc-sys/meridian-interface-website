@@ -21,7 +21,7 @@ type Piece = typeof PORTFOLIO[number];
  */
 
 const HERO = {
-  dashboard: { id: 'p9', src: '/images/hero/hero-dashboard.webp', w: 1200, h: 750, path: 'demos/analytics-hub' },
+  dashboard: { id: 'p1', src: '/images/hero/hero-dashboard.webp', w: 1200, h: 750, path: 'demos/healthcare' },
   website: { id: 'p2', src: '/images/hero/hero-website.webp', w: 1200, h: 750, path: 'demos/frame-shop' },
   mobile: { id: 'p4', src: '/images/hero/hero-mobile.webp', w: 480, h: 1039 },
 } as const;
@@ -73,9 +73,9 @@ export const HeroShowcase: React.FC<{ onOpen: (item: Piece) => void }> = ({ onOp
       <div className="relative aspect-[10/8.2]">
         {frame(
           dashboard,
-          'IntelHub BI dashboard',
+          'CarePulse healthcare dashboard',
           'hero-frame-1 top-0 right-0 w-[80%] z-10',
-          <BrowserFrame {...HERO.dashboard} alt="IntelHub BI, an analytics dashboard built by Meridian Interface" />,
+          <BrowserFrame {...HERO.dashboard} alt="CarePulse, a doctor-patient healthcare dashboard built by Meridian Interface" />,
         )}
         {frame(
           website,

@@ -17,15 +17,15 @@ export const HOTLINK_IMAGES = {
   // The service cards show the products Meridian actually built — the same
   // screenshots the portfolio uses — not concept renders. A service card that
   // shows a fictional client's dashboard says less than one that shows the
-  // studio's own. FinSight was the dashboard here until Haven replaced its tile
-  // (11 Oct); the Analytics Hub is the dashboard still on the site.
+  // studio's own. FinSight and then the Analytics Hub were the dashboard here;
+  // both were taken off the site (13 Oct), so it is CarePulse now.
   webDesign: '/images/portfolio/modern-street.jpg',
   // Was the private-banking concept, removed 17 Sep. The studio has no
   // app-design PRODUCT to show, so this is the nearest true thing: the frame
   // shop's own site photographed on a phone, which is real work and really is
   // a mobile interface. Swap it the day an actual app ships.
   appDesign: '/images/portfolio/frame-shop-mobile.jpg',
-  dashboardDesign: '/images/portfolio/analytics-hub.jpg',
+  dashboardDesign: '/images/portfolio/carepulse.jpg',
   // Not agentic-tech-stack.jpg: that is the Stack Planner section's own
   // picture on the home page, and the card sat directly above it. A workflow
   // running is also the truer picture of "tools wired together".
@@ -256,25 +256,6 @@ export const PORTFOLIO: PortfolioItem[] = [
     ],
     summary: 'The desk a small studio runs on: leads, clients, projects, invoices and software costs in one place, a copilot that reads the live figures before it answers, and a privacy switch that blurs every name and number the moment a screen is shared.',
     highlights: ['Privacy mode for screen sharing', 'Copilot reads the live figures', 'One owner, signed in with Google']
-  },
-  {
-    id: 'p9',
-    title: 'Data Analytics Intelligence Hub',
-    explainerId: 'exp_web_app',
-    category: 'dashboards',
-    categoryLabel: 'Analytics Dashboard',
-    client: 'Data & Analytics',
-    year: '2026',
-    demo: '/demos/analytics-hub/',
-    image: '/images/portfolio/analytics-hub.jpg',
-    gallery: [
-      { src: '/images/portfolio/analytics-hub.jpg', caption: 'Dashboard: every metric against its target, with a confidence range' },
-      { src: '/images/portfolio/analytics-hub-trends.jpg', caption: 'Trend models: four forecasts and what-if sliders' },
-      { src: '/images/portfolio/analytics-hub-cohorts.jpg', caption: 'Cohorts: retention and net revenue retention by month joined' },
-      { src: '/images/portfolio/analytics-hub-anomalies.jpg', caption: 'Anomalies: what moved, why, and what to do' },
-    ],
-    summary: 'A BI desk for a subscription business: every metric against its target with a confidence range, a live stream of what customers are doing, four forecasting models with what-if sliders, cohort retention tables, and an assistant that answers questions about the numbers in plain English.',
-    highlights: ['Four forecast models, what-if sliders', 'Cohort retention and NRR', 'Ask the numbers a question']
   },
   {
     id: 'p1',
