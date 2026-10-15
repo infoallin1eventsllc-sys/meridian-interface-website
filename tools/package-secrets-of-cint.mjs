@@ -12,6 +12,7 @@
 //
 // What changes on the way in, and why:
 //   - Fonts are served from the demo folder (Fontsource, OFL) instead of Google Fonts.
+//   - The scroll narration plays through one tap-started player, so it speaks on iPhones too.
 //   - The newsletter form says plainly that it is a demo: on this host nothing is sent,
 //     so "You're on the list" would tell a visitor something happened that did not.
 //   - The page is wrapped in <div id="root"> for tools/brand-demos.mjs, and the site's
@@ -75,6 +76,36 @@ html = once(html, "</head>", `<style id="meridian-demo-fit">
 html = once(html, "<body>", '<body>\n<div id="root">', "index.html");
 html = once(html, "</body>", "</div>\n</body>", "index.html");
 fs.writeFileSync(path.join(out, "index.html"), html);
+
+// Narration on phones. Mobile Safari only lets an audio player make sound if a tap started it once;
+// the site gave every scent its own player and started it from the scroll, so on an iPhone the welcome
+// line played (it starts inside the Sound tap) and every candle after it stayed silent. All lines now go
+// through one narrator that the Sound tap starts; the per-scent players only warm the cache. The second
+// music player (the crossfade copy) is started and paused inside the same tap for the same reason, and
+// the "turn on sound" hint is timed from when the scents arrive, not from page load.
+const scrollJs = path.join(out, "assets/js/scroll-shop.js");
+let ss = fs.readFileSync(scrollJs, "utf8");
+ss = once(ss, `  function voice(id) { if (!voices[id]) { var a = new Audio(AUDIO + id + ".mp3"); a.preload = "auto"; voices[id] = a; } return voices[id]; }`,
+  `  function voice(id) { if (!voices[id]) { var a = new Audio(AUDIO + id + ".mp3"); a.preload = "auto"; voices[id] = a; } return voices[id]; }
+  // One narrator for every line: phones only let a player speak once a tap has started it (see the packager note).
+  var narrator = new Audio(); narrator.preload = "auto";`, "scroll-shop.js");
+ss = once(ss, `    var a = voice(id);
+    a.currentTime = 0; speaking = a; speakingId = id;`,
+  `    var a = narrator, warm = voice(id);
+    if (a.getAttribute("data-id") !== id) { a.src = AUDIO + id + ".mp3"; a.setAttribute("data-id", id); }
+    try { a.currentTime = 0; } catch (e) {}
+    speaking = a; speakingId = id;`, "scroll-shop.js");
+ss = once(ss, `    caption(text, a.duration ? a.duration * 1000 + 900 : 9500);`,
+  `    caption(text, warm.duration ? warm.duration * 1000 + 900 : 9500);`, "scroll-shop.js");
+ss = once(ss, `      var m = music[mi]; m.volume = 0; m.play().catch(function () {}); fadeTo(m, MUSIC);`,
+  `      var m = music[mi]; m.volume = 0; m.play().catch(function () {}); fadeTo(m, MUSIC);
+      var other = music[1 - mi];   // the crossfade copy: start it inside this tap too, then park it
+      if (other.paused) { other.volume = 0; var pr = other.play(); if (pr && pr.then) pr.then(function () { if (other !== music[mi]) { other.pause(); other.currentTime = 0; } }).catch(function () {}); }`, "scroll-shop.js");
+ss = once(ss, `  setTimeout(function () { hint.classList.add("fade"); }, 12000);`, `  var hintTimer = null;   // the hint stays for a while once the scents (and the button) are on screen`, "scroll-shop.js");
+ss = once(ss, `    ui.classList.toggle("show", active);`,
+  `    ui.classList.toggle("show", active);
+    if (active && !hintTimer && !on) hintTimer = setTimeout(function () { hint.classList.add("fade"); }, 10000);`, "scroll-shop.js");
+fs.writeFileSync(scrollJs, ss);
 
 const mainJs = path.join(out, "assets/js/main.js");
 fs.writeFileSync(mainJs, once(fs.readFileSync(mainJs, "utf8"), 'showToast("You\'re on the list");', 'showToast("Demo only: no email was sent");', "main.js"));

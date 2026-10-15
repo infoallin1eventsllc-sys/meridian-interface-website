@@ -86,6 +86,8 @@
   music.forEach(function (a) { a.preload = "none"; a.volume = 0; a.loop = false; });
   var voices = {};
   function voice(id) { if (!voices[id]) { var a = new Audio(AUDIO + id + ".mp3"); a.preload = "auto"; voices[id] = a; } return voices[id]; }
+  // One narrator for every line: phones only let a player speak once a tap has started it (see the packager note).
+  var narrator = new Audio(); narrator.preload = "auto";
   var targets = new Map();
   function fadeTo(a, v) { targets.set(a, v); }
   var speaking = null;
@@ -121,7 +123,7 @@
   wrap.appendChild(btn);
   ui.appendChild(wrap);
   section.appendChild(ui);   // inside the section's landmark (fixed positioning still pins it to the screen)
-  setTimeout(function () { hint.classList.add("fade"); }, 12000);
+  var hintTimer = null;   // the hint stays for a while once the scents (and the button) are on screen
 
   var capTimer;
   function caption(text, ms) {
@@ -142,11 +144,13 @@
     hush();
     scents.forEach(function (s) { s.classList.toggle("lit", s.getAttribute("data-id") === id); });
     if (!on) { caption(text, 6500); return; }
-    var a = voice(id);
-    a.currentTime = 0; speaking = a; speakingId = id;
+    var a = narrator, warm = voice(id);
+    if (a.getAttribute("data-id") !== id) { a.src = AUDIO + id + ".mp3"; a.setAttribute("data-id", id); }
+    try { a.currentTime = 0; } catch (e) {}
+    speaking = a; speakingId = id;
     a.onended = function () { if (speaking === a) { speaking = null; speakingId = null; } };
     a.play().catch(function () { if (speaking === a) { speaking = null; speakingId = null; } });
-    caption(text, a.duration ? a.duration * 1000 + 900 : 9500);
+    caption(text, warm.duration ? warm.duration * 1000 + 900 : 9500);
   }
   // A scent has to rest in view for a moment before it speaks, so a fast scroll doesn't stutter through nine voices.
   function focus(id) {
@@ -167,6 +171,8 @@
       document.dispatchEvent(new CustomEvent("soc:sound", { detail: { source: "scents" } }));
       items.forEach(function (it) { voice(it.id); }); voice("welcome");   // warm the cache
       var m = music[mi]; m.volume = 0; m.play().catch(function () {}); fadeTo(m, MUSIC);
+      var other = music[1 - mi];   // the crossfade copy: start it inside this tap too, then park it
+      if (other.paused) { other.volume = 0; var pr = other.play(); if (pr && pr.then) pr.then(function () { if (other !== music[mi]) { other.pause(); other.currentTime = 0; } }).catch(function () {}); }
       lastSaid = focused;
       say(focused || "welcome");
     } else {
@@ -185,6 +191,7 @@
     if (next === active) return;
     active = next;
     ui.classList.toggle("show", active);
+    if (active && !hintTimer && !on) hintTimer = setTimeout(function () { hint.classList.add("fade"); }, 10000);
     if (!active) { music.forEach(function (a) { fadeTo(a, 0); }); }
     else if (on) { var m = music[mi]; if (m.paused) m.play().catch(function () {}); }
   }
