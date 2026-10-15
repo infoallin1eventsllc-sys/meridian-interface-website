@@ -20,7 +20,8 @@ import { shouldStayStill } from '../lib/stillness';
  *      the poster frame and a play button instead: the same test the hero
  *      backdrop uses (lib/stillness.ts).
  *   3. **Cheap.** 2.6 MB, self-hosted next to the hero loop, with a poster so
- *      the frame is painted before a byte of video arrives.
+ *      the frame is painted before a byte of video arrives, and nothing
+ *      fetched until the card is on screen.
  *
  * The film is the three-product reel: Big Boy Subs, the FinSight dashboard and
  * the Stack Planner, with one narration across all three. It is portrait,
@@ -43,12 +44,25 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
     setPlaying(true);
   }, []);
 
+  // It starts when it comes into view, not when the page opens. The card sits
+  // well below the fold, and starting on load made every phone fetch 2.2 MB of
+  // film before the visitor had scrolled anywhere near it (Lighthouse, 15 Oct).
+  // Off screen it pauses, the same rule the hero backdrop follows.
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !playing) return;
-    // A rejected play() is a policy decision, not an error: the poster and the
-    // button are already on screen, so there is nothing to recover from.
-    void video.play().catch(() => undefined);
+    if (typeof IntersectionObserver === 'undefined') {
+      void video.play().catch(() => undefined);
+      return;
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      // A rejected play() is a policy decision, not an error: the poster and
+      // the button are already on screen, so there is nothing to recover from.
+      if (entry.isIntersecting) void video.play().catch(() => undefined);
+      else video.pause();
+    }, { threshold: 0.25 });
+    io.observe(video);
+    return () => io.disconnect();
   }, [playing]);
 
   const start = (withSound: boolean) => {
@@ -72,7 +86,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
           muted={muted}
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           aria-label="Meridian Interface showreel: a restaurant ordering site, a revenue dashboard and the Stack Planner"
         >
           {/* H.264 first: it is the smaller file here and every current browser

@@ -17,6 +17,11 @@ import React, { useCallback, useRef, useState } from 'react';
  *
  * This renders a branded panel instead: no network, no other service's
  * photograph, and it reads as designed rather than broken.
+ *
+ * Every picture here loads lazily. They are all cards and tiles below the first
+ * screen, and loading them up front made a phone fetch about 1.5 MB of photos
+ * before the visitor scrolled (Lighthouse, 15 Oct). The first screen's pictures
+ * are in HeroShowcase and HeroBackdrop, which load eagerly with high priority.
  */
 
 interface ImageWithFallbackProps {
@@ -104,12 +109,14 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
             src={src}
             alt=""
             aria-hidden="true"
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-80"
           />
         )}
         <img
           src={src}
           alt={alt}
+          loading="lazy"
           onLoad={measure}
           onError={() => setFailed(true)}
           className={`absolute inset-0 w-full h-full ${fit === 'cover' ? 'object-cover' : 'object-contain'}`}
@@ -122,6 +129,7 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     <img
       src={src}
       alt={alt}
+      loading="lazy"
       onError={() => setFailed(true)}
       className={className}
     />

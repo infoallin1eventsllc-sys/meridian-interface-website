@@ -43,7 +43,10 @@ const BrowserFrame: React.FC<{ src: string; w: number; h: number; path: string; 
         <span className="hidden sm:inline">meridianinterface.com/</span><span className="text-slate-300">{path}</span>
       </span>
     </div>
-    <img src={src} width={w} height={h} alt={alt} decoding="async" className="block w-full h-auto" />
+    {/* fetchPriority: on a phone the dashboard capture is the largest thing on
+        the first screen, and without the hint it queued behind every other
+        request (Lighthouse, 15 Oct: about 1.5 s of the 8.4 s first paint). */}
+    <img src={src} width={w} height={h} alt={alt} decoding="async" fetchPriority="high" className="block w-full h-auto" />
   </div>
 );
 

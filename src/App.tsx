@@ -94,8 +94,8 @@ export default function App() {
   useEffect(() => {
     if (isUnsubscribe) { document.title = 'Unsubscribe | Meridian Interface'; return; }
     const titles: Record<TabType, string> = {
-      home: 'Meridian Interface | Custom Web Design, Mobile Apps & Data Dashboards',
-      services: 'Services | Meridian Interface',
+      home: 'Houston Web Design, Apps & Dashboards | Meridian Interface',
+      services: 'Services: Web Design, Apps & Dashboards in Houston | Meridian Interface',
       portfolio: 'Portfolio: Working Demos | Meridian Interface',
       booking: 'Book an Appointment | Meridian Interface',
       bucket: 'Your Saved List | Meridian Interface',
