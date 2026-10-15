@@ -23,4 +23,4 @@ The demo needs more than the site does. It streams recorded drone footage from P
 
 ## Removed demos redirect home
 
-`/demos/analytics-hub/` and `/demos/finsight/` were taken off the site in October 2026, but search engines still had them indexed (seen 15 Oct: analytics-hub was one of the two pages Google listed). Both, and anything under them, redirect permanently to `/`, so a searcher lands on the studio instead of a 404, and the permanent redirect tells search engines to drop the old address. Add a pair of rules here whenever another demo is removed.
+`/demos/analytics-hub/` and `/demos/finsight/` were taken off the site in October 2026, but search engines still had them indexed (seen 15 Oct: analytics-hub was one of the two pages Google listed). Both, with and without the trailing slash (`/:path*` alone did not match the bare `/demos/x/` form, measured live), and anything under them, redirect permanently to `/`, so a searcher lands on the studio instead of a 404, and the permanent redirect tells search engines to drop the old address. Add a pair of rules here whenever another demo is removed.
