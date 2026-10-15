@@ -111,6 +111,89 @@
     }
     </script>
 
+    <!-- The site, the home page and its "Before you book" questions, for search
+         engines and AI answers. The questions and answers are word for word the
+         ones on the page (HomeView.tsx) and in the <noscript> copy below: change
+         all three together. dateModified is the last real content change; move
+         it (and the sitemap's lastmod) when the page copy changes, not on every
+         deploy. -->
+    <script type="application/ld+json">
+{
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://meridianinterface.com/#site",
+          "name": "Meridian Interface",
+          "url": "https://meridianinterface.com/",
+          "publisher": {
+            "@id": "https://meridianinterface.com/#studio"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://meridianinterface.com/#home",
+          "url": "https://meridianinterface.com/",
+          "name": "Meridian Interface | Custom Web Design, Mobile Apps & Data Dashboards",
+          "isPartOf": {
+            "@id": "https://meridianinterface.com/#site"
+          },
+          "about": {
+            "@id": "https://meridianinterface.com/#studio"
+          },
+          "dateModified": "2026-10-15",
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://meridianinterface.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How much will my project cost?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Every project gets a written quote that itemises each line and says what it does and does not include. We write it after we understand what you need, because a price given before that is a guess. Nothing is owed until you have seen the quote and agreed to it."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How long does it take?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A logo and visual identity takes 3 to 7 days. Websites and dashboards usually take 1 to 3 weeks, and mobile apps 2 to 4 weeks. Your quote gives the timeline for your project."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I own what you build?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. You receive the source files and full rights to everything we make for you."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are the portfolio pieces client projects?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. They are working demos we built to show what we can make, and you can open and use every one. Your project is designed around your business, your brief and your brand."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What happens after I book?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Once we confirm a time, we go through your goals and any examples you like on the call, then send a written proposal and quote."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
     <!-- Fonts are self-hosted (see src/index.css / public/fonts) — no external CDN dependency. -->
   </head>
   <body class="bg-[#f7f9fd] text-[#191c1f] antialiased">
@@ -163,6 +246,21 @@
           <li><strong>Your Business Tech Stack, Chosen and Connected</strong>: systems and integration work, so the tools you run talk to each other.</li>
           <li><strong>Logo Design &amp; Visual Identity</strong>: logos, vector iconography, colour palettes and typography rules.</li>
           <li><strong>Full Studio Design Bundle</strong>: web, app, dashboard and brand together.</li>
+        </ul>
+
+        <h2 style="font-size:1.25rem;margin:0 0 .75rem">See what we build, before you ask for anything</h2>
+        <p style="margin:0 0 .75rem">Working demos we built to show what we can make. Every one is real: click in and use it.</p>
+        <ul style="margin:0 0 2rem;padding-left:1.25rem">
+          <li><a href="/demos/stack-planner/">Tech Stack for Growing Businesses</a></li>
+          <li><a href="/demos/drone-command/">Meridian Interface Drone Command: Drone Operations Console</a></li>
+          <li><a href="/demos/haven/">Haven: AI Home Integration System</a></li>
+          <li><a href="/demos/meridian-crm/">Meridian CRM: Operations Hub</a></li>
+          <li><a href="/demos/healthcare/">CarePulse: Doctor-Patient Healthcare Dashboard</a></li>
+          <li><a href="/demos/secrets-of-cint/">Secrets of Cint: Candle House Promotional Website</a></li>
+          <li><a href="/demos/frame-shop/">The Frame Shop: Motorcycle Frame &amp; Alignment</a></li>
+          <li><a href="/demos/big-boy-subs/">Big Boy Subs: Restaurant Ordering Site</a></li>
+          <li><a href="/demos/fog-city/">Fog City Roasters: Coffee Brand Identity</a></li>
+          <li><a href="/demos/modern-street/">MODERN_STREET: Streetwear Storefront</a></li>
         </ul>
 
         <h2 style="font-size:1.25rem;margin:0 0 .75rem">Before you book</h2>

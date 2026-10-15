@@ -87,6 +87,26 @@
       "source": "/demos/drone-command",
       "destination": "/demos/drone-command/",
       "permanent": true
+    },
+    {
+      "source": "/demos/analytics-hub",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/analytics-hub/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/finsight",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/finsight/:path*",
+      "destination": "/",
+      "permanent": true
     }
   ]
 }

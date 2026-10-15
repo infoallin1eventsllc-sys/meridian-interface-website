@@ -110,7 +110,40 @@ const bar = (slug) => `
  */
 const unstamp = (html) => html
   .replace(/\n?<style id="meridian-demo-bar-style">[\s\S]*?<\/style>\n?/, '')
-  .replace(/\n?<div id="meridian-demo-bar">[\s\S]*?<\/a>\s*<\/div>/, '');
+  .replace(/\n?<div id="meridian-demo-bar">[\s\S]*?<\/a>\s*<\/div>/, '')
+  .replace(/\n?<link rel="canonical"[^>]*data-meridian-seo[^>]*>/, '')
+  // Every structured-data block goes, ours and the app's own: see seo() below.
+  .replace(/\n?[ \t]*<script type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, '');
+
+/**
+ * What search engines and AI answers read about each demo.
+ *
+ * Otis wants the demos found by people looking for this kind of site, and
+ * credited to Meridian Interface as one website. So each demo names itself as a
+ * demonstration designed and built by Meridian Interface, part of
+ * meridianinterface.com, with its own canonical address.
+ *
+ * An app's own structured data is removed, not kept beside ours. The Frame Shop
+ * build shipped an AutoRepair block (street address, hours, owner) whose url was
+ * "/", which on this domain is Meridian's homepage: it told search engines that
+ * meridianinterface.com is a motorcycle repair shop in Spring, TX. That data
+ * belongs on the client's own site, never on a hosted copy of it.
+ */
+const SITE = 'https://meridianinterface.com';
+const seo = (slug, html) => {
+  const url = `${SITE}/demos/${slug}/`;
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: (LABEL[slug] ?? slug).replace(' \u2014 ', ': '),
+    url,
+    description: 'A working demonstration designed and built by Meridian Interface, a design and development studio in Houston, Texas. This page is a demonstration hosted on meridianinterface.com.',
+    creator: { '@type': 'ProfessionalService', '@id': `${SITE}/#studio`, name: 'Meridian Interface', url: `${SITE}/` },
+    isPartOf: { '@type': 'WebSite', name: 'Meridian Interface', url: `${SITE}/` },
+  };
+  const canonical = /<link rel="canonical"/.test(html) ? '' : `\n<link rel="canonical" href="${url}" data-meridian-seo />`;
+  return `${canonical}\n<script type="application/ld+json">${JSON.stringify(ld)}</script>`;
+};
 
 let done = 0, updated = 0;
 for (const slug of readdirSync(DEMOS)) {
@@ -126,7 +159,7 @@ for (const slug of readdirSync(DEMOS)) {
     continue;
   }
 
-  html = html.replace('</head>', `${styles}\n</head>`);
+  html = html.replace('</head>', `${seo(slug, html)}${styles}\n</head>`);
   html = html.replace(/(<body[^>]*>)/, `$1${bar(slug)}`);
 
   if (html === before) { console.log(`${slug}: unchanged`); continue; }
