@@ -5,7 +5,7 @@ export type ServiceCategory = 'web_design' | 'app_design' | 'dashboards' | 'logo
 export interface InvoiceLineItem {
   id: string;
   description: string;
-  category: 'Web Design' | 'Logo Design' | 'Mobile App UI' | 'Analytics Dashboard' | 'Custom';
+  category: 'Web Design' | 'Logo Design' | 'Mobile App UI' | 'Analytics Dashboard' | 'Full Agency Package' | 'Hourly Design & Engineering' | 'Video Ads' | 'Custom';
   quantity: number;
   rate: number;
   amount: number;

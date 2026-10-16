@@ -57,7 +57,7 @@ export interface BundledPackage {
 
 export interface PricingPreset {
   id: string;
-  category: 'Web Design' | 'Logo Design' | 'Mobile App UI' | 'Analytics Dashboard' | 'Full Agency Package' | 'Hourly Design & Engineering';
+  category: 'Web Design' | 'Logo Design' | 'Mobile App UI' | 'Analytics Dashboard' | 'Full Agency Package' | 'Hourly Design & Engineering' | 'Video Ads';
   title: string;
   rate: number;
   range: string;

@@ -1397,6 +1397,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                             <option value="Logo Design">Logo Design</option>
                             <option value="Mobile App UI">Mobile App UI</option>
                             <option value="Analytics Dashboard">Analytics Dashboard</option>
+                            {/* Presets carry these categories too; without an option of its
+                                own a "Video Ads" line showed as "Web Design" here. */}
+                            <option value="Full Agency Package">Full Agency Package</option>
+                            <option value="Hourly Design & Engineering">Hourly Design &amp; Engineering</option>
+                            <option value="Video Ads">Video Ads</option>
                             <option value="Custom">Custom</option>
                           </select>
                         </td>
