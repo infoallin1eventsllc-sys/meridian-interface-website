@@ -117,6 +117,26 @@
       "source": "/demos/finsight/:path*",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/go/conveyor",
+      "destination": "/go/conveyor/",
+      "permanent": true
+    },
+    {
+      "source": "/go/devices",
+      "destination": "/go/devices/",
+      "permanent": true
+    },
+    {
+      "source": "/go",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/go/",
+      "destination": "/",
+      "permanent": false
     }
   ]
 }
