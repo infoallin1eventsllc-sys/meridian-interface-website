@@ -2,6 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
+      "source": "/card/otis-williams.vcf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/vcard; charset=utf-8"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Otis Williams.vcf\""
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -126,6 +139,11 @@
     {
       "source": "/go/devices",
       "destination": "/go/devices/",
+      "permanent": true
+    },
+    {
+      "source": "/card",
+      "destination": "/card/",
       "permanent": true
     },
     {
