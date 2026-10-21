@@ -155,6 +155,21 @@
       "source": "/go/",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/video/share/mendocino-concept-a-preview.mp4",
+      "destination": "/watch/mendocino-grasslands/#concept-a",
+      "permanent": false
+    },
+    {
+      "source": "/video/share/mendocino-concept-b-preview.mp4",
+      "destination": "/watch/mendocino-grasslands/#concept-b",
+      "permanent": false
+    },
+    {
+      "source": "/watch/mendocino-grasslands",
+      "destination": "/watch/mendocino-grasslands/",
+      "permanent": true
     }
   ]
 }
