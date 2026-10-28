@@ -9,6 +9,7 @@ import {
   fileToBase64,
 } from '../lib/imageStore';
 import { publishImageUrl, publishImageFile } from '../lib/ownerStore';
+import { OwnerCardWallpaper } from './OwnerCardWallpaper';
 
 interface ManagedImage {
   id: string;
@@ -181,6 +182,7 @@ export const OwnerPhotoControl: React.FC = () => {
 
   return (
     <section className="space-y-6">
+      <OwnerCardWallpaper />
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-5">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-blue-600">
