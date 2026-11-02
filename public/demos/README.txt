@@ -84,6 +84,7 @@ repo's vercel.json:
 
   cd meridian-agent-dashboard && npm run build && npm test
   cp public/index.html public/favicon.png public/apple-touch-icon.png public/og-image.png <this repo>/public/demos/agent-dashboard/
+  rm -rf <this repo>/public/demos/agent-dashboard/fonts && cp -r public/fonts <this repo>/public/demos/agent-dashboard/
   node tools/brand-demos.mjs
 
 It has no <div id="root">, so brand-demos.mjs checks for its <main id="main">

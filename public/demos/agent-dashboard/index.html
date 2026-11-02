@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Q5yhpeq7o99F528DeL46B6m8MTL1Mm/1YpT400I7bac=' 'sha256-aU3IHTjaKp4M/K84duTzSrPDOMf5tafmkgmOw0fGhgo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Q5yhpeq7o99F528DeL46B6m8MTL1Mm/1YpT400I7bac=' 'sha256-9et5MooXCBo1cw2Y32qTLAuwIHVr3N4AQlSny2ZFAJA='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Meridian Agent Dashboard · Interactive demo</title>
 <meta name="description" content="An agent CRM by Meridian Interface: pipeline, contacts and AI agents in a quiet-glass dashboard. Interactive demo with sample data.">
@@ -25,9 +25,298 @@
 <meta name="twitter:title" content="Meridian Agent Dashboard · Interactive demo">
 <meta name="twitter:description" content="An agent CRM by Meridian Interface: pipeline, contacts and AI agents in a quiet-glass dashboard. Interactive demo with sample data.">
 <meta name="twitter:image" content="https://meridianinterface.com/demos/agent-dashboard/og-image.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="preload" href="fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/geist-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>/* Geist and Geist Mono (SIL Open Font License 1.1, see OFL.txt), from Google Fonts, served with the demo. */
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(fonts/geist-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(fonts/geist-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(fonts/geist-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/geist-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/geist-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/geist-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/geist-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* symbols2 */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-symbols2.woff2) format('woff2');
+  unicode-range: U+2000-2001, U+2004-2008, U+200A, U+23B8-23BD, U+2500-259F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/geist-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* symbols2 */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-symbols2.woff2) format('woff2');
+  unicode-range: U+2000-2001, U+2004-2008, U+200A, U+23B8-23BD, U+2500-259F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/geist-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
 <script>window.MERIDIAN_DEMO={"contact": "https://meridianinterface.com", "video": "", "site": "https://meridianinterface.com/demos/agent-dashboard/"};</script>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Meridian Agent Dashboard: agent CRM with AI agents","url":"https://meridianinterface.com/demos/agent-dashboard/","description":"A working demonstration designed and built by Meridian Interface, a design and development studio in Houston, Texas. This page is a demonstration hosted on meridianinterface.com.","creator":{"@type":"ProfessionalService","@id":"https://meridianinterface.com/#studio","name":"Meridian Interface","url":"https://meridianinterface.com/"},"isPartOf":{"@type":"WebSite","name":"Meridian Interface","url":"https://meridianinterface.com/"}}</script>
@@ -725,7 +1014,7 @@ kbd{font-family:var(--mono);font-size:11px;line-height:18px;color:var(--muted);b
         </article>
         <article class="panel">
           <div class="ph"><div><h2>Activity</h2><p class="hint" id="feedHint">Agents and team, newest first</p></div></div>
-          <ul class="feed" id="feed"></ul>
+          <ul class="feed" id="feed" tabindex="0" aria-label="Activity, newest first"></ul>
         </article>
       </div>
 
@@ -1144,7 +1433,7 @@ function renderKpis(){const p=P();const {c,p:pv,w}=kpiData();const cmp=w.R.prev?
     {k:'created',label:'New '+p.dealNoun,card:c.created.toLocaleString('en-US'),exact:c.created+' created '+w.R.phrase,go:'contacts'},
     {k:'win',label:'Win rate',card:c.win.rate===null?'—':Math.round(c.win.rate)+'%',exact:c.win.n?c.win.won+' won of '+c.win.n+' closed '+w.R.phrase:'nothing closed '+w.R.phrase,go:'contacts'}];
   $('#kpis').innerHTML=K.map(x=>{const di=x.k==='win'?winDelta(c.win,pv?pv.win:null):deltaInfo(c[x.k],pv?pv[x.k]:null,x.goodDown);const pvTxt=pv?(x.k==='win'?(pv.win.rate===null?'nothing closed':Math.round(pv.win.rate)+'% ('+pv.win.won+' of '+pv.win.n+')'):x.k==='pipe'||x.k==='added'?money(pv[x.k]):String(pv[x.k])):'';
-    return `<button class="kpi" data-go="${x.go}" data-k="${x.k}" data-raw="${x.k==='win'?(c.win.rate===null?'':c.win.rate.toFixed(1)):c[x.k]}" aria-label="${esc(x.label)}: ${esc(x.exact)}, ${esc(di.sr)} ${esc(cmp)}. Open ${x.go==='attn'?'the needs attention table':x.go}"><span class="kl">${esc(x.label)}</span><span class="kv" title="${esc(x.exact)}">${esc(x.card)}</span><span class="kf"><span class="delta ${di.cls}"${pv?` title="${esc(w.R.prev)}: ${esc(pvTxt)}"`:''}>${esc(di.txt)}</span><span class="kc">${esc(cmp)}</span></span></button>`;}).join('');}
+    return `<button class="kpi" data-go="${x.go}" data-k="${x.k}" data-raw="${x.k==='win'?(c.win.rate===null?'':c.win.rate.toFixed(1)):c[x.k]}" ><span class="kl">${esc(x.label)}</span><span class="kv" title="${esc(x.exact)}">${esc(x.card)}</span><span class="sr">: ${esc(x.exact)},</span><span class="kf"><span class="delta ${di.cls}" aria-hidden="true"${pv?` title="${esc(w.R.prev)}: ${esc(pvTxt)}"`:''}>${esc(di.txt)}</span><span class="sr">${esc(di.sr)}</span> <span class="kc">${esc(cmp)}</span></span><span class="sr">. Open ${x.go==='attn'?'the needs attention table':x.go}</span></button>`;}).join('');}
 
 /* ---------- revenue: a seeded daily series, sliced by the range; current period in the accent, same period last year dashed neutral ---------- */
 const REVC={};let REVG=null,revKey='';
@@ -1309,7 +1598,7 @@ function csvText(head,rows){return[head].concat(rows).map(r=>r.map(csvCell).join
 function exportData(tbl){const p=P();const cur=CUR[state.currency]||state.currency;
   if(tbl==='attn')return{slug:fileBase()+'-needs-attention',head:[cap1(singular(p.dealNoun)),'Account','Contact','Owner','Stage','Heat','Value','Currency','Idle (days)','Next step'],rows:attnRows().map(d=>[d.title,d.company,d.contact,d.owner,stageName(d),d.heat,d.value,cur,d.days,d.next])};
   return{slug:fileBase()+'-'+p.people.toLowerCase().replace(/[^a-z0-9]+/g,'-'),head:['Name','Account','Opportunity','Stage','Value','Currency','Owner','Last touch','Heat','Created','Next step'],rows:acctRows().map(d=>[d.contact,d.company,d.title,stageName(d),d.value,cur,d.owner,isoOf(d.updated),d.heat,isoOf(d.created),d.next])};}
-/* export file names follow white-labelling: "prism-…" or the business name */
+/* export file names follow white-labelling: "meridian-…" or the business name */
 function fileBase(){return state.brand.prism?'meridian':(bizName().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'crm');}
 function csvFile(tbl){const x=exportData(tbl);const w=win();return{name:`${x.slug}_${isoOf(w.start)}_to_${isoOf(w.end)}.csv`,text:csvText(x.head,x.rows),n:x.rows.length};}
 /* outside claude.ai (the public demo) a normal browser download is used; inside the viewer only the downloads capability works */
@@ -1503,7 +1792,7 @@ function whyOf(d){return d.heat==='hot'&&d.days>=7?'Hot, idle '+d.days+' days':d
 const NOTIF_MAX=12;
 function renderNotif(focusSel){const all=notifItems();const items=all.slice(0,NOTIF_MAX);const doneN=Object.keys(state.doneTasks[state.preset]||{}).length;
   pop.innerHTML=`<div class="pop-h"><h2 id="notifTitle">Needs attention</h2><span class="hint">${all.length?all.length+' open · all dates':'All caught up'}</span></div>`+
-    (items.length?`<ul class="nlist">${items.map(d=>`<li class="ni"><button type="button" class="nopen" data-open="${d.id}"><b>${esc(d.title)}</b><small>${esc(whyOf(d))} · ${esc(d.company||d.contact)}</small></button><span class="nage num" title="Idle ${d.days} days">${d.days}d</span><button type="button" class="btn small" data-done="${d.id}" aria-label="Mark ${esc(d.title)} done">Mark done</button></li>`).join('')}</ul>${all.length>NOTIF_MAX?`<p class="hint" style="padding:8px 8px 4px">Showing the ${NOTIF_MAX} highest priority. <button type="button" class="link" id="notifAll">See all ${all.length} in Needs attention</button></p>`:''}`
+    (items.length?`<ul class="nlist">${items.map(d=>`<li class="ni"><button type="button" class="nopen" data-open="${d.id}"><b>${esc(d.title)}</b><small>${esc(whyOf(d))} · ${esc(d.company||d.contact)}</small></button><span class="nage num" title="Idle ${d.days} days">${d.days}d</span><button type="button" class="btn small" data-done="${d.id}">Mark done<span class="sr">: ${esc(d.title)}</span></button></li>`).join('')}</ul>${all.length>NOTIF_MAX?`<p class="hint" style="padding:8px 8px 4px">Showing the ${NOTIF_MAX} highest priority. <button type="button" class="link" id="notifAll">See all ${all.length} in Needs attention</button></p>`:''}`
       :`<div class="empty"><p>Nothing needs attention.${doneN?' '+doneN+' marked done.':''}</p>${doneN?'<button type="button" class="btn small" id="notifRestore">Restore '+doneN+' marked done</button>':''}</div>`);
   const f=focusSel&&pop.querySelector(focusSel);(f||focusables(pop)[0]||pop).focus({preventScroll:true});}
 function placePop(){const r=bell.getBoundingClientRect();const vw=document.documentElement.clientWidth||innerWidth;let right=Math.max(16,Math.round(vw-r.right));if(vw-right-pop.offsetWidth<16)right=Math.max(16,vw-16-pop.offsetWidth);pop.style.top=Math.round(r.bottom+8)+'px';pop.style.right=right+'px';}
@@ -1841,7 +2130,7 @@ function autoMap(heads){const p=P();const nh=heads.map(normH);const used=new Set
   pick('title',[dn,dn+'name',dn+'title'].concat(IMP_SYN.title));['company','value','stage','owner','heat','next','closed','created','updated','note','contact'].forEach(f=>pick(f,IMP_SYN[f]));
   /* second pass: a header that contains a synonym ("Value, USD", "Deal Amount (EUR)"); short words only match exactly */
   Object.keys(IMP_SYN).forEach(f=>{if(map[f]!==undefined)return;for(const x of IMP_SYN[f].filter(y=>y.length>=5)){const i=nh.findIndex((h,k)=>!used.has(k)&&h.includes(x));if(i>=0){used.add(i);map[f]=i;return;}}});
-  /* a bare "Name": the record if none matched yet, otherwise the contact (Prism's own export puts the contact under Name) */
+  /* a bare "Name": the record if none matched yet, otherwise the contact (this dashboard's own export puts the contact under Name) */
   const ni=nh.findIndex((h,k)=>!used.has(k)&&h==='name');if(ni>=0){if(map.title===undefined){used.add(ni);map.title=ni;}else if(map.contact===undefined){used.add(ni);map.contact=ni;}}
   return map;}
 function stageOf(v,p){const n=normH(v);if(!n)return null;const i=p.stages.findIndex(x=>normH(x)===n);if(i>=0)return i;const last=p.stages.length-1;
@@ -2157,7 +2446,7 @@ function redrawCharts(){renderRevenue();}
 let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(redrawCharts,60);}).observe($('#main'));
 function switchPreset(){const m=$('#main');m.classList.add('fading');resetShown();extraFeed=[];doneBonus={};$('#q').value='';F.owner='all';F.stage=-1;F.q='';normalizeF();writeHash(false);setTimeout(()=>{renderAll();m.classList.remove('fading');},150);}
 /* each panel renders on its own: one bad record can't stop the rest */
-function safe(f,a){try{f(a);}catch(e){if(window.console)console.error('Prism: a panel failed to render',e);}}
+function safe(f,a){try{f(a);}catch(e){if(window.console)console.error('Meridian: a panel failed to render',e);}}
 function renderData(o){safe(normalizeF);[renderOnb,renderHeader,renderFilters,renderKpis].forEach(f=>safe(f));safe(renderRevenue,o);[renderStageBars,renderAgents,renderAttention,renderBoard,renderContacts].forEach(f=>safe(f));}
 function renderAll(o){renderData(o);safe(renderFeed);safe(renderLiveCards);}
 /* back / forward and pasted links: the hash is the source of truth for view + filters */
