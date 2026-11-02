@@ -15,6 +15,7 @@ of its own:
   /demos/healthcare/     -> healthcare/          (this repo, CarePulse; see below)
   /demos/secrets-of-cint/ -> Secrets of Cint, the client promotional site (static; source in all-in-1-events-2 branch claude/client-promo-website-5ct9i8); packaged by node tools/package-secrets-of-cint.mjs, see its header
   /demos/drone-command/  -> all-in-1-events-2/drone (built with DEMO_BASE and DEMO_URL, below)
+  /demos/agent-dashboard/ -> meridian-agent-dashboard (one HTML file; see below)
 
 To refresh one, build its source with DEMO_BASE set to the path it is served
 from, then copy the build here. For the planner, which lives in this repo:
@@ -75,6 +76,21 @@ that runs its own Express server with a Gemini key sets VITE_AI_SERVER=1.
   cd healthcare && DEMO_BASE=/demos/healthcare/ npm run build
   rm -rf ../public/demos/healthcare && cp -r dist ../public/demos/healthcare
   cd .. && node tools/brand-demos.mjs
+
+Meridian Agent Dashboard (meridian-agent-dashboard repo) is a single HTML file,
+not a Vite app. Its build already targets this path (SITE_URL in
+tools/build_public.py). Leave out its vercel.json; the headers live in this
+repo's vercel.json:
+
+  cd meridian-agent-dashboard && npm run build && npm test
+  cp public/index.html public/favicon.png public/apple-touch-icon.png public/og-image.png <this repo>/public/demos/agent-dashboard/
+  node tools/brand-demos.mjs
+
+It has no <div id="root">, so brand-demos.mjs checks for its <main id="main">
+instead. Its layout reads --meridian-bar to sit below the bar. Its scripts are
+inline and allowed by sha256 hashes in its own <meta> policy, which changes on
+every build, so the site's header policy for this path leaves scripts to the
+meta tag (see VERCEL-CONFIG.md).
 
 Edits made directly to built bundles (these demos have no source in either
 repo, so a rebuild cannot carry them; re-apply if the bundle is ever replaced):

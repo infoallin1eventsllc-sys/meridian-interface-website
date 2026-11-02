@@ -21,6 +21,12 @@ The Content-Security-Policy and Permissions-Policy are split in two: one rule fo
 
 The demo needs more than the site does. It streams recorded drone footage from Pexels (media-src). It connects to an aircraft link the pilot chooses: a bridge or video streamer on the local network, over https/wss, or localhost (connect-src). And it uses geolocation (walking a survey boundary), the microphone (push-to-talk), and Web Bluetooth and Web Serial (flying a real aircraft) (Permissions-Policy). None of this applies to the rest of the site, whose policy is unchanged. `/demos/drone-command` without the slash redirects to the slash form, so the page always gets the demo's own policy and the service worker scope.
 
+## The agent dashboard's policy (`/demos/agent-dashboard/`)
+
+This demo is one HTML file whose scripts are inline. The site-wide policy (`script-src 'self'`) would block them and leave a blank page, so this path is left out of the site-wide rule, the same way as the drone demo and Haven.
+
+Its real policy is a `<meta http-equiv="Content-Security-Policy">` tag that the demo's own build writes: scripts only by sha256 hash, `connect-src 'none'` (the demo sends nothing anywhere), fonts from Google only. Those hashes change every time the demo is rebuilt, so they are not copied here. The header for this path carries only what a meta tag cannot set, or what is worth stating twice: `frame-ancestors 'none'`, `object-src`, `base-uri`, `form-action` and `upgrade-insecure-requests`. It has no `script-src` or `default-src`, because a browser enforces the header and the meta tag together and a `script-src` here would block the hashed scripts the meta tag allows. The Permissions-Policy is the site's own. `/demos/agent-dashboard` without the slash redirects to the slash form.
+
 ## Removed demos redirect home
 
 `/demos/analytics-hub/` and `/demos/finsight/` were taken off the site in October 2026, but search engines still had them indexed (seen 15 Oct: analytics-hub was one of the two pages Google listed). Both, with and without the trailing slash (`/:path*` alone did not match the bare `/demos/x/` form, measured live), and anything under them, redirect permanently to `/`, so a searcher lands on the studio instead of a 404, and the permanent redirect tells search engines to drop the old address. Add a pair of rules here whenever another demo is removed.

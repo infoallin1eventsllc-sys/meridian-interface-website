@@ -259,6 +259,28 @@ export const PORTFOLIO: PortfolioItem[] = [
     highlights: ['Privacy mode for screen sharing', 'Copilot reads the live figures', 'One owner, signed in with Google']
   },
   {
+    // The agent CRM built as a claude.ai artifact (repo: meridian-agent-dashboard).
+    // The hosted copy runs on sample data in the visitor's browser and sends
+    // nothing anywhere; the shared team workspace and real agent runs need claude.ai.
+    id: 'p14',
+    title: 'Meridian Agent Dashboard: Agent CRM',
+    explainerId: 'exp_web_app',
+    category: 'dashboards',
+    categoryLabel: 'Agent CRM',
+    client: 'Meridian Interface',
+    year: '2026',
+    demo: '/demos/agent-dashboard/',
+    image: '/images/portfolio/agent-dashboard.jpg',
+    gallery: [
+      { src: '/images/portfolio/agent-dashboard.jpg', caption: 'Overview: the pipeline, revenue against last year, and what the agents did' },
+      { src: '/images/portfolio/agent-dashboard-pipeline.jpg', caption: 'Pipeline: every opportunity by stage, dragged between columns' },
+      { src: '/images/portfolio/agent-dashboard-agents.jpg', caption: 'Agents: what each one is working on, with pause and give-a-task' },
+      { src: '/images/portfolio/agent-dashboard-record.jpg', caption: 'A record: stage, heat, next step and one-click agent actions' },
+    ],
+    summary: 'A CRM where AI agents take the busywork: they score the pipeline, research accounts and draft follow-ups, and every change they suggest waits for a person to approve it. Seven ready-made layouts, from enterprise sales to salons, with a shared team workspace and the client\'s own branding.',
+    highlights: ['Agents suggest, a person approves', 'Seven layouts, from sales teams to salons', 'The demo sends nothing anywhere']
+  },
+  {
     id: 'p1',
     title: 'CarePulse: Doctor-Patient Healthcare Dashboard',
     explainerId: 'exp_web_app',

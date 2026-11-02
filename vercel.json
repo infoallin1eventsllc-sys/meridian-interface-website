@@ -50,7 +50,7 @@
       ]
     },
     {
-      "source": "/((?!demos/drone-command/|demos/haven/).*)",
+      "source": "/((?!demos/drone-command/|demos/haven/|demos/agent-dashboard/).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
@@ -87,6 +87,19 @@
           "value": "geolocation=(), microphone=(self), camera=(), payment=(), usb=(), interest-cohort=()"
         }
       ]
+    },
+    {
+      "source": "/demos/agent-dashboard/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -99,6 +112,11 @@
     {
       "source": "/demos/drone-command",
       "destination": "/demos/drone-command/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/agent-dashboard",
+      "destination": "/demos/agent-dashboard/",
       "permanent": true
     },
     {

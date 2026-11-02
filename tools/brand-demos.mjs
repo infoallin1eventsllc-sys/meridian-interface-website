@@ -30,7 +30,15 @@ const LABEL = {
   'secrets-of-cint': 'Secrets of Cint — candle house website',
   'drone-command': 'Meridian Interface Drone Command — drone operations console',
   haven: 'Haven — AI home integration system',
+  'agent-dashboard': 'Meridian Agent Dashboard — agent CRM with AI agents',
 };
+
+/**
+ * The element that holds each app, checked after the old bar is stripped.
+ * The React builds mount into <div id="root">. The agent dashboard is one
+ * hand-written page with no root div; its <main id="main"> plays that part.
+ */
+const ROOT = { 'agent-dashboard': 'id="main"' };
 
 const styles = `
 <style id="meridian-demo-bar-style">
@@ -153,7 +161,7 @@ for (const slug of readdirSync(DEMOS)) {
   const had = before.includes('meridian-demo-bar');
   let html = unstamp(before);
 
-  if (!html.includes('id="root"')) {
+  if (!html.includes(ROOT[slug] ?? 'id="root"')) {
     console.error(`${slug}: ABORTED — stripping the old bar would have removed the app root`);
     process.exitCode = 1;
     continue;
