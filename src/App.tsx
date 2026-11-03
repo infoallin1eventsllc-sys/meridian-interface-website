@@ -56,8 +56,16 @@ export default function App() {
 
   // `?project=<slug>` opens the Portfolio with that piece's panel: a link a recruiter or client can be
   // sent, instead of the home page. ImpactView reads the slug and keeps the address bar in step.
-  const [openProject] = useState<string | null>(() =>
+  const [openProject, setOpenProject] = useState<string | null>(() =>
     isUnsubscribe ? null : new URLSearchParams(window.location.search).get('project'));
+  const forgetProject = () => {
+    setOpenProject(null);
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('project')) {
+      url.searchParams.delete('project');
+      window.history.replaceState(null, '', url);
+    }
+  };
   useEffect(() => {
     if (!openProject) return;
     setCurrentTab('portfolio');
@@ -70,6 +78,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleTabChange = (tab: TabType) => {
+    forgetProject();
     setCurrentTab(tab);
     trackPage(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -82,8 +91,12 @@ export default function App() {
     handleTabChange('services');
   };
 
-  const handleQuickBookService = (serviceId: ServiceCategory) => {
+  // Notes a booking starts with: the brief from the Services page scope builder.
+  const [bookingNotes, setBookingNotes] = useState('');
+  const handleQuickBookService = (serviceId: ServiceCategory, brief = '') => {
     setPreselectedService(serviceId);
+    setBookingNotes(brief);
+    forgetProject();
     setCurrentTab('booking');
     trackPage('booking');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -194,6 +207,7 @@ export default function App() {
           <ConnectView
             onTabChange={handleTabChange}
             preselectedService={preselectedService}
+            initialNotes={bookingNotes}
             onAppointmentCreated={handleAppointmentCreated}
           />
         )}

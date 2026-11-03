@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { MeridianLogo } from './MeridianLogo';
@@ -49,12 +49,20 @@ export const Modals: React.FC<ModalsProps> = ({
   const [modalDate, setModalDate] = useState(nextBusinessDay);
   const [modalTime, setModalTime] = useState('10:00 AM - 11:00 AM EST');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  // Same two guards as the booking page: no double booking, and no "Scheduled!"
+  // when the studio never received it.
+  const [sending, setSending] = useState(false);
+  const sendingRef = useRef(false); // state alone misses clicks landing in the same tick
+  const [delivered, setDelivered] = useState(true);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleModalBookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sendingRef.current) return;
+    sendingRef.current = true;
+    setSending(true);
     const serviceObj = SERVICES.find(s => s.id === modalService) || SERVICES[0];
 
     const newApt: Appointment = {
@@ -73,13 +81,18 @@ export const Modals: React.FC<ModalsProps> = ({
     };
 
     // Single submission seam — persists locally and delivers to the backend when connected.
-    await submitAppointment(newApt);
+    const result = await submitAppointment(newApt);
+    sendingRef.current = false;
+    setSending(false);
+    setDelivered(result.delivered);
 
     if (onAppointmentCreated) {
       onAppointmentCreated(newApt);
     }
 
     setIsSubmitted(true);
+    // A failed send stays on screen: the visitor needs to read the fallback.
+    if (!result.delivered) return;
     setTimeout(() => {
       setIsSubmitted(false);
       onCloseConsultation();
@@ -104,7 +117,7 @@ export const Modals: React.FC<ModalsProps> = ({
             </button>
 
             {isSubmitted ? (
-              <div className="text-center py-8 space-y-4">
+              <div data-private className="text-center py-8 space-y-4">
                 <div className="w-14 h-14 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center mx-auto">
                   <span className="material-symbols-outlined text-3xl">check</span>
                 </div>
@@ -114,6 +127,12 @@ export const Modals: React.FC<ModalsProps> = ({
                 <p className="font-body text-xs text-slate-600 max-w-sm mx-auto">
                   Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal. We'll reply within one business day to confirm it.
                 </p>
+                {!delivered && (
+                  <p role="alert" className="font-body text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 max-w-sm mx-auto text-left">
+                    We could not reach the studio's system just now, so this request is saved on this device only. If you do not
+                    hear back within one business day, email <a className="underline font-semibold" href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a> and it will not be lost.
+                  </p>
+                )}
               </div>
             ) : (
               <div>
@@ -132,6 +151,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     </label>
                     <select
                       aria-label="Required design service"
+                      autoFocus
                       value={modalService}
                       onChange={(e) => setModalService(e.target.value as ServiceCategory)}
                       className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-slate-900"
@@ -226,9 +246,10 @@ export const Modals: React.FC<ModalsProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full bg-[#0f172a] text-white py-3.5 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md mt-2"
+                    disabled={sending}
+                    className="w-full bg-[#0f172a] text-white py-3.5 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md mt-2 disabled:opacity-60 disabled:cursor-wait"
                   >
-                    Confirm Appointment
+                    {sending ? 'Sending…' : 'Confirm Appointment'}
                   </button>
                 </form>
               </div>

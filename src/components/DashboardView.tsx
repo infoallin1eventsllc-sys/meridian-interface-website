@@ -67,7 +67,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
   });
 
   return (
-    <main className="pt-24 pb-24 md:pb-16 px-4 md:px-12 max-w-[1440px] mx-auto animate-fadeIn bg-slate-50 min-h-screen">
+    <main data-private className="pt-24 pb-24 md:pb-16 px-4 md:px-12 max-w-[1440px] mx-auto animate-fadeIn bg-slate-50 min-h-screen">
       {/* Top Banner */}
       <section className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
@@ -272,7 +272,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                 {activeAppointment.serviceTitle}
               </h3>
 
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 text-xs">
+              <div data-private className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-medium">Client Name:</span>
                   <span className="font-bold text-slate-900">{activeAppointment.clientName}</span>

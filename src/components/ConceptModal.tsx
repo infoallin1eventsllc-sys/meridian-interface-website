@@ -36,12 +36,19 @@ export const ConceptModal: React.FC<{
     return () => window.removeEventListener('keydown', onKey);
   }, [item, zoomed, onClose]);
 
+  useEffect(() => {
+    if (!item) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [item]);
+
   if (!item) return null;
 
   return (
     <>
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div role="dialog" aria-modal="true" aria-label={item.title} className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+          <div role="dialog" aria-modal="true" aria-label={item.title} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={onClose}
               aria-label="Close"

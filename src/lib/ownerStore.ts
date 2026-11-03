@@ -248,7 +248,13 @@ export async function saveInvoice(invoice: OwnerInvoice): Promise<{ offline: boo
     await call({ action: 'save', invoice });
     return { offline: false };
   } catch (err) {
-    if (err instanceof UnauthorizedError) throw err;
+    // The session expired between opening the form and pressing Save. The
+    // rejection wiped the cache, so keep just this invoice: the owner typed it,
+    // and the next successful login uploads it (migrateLocalInvoices).
+    if (err instanceof UnauthorizedError) {
+      writeLocal([invoice]);
+      throw err;
+    }
     const list = readLocal().filter((i) => i.id !== invoice.id);
     writeLocal([invoice, ...list]);
     return { offline: true };

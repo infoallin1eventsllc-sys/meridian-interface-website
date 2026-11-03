@@ -9,6 +9,17 @@ import './index.css';
 // and the first touch is what a later booking will be credited to.
 captureAttribution();
 
+window.addEventListener('vite:preloadError', (event) => {
+  try {
+    if (sessionStorage.getItem('reloaded-for-new-build')) return;
+    sessionStorage.setItem('reloaded-for-new-build', '1');
+  } catch {
+    return;
+  }
+  event.preventDefault();
+  window.location.reload();
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

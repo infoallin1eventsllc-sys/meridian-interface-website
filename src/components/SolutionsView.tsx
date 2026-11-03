@@ -18,7 +18,7 @@ import { useMeridianMotion, m as motion } from '../lib/motion';
 
 interface ServicesViewProps {
   onTabChange: (tab: TabType) => void;
-  onSelectServiceForBooking: (serviceId: ServiceCategory) => void;
+  onSelectServiceForBooking: (serviceId: ServiceCategory, brief?: string) => void;
   /** Which service to open on; a home-page service card passes its own. */
   initialServiceId?: ServiceCategory;
 }
@@ -289,7 +289,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
 };
 
 interface CalculatorProps {
-  onSelectServiceForBooking: (serviceId: ServiceCategory) => void;
+  onSelectServiceForBooking: (serviceId: ServiceCategory, brief?: string) => void;
 }
 
 const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForBooking }) => {
@@ -534,7 +534,11 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
 
           <div className="space-y-3 pt-4 border-t border-white/10">
             <button
-              onClick={() => onSelectServiceForBooking(calcService)}
+              onClick={() => onSelectServiceForBooking(
+                calcService,
+                [`Brief from the Services page: ${SERVICES.find((s) => s.id === calcService)?.title ?? calcService}, ${scopeLabel.toLowerCase()} scope.`,
+                  ...chosenExtras.map((x) => `- ${x}`)].join('\n'),
+              )}
               className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg">calendar_month</span>

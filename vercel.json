@@ -120,6 +120,56 @@
       "permanent": true
     },
     {
+      "source": "/demos/stack-planner",
+      "destination": "/demos/stack-planner/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/secrets-of-cint",
+      "destination": "/demos/secrets-of-cint/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/orchestra",
+      "destination": "/demos/orchestra/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/modern-street",
+      "destination": "/demos/modern-street/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/meridian-crm",
+      "destination": "/demos/meridian-crm/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/healthcare",
+      "destination": "/demos/healthcare/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/haven",
+      "destination": "/demos/haven/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/frame-shop",
+      "destination": "/demos/frame-shop/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/fog-city",
+      "destination": "/demos/fog-city/",
+      "permanent": true
+    },
+    {
+      "source": "/demos/big-boy-subs",
+      "destination": "/demos/big-boy-subs/",
+      "permanent": true
+    },
+    {
       "source": "/demos/analytics-hub",
       "destination": "/",
       "permanent": true

@@ -18,6 +18,10 @@ import {
 } from '../lib/catalogue';
 
 import { INITIAL_OWNER_INVOICES } from '../data/mockData';
+
+const cents = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+/** Dollars with exactly two decimals: "4,578.98", never "1,336.411". */
+const money = (n: number) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SecurityPanel } from './SecurityPanel';
@@ -161,7 +165,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       .then(({ invoices: remote, offline: isOffline }) => {
         if (cancelled) return;
         setOffline(isOffline);
-        setInvoices(remote.length ? remote : INITIAL_OWNER_INVOICES);
+        setInvoices(remote.length || isOffline ? remote : INITIAL_OWNER_INVOICES);
       })
       // A rejected session already re-locked the portal above; there is nothing
       // to show and nothing to report beyond that.
@@ -208,12 +212,12 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setInvoices([]);
   };
 
-  // Calculations
-  const subtotal = lineItems.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const discountAmount = (subtotal * formDiscount) / 100;
-  const taxableAmount = subtotal - discountAmount;
-  const taxAmount = (taxableAmount * formTax) / 100;
-  const grandTotal = taxableAmount + taxAmount;
+  // Calculations, each rounded to the cent so what is shown is what is stored.
+  const subtotal = cents(lineItems.reduce((sum, item) => sum + (item.amount || 0), 0));
+  const discountAmount = cents((subtotal * formDiscount) / 100);
+  const taxableAmount = cents(subtotal - discountAmount);
+  const taxAmount = cents((taxableAmount * formTax) / 100);
+  const grandTotal = cents(taxableAmount + taxAmount);
 
   // Invoice Items Management
   const handleStartNewInvoiceWithItems = (items: InvoiceLineItem[]) => {
@@ -510,7 +514,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       status: formStatus,
       notes: formNotes,
       isOwnerOnly: true,
-      createdAt: todayISO()
+      createdAt: activeInvoice?.createdAt || todayISO()
     };
 
     let updatedList: OwnerInvoice[];
@@ -524,7 +528,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     // Optimistic: the list updates immediately, then the server confirms. If it
     // cannot be reached the seam keeps a local copy and says so, rather than
     // pretending the invoice was filed.
-    void saveInvoiceRemote(newInvoice).then(({ offline: isOffline }) => setOffline(isOffline));
+    void saveInvoiceRemote(newInvoice)
+      .then(({ offline: isOffline }) => setOffline(isOffline))
+      .catch(() => setPinError('Your session expired before that invoice reached the server. It is kept on this device: enter the passcode and it uploads.'));
 
     setIsCreatingNew(false);
     setActiveInvoice(null);
@@ -552,7 +558,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     if (confirm(`Delete owner invoice #${id}? This action cannot be undone.`)) {
       const updated = invoices.filter(i => i.id !== id);
       setInvoices(updated);
-      void deleteInvoiceRemote(id).then(({ offline: isOffline }) => setOffline(isOffline));
+      void deleteInvoiceRemote(id)
+        .then(({ offline: isOffline }) => setOffline(isOffline))
+        .catch(() => setPinError('Your session expired before that delete reached the server. Enter the passcode and delete it again.'));
     }
   };
 
@@ -711,6 +719,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               </label>
               <input
                 type="password"
+                aria-label="Owner passcode"
                 placeholder="Enter owner passcode"
                 value={pinInput}
                 onChange={(e) => {
@@ -1439,7 +1448,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           />
                         </td>
                         <td className="p-3 text-right font-display font-black text-slate-900">
-                          ${(item.amount || 0).toLocaleString()}
+                          ${money((item.amount || 0))}
                         </td>
                         <td className="p-3 text-center">
                           <button
@@ -1535,7 +1544,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs">
                 <div className="flex justify-between text-slate-600 font-semibold">
                   <span>Subtotal:</span>
-                  <span className="font-mono font-bold text-slate-900">${subtotal.toLocaleString()}</span>
+                  <span className="font-mono font-bold text-slate-900">${money(subtotal)}</span>
                 </div>
 
                 <div className="flex justify-between items-center text-slate-600 font-semibold">
@@ -1568,7 +1577,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
                 <div className="pt-3 border-t border-slate-200 flex justify-between items-center text-base font-display font-black text-slate-900">
                   <span>Grand Total:</span>
-                  <span className="text-xl text-emerald-700 font-mono">${grandTotal.toLocaleString()}</span>
+                  <span className="text-xl text-emerald-700 font-mono">${money(grandTotal)}</span>
                 </div>
               </div>
             </div>
@@ -1666,7 +1675,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                       {inv.lineItems ? inv.lineItems.length : 0} line items
                     </td>
                     <td className="p-4 font-display font-black text-sm text-slate-900">
-                      ${(inv.totalAmount || 0).toLocaleString()}
+                      ${money((inv.totalAmount || 0))}
                     </td>
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -1860,8 +1869,8 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           )}
                         </td>
                         <td className="p-3 text-center font-mono font-bold text-slate-800">{item.quantity}</td>
-                        <td className="p-3 text-right font-mono text-slate-800 whitespace-nowrap">${item.rate.toLocaleString()}</td>
-                        <td className="p-3 text-right font-mono font-bold text-slate-950 whitespace-nowrap">${item.amount.toLocaleString()}</td>
+                        <td className="p-3 text-right font-mono text-slate-800 whitespace-nowrap">${money(item.rate)}</td>
+                        <td className="p-3 text-right font-mono font-bold text-slate-950 whitespace-nowrap">${money(item.amount)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1873,23 +1882,23 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 <div className="w-full sm:w-72 bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
                   <div className="flex justify-between text-slate-600 font-semibold">
                     <span>Subtotal:</span>
-                    <span className="font-mono text-slate-950">${(showPrintModal.subtotal || 0).toLocaleString()}</span>
+                    <span className="font-mono text-slate-950">${money((showPrintModal.subtotal || 0))}</span>
                   </div>
                   {showPrintModal.discountPercentage > 0 && (
                     <div className="flex justify-between text-emerald-700 font-semibold">
                       <span>Discount ({showPrintModal.discountPercentage}%):</span>
-                      <span className="font-mono">-${((showPrintModal.subtotal * showPrintModal.discountPercentage) / 100).toLocaleString()}</span>
+                      <span className="font-mono">-${money(cents((showPrintModal.subtotal * showPrintModal.discountPercentage) / 100))}</span>
                     </div>
                   )}
                   {showPrintModal.taxPercentage > 0 && (
                     <div className="flex justify-between text-slate-600 font-semibold">
                       <span>Tax ({showPrintModal.taxPercentage}%):</span>
-                      <span className="font-mono">+${((showPrintModal.subtotal * showPrintModal.taxPercentage) / 100).toLocaleString()}</span>
+                      <span className="font-mono">+${money(cents(((showPrintModal.subtotal - cents((showPrintModal.subtotal * showPrintModal.discountPercentage) / 100)) * showPrintModal.taxPercentage) / 100))}</span>
                     </div>
                   )}
                   <div className="pt-2 border-t border-slate-300 flex justify-between font-display font-black text-sm text-slate-950">
                     <span>Total Amount Due:</span>
-                    <span className="font-mono text-base text-slate-950">${(showPrintModal.totalAmount || 0).toLocaleString()}</span>
+                    <span className="font-mono text-base text-slate-950">${money((showPrintModal.totalAmount || 0))}</span>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
@@ -7,12 +7,15 @@ import { nextBusinessDay, todayISO } from '../lib/dates';
 interface AppointmentBookingViewProps {
   onTabChange?: (tab: TabType) => void;
   preselectedService?: ServiceCategory;
+  /** Starts the notes field, e.g. with the brief built on the Services page. */
+  initialNotes?: string;
   onAppointmentCreated?: (appointment: Appointment) => void;
 }
 
 export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
   onTabChange,
   preselectedService = 'web_design',
+  initialNotes = '',
   onAppointmentCreated
 }) => {
   // Booking Form State
@@ -28,16 +31,26 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
   // point and then showed it back to them as a fact. Money is settled in the
   // itemised quote Otis sends after the call, not assumed at booking.
   const [budgetRange] = useState(NOT_DISCUSSED);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(initialNotes);
 
   // Submission State
   const [createdAppointment, setCreatedAppointment] = useState<Appointment | null>(null);
+  // `sending` stops a double click from booking twice (each click mints a new
+  // reference, so the CRM would get two deals). `delivered` is whether the
+  // studio actually received it: the form used to say "Successfully Booked"
+  // even when the request failed and the booking existed only in this browser.
+  const [sending, setSending] = useState(false);
+  const sendingRef = useRef(false); // state alone misses clicks landing in the same tick
+  const [delivered, setDelivered] = useState(true);
 
 
   const activeServiceObj = SERVICES.find(s => s.id === selectedService) || SERVICES[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sendingRef.current) return;
+    sendingRef.current = true;
+    setSending(true);
 
     const newApt: Appointment = {
       id: newAppointmentId(),
@@ -57,7 +70,10 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
     // Route through the single submission seam: persists locally and, when the
     // marketing backend is connected, delivers to it. See src/lib/leads.ts.
-    await submitAppointment(newApt);
+    const result = await submitAppointment(newApt);
+    sendingRef.current = false;
+    setSending(false);
+    setDelivered(result.delivered);
 
     if (onAppointmentCreated) {
       onAppointmentCreated(newApt);
@@ -93,7 +109,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
       {createdAppointment ? (
         /* Confirmation Screen */
-        <section className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-xl space-y-6 text-center animate-fadeIn">
+        <section data-private className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-xl space-y-6 text-center animate-fadeIn">
           <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-sm">
             <span className="material-symbols-outlined text-3xl">check_circle</span>
           </div>
@@ -109,6 +125,13 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>. Your appointment is booked.
             </p>
           </div>
+
+          {!delivered && (
+            <p role="alert" className="font-body text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
+              We could not reach the studio's system just now, so this request is saved on this device only. If you do not
+              hear back within one business day, email <a className="underline font-semibold" href="mailto:otis@meridianinterface.com">otis@meridianinterface.com</a> and it will not be lost.
+            </p>
+          )}
 
           <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-left space-y-3 text-xs text-slate-700">
             <div className="flex justify-between border-b border-slate-200 pb-2">
@@ -349,10 +372,11 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
               <button
                 type="submit"
-                className="w-full bg-[#0f172a] text-white py-4 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 mt-4"
+                disabled={sending}
+                className="w-full bg-[#0f172a] text-white py-4 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 mt-4 disabled:opacity-60 disabled:cursor-wait"
               >
                 <span className="material-symbols-outlined text-lg">event_available</span>
-                Confirm & Schedule Appointment
+                {sending ? 'Sending…' : 'Confirm & Schedule Appointment'}
               </button>
             </form>
           </div>
