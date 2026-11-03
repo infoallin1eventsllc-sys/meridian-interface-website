@@ -133,6 +133,8 @@ export interface PortfolioItem {
   video?: string;
   /** Length of `video` in seconds, shown on its play buttons. */
   videoSeconds?: number;
+  /** A vertical (9:16) cut of `video`, played on phones held upright. */
+  videoPortrait?: string;
   summary: string;
   highlights: string[];
 }

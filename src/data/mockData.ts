@@ -273,6 +273,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     image: '/images/portfolio/agent-dashboard.jpg',
     video: '/video/agent-dashboard-demo.mp4',
     videoSeconds: 84,
+    videoPortrait: '/video/agent-dashboard-demo-vertical.mp4',
     gallery: [
       { src: '/images/portfolio/agent-dashboard.jpg', caption: 'Overview: the pipeline, revenue against last year, and what the agents did' },
       { src: '/images/portfolio/agent-dashboard-pipeline.jpg', caption: 'Pipeline: every opportunity by stage, dragged between columns' },

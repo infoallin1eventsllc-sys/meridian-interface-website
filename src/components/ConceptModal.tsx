@@ -68,6 +68,8 @@ export const ConceptModal: React.FC<{
                   label={`Watch ${item.title}`}
                   poster={resolveImage(item.id, item.image)}
                   seconds={item.videoSeconds}
+                  portraitSrc={item.videoPortrait}
+                  browserAddress={item.demo ? `meridianinterface.com${item.demo.replace(/\/$/, '')}` : undefined}
                   autoStart={autoPlay}
                 />
               ) : (
