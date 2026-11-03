@@ -24,6 +24,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onViewService
 }) => {
   const [concept, setConcept] = useState<typeof PORTFOLIO[number] | null>(null);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const openConcept = (item: typeof PORTFOLIO[number], play = false) => { setAutoPlay(play); setConcept(item); };
   // lg and up: the hero video carries the product imagery, so the cards step aside.
   const [wideHero, setWideHero] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
   useEffect(() => {
@@ -44,8 +46,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // to appear word for word on the Portfolio page too. Change the ids to change
   // the picks; the Portfolio page always shows everything. Otis, 13 Oct: Secrets
   // of Cint (p13) and Haven (p12) here in place of Drone Command (p11) and
-  // CarePulse (p1), which stay on the Portfolio page.
-  const FEATURED_IDS = ['p13', 'p12', 'p2'];
+  // CarePulse (p1), which stay on the Portfolio page. Otis, 3 Nov: the Agent
+  // Dashboard (p14) leads in place of Secrets of Cint, which stays on the
+  // Portfolio page.
+  const FEATURED_IDS = ['p14', 'p12', 'p2'];
   const featured = FEATURED_IDS
     .map((id) => PORTFOLIO.find((item) => item.id === id))
     .filter((item): item is typeof PORTFOLIO[number] => Boolean(item));
@@ -125,7 +129,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           {/* Real work, not a stock picture: three of the demos, each opening its
               concept panel. On wide screens the backdrop shows the products
               itself, so the cards are not rendered there (nor their images fetched). */}
-          {!wideHero && <HeroShowcase onOpen={setConcept} />}
+          {!wideHero && <HeroShowcase onOpen={(item) => openConcept(item)} />}
         </div>
       </section>
 
@@ -171,6 +175,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 className="absolute top-3 right-3 z-10"
                 item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, explainerId: item.explainerId, image: resolveImage(item.id, item.image) }}
               />
+              {/* The Portfolio page's Watch button, so a featured piece with a film plays from
+                  here in one click. A sibling over the picture, because the picture is itself a
+                  button (full screen) and a button cannot hold another. */}
+              {item.video && (
+                <div className="absolute inset-x-0 top-0 aspect-video z-10 flex items-center justify-center pointer-events-none">
+                  <button
+                    type="button"
+                    onClick={() => openConcept(item, true)}
+                    aria-label={`Watch ${item.title}${item.videoSeconds ? `, ${item.videoSeconds} seconds` : ''}`}
+                    className="pointer-events-auto inline-flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-[#0f172a]/90 text-white font-body font-bold text-xs uppercase tracking-wider shadow-lg hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-xl leading-none rounded-full bg-blue-600 p-1" aria-hidden="true">play_arrow</span>
+                    Watch{item.videoSeconds ? ` · ${Math.floor(item.videoSeconds / 60)}:${String(item.videoSeconds % 60).padStart(2, '0')}` : ''}
+                  </button>
+                </div>
+              )}
               <div
                 {...(screensFor(item).length
                   ? {
@@ -247,7 +267,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   )}
                   <button
                     type="button"
-                    onClick={() => setConcept(item)}
+                    onClick={() => openConcept(item)}
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-50 text-slate-900 font-body font-bold text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-colors"
                   >
                     View concept
@@ -263,6 +283,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           item={concept}
           onClose={() => setConcept(null)}
           onBook={() => onTabChange('booking')}
+          autoPlay={autoPlay}
         />
 
         <Lightbox
