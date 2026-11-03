@@ -33,7 +33,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
     const url = new URL(window.location.href);
     if (activeItem) url.searchParams.set('project', projectSlug(activeItem));
     else url.searchParams.delete('project');
-    if (url.href !== window.location.href) window.history.replaceState(null, '', url);
+    if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
   }, [activeItem]);
   // The detail panel's picture opens full screen; a concept with no picture stays inert.
 

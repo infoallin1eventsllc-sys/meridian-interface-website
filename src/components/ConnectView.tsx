@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
+import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
 import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface AppointmentBookingViewProps {
@@ -70,7 +71,10 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
     // Route through the single submission seam: persists locally and, when the
     // marketing backend is connected, delivers to it. See src/lib/leads.ts.
-    const result = await submitAppointment(newApt);
+    // A spam bot gets the confirmation and nothing is sent or saved.
+    const result = caughtBySpamTrap(e.currentTarget as HTMLFormElement)
+      ? { delivered: true }
+      : await submitAppointment(newApt);
     sendingRef.current = false;
     setSending(false);
     setDelivered(result.delivered);
@@ -204,6 +208,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
           {/* Main Appointment Form */}
           <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-md">
             <form onSubmit={handleSubmit} className="space-y-6">
+              <SpamTrap />
               {/* Step 1: Service Selection */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">

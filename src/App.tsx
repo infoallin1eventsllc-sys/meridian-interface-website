@@ -21,6 +21,10 @@ const OwnerInvoiceView = lazy(() =>
   import('./components/OwnerInvoiceView').then((m) => ({ default: m.OwnerInvoiceView })),
 );
 
+/** What a browser history entry remembers: the section, which legal page and service it was
+    showing, and how far down the visitor had scrolled when they left it. */
+type HistoryEntry = { tab: TabType; legal: 'privacy' | 'terms'; service: ServiceCategory; y?: number };
+
 export default function App() {
   // An unsubscribe link must work for someone who has never seen this site and
   // does not want to. It is not a tab: no header, no nav, no booking prompt —
@@ -28,7 +32,13 @@ export default function App() {
   const isUnsubscribe = typeof window !== 'undefined' &&
     window.location.pathname.replace(/\/+$/, '') === '/unsubscribe';
 
-  const [currentTab, setCurrentTab] = useState<TabType>('home');
+  // A ?project= or ?book= link lands on its section (the effects below fill in the details). Starting
+  // there, rather than on Home, keeps Back from stopping on a Home page the visitor never saw.
+  const [currentTab, setCurrentTab] = useState<TabType>(() => {
+    if (isUnsubscribe) return 'home';
+    const query = new URLSearchParams(window.location.search);
+    return query.get('project') ? 'portfolio' : query.has('book') ? 'booking' : 'home';
+  });
 
   /* Analytics starts once, and never on the unsubscribe page: that page is
      reached by someone asking to hear less from this business, and measuring
@@ -63,7 +73,7 @@ export default function App() {
     const url = new URL(window.location.href);
     if (url.searchParams.has('project')) {
       url.searchParams.delete('project');
-      window.history.replaceState(null, '', url);
+      window.history.replaceState(window.history.state, '', url);
     }
   };
   useEffect(() => {
@@ -77,7 +87,12 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Where this section was left, so Back can return to the same spot.
+  const rememberScroll = () =>
+    window.history.replaceState({ ...window.history.state, y: window.scrollY }, '');
+
   const handleTabChange = (tab: TabType) => {
+    rememberScroll();
     forgetProject();
     setCurrentTab(tab);
     trackPage(tab);
@@ -96,6 +111,7 @@ export default function App() {
   const handleQuickBookService = (serviceId: ServiceCategory, brief = '') => {
     setPreselectedService(serviceId);
     setBookingNotes(brief);
+    rememberScroll();
     forgetProject();
     setCurrentTab('booking');
     trackPage('booking');
@@ -128,6 +144,38 @@ export default function App() {
     };
     document.title = titles[currentTab];
   }, [currentTab, legalDoc, isUnsubscribe]);
+
+  // Back and Forward move between sections. There is still one address and no router: each change
+  // of section adds a history entry saying which section it was, so the browser's Back button
+  // returns to the previous section instead of leaving the site.
+  useEffect(() => {
+    if (isUnsubscribe) return;
+    const entry = { tab: currentTab, legal: legalDoc, service: servicesFocus };
+    const here = window.history.state as HistoryEntry | null;
+    if (!here?.tab) window.history.replaceState({ ...here, ...entry }, '');
+    else if (here.tab !== entry.tab || here.legal !== entry.legal || here.service !== entry.service)
+      window.history.pushState(entry, '');
+  }, [currentTab, legalDoc, servicesFocus, isUnsubscribe]);
+
+  useEffect(() => {
+    if (isUnsubscribe) return;
+    // The browser would restore the scroll before the section has drawn; this puts people back after.
+    window.history.scrollRestoration = 'manual';
+    const onBackOrForward = (event: PopStateEvent) => {
+      const entry = event.state as HistoryEntry | null;
+      if (!entry?.tab) return;
+      setLegalDoc(entry.legal);
+      setServicesFocus(entry.service);
+      setOpenProject(new URLSearchParams(window.location.search).get('project'));
+      setCurrentTab(entry.tab);
+      setIsMobileMenuOpen(false);
+      setIsSearchOpen(false);
+      trackPage(entry.tab);
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, entry.y ?? 0)));
+    };
+    window.addEventListener('popstate', onBackOrForward);
+    return () => window.removeEventListener('popstate', onBackOrForward);
+  }, [isUnsubscribe]);
 
   const handleOpenLegal = (doc: 'privacy' | 'terms') => {
     setLegalDoc(doc);

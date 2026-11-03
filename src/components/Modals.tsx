@@ -3,6 +3,7 @@ import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { MeridianLogo } from './MeridianLogo';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
+import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
 import { nextBusinessDay, todayISO } from '../lib/dates';
 
 interface ModalsProps {
@@ -81,7 +82,10 @@ export const Modals: React.FC<ModalsProps> = ({
     };
 
     // Single submission seam — persists locally and delivers to the backend when connected.
-    const result = await submitAppointment(newApt);
+    // A spam bot gets the confirmation and nothing is sent or saved.
+    const result = caughtBySpamTrap(e.currentTarget as HTMLFormElement)
+      ? { delivered: true }
+      : await submitAppointment(newApt);
     sendingRef.current = false;
     setSending(false);
     setDelivered(result.delivered);
@@ -145,6 +149,7 @@ export const Modals: React.FC<ModalsProps> = ({
                 </h3>
 
                 <form onSubmit={handleModalBookSubmit} className="space-y-4">
+                  <SpamTrap />
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
                       Required Design Service
