@@ -25,7 +25,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
   const [clientPhone, setClientPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [preferredDate, setPreferredDate] = useState(nextBusinessDay);
-  const [preferredTimeSlot, setPreferredTimeSlot] = useState('10:00 AM - 11:00 AM EST');
+  const [preferredTimeSlot, setPreferredTimeSlot] = useState('10:00 AM - 11:00 AM CT');
   // Not asked for, and not guessed at. This form has no budget field: the
   // client never saw a number, so recording one as theirs invented a data
   // point and then showed it back to them as a fact. Money is settled in the
@@ -274,11 +274,11 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       onChange={(e) => setPreferredTimeSlot(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
                     >
-                      <option>09:00 AM - 10:00 AM EST</option>
-                      <option>10:00 AM - 11:00 AM EST</option>
-                      <option>01:00 PM - 02:00 PM EST</option>
-                      <option>03:30 PM - 04:30 PM EST</option>
-                      <option>05:00 PM - 06:00 PM EST</option>
+                      <option>09:00 AM - 10:00 AM CT</option>
+                      <option>10:00 AM - 11:00 AM CT</option>
+                      <option>01:00 PM - 02:00 PM CT</option>
+                      <option>03:30 PM - 04:30 PM CT</option>
+                      <option>05:00 PM - 06:00 PM CT</option>
                     </select>
                   </div>
                 </div>

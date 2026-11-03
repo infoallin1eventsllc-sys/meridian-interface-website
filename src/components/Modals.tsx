@@ -47,7 +47,7 @@ export const Modals: React.FC<ModalsProps> = ({
   const [modalEmail, setModalEmail] = useState('');
   const [modalPhone, setModalPhone] = useState('');
   const [modalDate, setModalDate] = useState(nextBusinessDay);
-  const [modalTime, setModalTime] = useState('10:00 AM - 11:00 AM EST');
+  const [modalTime, setModalTime] = useState('10:00 AM - 11:00 AM CT');
   const [isSubmitted, setIsSubmitted] = useState(false);
   // Same two guards as the booking page: no double booking, and no "Scheduled!"
   // when the studio never received it.
@@ -189,9 +189,9 @@ export const Modals: React.FC<ModalsProps> = ({
                         onChange={(e) => setModalTime(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
                       >
-                        <option>10:00 AM - 11:00 AM EST</option>
-                        <option>01:00 PM - 02:00 PM EST</option>
-                        <option>03:30 PM - 04:30 PM EST</option>
+                        <option>10:00 AM - 11:00 AM CT</option>
+                        <option>01:00 PM - 02:00 PM CT</option>
+                        <option>03:30 PM - 04:30 PM CT</option>
                       </select>
                     </div>
                   </div>
