@@ -54,6 +54,16 @@ export default function App() {
     trackPage('booking');
   }, [isUnsubscribe]);
 
+  // `?project=<slug>` opens the Portfolio with that piece's panel: a link a recruiter or client can be
+  // sent, instead of the home page. ImpactView reads the slug and keeps the address bar in step.
+  const [openProject] = useState<string | null>(() =>
+    isUnsubscribe ? null : new URLSearchParams(window.location.search).get('project'));
+  useEffect(() => {
+    if (!openProject) return;
+    setCurrentTab('portfolio');
+    trackPage('portfolio');
+  }, [openProject]);
+
   // Modal States
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -176,6 +186,7 @@ export default function App() {
           <ImpactView
             onTabChange={handleTabChange}
             onOpenBookModal={() => setIsBookModalOpen(true)}
+            openProject={openProject}
           />
         )}
 

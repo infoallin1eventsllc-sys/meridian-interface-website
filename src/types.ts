@@ -131,6 +131,8 @@ export interface PortfolioItem {
   /** A film of the work. When set, the detail panel plays this instead of
       showing the still — see components/ReelPlayer.tsx and lib/reel.ts. */
   video?: string;
+  /** Length of `video` in seconds, shown on its play buttons. */
+  videoSeconds?: number;
   summary: string;
   highlights: string[];
 }

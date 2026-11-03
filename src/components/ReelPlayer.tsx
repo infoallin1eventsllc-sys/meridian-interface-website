@@ -38,6 +38,8 @@ interface ReelPlayerProps {
   webm?: string;
   /** Length announced on the play surface; the studio reel's by default. */
   seconds?: number;
+  /** Start playing on mount, for a player opened by a Watch click (that click is the user gesture). */
+  autoStart?: boolean;
 }
 
 export const ReelPlayer: React.FC<ReelPlayerProps> = ({
@@ -47,8 +49,9 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
   poster,
   webm,
   seconds = REEL.seconds,
+  autoStart = false,
 }) => {
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(autoStart);
   const [posterFailed, setPosterFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 

@@ -1,5 +1,5 @@
 import { SaveToListButton } from './SaveToListButton';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
@@ -9,11 +9,32 @@ import { ConceptModal } from './ConceptModal';
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
   onOpenBookModal: () => void;
+  /** A piece to open on arrival, from a ?project= link. */
+  openProject?: string | null;
 }
 
-export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal }) => {
+/**
+ * A piece's link name: its demo folder (`/demos/agent-dashboard/` → `agent-dashboard`), else its id.
+ * `?project=<slug>` opens the Portfolio with that piece's panel, so a recruiter or client can be
+ * sent straight to one project instead of the home page. Opening a panel puts the same link in
+ * the address bar (replaceState, no extra history entries), so whatever a visitor copies works.
+ */
+export const projectSlug = (item: PortfolioItem) => item.demo?.match(/\/demos\/([\w-]+)/)?.[1] ?? item.id;
+
+export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal, openProject = null }) => {
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
-  const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
+  const [activeItem, setActiveItem] = useState<PortfolioItem | null>(
+    () => (openProject && PORTFOLIO.find(p => projectSlug(p) === openProject)) || null,
+  );
+  const [autoPlay, setAutoPlay] = useState(false);
+  const open = (item: PortfolioItem, play = false) => { setAutoPlay(play); setActiveItem(item); };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (activeItem) url.searchParams.set('project', projectSlug(activeItem));
+    else url.searchParams.delete('project');
+    if (url.href !== window.location.href) window.history.replaceState(null, '', url);
+  }, [activeItem]);
   // The detail panel's picture opens full screen; a concept with no picture stays inert.
 
   // Re-render when the owner updates any managed image from the Photo Control portal.
@@ -81,9 +102,24 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             className="absolute top-3 right-3 z-10"
             item={{ id: item.id, kind: 'work', title: item.title, subtitle: item.categoryLabel, explainerId: item.explainerId, image: resolveImage(item.id, item.image) }}
           />
+          {/* Over the picture, not inside the card button (a button can't hold a button): opens the
+              panel already playing, so a visitor sees the piece working in one click. */}
+          {item.video && (
+            <div className="absolute inset-x-0 top-0 aspect-[16/10] z-10 flex items-center justify-center pointer-events-none">
+              <button
+                type="button"
+                onClick={() => open(item, true)}
+                aria-label={`Watch ${item.title}${item.videoSeconds ? `, ${item.videoSeconds} seconds` : ''}`}
+                className="pointer-events-auto inline-flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-[#0f172a]/90 text-white font-body font-bold text-xs uppercase tracking-wider shadow-lg hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 transition-colors"
+              >
+                <span className="material-symbols-outlined text-xl leading-none rounded-full bg-blue-600 p-1" aria-hidden="true">play_arrow</span>
+                Watch{item.videoSeconds ? ` · ${Math.floor(item.videoSeconds / 60)}:${String(item.videoSeconds % 60).padStart(2, '0')}` : ''}
+              </button>
+            </div>
+          )}
           <button
             type="button"
-            onClick={() => setActiveItem(item)}
+            onClick={() => open(item)}
             aria-label={`View concept: ${item.title}`}
             className="text-left w-full flex-1 flex flex-col justify-start"
           >
@@ -143,7 +179,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
             )}
             <button
               type="button"
-              onClick={() => setActiveItem(item)}
+              onClick={() => open(item)}
               className="w-full py-2.5 bg-slate-50 text-slate-900 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
             >
               View concept
@@ -158,6 +194,7 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
         item={activeItem}
         onClose={() => setActiveItem(null)}
         onBook={() => onTabChange('booking')}
+        autoPlay={autoPlay}
       />
 
       {/* Banner CTA */}

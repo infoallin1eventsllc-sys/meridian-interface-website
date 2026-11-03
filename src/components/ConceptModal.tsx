@@ -22,7 +22,9 @@ export const ConceptModal: React.FC<{
   onClose: () => void;
   /** Take the visitor to booking. The panel closes itself first. */
   onBook: () => void;
-}> = ({ item, onClose, onBook }) => {
+  /** Start the piece's video straight away: set when the panel was opened by a Watch click. */
+  autoPlay?: boolean;
+}> = ({ item, onClose, onBook, autoPlay = false }) => {
   const [zoomed, setZoomed] = useState<number | null>(null);
 
   // Escape closes the panel, unless the full-screen view is open on top of it,
@@ -61,7 +63,13 @@ export const ConceptModal: React.FC<{
                   case better than a screenshot of it does, and the still is
                   still reachable through the grid behind this panel. */}
               {item.video ? (
-                <ReelPlayer src={item.video} label={`Watch ${item.title}`} />
+                <ReelPlayer
+                  src={item.video}
+                  label={`Watch ${item.title}`}
+                  poster={resolveImage(item.id, item.image)}
+                  seconds={item.videoSeconds}
+                  autoStart={autoPlay}
+                />
               ) : (
                 <div
                   {...(resolveImage(item.id, item.image)
