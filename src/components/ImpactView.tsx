@@ -1,4 +1,5 @@
 import { SaveToListButton } from './SaveToListButton';
+import { demoLinkProps, isExternalDemo } from '../lib/demoLink';
 import React, { useEffect, useState } from 'react';
 import { TabType, PortfolioItem } from '../types';
 import { PORTFOLIO } from '../data/mockData';
@@ -19,7 +20,7 @@ interface ImpactViewProps {
  * sent straight to one project instead of the home page. Opening a panel puts the same link in
  * the address bar (replaceState, no extra history entries), so whatever a visitor copies works.
  */
-export const projectSlug = (item: PortfolioItem) => item.demo?.match(/\/demos\/([\w-]+)/)?.[1] ?? item.id;
+export const projectSlug = (item: PortfolioItem) => item.slug ?? item.demo?.match(/\/demos\/([\w-]+)/)?.[1] ?? item.id;
 
 export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal, openProject = null }) => {
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
@@ -170,11 +171,12 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           <div className="p-6 pt-0 space-y-2">
             {item.demo && (
               <a
-                href={item.demo}
+                {...demoLinkProps(item.demo)}
                 className="w-full py-2.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
                 Open the working demo
+                {isExternalDemo(item.demo) && <span className="sr-only"> (opens in a new tab)</span>}
               </a>
             )}
             <button

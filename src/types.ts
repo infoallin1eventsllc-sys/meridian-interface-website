@@ -126,8 +126,13 @@ export interface PortfolioItem {
   image: string;
   /** Extra screens, shown full-size when the picture is opened. */
   gallery?: { src: string; caption: string }[];
-  /** A working copy a visitor can click through, served from this site. */
+  /** A working copy a visitor can click through: a path served from this site
+      (`/demos/<name>/`), or a full https address for a live app hosted
+      elsewhere, which opens in a new tab (see lib/demoLink.ts). */
   demo?: string;
+  /** The `?project=` name in shared links. Defaults to the `/demos/<name>/`
+      folder, so it only needs setting for a demo hosted elsewhere. */
+  slug?: string;
   /** A film of the work. When set, the detail panel plays this instead of
       showing the still — see components/ReelPlayer.tsx and lib/reel.ts. */
   video?: string;

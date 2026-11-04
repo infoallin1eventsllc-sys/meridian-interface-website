@@ -5,6 +5,7 @@ import { ImageWithFallback } from './ImageWithFallback';
 import { Lightbox, type LightboxItem } from './Lightbox';
 import { ReelPlayer } from './ReelPlayer';
 import { SaveToListButton } from './SaveToListButton';
+import { demoAddress, demoLinkProps, isExternalDemo } from '../lib/demoLink';
 
 /**
  * The concept panel — one piece, everything a visitor can do with it.
@@ -76,7 +77,7 @@ export const ConceptModal: React.FC<{
                   poster={resolveImage(item.id, item.image)}
                   seconds={item.videoSeconds}
                   portraitSrc={item.videoPortrait}
-                  browserAddress={item.demo ? `meridianinterface.com${item.demo.replace(/\/$/, '')}` : undefined}
+                  browserAddress={item.demo ? demoAddress(item.demo) : undefined}
                   autoStart={autoPlay}
                 />
               ) : (
@@ -107,11 +108,12 @@ export const ConceptModal: React.FC<{
 
               {item.demo && (
                 <a
-                  href={item.demo}
+                  {...demoLinkProps(item.demo)}
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors self-start"
                 >
                   <span className="material-symbols-outlined text-lg leading-none" aria-hidden="true">open_in_new</span>
                   Open the working demo
+                  {isExternalDemo(item.demo) && <span className="sr-only"> (opens in a new tab)</span>}
                 </a>
               )}
 

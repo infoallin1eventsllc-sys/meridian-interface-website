@@ -284,6 +284,31 @@ export const PORTFOLIO: PortfolioItem[] = [
     highlights: ['Agents suggest, a person approves', 'Seven layouts, from sales teams to salons', 'The demo sends nothing anywhere']
   },
   {
+    // The hiring pipeline API (repo: meridian-hiring-api), live on Vercel with a
+    // real database. Unlike the other demos it isn't copied into public/demos:
+    // the button opens the running app in a new tab. Each visitor gets a private
+    // sample company that is deleted after 24 hours.
+    id: 'p15',
+    slug: 'meridian-hire',
+    title: 'Meridian Interface Hire: Hiring Pipeline API',
+    explainerId: 'exp_web_app',
+    category: 'systems',
+    categoryLabel: 'Hiring Pipeline API',
+    client: 'Meridian Interface',
+    year: '2026',
+    demo: 'https://meridian-hiring-api.vercel.app/',
+    image: '/images/portfolio/meridian-hire.jpg',
+    gallery: [
+      { src: '/images/portfolio/meridian-hire.jpg', caption: 'The board: every application by stage, with a short guide to try it in two minutes' },
+      { src: '/images/portfolio/meridian-hire-candidate.jpg', caption: 'A candidate: details, a move to the next stage, the résumé, and every step on record' },
+      { src: '/images/portfolio/meridian-hire-add.jpg', caption: 'Adding a candidate: the same request a careers page sends, with a résumé attached' },
+      { src: '/images/portfolio/meridian-hire-docs.jpg', caption: 'Interactive API docs: a developer can try every call, already signed in to the demo' },
+      { src: '/images/portfolio/meridian-hire-welcome.jpg', caption: 'What it becomes for a firm: team logins, a careers page, emails and scheduling, reports' },
+    ],
+    summary: 'The engine behind a recruiting firm\'s hiring. Companies post jobs, candidates apply with a résumé, and every move from Applied to Hired is saved and sent, signed, to the firm\'s own software. Each company\'s data is walled off by the database itself, and a candidate can be erased on request. Built to grow into a full hiring system, with only the parts a firm needs.',
+    highlights: ['A real back end, not a mock-up', 'Updates sent to the firm\'s own tools', 'Candidates erased on request']
+  },
+  {
     id: 'p1',
     title: 'CarePulse: Doctor-Patient Healthcare Dashboard',
     explainerId: 'exp_web_app',
