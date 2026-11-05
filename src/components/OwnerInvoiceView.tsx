@@ -36,7 +36,12 @@ const money = (n: number) => (n || 0).toLocaleString('en-US', { minimumFractionD
  * say so. The wording match covers price lines and anything typed by hand.
  */
 function answerFor(description: string): ClientExplainer | undefined {
-  const declared = [...PORTFOLIO, ...SERVICES].find((p) => p.title === description)?.explainerId;
+  const declared =
+    [...PORTFOLIO, ...SERVICES].find((p) => p.title === description)?.explainerId ??
+    // A service saved at a size reads "Custom Web Design & Development (One page)";
+    // the size, not the service, says which answer applies.
+    SERVICES.flatMap((s) => (s.sizes ?? []).map((z) => ({ title: `${s.title} (${z.label})`, id: z.explainerId })))
+      .find((z) => z.title === description)?.id;
   return explainerById(declared) ?? explainerForDescription(description);
 }
 
@@ -54,7 +59,7 @@ const SCOPED_WORK = 'exp_consultation';
  * A price line already lists what its own tier includes, and that list wins;
  * the answer's list fills a line that has none, such as one from a saved list.
  */
-function attachAnswer(item: InvoiceLineItem, answer: ClientExplainer | undefined): InvoiceLineItem {
+function attachAnswer(item: InvoiceLineItem, answer: ClientExplainer | undefined, auto = true): InvoiceLineItem {
   if (!answer) return item;
   const previous = explainerById(item.explainerId);
   const own = (item.deliverables ?? []).filter(Boolean);
@@ -64,6 +69,7 @@ function attachAnswer(item: InvoiceLineItem, answer: ClientExplainer | undefined
   return {
     ...item,
     explainerId: answer.id,
+    explainerAuto: auto,
     summary: answer.summary,
     timeline: answer.timeline,
     excluded: [...answer.excluded],
@@ -72,7 +78,17 @@ function attachAnswer(item: InvoiceLineItem, answer: ClientExplainer | undefined
 }
 
 function detachAnswer(item: InvoiceLineItem): InvoiceLineItem {
-  const rest: InvoiceLineItem = { ...item, explainerId: '' };
+  const previous = explainerById(item.explainerId);
+  const own = (item.deliverables ?? []).filter(Boolean);
+  // The answer's own list goes with it, so the next answer picked starts clean.
+  const ownIsPrevious =
+    !!previous && own.join('\n') === previous.included.map((x) => x.what).join('\n');
+  const rest: InvoiceLineItem = {
+    ...item,
+    explainerId: '',
+    explainerAuto: false,
+    deliverables: ownIsPrevious ? [] : item.deliverables,
+  };
   delete rest.summary;
   delete rest.timeline;
   delete rest.excluded;
@@ -503,7 +519,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       item.id !== itemId
         ? item
         : explainerId
-          ? attachAnswer(item, explainerById(explainerId))
+          ? attachAnswer(item, explainerById(explainerId), false)
           : detachAnswer(item)
     ));
   };
@@ -572,17 +588,18 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         if (field === 'quantity' || field === 'rate') {
           const qty = field === 'quantity' ? Number(value) : item.quantity;
           const rt = field === 'rate' ? Number(value) : item.rate;
-          updated.amount = qty * rt;
+          updated.amount = cents(qty * rt);
         }
-        // Renaming a line to a product brings that product's answer with it,
-        // unless the answer on the line was picked by hand.
-        if (field === 'description') {
-          const wasAuto = !item.explainerId || answerFor(item.description)?.id === item.explainerId;
+        // Until an answer is picked by hand (or None is chosen), the line's
+        // answer follows it: renaming it to a product brings that product's
+        // answer, and a tag that names one product replaces the scoped-work
+        // fallback. A name that matches nothing leaves the answer as it is.
+        const followsLine = item.explainerAuto !== false && item.explainerId !== '';
+        if (field === 'description' && followsLine) {
           const next = answerFor(String(value));
-          if (wasAuto && next && next.id !== item.explainerId) return attachAnswer(updated, next);
+          if (next && next.id !== item.explainerId) return attachAnswer(updated, next);
         }
-        // A tag that names one product gives an unexplained line its answer.
-        if (field === 'category' && !item.explainerId) {
+        if (field === 'category' && followsLine && (!item.explainerId || item.explainerId === SCOPED_WORK)) {
           const next = explainerById(TAG_ANSWERS[String(value)]);
           if (next) return attachAnswer(updated, next);
         }
@@ -1051,19 +1068,39 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           <SavedListInbox onCreateInvoice={handleStartInvoiceFromLead} />
         </ErrorBoundary>
       )}
-      {portalTab === 'photos' && <OwnerPhotoControl />}
+      {portalTab === 'photos' && (
+        <ErrorBoundary label="Photo Control">
+          <OwnerPhotoControl />
+        </ErrorBoundary>
+      )}
 
-      {portalTab === 'answers' && <ClientExplainers prices={cat.explainer_prices} />}
+      {portalTab === 'answers' && (
+        <ErrorBoundary label="Client Answers">
+          <ClientExplainers prices={cat.explainer_prices} />
+        </ErrorBoundary>
+      )}
 
-      {portalTab === 'links' && <CampaignLinks />}
+      {portalTab === 'links' && (
+        <ErrorBoundary label="Campaign Links">
+          <CampaignLinks />
+        </ErrorBoundary>
+      )}
 
       {portalTab === 'marketing' && (
         <ErrorBoundary label="Marketing">
           <MarketingQueue />
         </ErrorBoundary>
       )}
-      {portalTab === 'health' && <SystemHealth />}
-      {portalTab === 'stack' && <TechStack />}
+      {portalTab === 'health' && (
+        <ErrorBoundary label="System Health">
+          <SystemHealth />
+        </ErrorBoundary>
+      )}
+      {portalTab === 'stack' && (
+        <ErrorBoundary label="Tech Stack">
+          <TechStack />
+        </ErrorBoundary>
+      )}
       {portalTab === 'security' && (
         <ErrorBoundary label="Security">
           <SecurityPanel />
@@ -1546,6 +1583,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                         <td className="p-3">
                           <select
                             value={item.category}
+                            aria-label={`Tag for ${item.description || 'this line'}`}
                             onChange={(e: any) => handleUpdateLineItem(item.id, 'category', e.target.value)}
                             className="w-full p-1.5 bg-slate-50 border border-slate-200 rounded text-[11px] font-bold text-slate-800"
                           >
@@ -1567,6 +1605,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           <input
                             type="text"
                             value={item.description}
+                            aria-label="Line description"
                             onChange={(e) => handleUpdateLineItem(item.id, 'description', e.target.value)}
                             className="w-full p-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-semibold text-slate-900 outline-none focus:border-slate-800"
                             placeholder="Service scope..."
@@ -1578,6 +1617,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                             min="1"
                             step="1"
                             value={item.quantity}
+                            aria-label={`Quantity for ${item.description || 'this line'}`}
                             onChange={(e) => handleUpdateLineItem(item.id, 'quantity', clamp(e.target.value, 1, 9999))}
                             className="w-16 p-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-center text-slate-900 outline-none"
                           />
@@ -1592,6 +1632,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                             step="any"
                             min="0"
                             value={item.rate}
+                            aria-label={`Rate for ${item.description || 'this line'}`}
                             onChange={(e) => handleUpdateLineItem(item.id, 'rate', clamp(e.target.value, 0, 10_000_000))}
                             className="w-24 p-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-right text-slate-900 outline-none"
                           />
@@ -1603,6 +1644,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           <button
                             type="button"
                             onClick={() => handleRemoveLineItem(item.id)}
+                            aria-label={`Remove ${item.description || 'this line'}`}
                             className="p-1 text-red-600 hover:bg-red-50 rounded"
                           >
                             <span className="material-symbols-outlined text-base" aria-hidden="true">delete</span>
@@ -1625,12 +1667,13 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                   click from where the question gets asked. */}
                               <CopyExplainerButton
                                 description={item.description}
-                                rate={item.rate}
+                                rate={item.amount}
                                 explainerId={item.explainerId}
                               />
                               <button
                                 type="button"
                                 onClick={() => handleAddDeliverable(item.id)}
+                                aria-label={`Add a deliverable to ${item.description || 'this line'}`}
                                 className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
                               >
                                 + Add deliverable
@@ -1652,6 +1695,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                 <input
                                   type="text"
                                   value={d}
+                                  aria-label={`Deliverable ${i + 1}`}
                                   placeholder="e.g. Up to 7 custom-designed pages, built mobile-first"
                                   onChange={(e) => handleUpdateDeliverable(item.id, i, e.target.value)}
                                   className="flex-1 p-1.5 bg-white border border-slate-200 rounded text-[11px] text-slate-800 outline-none focus:border-slate-400"
@@ -1714,6 +1758,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                     <button
                                       type="button"
                                       onClick={() => handleAddExcluded(item.id)}
+                                      aria-label={`Add a not-included line to ${item.description || 'this line'}`}
                                       className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
                                     >
                                       + Add line
@@ -2083,7 +2128,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                           {/* The itemised breakdown. A client looking at a
                               four-figure line should be able to see the things
                               they are buying, not infer them from a sentence. */}
-                          {item.deliverables && item.deliverables.length > 0 && (
+                          {item.deliverables && item.deliverables.filter(Boolean).length > 0 && (
                             <>
                             {item.explainerId && (
                               <span className="mt-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">

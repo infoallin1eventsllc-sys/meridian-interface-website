@@ -34,6 +34,12 @@ export interface InvoiceLineItem {
   explainerId?: string;
   summary?: string;
   timeline?: string;
+  /**
+   * False once the owner has picked the answer by hand (or chosen None). Until
+   * then, renaming the line or giving it a product's tag brings that product's
+   * answer with it. Missing on older lines, which counts as automatic.
+   */
+  explainerAuto?: boolean;
 }
 
 export interface OwnerInvoice {

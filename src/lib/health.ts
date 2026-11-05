@@ -76,7 +76,11 @@ export async function fetchHealth(): Promise<SystemHealth | null> {
     });
     if (!res.ok) return null;
     const body = await res.json();
-    return body?.ok ? (body as SystemHealth) : null;
+    // A reply missing the parts the panel draws counts as a failed check, not a
+    // crash: an older or half-deployed function must not blank the portal.
+    return body?.ok && Array.isArray(body.alerts) && body.marketing && body.keyrouter
+      ? (body as SystemHealth)
+      : null;
   } catch {
     return null;
   }

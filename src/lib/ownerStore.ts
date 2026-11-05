@@ -20,6 +20,8 @@ import { OwnerInvoice } from '../types';
 
 const TOKEN_KEY = 'meridian_owner_token';
 const LOCAL_INVOICES_KEY = 'meridian_owner_invoices';
+/** Invoices deleted while the server was unreachable, still to delete there. */
+const PENDING_DELETES_KEY = 'meridian_owner_pending_deletes';
 
 const DEFAULT_OWNER_ENDPOINT =
   'https://glzodwhyavexpuusbqjy.supabase.co/functions/v1/owner';
@@ -133,6 +135,44 @@ function writeLocal(list: OwnerInvoice[]): void {
   }
 }
 
+function readPendingDeletes(): string[] {
+  try {
+    const raw = localStorage.getItem(PENDING_DELETES_KEY);
+    const ids = raw ? JSON.parse(raw) : [];
+    return Array.isArray(ids) ? ids.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePendingDeletes(ids: string[]): void {
+  try {
+    if (ids.length) localStorage.setItem(PENDING_DELETES_KEY, JSON.stringify(ids));
+    else localStorage.removeItem(PENDING_DELETES_KEY);
+  } catch {
+    /* storage unavailable: the delete is retried by hand instead */
+  }
+}
+
+/**
+ * Finish deletes made offline, now that the server answers. Without this the
+ * server copy came straight back on the next list, as if never deleted.
+ * Returns the ids still waiting, so the list can hide them meanwhile.
+ */
+async function flushPendingDeletes(): Promise<string[]> {
+  const waiting: string[] = [];
+  for (const id of readPendingDeletes()) {
+    try {
+      await call({ action: 'delete', id });
+    } catch (err) {
+      if (err instanceof UnauthorizedError) throw err;
+      waiting.push(id);
+    }
+  }
+  writePendingDeletes(waiting);
+  return waiting;
+}
+
 /* --------------------------------------------------------------- api ----- */
 
 /**
@@ -234,8 +274,9 @@ export async function migrateLocalInvoices(): Promise<number> {
 
 export async function listInvoices(): Promise<{ invoices: OwnerInvoice[]; offline: boolean }> {
   try {
+    const waiting = await flushPendingDeletes();
     const r = await call<{ invoices: OwnerInvoice[] }>({ action: 'list' });
-    return { invoices: r.invoices ?? [], offline: false };
+    return { invoices: (r.invoices ?? []).filter((i) => !waiting.includes(i.id)), offline: false };
   } catch (err) {
     // A refused session gets nothing. Only an unreachable server earns the cache.
     if (err instanceof UnauthorizedError) throw err;
@@ -244,6 +285,9 @@ export async function listInvoices(): Promise<{ invoices: OwnerInvoice[]; offlin
 }
 
 export async function saveInvoice(invoice: OwnerInvoice): Promise<{ offline: boolean }> {
+  // A new invoice can take the number of one deleted offline; that delete must
+  // not later remove it.
+  writePendingDeletes(readPendingDeletes().filter((id) => id !== invoice.id));
   try {
     await call({ action: 'save', invoice });
     return { offline: false };
@@ -268,6 +312,7 @@ export async function deleteInvoice(id: string): Promise<{ offline: boolean }> {
   } catch (err) {
     if (err instanceof UnauthorizedError) throw err;
     writeLocal(readLocal().filter((i) => i.id !== id));
+    writePendingDeletes([...new Set([...readPendingDeletes(), id])]);
     return { offline: true };
   }
 }

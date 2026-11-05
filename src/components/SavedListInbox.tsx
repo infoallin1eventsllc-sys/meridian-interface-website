@@ -13,6 +13,11 @@
 import { useEffect, useState } from 'react';
 import { fetchLeads, itemsAsInvoiceLines, receivedLabel, type InboxLead } from '../lib/inbox';
 
+/** One stable key per saved list. Not every booking has an appointment id, and
+ *  two without one must not share a key (or a "Copied" label). */
+const leadKey = (lead: InboxLead): string =>
+  lead.appointmentId ?? `${lead.contactId ?? 'none'}-${lead.receivedAt ?? ''}`;
+
 export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: InboxLead) => void }) {
   const [leads, setLeads] = useState<InboxLead[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +38,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
     const text = itemsAsInvoiceLines(lead).join('\n');
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(lead.appointmentId ?? '');
+      setCopied(leadKey(lead));
       setTimeout(() => setCopied(null), 2000);
     } catch {
       // Clipboard is blocked in some browsers and over plain http. The items
@@ -81,7 +86,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
 
       {leads.map((lead) => (
         <article
-          key={lead.appointmentId ?? `${lead.contactId}-${lead.receivedAt}`}
+          key={leadKey(lead)}
           className="rounded-xl border border-slate-200 bg-white overflow-hidden"
         >
           <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 bg-slate-50 px-5 py-4">
@@ -161,7 +166,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 transition-colors hover:bg-slate-50"
                 >
                   <span className="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
-                  {copied === (lead.appointmentId ?? '') ? 'Copied' : 'Copy lines'}
+                  {copied === leadKey(lead) ? 'Copied' : 'Copy lines'}
                 </button>
               </div>
             ) : null}

@@ -107,15 +107,17 @@ const CopyButton: React.FC<{
  * from memory instead — differently every time, which is exactly what a written
  * reference is for.
  *
- * Renders nothing when the description matches no entry, rather than showing a
- * dead button. A hand-typed custom line has no catalogue answer, and pretending
- * otherwise is worse than staying quiet.
+ * Uses the answer attached to the line, falling back to the wording match for
+ * a line that has none yet. Renders nothing when the owner chose None for the
+ * line, or nothing matches, rather than showing a dead button. `rate` is the
+ * line's total, so the copied text quotes what the client will pay.
  */
 export const CopyExplainerButton: React.FC<{ description: string; rate?: number; explainerId?: string }> = ({
   description,
   rate,
   explainerId,
 }) => {
+  if (explainerId === '') return null;
   const item = explainerById(explainerId) ?? explainerForDescription(description);
   if (!item) return null;
 

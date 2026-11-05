@@ -709,7 +709,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_growth',
     title: 'Growth / Professional Package',
     category: 'Packages',
-    matches: ['growth / professional', 'growth package', 'professional package', 'growth'],
+    matches: ['growth / professional', 'growth package', 'professional package'],
     summary:
       'A full brand kit plus a larger site with working tools built in — for a business the simple site has outgrown.',
     short:
@@ -757,7 +757,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_bundle_enterprise',
     title: 'Enterprise / Custom Application',
     category: 'Packages',
-    matches: ['enterprise custom application', 'enterprise / custom', 'enterprise package', 'enterprise', 'mobile app'],
+    matches: ['enterprise custom application', 'enterprise / custom', 'enterprise package', 'mobile app'],
     summary:
       'A complete custom platform or mobile app, built end to end, for software the business depends on.',
     short:
@@ -807,7 +807,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_tech_stack',
     title: 'Business Tech Stack — Chosen & Connected',
     category: 'Packages',
-    matches: ['tech stack', 'business tech stack', 'systems & integration', 'integration'],
+    matches: ['tech stack', 'business tech stack', 'systems & integration'],
     summary:
       'The set of tools your business runs on, picked for how you actually work and connected so information moves between them by itself.',
     short:
@@ -922,7 +922,7 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     id: 'exp_video_ad',
     title: 'Video Ad',
     category: 'Video Ads',
-    matches: ['starter ad', 'standard ad', 'premium ad', 'video ad', 'video', 'commercial'],
+    matches: ['starter ad', 'standard ad', 'premium ad', 'video ad', 'video'],
     summary:
       'A short video ad made for your business, ready to post on social media, send by email or play on your website.',
     short:
@@ -1166,22 +1166,29 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
 
 /* ------------------------------------------------------------- lookup ----- */
 
-/**
- * Find the explainer for an invoice line. Longest fragment first, so a line
- * reading "Complex Custom Web App / Multi-Page Portal" resolves to the web app
- * entry rather than being caught by the shorter "portal".
- */
 export function explainerById(id: string | null | undefined): ClientExplainer | undefined {
   return id ? CLIENT_EXPLAINERS.find((e) => e.id === id) : undefined;
 }
 
+/** A fragment found as whole words: "website ad" is not in "website admin". */
+function containsWords(text: string, fragment: string): boolean {
+  const escaped = fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(?<![a-z0-9])${escaped}(?![a-z0-9])`).test(text);
+}
+
+/**
+ * Find the explainer for an invoice line. Longest fragment first, so a line
+ * reading "Complex Custom Web App / Multi-Page Portal" resolves to the web app
+ * entry rather than being caught by the shorter "portal". Fragments match
+ * whole words only, so a short one cannot fire inside a longer word.
+ */
 export function explainerForDescription(description: string): ClientExplainer | undefined {
   const text = description.toLowerCase();
   let best: { explainer: ClientExplainer; length: number } | undefined;
 
   for (const explainer of CLIENT_EXPLAINERS) {
     for (const fragment of explainer.matches) {
-      if (text.includes(fragment) && (!best || fragment.length > best.length)) {
+      if (containsWords(text, fragment) && (!best || fragment.length > best.length)) {
         best = { explainer, length: fragment.length };
       }
     }
