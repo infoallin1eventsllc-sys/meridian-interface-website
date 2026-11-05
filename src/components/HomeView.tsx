@@ -49,8 +49,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // of Cint (p13) and Haven (p12) here in place of Drone Command (p11) and
   // CarePulse (p1), which stay on the Portfolio page. Otis, 3 Nov: the Agent
   // Dashboard (p14) leads in place of Secrets of Cint, which stays on the
-  // Portfolio page.
-  const FEATURED_IDS = ['p14', 'p12', 'p2'];
+  // Portfolio page. Otis, 5 Nov: Meridian Hire (p15) takes the Frame Shop's
+  // (p2) place here and on the Portfolio page; the Frame Shop moves to Hire's old spot.
+  const FEATURED_IDS = ['p14', 'p12', 'p15'];
   const featured = FEATURED_IDS
     .map((id) => PORTFOLIO.find((item) => item.id === id))
     .filter((item): item is typeof PORTFOLIO[number] => Boolean(item));
