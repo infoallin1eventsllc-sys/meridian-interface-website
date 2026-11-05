@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { OwnerInvoice, InvoiceLineItem } from '../types';
 import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
+import {
+  CLIENT_EXPLAINERS,
+  explainerById,
+  explainerForDescription,
+  type ClientExplainer,
+} from '../data/clientExplainers';
+import { PORTFOLIO, SERVICES } from '../data/mockData';
 import { CampaignLinks } from './CampaignLinks';
 import { SystemHealth } from './SystemHealth';
 import { MarketingQueue } from './MarketingQueue';
@@ -20,6 +27,93 @@ import {
 const cents = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 /** Dollars with exactly two decimals: "4,578.98", never "1,336.411". */
 const money = (n: number) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/**
+ * The Client Answer for a product name.
+ *
+ * The site's own lists come first, because a portfolio piece declares its
+ * answer ("The Frame Shop" is a business site) where its title alone would not
+ * say so. The wording match covers price lines and anything typed by hand.
+ */
+function answerFor(description: string): ClientExplainer | undefined {
+  const declared = [...PORTFOLIO, ...SERVICES].find((p) => p.title === description)?.explainerId;
+  return explainerById(declared) ?? explainerForDescription(description);
+}
+
+/**
+ * Every line on an invoice carries an answer (Otis, 5 Nov 2026). Work that
+ * matches no product is, by definition, scoped work, so it gets that answer
+ * rather than none. An `explainerId` of '' means "None" was chosen on purpose.
+ */
+const SCOPED_WORK = 'exp_consultation';
+
+/**
+ * Put a Client Answer on an invoice line, so the client reads what the line is,
+ * what it includes, what it does not, and how long it takes, on the invoice.
+ *
+ * A price line already lists what its own tier includes, and that list wins;
+ * the answer's list fills a line that has none, such as one from a saved list.
+ */
+function attachAnswer(item: InvoiceLineItem, answer: ClientExplainer | undefined): InvoiceLineItem {
+  if (!answer) return item;
+  const previous = explainerById(item.explainerId);
+  const own = (item.deliverables ?? []).filter(Boolean);
+  // A list that is just the previous answer's is replaced along with it.
+  const ownIsPrevious =
+    !!previous && own.join('\n') === previous.included.map((x) => x.what).join('\n');
+  return {
+    ...item,
+    explainerId: answer.id,
+    summary: answer.summary,
+    timeline: answer.timeline,
+    excluded: [...answer.excluded],
+    deliverables: own.length && !ownIsPrevious ? item.deliverables : answer.included.map((x) => x.what),
+  };
+}
+
+function detachAnswer(item: InvoiceLineItem): InvoiceLineItem {
+  const rest: InvoiceLineItem = { ...item, explainerId: '' };
+  delete rest.summary;
+  delete rest.timeline;
+  delete rest.excluded;
+  return rest;
+}
+
+const withAnswer = (item: InvoiceLineItem): InvoiceLineItem =>
+  attachAnswer(item, answerFor(item.description) ?? explainerById(SCOPED_WORK));
+
+/** A line from before answers were attached, or one that slipped through, gets one. */
+const ensureAnswer = (item: InvoiceLineItem): InvoiceLineItem =>
+  item.explainerId === undefined ? withAnswer(item) : item;
+
+/** Tags that stand for a single product, and that product's answer. */
+const TAG_ANSWERS: Record<string, string> = {
+  'Video Ads': 'exp_video_ad',
+  'Agent CRM': 'exp_agent_crm',
+  'Hiring API': 'exp_hiring_api',
+  'Hourly Design & Engineering': 'exp_hourly',
+};
+
+/** The invoice tag for a line that arrives with no tag of its own (a saved list). */
+function categoryFor(answer: ClientExplainer): InvoiceLineItem['category'] {
+  if (answer.id === 'exp_agent_crm') return 'Agent CRM';
+  if (answer.id === 'exp_hiring_api') return 'Hiring API';
+  switch (answer.category) {
+    case 'Websites': return 'Web Design';
+    case 'Brand & Logo': return 'Logo Design';
+    case 'Packages': return 'Full Agency Package';
+    case 'Video Ads': return 'Video Ads';
+    default: return 'Custom';
+  }
+}
+
+/** The answers in the order the Client Answers tab shows them, for the picker. */
+const ANSWER_GROUPS = CLIENT_EXPLAINERS.reduce<{ category: string; items: ClientExplainer[] }[]>((groups, e) => {
+  const group = groups.find((g) => g.category === e.category);
+  if (group) group.items.push(e);
+  else groups.push({ category: e.category, items: [e] });
+  return groups;
+}, []);
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SecurityPanel } from './SecurityPanel';
@@ -103,11 +197,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [catalogueFailed, setCatalogueFailed] = useState(false);
   const cat = catalogue ?? EMPTY_CATALOGUE;
 
-  const [lineItems, setLineItems] = useState<InvoiceLineItem[]>([
+  const [lineItems, setLineItems] = useState<InvoiceLineItem[]>(() => [
     {
       id: 'li_preset_1',
       description: 'Custom Web Design & Frontend Development Package',
-      category: 'Web Design',
+      category: 'Web Design' as const,
       quantity: 1,
       rate: 3500,
       amount: 3500
@@ -115,12 +209,12 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     {
       id: 'li_preset_2',
       description: 'Custom Vector Logo & Complete Brand Identity System',
-      category: 'Logo Design',
+      category: 'Logo Design' as const,
       quantity: 1,
       rate: 1200,
       amount: 1200
     }
-  ]);
+  ].map(withAnswer));
 
   // Ask the server whether a passcode exists, so the gate can show the right
   // screen instead of a form that might be impossible to satisfy.
@@ -248,17 +342,24 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
    * flow is that pricing happens here, deliberately, after the conversation.
    */
   const handleStartInvoiceFromLead = (lead: InboxLead) => {
-    const items: InvoiceLineItem[] = lead.items.map((item, n) => ({
-      id: `li_${Date.now()}_${n}`,
-      description: item.title,
-      // The category shown on the site becomes the deliverable line rather
-      // than being dropped; it is what the client thought they were choosing.
-      deliverables: item.detail ? [item.detail] : [],
-      category: 'Custom',
-      quantity: 1,
-      rate: 0,
-      amount: 0,
-    }));
+    const items: InvoiceLineItem[] = lead.items.map((item, n) => {
+      const line: InvoiceLineItem = {
+        id: `li_${Date.now()}_${n}`,
+        description: item.title,
+        deliverables: [],
+        category: 'Custom',
+        quantity: 1,
+        rate: 0,
+        amount: 0,
+      };
+      // The product's Client Answer itemises the line. Without one, the
+      // category shown on the site becomes the deliverable line rather than
+      // being dropped; it is what the client thought they were choosing.
+      const answer = answerFor(item.title);
+      return answer
+        ? attachAnswer({ ...line, category: categoryFor(answer) }, answer)
+        : withAnswer({ ...line, deliverables: item.detail ? [item.detail] : [] });
+    });
 
     setActiveInvoice(null);
     setFormClientName(lead.client.name ?? '');
@@ -295,9 +396,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     };
 
     if (!isCreatingNew) {
-      handleStartNewInvoiceWithItems([newItem]);
+      handleStartNewInvoiceWithItems([withAnswer(newItem)]);
     } else {
-      setLineItems([...lineItems, newItem]);
+      setLineItems([...lineItems, withAnswer(newItem)]);
     }
   };
 
@@ -319,9 +420,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     };
 
     if (!isCreatingNew) {
-      handleStartNewInvoiceWithItems([newItem]);
+      handleStartNewInvoiceWithItems([withAnswer(newItem)]);
     } else {
-      setLineItems([...lineItems, newItem]);
+      setLineItems([...lineItems, withAnswer(newItem)]);
     }
   };
 
@@ -338,9 +439,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     };
 
     if (!isCreatingNew) {
-      handleStartNewInvoiceWithItems([newItem]);
+      handleStartNewInvoiceWithItems([withAnswer(newItem)]);
     } else {
-      setLineItems([...lineItems, newItem]);
+      setLineItems([...lineItems, withAnswer(newItem)]);
     }
   };
 
@@ -358,9 +459,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     };
 
     if (!isCreatingNew) {
-      handleStartNewInvoiceWithItems([newItem]);
+      handleStartNewInvoiceWithItems([withAnswer(newItem)]);
     } else {
-      setLineItems([...lineItems, newItem]);
+      setLineItems([...lineItems, withAnswer(newItem)]);
     }
   };
 
@@ -397,6 +498,42 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     ));
   };
 
+  const handleSetAnswer = (itemId: string, explainerId: string) => {
+    setLineItems(lineItems.map((item) =>
+      item.id !== itemId
+        ? item
+        : explainerId
+          ? attachAnswer(item, explainerById(explainerId))
+          : detachAnswer(item)
+    ));
+  };
+
+  const handleUpdateExcluded = (itemId: string, index: number, value: string) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId
+        ? { ...item, excluded: (item.excluded ?? []).map((d, i) => (i === index ? value : d)) }
+        : item
+    ));
+  };
+
+  const handleAddExcluded = (itemId: string) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId ? { ...item, excluded: [...(item.excluded ?? []), ''] } : item
+    ));
+  };
+
+  const handleRemoveExcluded = (itemId: string, index: number) => {
+    setLineItems(lineItems.map((item) =>
+      item.id === itemId
+        ? { ...item, excluded: (item.excluded ?? []).filter((_, i) => i !== index) }
+        : item
+    ));
+  };
+
+  const handleUpdateAnswerText = (itemId: string, field: 'summary' | 'timeline', value: string) => {
+    setLineItems(lineItems.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)));
+  };
+
   const handleRemoveDeliverable = (itemId: string, index: number) => {
     setLineItems(lineItems.map((item) =>
       item.id === itemId
@@ -414,7 +551,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       rate: 500,
       amount: 500
     };
-    setLineItems([...lineItems, newItem]);
+    setLineItems([...lineItems, withAnswer(newItem)]);
   };
 
   /**
@@ -436,6 +573,18 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           const qty = field === 'quantity' ? Number(value) : item.quantity;
           const rt = field === 'rate' ? Number(value) : item.rate;
           updated.amount = qty * rt;
+        }
+        // Renaming a line to a product brings that product's answer with it,
+        // unless the answer on the line was picked by hand.
+        if (field === 'description') {
+          const wasAuto = !item.explainerId || answerFor(item.description)?.id === item.explainerId;
+          const next = answerFor(String(value));
+          if (wasAuto && next && next.id !== item.explainerId) return attachAnswer(updated, next);
+        }
+        // A tag that names one product gives an unexplained line its answer.
+        if (field === 'category' && !item.explainerId) {
+          const next = explainerById(TAG_ANSWERS[String(value)]);
+          if (next) return attachAnswer(updated, next);
         }
         return updated;
       }
@@ -504,7 +653,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       clientPhone: formClientPhone.trim() || '281-882-9198',
       issueDate: formIssueDate,
       dueDate: formDueDate,
-      lineItems: [...lineItems],
+      lineItems: lineItems.map(ensureAnswer),
       subtotal,
       discountPercentage: formDiscount,
       taxPercentage: formTax,
@@ -548,7 +697,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setFormNotes(inv.notes);
     setFormDiscount(inv.discountPercentage || 0);
     setFormTax(inv.taxPercentage || 0);
-    setLineItems(inv.lineItems || []);
+    setLineItems((inv.lineItems || []).map(ensureAnswer));
     setIsCreatingNew(true);
   };
 
@@ -579,7 +728,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       {
         id: 'li_preset_1',
         description: 'Custom Web Design & Frontend Development Package',
-        category: 'Web Design',
+        category: 'Web Design' as const,
         quantity: 1,
         rate: 3500,
         amount: 3500
@@ -587,12 +736,12 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       {
         id: 'li_preset_2',
         description: 'Custom Vector Logo & Complete Brand Identity Suite',
-        category: 'Logo Design',
+        category: 'Logo Design' as const,
         quantity: 1,
         rate: 1200,
         amount: 1200
       }
-    ]);
+    ].map(withAnswer));
     setIsCreatingNew(true);
   };
 
@@ -1477,6 +1626,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                               <CopyExplainerButton
                                 description={item.description}
                                 rate={item.rate}
+                                explainerId={item.explainerId}
                               />
                               <button
                                 type="button"
@@ -1516,6 +1666,94 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                 </button>
                               </div>
                             ))}
+                          </div>
+
+                          {/* The Client Answer printed with this line. Picked
+                              for the product automatically; change it, edit the
+                              wording for this client, or take it off. */}
+                          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <label
+                                htmlFor={`answer-${item.id}`}
+                                className="text-[10px] font-bold uppercase tracking-wider text-slate-500"
+                              >
+                                Client answer on the invoice
+                              </label>
+                              <select
+                                id={`answer-${item.id}`}
+                                value={item.explainerId ?? ''}
+                                onChange={(e) => handleSetAnswer(item.id, e.target.value)}
+                                className="p-1.5 bg-white border border-slate-200 rounded text-[11px] font-bold text-slate-800"
+                              >
+                                <option value="">None</option>
+                                {ANSWER_GROUPS.map((g) => (
+                                  <optgroup key={g.category} label={g.category}>
+                                    {g.items.map((e) => (
+                                      <option key={e.id} value={e.id}>{e.title}</option>
+                                    ))}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </div>
+
+                            {item.explainerId && (
+                              <>
+                                <label className="block">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">What it is</span>
+                                  <textarea
+                                    rows={2}
+                                    value={item.summary ?? ''}
+                                    onChange={(e) => handleUpdateAnswerText(item.id, 'summary', e.target.value)}
+                                    className="mt-1 w-full p-1.5 bg-white border border-slate-200 rounded text-[11px] text-slate-800 outline-none focus:border-slate-400"
+                                  />
+                                </label>
+
+                                <div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Not included</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAddExcluded(item.id)}
+                                      className="text-[11px] font-bold text-blue-700 hover:text-blue-900"
+                                    >
+                                      + Add line
+                                    </button>
+                                  </div>
+                                  <div className="mt-1 space-y-1.5">
+                                    {(item.excluded ?? []).map((d, i) => (
+                                      <div key={i} className="flex items-center gap-2">
+                                        <span className="h-1 w-1 shrink-0 rounded-full bg-slate-300" />
+                                        <input
+                                          type="text"
+                                          value={d}
+                                          aria-label={`Not included, line ${i + 1}`}
+                                          onChange={(e) => handleUpdateExcluded(item.id, i, e.target.value)}
+                                          className="flex-1 p-1.5 bg-white border border-slate-200 rounded text-[11px] text-slate-600 outline-none focus:border-slate-400"
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveExcluded(item.id, i)}
+                                          className="p-1 text-slate-400 hover:text-red-600 rounded"
+                                          aria-label="Remove not-included line"
+                                        >
+                                          <span className="material-symbols-outlined text-sm" aria-hidden="true">close</span>
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                <label className="block">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Timeline</span>
+                                  <input
+                                    type="text"
+                                    value={item.timeline ?? ''}
+                                    onChange={(e) => handleUpdateAnswerText(item.id, 'timeline', e.target.value)}
+                                    className="mt-1 w-full p-1.5 bg-white border border-slate-200 rounded text-[11px] text-slate-800 outline-none focus:border-slate-400"
+                                  />
+                                </label>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -1833,16 +2071,25 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {showPrintModal.lineItems && showPrintModal.lineItems.map((item, idx) => (
+                    {showPrintModal.lineItems && showPrintModal.lineItems.map(ensureAnswer).map((item, idx) => (
                       <tr key={idx} className="align-top hover:bg-slate-50">
                         <td className="p-3 font-bold text-slate-800 whitespace-nowrap">{item.category}</td>
                         <td className="p-3 text-slate-900">
                           <div className="font-bold">{item.description}</div>
+                          {item.summary && (
+                            <p className="mt-1 text-[11px] leading-relaxed text-slate-600">{item.summary}</p>
+                          )}
 
                           {/* The itemised breakdown. A client looking at a
                               four-figure line should be able to see the things
                               they are buying, not infer them from a sentence. */}
                           {item.deliverables && item.deliverables.length > 0 && (
+                            <>
+                            {item.explainerId && (
+                              <span className="mt-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                What's included
+                              </span>
+                            )}
                             <ul className="mt-2 space-y-1">
                               {item.deliverables.filter(Boolean).map((d, i) => (
                                 <li key={i} className="flex gap-2 text-[11px] leading-relaxed text-slate-600">
@@ -1851,6 +2098,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                 </li>
                               ))}
                             </ul>
+                            </>
                           )}
 
                           {item.excluded && item.excluded.filter(Boolean).length > 0 && (
@@ -1866,6 +2114,13 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                 ))}
                               </ul>
                             </div>
+                          )}
+
+                          {item.timeline && (
+                            <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+                              <span className="font-bold text-slate-600">Timeline: </span>
+                              {item.timeline}
+                            </p>
                           )}
                         </td>
                         <td className="p-3 text-center font-mono font-bold text-slate-800">{item.quantity}</td>

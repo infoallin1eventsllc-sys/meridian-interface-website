@@ -141,7 +141,7 @@ export const SERVICES: ServiceDetail[] = [
     id: 'full_package',
     title: 'Full Studio Design Bundle',
     categoryName: 'Web + App + Dashboard + Brand',
-    explainerId: null,
+    explainerId: 'exp_full_package',
     duration: '3 - 5 Weeks',
     icon: 'workspace_premium',
     summary: 'Complete digital transformation: Custom Web, Mobile App UI, Analytics Dashboards & Complete Brand Identity.',
@@ -411,7 +411,7 @@ export const PORTFOLIO: PortfolioItem[] = [
   {
     id: 'p6',
     title: 'MODERN_STREET: Streetwear Storefront',
-    explainerId: null,
+    explainerId: 'exp_ecommerce',
     category: 'web_design',
     categoryLabel: 'E-Commerce',
     client: 'Retail / DTC',

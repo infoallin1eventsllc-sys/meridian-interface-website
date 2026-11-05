@@ -25,6 +25,15 @@ export interface InvoiceLineItem {
    * arguing about it later.
    */
   excluded?: string[];
+  /**
+   * The Client Answer attached to this line, and the parts of it the invoice
+   * prints: one sentence on what it is, and how long it takes. Copied onto the
+   * line rather than looked up, so an invoice already sent keeps the wording
+   * the client saw even if the answer is rewritten later.
+   */
+  explainerId?: string;
+  summary?: string;
+  timeline?: string;
 }
 
 export interface OwnerInvoice {

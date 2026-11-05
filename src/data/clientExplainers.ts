@@ -23,7 +23,7 @@ export interface ClientExplainer {
   id: string;
   /** Matches how the line reads on the invoice. */
   title: string;
-  category: 'Websites' | 'Software' | 'Brand & Logo' | 'Packages' | 'Ongoing Work';
+  category: 'Websites' | 'Software' | 'Brand & Logo' | 'Packages' | 'Video Ads' | 'Ongoing Work';
   /**
    * Filled in at runtime from the server catalogue, keyed by `id`.
    *
@@ -336,6 +336,73 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
       'Access to the systems it needs to connect to',
       'Decisions at each stage, so the build does not stall waiting on an answer',
       'A named person who can sign off — the fastest projects have exactly one',
+    ],
+  },
+
+  {
+    // Added 5 Nov 2026 so every product has an answer (MODERN_STREET, p6).
+    id: 'exp_ecommerce',
+    title: 'Online Store',
+    category: 'Websites',
+    matches: ['online store', 'storefront', 'e-commerce', 'ecommerce', 'web shop'],
+    summary:
+      'A shop that sells for you around the clock: your products, photographed and organised, with a cart and checkout built to turn browsers into paying customers.',
+    short:
+      'This is an online store built around your products. Customers can browse your collections, pick a colour and size, add to a cart that remembers what they chose, and pay in a few steps. You can add products, change prices and see orders yourself, without calling us.',
+    included: [
+      {
+        what: 'A storefront designed around your brand and your best sellers',
+        why:
+          'The first screen shows what you most want to sell, so visitors see your strongest products before anything else.',
+      },
+      {
+        what: 'Product pages with photos, colours, sizes and stock',
+        why:
+          'Customers get the answers they need to buy without having to message you first.',
+      },
+      {
+        what: 'A cart that remembers what was chosen, and a short checkout',
+        why:
+          'Every extra step at checkout loses sales. Ours is kept to the few that are actually needed.',
+      },
+      {
+        what: 'Card payments through a trusted payment provider',
+        why:
+          'Card details go straight to the payment provider and never touch your site, which keeps you out of handling them.',
+      },
+      {
+        what: 'Order emails to you and your customer',
+        why:
+          'You know the moment something sells, and the customer gets a receipt straight away.',
+      },
+      {
+        what: 'You can add products and change prices yourself',
+        why:
+          'A new product or a sale price should not need a call to us.',
+      },
+      {
+        what: 'Correct on phones, and set up so Google can list your products',
+        why:
+          'Most shoppers will find and buy on a phone, so it is designed for that first.',
+      },
+    ],
+    outcome:
+      'You have a shop that takes orders while you sleep, looks like a brand people trust, and that you can run day to day yourself.',
+    excluded: [
+      'Payment processing fees charged by the payment provider on each sale',
+      'Product photography, unless it is added as a separate line',
+      'Entering a large product catalogue, quoted once we know how many products there are',
+      'Shipping, tax and warehouse integrations beyond the standard ones, quoted once we have seen them',
+      'Ongoing hosting, support and changes after launch',
+      'Feature work beyond what is agreed at the start — added by written change order so the price never moves without your say-so',
+    ],
+    timeline:
+      'Typically 4 to 8 weeks, depending on how many products and how many payment and shipping options it needs. You see it working before launch.',
+    needFromYou: [
+      'Your products: names, descriptions, prices, sizes and colours',
+      'Product photos, or a decision to have them taken',
+      'Your shipping and returns rules',
+      'An account with the payment provider, which we help you set up',
     ],
   },
 
@@ -790,6 +857,236 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
     ],
   },
 
+  {
+    // Added 5 Nov 2026 so the Full Studio Design Bundle service has an answer.
+    id: 'exp_full_package',
+    title: 'Full Studio Design Bundle',
+    category: 'Packages',
+    matches: ['full studio design bundle', 'studio design bundle', 'full studio bundle'],
+    summary:
+      'Everything a growing business needs to look and run as one brand: a website, an app design, a dashboard and a complete brand identity, made together.',
+    short:
+      'This bundle brings everything together in one project: a complete brand identity, a custom website, the design of a mobile app, and a dashboard showing the numbers you run the business on. Because it is all made by one team at the same time, it looks and works as one brand, and it costs less than buying each part separately.',
+    included: [
+      {
+        what: 'A complete brand identity: logo, colours, fonts and a brand guide',
+        why:
+          'Everything else in the bundle is built on it, so your website, app and dashboard all look like the same business.',
+      },
+      {
+        what: 'A custom website, designed and launched',
+        why:
+          'Built around what your business sells and what you need visitors to do, rather than a template.',
+      },
+      {
+        what: 'The design of your mobile app, with a clickable prototype',
+        why:
+          'You can tap through the app on a phone and test it with customers before paying to have it built.',
+      },
+      {
+        what: 'A dashboard for the numbers you run the business on',
+        why:
+          'Sales, customers or finances in one place, instead of adding them up from several systems by hand.',
+      },
+      {
+        what: 'Priority appointments throughout the project',
+        why:
+          'Your questions and decisions are dealt with first, which keeps a larger project moving.',
+      },
+    ],
+    outcome:
+      'Your business looks established and consistent everywhere a customer meets it, and you can see how it is doing at a glance.',
+    excluded: [
+      'Building the mobile app and submitting it to the app stores, which is a separate build',
+      'Third-party service fees — hosting, domain, email delivery, payment processing',
+      'Moving data out of existing systems into the dashboard, quoted once we have seen it',
+      'Ongoing hosting, support and changes after launch',
+      'Feature work beyond what is agreed at the start — added by written change order so the price never moves without your say-so',
+    ],
+    timeline:
+      'Typically 8 to 12 weeks. The brand comes first, then the website, app design and dashboard are made alongside each other. You approve each stage before the next begins.',
+    needFromYou: [
+      'An hour at the start to talk through your business, your customers and your competitors',
+      'Anything you already have: a logo, photos, wording, a current site',
+      'Access to the systems the dashboard will read from',
+      'A named person who can sign off — the fastest projects have exactly one',
+    ],
+  },
+
+  /* ----------------------------------------------------------- video ads -- */
+  // Added 5 Nov 2026: the ad presets had no answer, so a video ad line on an
+  // invoice had nothing to explain it. The invoice line keeps its own tier
+  // list (Starter, Standard, Premium); these add the summary, what is not
+  // included and the timeline.
+  {
+    id: 'exp_video_ad',
+    title: 'Video Ad',
+    category: 'Video Ads',
+    matches: ['starter ad', 'standard ad', 'premium ad', 'video ad', 'video', 'commercial'],
+    summary:
+      'A short video ad made for your business, ready to post on social media, send by email or play on your website.',
+    short:
+      'This is a short video ad made for your business and ready to post. It is written and edited around one clear message, with music and an ending card showing how to reach you. Higher levels add more shapes for different platforms, original music, custom footage, a voiceover and rounds of changes.',
+    included: [
+      {
+        what: 'A short video ad built around one clear message',
+        why:
+          'People scroll past an ad in seconds. One message, said well, is what gets remembered.',
+      },
+      {
+        what: 'Sized for where it will run: square, vertical or wide',
+        why:
+          'Each platform crops differently. An ad made in the right shape fills the screen instead of shrinking into it.',
+      },
+      {
+        what: 'Music, and an ending card with your contact details',
+        why:
+          'Someone who likes the ad knows exactly how to reach you before it ends.',
+      },
+      {
+        what: 'Finished files ready to upload',
+        why:
+          'You get files that post straight to each platform, with no further editing needed.',
+      },
+    ],
+    outcome:
+      'You have a professional ad to put in front of customers this week, without filming anything yourself.',
+    excluded: [
+      'Paying for the ads to be shown — platform ad spend is paid directly by you',
+      'Running or managing your ad campaigns',
+      'AI footage credits, which are billed separately at what they cost us',
+      'Changes beyond the rounds included at your level, quoted per round',
+      'Filming on location or with actors, quoted separately',
+    ],
+    timeline:
+      'Typically 3 to 7 working days from the time we have your logo, message and contact details, depending on the level.',
+    needFromYou: [
+      'Your logo and brand colours',
+      'The one thing the ad should say, and who it is for',
+      'The contact details for the ending card',
+      'Any photos or clips of your business you would like used',
+    ],
+  },
+  {
+    id: 'exp_ads_monthly',
+    title: 'Monthly Ads',
+    category: 'Video Ads',
+    matches: ['monthly ads'],
+    summary:
+      'Fresh video ads for your social media every month, so your accounts never go quiet.',
+    short:
+      'Each month we make 3 to 4 new video ads for your social media accounts, planned around what you want to promote that month. You approve them before they are finished, and the files arrive ready to post.',
+    included: [
+      {
+        what: '3 to 4 new video ads every month',
+        why:
+          'Social platforms reward accounts that post regularly. A steady supply keeps you in front of customers.',
+      },
+      {
+        what: 'Planned around what you want to promote that month',
+        why:
+          'A new service, a sale or a busy season gets its own ad, made in time to matter.',
+      },
+      {
+        what: 'Made in the right shape for each of your accounts',
+        why:
+          'Each ad fills the screen on the platform it runs on.',
+      },
+      {
+        what: 'You approve each ad before it is finished',
+        why:
+          'Nothing goes out in your name that you have not seen.',
+      },
+    ],
+    outcome:
+      'Your social media keeps working for you every month without you having to make content yourself.',
+    excluded: [
+      'Paying for the ads to be shown — platform ad spend is paid directly by you',
+      'Posting the ads and replying to comments, unless added separately',
+      'AI footage credits, which are billed separately at what they cost us',
+      'Ads beyond the monthly number, quoted per ad',
+    ],
+    timeline:
+      'Billed monthly. The first set is ready about a week after we agree the month\'s plan, then each month on a regular schedule.',
+    needFromYou: [
+      'What you want to promote each month, agreed at the start of the month',
+      'Your logo and brand colours',
+      'Approval of each ad within a few days, so the schedule holds',
+    ],
+  },
+  {
+    id: 'exp_ad_site_addon',
+    title: 'Website Ad Add-on',
+    category: 'Video Ads',
+    matches: ['website ad add-on', 'website ad'],
+    summary:
+      'A video ad made from the website we have just built for you, to announce it and send people to it.',
+    short:
+      'Once your new website is built, we turn it into a short video ad that shows it off and sends people to it. It reuses the design, photos and wording we have already made, which is why it costs less than an ad made from scratch.',
+    included: [
+      {
+        what: 'A short video ad made from your new website',
+        why:
+          'Announcing the new site gives people a reason to visit it in its first weeks.',
+      },
+      {
+        what: 'Your site\'s design, photos and wording, in motion',
+        why:
+          'The ad matches the site exactly, so people recognise it when they arrive.',
+      },
+      {
+        what: 'An ending card with your website address',
+        why:
+          'Anyone who watches knows exactly where to go.',
+      },
+    ],
+    outcome:
+      'Your new website launches with an ad that brings people to it.',
+    excluded: [
+      'Paying for the ad to be shown — platform ad spend is paid directly by you',
+      'New footage or a voiceover, which are part of the Premium Ad',
+      'Changes to the website itself',
+    ],
+    timeline:
+      'Typically 3 to 5 working days after your website is finished.',
+    needFromYou: [
+      'Your approval of the finished website',
+      'Where you plan to post the ad, so it is made in the right shape',
+    ],
+  },
+  {
+    id: 'exp_ai_credits',
+    title: 'AI Footage Credits',
+    category: 'Video Ads',
+    matches: ['ai footage credits', 'ai footage', 'ai credits'],
+    summary:
+      'The cost of the AI tools used to create custom footage for your ad, passed on at exactly what they cost us.',
+    short:
+      'Custom footage for your ad is made with paid AI tools that charge for each clip they create. This line passes that cost on to you exactly as we pay it, with nothing added, so you only pay for the footage your ad actually needed.',
+    included: [
+      {
+        what: 'The AI generation credits used to create your custom footage',
+        why:
+          'You see this cost on its own line instead of hidden inside the price of the ad.',
+      },
+      {
+        what: 'Charged at exactly our cost, with nothing added',
+        why:
+          'You pay for what your ad used, and no more.',
+      },
+    ],
+    outcome:
+      'Your ad can show footage made just for your business, and you can see exactly what that footage cost.',
+    excluded: [
+      'The ad itself, which is its own line on this invoice',
+    ],
+    timeline:
+      'Billed once the footage for your ad has been made.',
+    needFromYou: [
+      'Approval of the footage plan before credits are used',
+    ],
+  },
+
   /* ------------------------------------------------------ ongoing work ---- */
   {
     id: 'exp_hourly',
@@ -874,6 +1171,10 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
  * reading "Complex Custom Web App / Multi-Page Portal" resolves to the web app
  * entry rather than being caught by the shorter "portal".
  */
+export function explainerById(id: string | null | undefined): ClientExplainer | undefined {
+  return id ? CLIENT_EXPLAINERS.find((e) => e.id === id) : undefined;
+}
+
 export function explainerForDescription(description: string): ClientExplainer | undefined {
   const text = description.toLowerCase();
   let best: { explainer: ClientExplainer; length: number } | undefined;

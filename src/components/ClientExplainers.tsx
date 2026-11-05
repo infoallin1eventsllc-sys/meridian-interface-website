@@ -4,6 +4,7 @@ import {
   ClientExplainer,
   explainerAsEmail,
   explainerAsShort,
+  explainerById,
   explainerForDescription,
 } from '../data/clientExplainers';
 
@@ -22,7 +23,7 @@ import {
  * and trimmed by hand.
  */
 
-const CATEGORIES = ['All', 'Websites', 'Software', 'Brand & Logo', 'Packages', 'Ongoing Work'] as const;
+const CATEGORIES = ['All', 'Websites', 'Software', 'Brand & Logo', 'Packages', 'Video Ads', 'Ongoing Work'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 /**
@@ -110,11 +111,12 @@ const CopyButton: React.FC<{
  * dead button. A hand-typed custom line has no catalogue answer, and pretending
  * otherwise is worse than staying quiet.
  */
-export const CopyExplainerButton: React.FC<{ description: string; rate?: number }> = ({
+export const CopyExplainerButton: React.FC<{ description: string; rate?: number; explainerId?: string }> = ({
   description,
   rate,
+  explainerId,
 }) => {
-  const item = explainerForDescription(description);
+  const item = explainerById(explainerId) ?? explainerForDescription(description);
   if (!item) return null;
 
   const price =
