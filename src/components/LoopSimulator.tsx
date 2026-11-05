@@ -183,7 +183,7 @@ export const LoopSimulator: React.FC = () => {
     <section className="mt-20 border-t border-slate-200 pt-14">
       <div className="max-w-3xl space-y-3 mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
-          <span className="material-symbols-outlined text-sm">account_tree</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">account_tree</span>
           A tech stack, running
         </div>
         <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-slate-900 font-black leading-tight tracking-tight">
@@ -204,7 +204,7 @@ export const LoopSimulator: React.FC = () => {
           onClick={() => setRunning((r) => !r)}
           className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition-colors flex items-center gap-1.5"
         >
-          <span className="material-symbols-outlined text-base">{running ? 'pause' : 'play_arrow'}</span>
+          <span className="material-symbols-outlined text-base" aria-hidden="true">{running ? 'pause' : 'play_arrow'}</span>
           {running ? 'Pause' : 'Play'}
         </button>
 

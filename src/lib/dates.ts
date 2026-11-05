@@ -27,3 +27,12 @@ export function nextBusinessDay(): string {
   while (d.getDay() === 0 || d.getDay() === 6);
   return localISODate(d);
 }
+
+/** The appointment times both booking forms offer, in Houston time. */
+export const TIME_SLOTS = [
+  '09:00 AM - 10:00 AM CT',
+  '10:00 AM - 11:00 AM CT',
+  '01:00 PM - 02:00 PM CT',
+  '03:30 PM - 04:30 PM CT',
+  '05:00 PM - 06:00 PM CT',
+];

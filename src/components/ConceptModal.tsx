@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDialogFocus } from '../lib/useDialogFocus';
 import { PortfolioItem } from '../types';
 import { resolveImage } from '../lib/imageStore';
 import { ImageWithFallback } from './ImageWithFallback';
@@ -27,6 +28,8 @@ export const ConceptModal: React.FC<{
   autoPlay?: boolean;
 }> = ({ item, onClose, onBook, autoPlay = false }) => {
   const [zoomed, setZoomed] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(dialogRef, Boolean(item));
 
   // Escape closes the panel, unless the full-screen view is open on top of it,
   // in which case the Lightbox handles Escape and the panel stays.
@@ -49,13 +52,13 @@ export const ConceptModal: React.FC<{
   return (
     <>
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
-          <div role="dialog" aria-modal="true" aria-label={item.title} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={item.title} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-2xl w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={onClose}
               aria-label="Close"
               className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 transition-colors"
             >
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <span className="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
             </button>
 
             <div className="space-y-4">
@@ -166,7 +169,7 @@ export const ConceptModal: React.FC<{
                   }}
                   className="w-full sm:flex-1 py-3 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-base">calendar_month</span>
+                  <span className="material-symbols-outlined text-base" aria-hidden="true">calendar_month</span>
                   Book an appointment
                 </button>
               </div>

@@ -62,7 +62,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
   if (leads.length === 0) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-        <span className="material-symbols-outlined text-4xl text-slate-300">shopping_cart</span>
+        <span className="material-symbols-outlined text-4xl text-slate-300" aria-hidden="true">shopping_cart</span>
         <div className="mt-2 font-bold text-slate-700">No saved lists yet</div>
         <p className="mt-1 text-sm text-slate-500 max-w-md mx-auto">
           When a client saves products on the site and sends them through, the list
@@ -151,7 +151,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
                     onClick={() => onCreateInvoice(lead)}
                     className="inline-flex items-center gap-2 rounded-lg bg-[#0f172a] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-slate-700"
                   >
-                    <span className="material-symbols-outlined text-base">receipt_long</span>
+                    <span className="material-symbols-outlined text-base" aria-hidden="true">receipt_long</span>
                     Start invoice from this list
                   </button>
                 ) : null}
@@ -160,7 +160,7 @@ export function SavedListInbox({ onCreateInvoice }: { onCreateInvoice?: (lead: I
                   onClick={() => copyLines(lead)}
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-700 transition-colors hover:bg-slate-50"
                 >
-                  <span className="material-symbols-outlined text-base">content_copy</span>
+                  <span className="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
                   {copied === (lead.appointmentId ?? '') ? 'Copied' : 'Copy lines'}
                 </button>
               </div>

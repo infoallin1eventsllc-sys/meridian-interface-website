@@ -17,8 +17,6 @@ import {
   type WebPricingScope,
 } from '../lib/catalogue';
 
-import { INITIAL_OWNER_INVOICES } from '../data/mockData';
-
 const cents = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 /** Dollars with exactly two decimals: "4,578.98", never "1,336.411". */
 const money = (n: number) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -165,7 +163,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       .then(({ invoices: remote, offline: isOffline }) => {
         if (cancelled) return;
         setOffline(isOffline);
-        setInvoices(remote.length || isOffline ? remote : INITIAL_OWNER_INVOICES);
+        setInvoices(remote);
       })
       // A rejected session already re-locked the portal above; there is nothing
       // to show and nothing to report beyond that.
@@ -640,7 +638,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 md:p-8 w-full space-y-5">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-2xl">key_off</span>
+              <span className="material-symbols-outlined text-2xl" aria-hidden="true">key_off</span>
             </div>
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full text-[10px] font-bold uppercase tracking-wider">
@@ -671,7 +669,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
 
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5">
             <p className="text-[12px] font-bold text-slate-800 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">shield</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">shield</span>
               Set it as a Supabase secret, not a site variable
             </p>
             <p className="text-[12px] text-slate-600 leading-relaxed">
@@ -697,7 +695,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       <main className="pt-28 pb-20 px-4 max-w-md mx-auto min-h-screen flex items-center justify-center animate-fadeIn">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 md:p-8 w-full text-center space-y-6">
           <div className="w-16 h-16 bg-slate-900 text-blue-400 rounded-2xl flex items-center justify-center mx-auto shadow-md">
-            <span className="material-symbols-outlined text-3xl">lock</span>
+            <span className="material-symbols-outlined text-3xl" aria-hidden="true">lock</span>
           </div>
 
           <div className="space-y-1">
@@ -767,7 +765,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               disabled={checking || !pinInput.trim() || (twoStep && codeInput.length !== 6)}
               className="w-full py-3 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <span className="material-symbols-outlined text-base">key</span>
+              <span className="material-symbols-outlined text-base" aria-hidden="true">key</span>
               {checking ? 'Checking\u2026' : 'Authenticate Owner Access'}
             </button>
           </form>
@@ -788,7 +786,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 bg-slate-100 text-slate-700 border border-slate-200 rounded-full text-[11px] font-extrabold uppercase tracking-widest flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">verified_user</span>
+              <span className="material-symbols-outlined text-xs" aria-hidden="true">verified_user</span>
               Internal
             </span>
             <span className="text-xs text-slate-500 font-mono">Meridian Interface</span>
@@ -806,7 +804,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             onClick={() => { setPortalTab('invoices'); handleStartNewInvoice(); }}
             className="px-5 py-2.5 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-base">post_add</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">post_add</span>
             Create Internal Invoice
           </button>
           <button
@@ -814,7 +812,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             className="px-3 py-2.5 bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-1"
             title="Lock Owner Portal"
           >
-            <span className="material-symbols-outlined text-base">lock</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">lock</span>
             Lock
           </button>
         </div>
@@ -825,7 +823,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           role="status"
           className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
         >
-          <span className="material-symbols-outlined text-amber-600 text-lg shrink-0">cloud_off</span>
+          <span className="material-symbols-outlined text-amber-600 text-lg shrink-0" aria-hidden="true">cloud_off</span>
           <div className="text-[12px] leading-relaxed text-amber-900">
             <strong className="font-bold">Working offline.</strong> The Meridian
             database could not be reached, so changes are being kept in this browser
@@ -867,7 +865,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
             }`}
           >
-            <span className="material-symbols-outlined text-base">{t.icon}</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">{t.icon}</span>
             {t.label}
           </button>
         ))}
@@ -933,7 +931,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               Industry Standard Benchmark Reference
             </span>
             <h2 className="font-display font-black text-xl text-slate-900 pt-1 flex items-center gap-2">
-              <span className="material-symbols-outlined text-amber-500">payments</span>
+              <span className="material-symbols-outlined text-amber-500" aria-hidden="true">payments</span>
               Studio Pricing Matrices & Agency Bundled Packages
             </h2>
           </div>
@@ -948,7 +946,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="material-symbols-outlined text-sm">auto_awesome</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">auto_awesome</span>
               Bundled Packages
             </button>
             <button
@@ -959,7 +957,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="material-symbols-outlined text-sm">palette</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">palette</span>
               Logo & Brand Identity
             </button>
             <button
@@ -970,7 +968,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="material-symbols-outlined text-sm">language</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">language</span>
               Web & App Development
             </button>
             <button
@@ -981,7 +979,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="material-symbols-outlined text-sm">grid_view</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">grid_view</span>
               Quick Presets
             </button>
           </div>
@@ -1020,7 +1018,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                       <ul className="space-y-1.5 text-xs text-slate-700">
                         {bundle.features.map((feat, i) => (
                           <li key={i} className="flex items-start gap-2">
-                            <span className="material-symbols-outlined text-emerald-600 text-sm shrink-0 pt-0.5">check_circle</span>
+                            <span className="material-symbols-outlined text-emerald-600 text-sm shrink-0 pt-0.5" aria-hidden="true">check_circle</span>
                             <span>{feat}</span>
                           </li>
                         ))}
@@ -1032,7 +1030,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     onClick={() => handleAddBundleToInvoice(bundle)}
                     className="w-full py-2.5 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-sm"
                   >
-                    <span className="material-symbols-outlined text-sm">post_add</span>
+                    <span className="material-symbols-outlined text-sm" aria-hidden="true">post_add</span>
                     Add Bundle to Invoice
                   </button>
                 </div>
@@ -1095,7 +1093,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                         </button>
                       </td>
                       <td className="p-3 text-center">
-                        <span className="material-symbols-outlined text-slate-400">palette</span>
+                        <span className="material-symbols-outlined text-slate-400" aria-hidden="true">palette</span>
                       </td>
                     </tr>
                   ))}
@@ -1190,7 +1188,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     onClick={() => handleAddPreset(preset)}
                     className="px-2.5 py-1 bg-slate-900 text-white rounded text-[10px] font-bold uppercase tracking-wider hover:bg-slate-800 transition-all flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-xs">add</span>
+                    <span className="material-symbols-outlined text-xs" aria-hidden="true">add</span>
                     Add to Invoice
                   </button>
                 </div>
@@ -1216,7 +1214,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
               onClick={() => setIsCreatingNew(false)}
               className="p-2 text-slate-400 hover:text-slate-800"
             >
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <span className="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
             </button>
           </div>
 
@@ -1335,7 +1333,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             {/* Quick Add Presets Bar */}
             <div className="space-y-2">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm text-slate-700">bolt</span>
+                <span className="material-symbols-outlined text-sm text-slate-700" aria-hidden="true">bolt</span>
                 Quick Add Industry Standard Rate Presets
               </div>
               <div className="flex flex-wrap gap-2">
@@ -1346,7 +1344,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     onClick={() => handleAddBundleToInvoice(b)}
                     className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-[11px] font-bold text-blue-900 transition-all flex items-center gap-1.5"
                   >
-                    <span className="material-symbols-outlined text-xs text-amber-700">stars</span>
+                    <span className="material-symbols-outlined text-xs text-amber-700" aria-hidden="true">stars</span>
                     Bundle: {b.name} (${b.defaultPrice.toLocaleString()})
                   </button>
                 ))}
@@ -1357,7 +1355,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                     onClick={() => handleAddPreset(p)}
                     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800 transition-all flex items-center gap-1.5"
                   >
-                    <span className="material-symbols-outlined text-xs text-blue-700">add_circle</span>
+                    <span className="material-symbols-outlined text-xs text-blue-700" aria-hidden="true">add_circle</span>
                     {p.title} (${p.rate.toLocaleString()})
                   </button>
                 ))}
@@ -1375,7 +1373,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   onClick={handleAddCustomLine}
                   className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-all flex items-center gap-1"
                 >
-                  <span className="material-symbols-outlined text-sm">add</span>
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">add</span>
                   Add Custom Item
                 </button>
               </div>
@@ -1456,7 +1454,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                             onClick={() => handleRemoveLineItem(item.id)}
                             className="p-1 text-red-600 hover:bg-red-50 rounded"
                           >
-                            <span className="material-symbols-outlined text-base">delete</span>
+                            <span className="material-symbols-outlined text-base" aria-hidden="true">delete</span>
                           </button>
                         </td>
                       </tr>
@@ -1512,7 +1510,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                                   className="p-1 text-slate-400 hover:text-red-600 rounded"
                                   aria-label="Remove deliverable"
                                 >
-                                  <span className="material-symbols-outlined text-sm">close</span>
+                                  <span className="material-symbols-outlined text-sm" aria-hidden="true">close</span>
                                 </button>
                               </div>
                             ))}
@@ -1604,7 +1602,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                 type="submit"
                 className="px-6 py-3 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-slate-800 shadow-lg flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-base">save</span>
+                <span className="material-symbols-outlined text-base" aria-hidden="true">save</span>
                 Save & View Printable Invoice
               </button>
             </div>
@@ -1627,14 +1625,14 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
             onClick={handleStartNewInvoice}
             className="px-4 py-2 bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-blue-500 transition-all flex items-center gap-1.5 shadow-sm"
           >
-            <span className="material-symbols-outlined text-base">add</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">add</span>
             New Invoice
           </button>
         </div>
 
         {invoices.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <span className="material-symbols-outlined text-4xl text-slate-400">receipt_long</span>
+            <span className="material-symbols-outlined text-4xl text-slate-400" aria-hidden="true">receipt_long</span>
             <h3 className="font-display font-bold text-base text-slate-800">No Owner Invoices Created Yet</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Click 'Create Internal Invoice' above or select a preset/bundle from the pricing matrix above.
@@ -1696,21 +1694,21 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                         className="p-1.5 text-blue-700 hover:bg-blue-50 rounded"
                         title="View & Print Official Invoice"
                       >
-                        <span className="material-symbols-outlined text-lg">print</span>
+                        <span className="material-symbols-outlined text-lg" aria-hidden="true">print</span>
                       </button>
                       <button
                         onClick={() => handleEditInvoice(inv)}
                         className="p-1.5 text-slate-700 hover:bg-slate-200 rounded"
                         title="Edit Invoice"
                       >
-                        <span className="material-symbols-outlined text-lg">edit</span>
+                        <span className="material-symbols-outlined text-lg" aria-hidden="true">edit</span>
                       </button>
                       <button
                         onClick={() => handleDeleteInvoice(inv.id)}
                         className="p-1.5 text-red-600 hover:bg-red-50 rounded"
                         title="Delete Invoice"
                       >
-                        <span className="material-symbols-outlined text-lg">delete</span>
+                        <span className="material-symbols-outlined text-lg" aria-hidden="true">delete</span>
                       </button>
                     </td>
                   </tr>
@@ -1754,7 +1752,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
                   onClick={() => window.print()}
                   className="px-4 py-2 bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-md"
                 >
-                  <span className="material-symbols-outlined text-base">print</span>
+                  <span className="material-symbols-outlined text-base" aria-hidden="true">print</span>
                   Print / Save PDF
                 </button>
                 <button

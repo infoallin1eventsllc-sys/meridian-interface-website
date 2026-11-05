@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="md:hidden text-[#0f172a] hover:opacity-70 transition-opacity p-1"
             aria-label="Open Navigation Menu"
           >
-            <span className="material-symbols-outlined">menu</span>
+            <span className="material-symbols-outlined" aria-hidden="true">menu</span>
           </button>
 
           <button
@@ -43,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           <nav className="hidden md:flex items-center gap-5 lg:gap-7 ml-4">
             <button
               onClick={() => onTabChange('home')}
+              aria-current={currentTab === 'home' ? 'page' : undefined}
               className={`font-body text-xs font-bold uppercase tracking-widest py-1 transition-colors relative ${
                 currentTab === 'home'
                   ? 'text-[#0f172a] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#0f172a]'
@@ -53,6 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => onTabChange('services')}
+              aria-current={currentTab === 'services' ? 'page' : undefined}
               className={`font-body text-xs font-bold uppercase tracking-widest py-1 transition-colors relative ${
                 currentTab === 'services'
                   ? 'text-[#0f172a] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#0f172a]'
@@ -63,6 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => onTabChange('portfolio')}
+              aria-current={currentTab === 'portfolio' ? 'page' : undefined}
               className={`font-body text-xs font-bold uppercase tracking-widest py-1 transition-colors relative ${
                 currentTab === 'portfolio'
                   ? 'text-[#0f172a] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#0f172a]'
@@ -73,6 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
             <button
               onClick={() => onTabChange('appointments')}
+              aria-current={currentTab === 'appointments' ? 'page' : undefined}
               className={`font-body text-xs font-bold uppercase tracking-widest py-1 transition-colors relative ${
                 currentTab === 'appointments'
                   ? 'text-[#0f172a] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#0f172a]'
@@ -94,14 +98,14 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label="Search Studio"
             title="Search Web, App & Logo Services"
           >
-            <span className="material-symbols-outlined text-xl">search</span>
+            <span className="material-symbols-outlined text-xl" aria-hidden="true">search</span>
           </button>
 
           <button
             onClick={onOpenBookModal}
             className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-wider rounded-md hover:bg-slate-800 active:scale-[0.98] transition-all shadow-sm"
           >
-            <span className="material-symbols-outlined text-base">calendar_month</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">calendar_month</span>
             Book Appointment
           </button>
         </div>

@@ -135,7 +135,7 @@ const ImageCard: React.FC<{ img: ManagedImage; isCustom: boolean }> = ({ img, is
 
         <div className="flex items-center justify-between gap-2">
           <label className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 hover:text-slate-900 cursor-pointer transition-colors">
-            <span className="material-symbols-outlined text-sm">upload</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">upload</span>
             {busy ? 'Working…' : 'Upload file'}
             <input type="file" accept="image/*" onChange={onFile} disabled={busy} className="hidden" />
           </label>
@@ -145,7 +145,7 @@ const ImageCard: React.FC<{ img: ManagedImage; isCustom: boolean }> = ({ img, is
             onClick={() => void revert()}
             className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            <span className="material-symbols-outlined text-sm">restart_alt</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">restart_alt</span>
             Reset
           </button>
         </div>
@@ -186,7 +186,7 @@ export const OwnerPhotoControl: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-5">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-blue-600">
-            <span className="material-symbols-outlined text-sm">photo_camera</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">photo_camera</span>
             Photo Control
           </div>
           <h2 className="font-display font-bold text-2xl text-slate-900">Manage site images</h2>

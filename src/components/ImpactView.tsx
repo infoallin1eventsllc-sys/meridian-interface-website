@@ -10,8 +10,10 @@ import { ConceptModal } from './ConceptModal';
 interface ImpactViewProps {
   onTabChange: (tab: TabType) => void;
   onOpenBookModal: () => void;
-  /** A piece to open on arrival, from a ?project= link. */
+  /** The piece whose panel should be open: from a ?project= link, Back/Forward, or search. */
   openProject?: string | null;
+  /** Told whenever a panel opens or closes here, so the app and the address bar agree. */
+  onProjectChange?: (slug: string | null) => void;
 }
 
 /**
@@ -22,7 +24,7 @@ interface ImpactViewProps {
  */
 export const projectSlug = (item: PortfolioItem) => item.slug ?? item.demo?.match(/\/demos\/([\w-]+)/)?.[1] ?? item.id;
 
-export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal, openProject = null }) => {
+export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookModal, openProject = null, onProjectChange }) => {
   const [filter, setFilter] = useState<'all' | 'systems' | 'dashboards' | 'web_design' | 'app_design' | 'logo_brand'>('all');
   const [activeItem, setActiveItem] = useState<PortfolioItem | null>(
     () => (openProject && PORTFOLIO.find(p => projectSlug(p) === openProject)) || null,
@@ -30,11 +32,19 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
   const [autoPlay, setAutoPlay] = useState(false);
   const open = (item: PortfolioItem, play = false) => { setAutoPlay(play); setActiveItem(item); };
 
+  // A search result or Back/Forward can name a different piece while this page is already open.
+  useEffect(() => {
+    const wanted = (openProject && PORTFOLIO.find(p => projectSlug(p) === openProject)) || null;
+    setActiveItem((current) => (current && wanted && current.id === wanted.id ? current : wanted));
+  }, [openProject]);
+
   useEffect(() => {
     const url = new URL(window.location.href);
     if (activeItem) url.searchParams.set('project', projectSlug(activeItem));
     else url.searchParams.delete('project');
     if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
+    onProjectChange?.(activeItem ? projectSlug(activeItem) : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeItem]);
   // The detail panel's picture opens full screen; a concept with no picture stays inert.
 
@@ -50,14 +60,14 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
       {/* Header Banner */}
       <section className="mb-10 max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
-          <span className="material-symbols-outlined text-sm">photo_library</span>
-          Concept &amp; Sample Work
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">photo_library</span>
+          Working Demos
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-extrabold leading-tight tracking-tight">
-          Web, app &amp; brand concepts
+          Web, app, system &amp; brand work
         </h1>
         <p className="font-body text-base md:text-lg text-slate-600 leading-relaxed">
-          Representative concepts across web, mobile, dashboards, and brand identity. Client case studies are shared on request.
+          Working demos across websites, mobile apps, business systems, dashboards and brand identity, built by the studio to show what each kind of project becomes. Open one and try it.
         </p>
       </section>
 
@@ -74,13 +84,14 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           <button
             key={cat.id}
             onClick={() => setFilter(cat.id as any)}
+            aria-pressed={filter === cat.id}
             className={`px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all ${
               filter === cat.id
                 ? 'bg-[#0f172a] text-white shadow-md'
                 : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
             }`}
           >
-            <span className="material-symbols-outlined text-base">{cat.icon}</span>
+            <span className="material-symbols-outlined text-base" aria-hidden="true">{cat.icon}</span>
             {cat.label}
           </button>
         ))}

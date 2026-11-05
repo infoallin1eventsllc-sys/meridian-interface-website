@@ -311,7 +311,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => onTabChange('services')}
             className="text-xs font-bold text-[#0f172a] hover:underline uppercase tracking-wider flex items-center gap-1"
           >
-            Explore All Services <span className="material-symbols-outlined text-sm">chevron_right</span>
+            Explore All Services <span className="material-symbols-outlined text-sm" aria-hidden="true">chevron_right</span>
           </button>
         </div>
 
@@ -335,7 +335,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
                 <div className="p-6 space-y-3">
                   <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-base text-[#0f172a]">{service.icon}</span>
+                    <span className="material-symbols-outlined text-base text-[#0f172a]" aria-hidden="true">{service.icon}</span>
                     {service.categoryName}
                   </div>
                   <h3 className="font-display font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">
@@ -458,7 +458,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           onClick={() => onTabChange('booking')}
           className="inline-flex items-center gap-2 px-8 py-4 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-lg active:scale-95"
         >
-          <span className="material-symbols-outlined text-lg">event</span>
+          <span className="material-symbols-outlined text-lg" aria-hidden="true">event</span>
           Schedule Design Appointment
         </button>
       </section>

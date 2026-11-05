@@ -34,10 +34,12 @@ export default function App() {
 
   // A ?project= or ?book= link lands on its section (the effects below fill in the details). Starting
   // there, rather than on Home, keeps Back from stopping on a Home page the visitor never saw.
+  // A refresh stays on the section it was on: the history entry for this page remembers it.
   const [currentTab, setCurrentTab] = useState<TabType>(() => {
     if (isUnsubscribe) return 'home';
     const query = new URLSearchParams(window.location.search);
-    return query.get('project') ? 'portfolio' : query.has('book') ? 'booking' : 'home';
+    const remembered = (window.history.state as HistoryEntry | null)?.tab;
+    return query.get('project') ? 'portfolio' : query.has('book') ? 'booking' : remembered ?? 'home';
   });
 
   /* Analytics starts once, and never on the unsubscribe page: that page is
@@ -47,7 +49,9 @@ export default function App() {
   useEffect(() => {
     if (isUnsubscribe) return;
     initAnalytics();
-    trackPage('home');
+    // The section the visitor actually landed on, not always Home.
+    trackPage(currentTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUnsubscribe]);
   const [preselectedService, setPreselectedService] = useState<ServiceCategory>('web_design');
 
@@ -56,12 +60,15 @@ export default function App() {
   // just clicked through one should land on the form, not the homepage.
   useEffect(() => {
     if (isUnsubscribe) return;
-    const want = new URLSearchParams(window.location.search).get('book');
+    const url = new URL(window.location.href);
+    const want = url.searchParams.get('book');
     if (want === null) return;
     const services: ServiceCategory[] = ['web_design', 'app_design', 'dashboards', 'logo_brand', 'systems', 'tech_stack', 'full_package'];
     if (services.includes(want as ServiceCategory)) setPreselectedService(want as ServiceCategory);
     setCurrentTab('booking');
-    trackPage('booking');
+    // Read once: left in the address, every refresh and every copied link reopened the form.
+    url.searchParams.delete('book');
+    window.history.replaceState(window.history.state, '', url);
   }, [isUnsubscribe]);
 
   // `?project=<slug>` opens the Portfolio with that piece's panel: a link a recruiter or client can be
@@ -76,11 +83,15 @@ export default function App() {
       window.history.replaceState(window.history.state, '', url);
     }
   };
-  useEffect(() => {
-    if (!openProject) return;
-    setCurrentTab('portfolio');
-    trackPage('portfolio');
-  }, [openProject]);
+  // Search can open one piece from anywhere on the site.
+  const handleOpenProject = (slug: string) => {
+    rememberScroll();
+    setOpenProject(slug);
+    if (currentTab !== 'portfolio') {
+      setCurrentTab('portfolio');
+      trackPage('portfolio');
+    }
+  };
 
   // Modal States
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
@@ -100,7 +111,9 @@ export default function App() {
   };
 
   // A home-page service card opens the Services page on that service.
-  const [servicesFocus, setServicesFocus] = useState<ServiceCategory>('web_design');
+  const [servicesFocus, setServicesFocus] = useState<ServiceCategory>(
+    () => (window.history.state as HistoryEntry | null)?.service ?? 'web_design',
+  );
   const handleViewService = (serviceId: ServiceCategory) => {
     setServicesFocus(serviceId);
     handleTabChange('services');
@@ -125,7 +138,9 @@ export default function App() {
   const [bookingVersion, setBookingVersion] = useState(0);
   // Which legal document the footer asked for. Both live on one page; this
   // only decides which heading it opens at.
-  const [legalDoc, setLegalDoc] = useState<'privacy' | 'terms'>('privacy');
+  const [legalDoc, setLegalDoc] = useState<'privacy' | 'terms'>(
+    () => (window.history.state as HistoryEntry | null)?.legal ?? 'privacy',
+  );
 
   // Each section gets its own browser-tab title. The site is one address with
   // no router, so this is for people (tabs, history, bookmarks) and analytics
@@ -248,6 +263,7 @@ export default function App() {
             onTabChange={handleTabChange}
             onOpenBookModal={() => setIsBookModalOpen(true)}
             openProject={openProject}
+            onProjectChange={setOpenProject}
           />
         )}
 
@@ -303,6 +319,8 @@ export default function App() {
         isMobileMenuOpen={isMobileMenuOpen}
         onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
         onTabChange={handleTabChange}
+        onViewService={handleViewService}
+        onOpenProject={handleOpenProject}
         onAppointmentCreated={handleAppointmentCreated}
       />
     </div>

@@ -29,15 +29,15 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
           </p>
           <div className="text-xs text-slate-300 font-semibold pt-1 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
             <a href="https://meridianinterface.com" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
-              <span className="material-symbols-outlined text-sm">language</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">language</span>
               meridianinterface.com
             </a>
             <a href="tel:+12818829198" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
-              <span className="material-symbols-outlined text-sm">call</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">call</span>
               281-882-9198
             </a>
             <a href="mailto:otis@meridianinterface.com" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">
-              <span className="material-symbols-outlined text-sm">mail</span>
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">mail</span>
               otis@meridianinterface.com
             </a>
           </div>
@@ -88,7 +88,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
                 onClick={() => onTabChange('owner_invoice')}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-slate-200 transition-colors"
               >
-                <span className="material-symbols-outlined text-sm">lock</span>
+                <span className="material-symbols-outlined text-sm" aria-hidden="true">lock</span>
                 Studio login
               </button>
           </div>

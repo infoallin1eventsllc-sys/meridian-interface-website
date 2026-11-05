@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TabType, ServiceCategory, Appointment } from '../types';
-import { SERVICES } from '../data/mockData';
+import { SERVICES, PORTFOLIO } from '../data/mockData';
+import { projectSlug } from './ImpactView';
+import { useDialogFocus } from '../lib/useDialogFocus';
 import { MeridianLogo } from './MeridianLogo';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
-import { nextBusinessDay, todayISO } from '../lib/dates';
+import { nextBusinessDay, todayISO, TIME_SLOTS } from '../lib/dates';
 
 interface ModalsProps {
   isConsultationOpen: boolean;
@@ -14,6 +16,10 @@ interface ModalsProps {
   isMobileMenuOpen: boolean;
   onCloseMobileMenu: () => void;
   onTabChange: (tab: TabType) => void;
+  /** Open the Services page on one service. */
+  onViewService: (service: ServiceCategory) => void;
+  /** Open the Portfolio with one piece's panel. */
+  onOpenProject: (slug: string) => void;
   onAppointmentCreated?: (appointment: Appointment) => void;
 }
 
@@ -25,22 +31,17 @@ export const Modals: React.FC<ModalsProps> = ({
   isMobileMenuOpen,
   onCloseMobileMenu,
   onTabChange,
+  onViewService,
+  onOpenProject,
   onAppointmentCreated
 }) => {
-  // Escape closes whichever of these three is open, like the concept panel
-  // and the lightbox. Without it a keyboard user had no way out but Tab to
-  // the close button.
-  useEffect(() => {
-    if (!isConsultationOpen && !isSearchOpen && !isMobileMenuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      if (isSearchOpen) onCloseSearch();
-      else if (isConsultationOpen) onCloseConsultation();
-      else if (isMobileMenuOpen) onCloseMobileMenu();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isConsultationOpen, isSearchOpen, isMobileMenuOpen, onCloseConsultation, onCloseSearch, onCloseMobileMenu]);
+  const bookRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(bookRef, isConsultationOpen);
+  useDialogFocus(searchRef, isSearchOpen);
+  useDialogFocus(menuRef, isMobileMenuOpen);
+
 
   // Modal Appointment Form State
   const [modalService, setModalService] = useState<ServiceCategory>('web_design');
@@ -58,6 +59,39 @@ export const Modals: React.FC<ModalsProps> = ({
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Closing always leaves the quick-book ready for a fresh booking. Before, a failed send kept the
+  // confirmation up, so reopening "Book Appointment" showed the last person's "Scheduled!" screen
+  // and no form until the page was reloaded.
+  const closeTimer = useRef<number | undefined>(undefined);
+  const resetBooking = () => {
+    window.clearTimeout(closeTimer.current);
+    setIsSubmitted(false);
+    setModalName('');
+    setModalEmail('');
+    setModalPhone('');
+  };
+  const closeConsultation = () => {
+    if (isSubmitted) resetBooking();
+    else window.clearTimeout(closeTimer.current);
+    onCloseConsultation();
+  };
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+
+  // Escape closes whichever of these three is open, like the concept panel
+  // and the lightbox. Without it a keyboard user had no way out but Tab to
+  // the close button.
+  useEffect(() => {
+    if (!isConsultationOpen && !isSearchOpen && !isMobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (isSearchOpen) onCloseSearch();
+      else if (isConsultationOpen) closeConsultation();
+      else if (isMobileMenuOpen) onCloseMobileMenu();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isConsultationOpen, isSearchOpen, isMobileMenuOpen, isSubmitted, onCloseConsultation, onCloseSearch, onCloseMobileMenu]);
 
   const handleModalBookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,12 +131,9 @@ export const Modals: React.FC<ModalsProps> = ({
     setIsSubmitted(true);
     // A failed send stays on screen: the visitor needs to read the fallback.
     if (!result.delivered) return;
-    setTimeout(() => {
-      setIsSubmitted(false);
+    closeTimer.current = window.setTimeout(() => {
+      resetBooking();
       onCloseConsultation();
-      setModalName('');
-      setModalEmail('');
-      setModalPhone('');
     }, 2000);
   };
 
@@ -110,26 +141,30 @@ export const Modals: React.FC<ModalsProps> = ({
     <>
       {/* 1. Quick Book Appointment Modal */}
       {isConsultationOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onCloseConsultation}>
-          <div role="dialog" aria-modal="true" aria-label="Book an appointment" onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={closeConsultation}>
+          <div ref={bookRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Book an appointment" onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 relative border border-slate-200 shadow-2xl">
             <button
-              onClick={onCloseConsultation}
+              onClick={closeConsultation}
               aria-label="Close dialog"
               className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 transition-colors"
             >
-              <span className="material-symbols-outlined text-2xl">close</span>
+              <span className="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
             </button>
 
             {isSubmitted ? (
               <div data-private className="text-center py-8 space-y-4">
                 <div className="w-14 h-14 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center mx-auto">
-                  <span className="material-symbols-outlined text-3xl">check</span>
+                  <span className="material-symbols-outlined text-3xl" aria-hidden="true">check</span>
                 </div>
                 <h3 className="font-display font-bold text-2xl text-slate-900">
-                  Appointment Scheduled!
+                  {delivered ? 'Appointment Scheduled!' : 'Request Saved on This Device'}
                 </h3>
                 <p className="font-body text-xs text-slate-600 max-w-sm mx-auto">
-                  Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal. We'll reply within one business day to confirm it.
+                  {delivered ? (
+                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal. We'll reply within one business day to confirm it.</>
+                  ) : (
+                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your request for {modalDate} ({modalTime}) is saved here, but it hasn't reached the studio yet.</>
+                  )}
                 </p>
                 {!delivered && (
                   <p role="alert" className="font-body text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 max-w-sm mx-auto text-left">
@@ -141,7 +176,7 @@ export const Modals: React.FC<ModalsProps> = ({
             ) : (
               <div>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">
-                  <span className="material-symbols-outlined text-sm">event</span>
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">event</span>
                   Quick Appointment Booking
                 </div>
                 <h3 className="font-display font-bold text-2xl text-slate-900 mb-4">
@@ -161,11 +196,9 @@ export const Modals: React.FC<ModalsProps> = ({
                       onChange={(e) => setModalService(e.target.value as ServiceCategory)}
                       className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-slate-900"
                     >
-                      <option value="web_design">Web Design & Development</option>
-                      <option value="app_design">Mobile App UI/UX Design</option>
-                      <option value="dashboards">Data Analyst, CRM & Financial Dashboards</option>
-                      <option value="logo_brand">Logo Design & Brand Identity</option>
-                      <option value="full_package">Full Studio Design Bundle</option>
+                      {SERVICES.map((service) => (
+                        <option key={service.id} value={service.id}>{service.title}</option>
+                      ))}
                     </select>
                   </div>
 
@@ -194,9 +227,7 @@ export const Modals: React.FC<ModalsProps> = ({
                         onChange={(e) => setModalTime(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
                       >
-                        <option>10:00 AM - 11:00 AM CT</option>
-                        <option>01:00 PM - 02:00 PM CT</option>
-                        <option>03:30 PM - 04:30 PM CT</option>
+                        {TIME_SLOTS.map((slot) => <option key={slot}>{slot}</option>)}
                       </select>
                     </div>
                   </div>
@@ -266,19 +297,20 @@ export const Modals: React.FC<ModalsProps> = ({
       {/* 2. Search Modal */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onCloseSearch}>
-          <div role="dialog" aria-modal="true" aria-label="Search the studio" onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-xl w-full p-4 md:p-6 shadow-2xl border border-slate-200 relative">
+          <div ref={searchRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Search the studio" onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-xl w-full p-4 md:p-6 shadow-2xl border border-slate-200 relative">
             <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
-              <span className="material-symbols-outlined text-slate-500">search</span>
+              <span className="material-symbols-outlined text-slate-500" aria-hidden="true">search</span>
               <input
-                type="text"
+                type="search"
                 autoFocus
+                aria-label="Search services, demos and pages"
                 placeholder="Search web design, app interfaces, logo packages..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full text-sm font-body text-slate-900 outline-none bg-transparent"
               />
               <button onClick={onCloseSearch} aria-label="Close search" className="p-1 text-slate-500 hover:text-slate-900">
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
               </button>
             </div>
 
@@ -287,16 +319,24 @@ export const Modals: React.FC<ModalsProps> = ({
                 {searchQuery ? `Search Results for "${searchQuery}"` : 'Quick Studio Navigation'}
               </div>
               {(() => {
-                const searchItems = [
-                  { title: 'Web Design & Development', desc: 'Custom responsive sites, landing pages, CMS & e-commerce', tab: 'services', category: 'Services' },
-                  { title: 'Mobile App Design (iOS & Android)', desc: 'Mobile UI/UX design, interactive prototypes & app flows', tab: 'services', category: 'Services' },
-                  { title: 'Data Analyst & Financial Dashboards', desc: 'CRM, business metrics, financial charts & analytics UI', tab: 'services', category: 'Services' },
-                  { title: 'Logo Design & Brand Identity', desc: 'Custom vector logos, brand guidelines & style guides', tab: 'services', category: 'Services' },
-                  { title: 'Schedule 1-on-1 Discovery Session', desc: 'Lock in an appointment time slot with lead designers', tab: 'booking', category: 'Booking' },
-                  { title: 'My Appointments', desc: 'See the sessions you have booked', tab: 'appointments', category: 'Appointments' },
-                  { title: 'Haven: AI Home Integration System', desc: 'The complete Haven website: the film, ten panel screens, the live panel and a guided tour', tab: 'portfolio', category: 'Portfolio' },
-                                    { title: 'Fog City Roasters: Coffee Brand Identity', desc: 'Working demo: wordmark, packaging and brand system', tab: 'portfolio', category: 'Portfolio' },
-                  { title: 'Interactive Project Cost Estimator', desc: 'Scope calculator for web, app, dashboard & logo quotes', tab: 'services', category: 'Tool' }
+                // Built from the same lists the pages use, so a new service or demo shows up here too.
+                type SearchItem = { title: string; desc: string; category: string; go: () => void };
+                const searchItems: SearchItem[] = [
+                  ...SERVICES.map((service) => ({
+                    title: service.title,
+                    desc: service.categoryName,
+                    category: 'Services',
+                    go: () => onViewService(service.id),
+                  })),
+                  { title: 'Book a 1-on-1 Appointment', desc: 'Pick a time to talk through your project with Otis', category: 'Booking', go: () => onTabChange('booking') },
+                  { title: 'My Appointments', desc: 'See the sessions you have booked', category: 'Appointments', go: () => onTabChange('appointments') },
+                  ...PORTFOLIO.map((piece) => ({
+                    title: piece.title,
+                    desc: piece.categoryLabel,
+                    category: 'Portfolio',
+                    go: () => onOpenProject(projectSlug(piece)),
+                  })),
+                  { title: 'Interactive Project Cost Estimator', desc: 'Scope calculator for web, app, dashboard & logo quotes', category: 'Tool', go: () => onTabChange('services') },
                 ];
 
                 const filtered = searchItems.filter(item =>
@@ -319,7 +359,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     key={index}
                     onClick={() => {
                       onCloseSearch();
-                      onTabChange(item.tab as TabType);
+                      item.go();
                     }}
                     className="w-full text-left p-3 hover:bg-slate-50 rounded-xl transition-colors flex items-center justify-between group border border-transparent hover:border-slate-100"
                   >
@@ -332,7 +372,7 @@ export const Modals: React.FC<ModalsProps> = ({
                       </div>
                       <p className="font-body text-[11px] text-slate-500 mt-0.5">{item.desc}</p>
                     </div>
-                    <span className="material-symbols-outlined text-xs text-slate-400 group-hover:translate-x-1 transition-transform">
+                    <span className="material-symbols-outlined text-xs text-slate-400 group-hover:translate-x-1 transition-transform" aria-hidden="true">
                       arrow_forward
                     </span>
                   </button>
@@ -346,14 +386,14 @@ export const Modals: React.FC<ModalsProps> = ({
       {/* 3. Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-[100] flex bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onCloseMobileMenu}>
-          <div role="dialog" aria-modal="true" aria-label="Navigation menu" onClick={(e) => e.stopPropagation()} className="bg-white w-4/5 max-w-sm h-full p-6 flex flex-col justify-between shadow-2xl relative">
+          <div ref={menuRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Navigation menu" onClick={(e) => e.stopPropagation()} className="bg-white w-4/5 max-w-sm h-full p-6 flex flex-col justify-between shadow-2xl relative">
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-6">
                 <div>
                   <MeridianLogo size={32} subtext="INTERFACE" />
                 </div>
                 <button onClick={onCloseMobileMenu} aria-label="Close menu" className="p-1 text-slate-500">
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
               </div>
 
@@ -374,10 +414,10 @@ export const Modals: React.FC<ModalsProps> = ({
                     className="w-full text-left px-4 py-3 rounded-xl font-body font-bold text-xs hover:bg-slate-100 flex items-center justify-between text-slate-800"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-lg">{nav.icon}</span>
+                      <span className="material-symbols-outlined text-lg" aria-hidden="true">{nav.icon}</span>
                       <span>{nav.label}</span>
                     </div>
-                    <span className="material-symbols-outlined text-sm text-slate-400">chevron_right</span>
+                    <span className="material-symbols-outlined text-sm text-slate-400" aria-hidden="true">chevron_right</span>
                   </button>
                 ))}
               </nav>

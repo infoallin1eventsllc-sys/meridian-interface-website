@@ -3,7 +3,7 @@ import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
-import { nextBusinessDay, todayISO } from '../lib/dates';
+import { nextBusinessDay, todayISO, TIME_SLOTS } from '../lib/dates';
 
 interface AppointmentBookingViewProps {
   onTabChange?: (tab: TabType) => void;
@@ -100,7 +100,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
       {/* Page Title */}
       <section className="mb-10 max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0f172a] text-white rounded-full text-xs font-bold uppercase tracking-widest">
-          <span className="material-symbols-outlined text-sm">calendar_add_on</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">calendar_add_on</span>
           MERIDIAN Appointment Desk
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-black leading-tight tracking-tight">
@@ -115,7 +115,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
         /* Confirmation Screen */
         <section data-private className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-xl space-y-6 text-center animate-fadeIn">
           <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-sm">
-            <span className="material-symbols-outlined text-3xl">check_circle</span>
+            <span className="material-symbols-outlined text-3xl" aria-hidden="true">check_circle</span>
           </div>
 
           <div className="space-y-2">
@@ -123,10 +123,11 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               Appointment Reference #{createdAppointment.id}
             </span>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              Appointment Successfully Booked!
+              {delivered ? 'Appointment Successfully Booked!' : 'Request Saved on This Device'}
             </h2>
             <p className="text-slate-600 text-sm max-w-md mx-auto">
-              Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>. Your appointment is booked.
+              Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>.{' '}
+              {delivered ? 'Your appointment is booked.' : "It hasn't reached the studio yet; see below."}
             </p>
           </div>
 
@@ -190,7 +191,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               onClick={() => onTabChange && onTabChange('appointments')}
               className="flex-1 py-3.5 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
             >
-              <span className="material-symbols-outlined text-base">dashboard</span>
+              <span className="material-symbols-outlined text-base" aria-hidden="true">dashboard</span>
               View in My Appointments
             </button>
             <button
@@ -222,6 +223,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       type="button"
                       key={s.id}
                       onClick={() => setSelectedService(s.id)}
+                      aria-pressed={selectedService === s.id}
                       className={`p-4 rounded-xl text-left border transition-all flex items-start gap-3 ${
                         selectedService === s.id
                           ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
@@ -230,7 +232,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                     >
                       <span className={`material-symbols-outlined text-2xl mt-0.5 ${
                         selectedService === s.id ? 'text-blue-400' : 'text-slate-600'
-                      }`}>
+                      }`} aria-hidden="true">
                         {s.icon}
                       </span>
                       <div className="space-y-0.5">
@@ -279,11 +281,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       onChange={(e) => setPreferredTimeSlot(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
                     >
-                      <option>09:00 AM - 10:00 AM CT</option>
-                      <option>10:00 AM - 11:00 AM CT</option>
-                      <option>01:00 PM - 02:00 PM CT</option>
-                      <option>03:30 PM - 04:30 PM CT</option>
-                      <option>05:00 PM - 06:00 PM CT</option>
+                      {TIME_SLOTS.map((slot) => <option key={slot}>{slot}</option>)}
                     </select>
                   </div>
                 </div>
@@ -380,7 +378,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                 disabled={sending}
                 className="w-full bg-[#0f172a] text-white py-4 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 mt-4 disabled:opacity-60 disabled:cursor-wait"
               >
-                <span className="material-symbols-outlined text-lg">event_available</span>
+                <span className="material-symbols-outlined text-lg" aria-hidden="true">event_available</span>
                 {sending ? 'Sending…' : 'Confirm & Schedule Appointment'}
               </button>
             </form>
@@ -390,7 +388,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-[#0f172a] text-white p-6 rounded-2xl shadow-md space-y-4">
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-                <span className="material-symbols-outlined text-3xl text-blue-400">verified</span>
+                <span className="material-symbols-outlined text-3xl text-blue-400" aria-hidden="true">verified</span>
                 <div>
                   <h3 className="font-display font-bold text-lg">Appointment Summary</h3>
                   <p className="text-slate-400 text-xs">Direct 1-on-1 Studio Session</p>
@@ -410,7 +408,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
               <div className="pt-4 border-t border-slate-800 space-y-2 text-[11px] text-slate-400">
                 <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                  <span className="material-symbols-outlined text-sm">lock</span>
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">lock</span>
                   No commitment to book
                 </div>
                 <p>To change or cancel, email otis@meridianinterface.com or call 281-882-9198. My Appointments shows what you have booked.</p>
@@ -425,15 +423,15 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               </p>
               <div className="space-y-1.5 pt-1 text-xs font-semibold text-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-slate-500 text-base">language</span>
+                  <span className="material-symbols-outlined text-slate-500 text-base" aria-hidden="true">language</span>
                   meridianinterface.com
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-slate-500 text-base">call</span>
+                  <span className="material-symbols-outlined text-slate-500 text-base" aria-hidden="true">call</span>
                   281-882-9198
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-slate-500 text-base">mail</span>
+                  <span className="material-symbols-outlined text-slate-500 text-base" aria-hidden="true">mail</span>
                   otis@meridianinterface.com
                 </div>
               </div>

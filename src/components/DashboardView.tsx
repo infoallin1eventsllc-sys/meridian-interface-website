@@ -72,7 +72,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
       <section className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
-            <span className="material-symbols-outlined text-sm">assignment_ind</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">assignment_ind</span>
             Client Appointment Portal
           </div>
           <h1 className="font-display text-3xl sm:text-4xl text-slate-900 font-black tracking-tight">
@@ -101,7 +101,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
           onClick={onOpenBookModal}
           className="px-6 py-3 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
         >
-          <span className="material-symbols-outlined text-base">add_circle</span>
+          <span className="material-symbols-outlined text-base" aria-hidden="true">add_circle</span>
           Book New Appointment
         </button>
       </section>
@@ -135,7 +135,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
       {/* Filter and Search Bar */}
       <section className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:w-80">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">
+          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg" aria-hidden="true">
             search
           </span>
           <input
@@ -168,7 +168,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
       <section className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md">
         {filtered.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <span className="material-symbols-outlined text-4xl text-slate-400">event_busy</span>
+            <span className="material-symbols-outlined text-4xl text-slate-400" aria-hidden="true">event_busy</span>
             <h3 className="font-display font-bold text-lg text-slate-800">No Appointments Found</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               You don't have any appointments matching your search criteria. Book a new design appointment to get started.

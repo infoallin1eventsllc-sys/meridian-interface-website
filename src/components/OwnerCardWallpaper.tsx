@@ -63,7 +63,7 @@ export const OwnerCardWallpaper: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-blue-600">
-            <span className="material-symbols-outlined text-sm">palette</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">palette</span>
             Card wallpaper
           </div>
           <h2 className="font-display font-bold text-2xl text-slate-900">Your digital business card</h2>
@@ -78,7 +78,7 @@ export const OwnerCardWallpaper: React.FC = () => {
           rel="noopener noreferrer"
           className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-700 hover:border-slate-900"
         >
-          <span className="material-symbols-outlined text-sm">visibility</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">visibility</span>
           Open my card
         </a>
       </div>
@@ -123,7 +123,7 @@ export const OwnerCardWallpaper: React.FC = () => {
 
       <div className="flex flex-wrap items-center gap-4">
         <label className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 cursor-pointer">
-          <span className="material-symbols-outlined text-sm">upload</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">upload</span>
           {busy ? 'Working…' : 'Use my own photo'}
           <input type="file" accept="image/*" onChange={onFile} disabled={busy} className="hidden" />
         </label>
@@ -134,7 +134,7 @@ export const OwnerCardWallpaper: React.FC = () => {
           onClick={() => void run(() => publishImageUrl(CARD_BACKGROUND_KEY, ''), 'Back to the default, Blue Ribbon.')}
           className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          <span className="material-symbols-outlined text-sm">restart_alt</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">restart_alt</span>
           Reset to default
         </button>
       </div>

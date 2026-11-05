@@ -12,39 +12,43 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
       <div className="flex items-center justify-around max-w-md mx-auto">
         <button
           onClick={() => onTabChange('home')}
+          aria-current={currentTab === 'home' ? 'page' : undefined}
           className={`flex flex-col items-center gap-0.5 px-1 min-[400px]:px-2 py-1 transition-colors ${
             currentTab === 'home' ? 'text-[#0f172a]' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className="material-symbols-outlined text-xl">home</span>
+          <span className="material-symbols-outlined text-xl" aria-hidden="true">home</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-normal min-[400px]:tracking-wider">Home</span>
         </button>
 
         <button
           onClick={() => onTabChange('services')}
+          aria-current={currentTab === 'services' ? 'page' : undefined}
           className={`flex flex-col items-center gap-0.5 px-1 min-[400px]:px-2 py-1 transition-colors ${
             currentTab === 'services' ? 'text-[#0f172a]' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className="material-symbols-outlined text-xl">grid_view</span>
+          <span className="material-symbols-outlined text-xl" aria-hidden="true">grid_view</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-normal min-[400px]:tracking-wider">Services</span>
         </button>
 
         <button
           onClick={() => onTabChange('booking')}
+          aria-current={currentTab === 'booking' ? 'page' : undefined}
           className="flex flex-col items-center gap-0.5 px-3 py-1 bg-[#0f172a] text-white rounded-full transition-transform active:scale-95 shadow-md -mt-4"
         >
-          <span className="material-symbols-outlined text-xl">add_card</span>
+          <span className="material-symbols-outlined text-xl" aria-hidden="true">add_card</span>
           <span className="font-body text-[9px] font-bold uppercase tracking-wider">Book</span>
         </button>
 
         <button
           onClick={() => onTabChange('portfolio')}
+          aria-current={currentTab === 'portfolio' ? 'page' : undefined}
           className={`flex flex-col items-center gap-0.5 px-1 min-[400px]:px-2 py-1 transition-colors ${
             currentTab === 'portfolio' ? 'text-[#0f172a]' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className="material-symbols-outlined text-xl">palette</span>
+          <span className="material-symbols-outlined text-xl" aria-hidden="true">palette</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-normal min-[400px]:tracking-wider">Portfolio</span>
         </button>
 
@@ -54,7 +58,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange })
             currentTab === 'appointments' ? 'text-[#0f172a]' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className="material-symbols-outlined text-xl">event_available</span>
+          <span className="material-symbols-outlined text-xl" aria-hidden="true">event_available</span>
           <span className="font-body text-[10px] font-bold uppercase tracking-normal min-[400px]:tracking-wider">Appointments</span>
         </button>
       </div>

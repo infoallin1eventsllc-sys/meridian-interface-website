@@ -96,10 +96,13 @@ export async function submitAppointment(appointment: Appointment): Promise<Submi
   let lastError = 'Network error';
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
+      // A hung intake function must not leave the button on "Sending…": after 10 s this attempt
+      // fails like any other and the visitor is shown the saved-on-this-device message.
       const res = await fetch(LEAD_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body,
+        signal: AbortSignal.timeout(10_000),
       });
       if (res.ok) return { appointment, delivered: true };
       lastError = `Endpoint responded ${res.status}`;

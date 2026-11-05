@@ -103,7 +103,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
             aria-label="Play the studio reel with sound, 31 seconds"
           >
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 shadow-lg">
-              <span className="material-symbols-outlined text-3xl">play_arrow</span>
+              <span className="material-symbols-outlined text-3xl" aria-hidden="true">play_arrow</span>
             </span>
             <span className="font-display text-xs font-bold uppercase tracking-widest">Play</span>
           </button>
@@ -116,7 +116,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
             className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-1.5 text-white backdrop-blur-sm transition-colors hover:bg-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             aria-label="Turn the narration on"
           >
-            <span className="material-symbols-outlined text-base leading-none">volume_up</span>
+            <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">volume_up</span>
             <span className="font-body text-[11px] font-bold uppercase tracking-wider">Sound on</span>
           </button>
         )}
@@ -131,7 +131,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
             className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-slate-950/80 px-3 py-1.5 text-white backdrop-blur-sm transition-colors hover:bg-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             aria-label="Mute the narration"
           >
-            <span className="material-symbols-outlined text-base leading-none">volume_off</span>
+            <span className="material-symbols-outlined text-base leading-none" aria-hidden="true">volume_off</span>
             <span className="font-body text-[11px] font-bold uppercase tracking-wider">Mute</span>
           </button>
         )}
@@ -140,7 +140,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
       {/* What it is, for anyone who reads before they watch. */}
       <div className="flex flex-1 flex-col justify-center gap-3 p-6">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-300">
-          <span className="material-symbols-outlined text-base">play_circle</span>
+          <span className="material-symbols-outlined text-base" aria-hidden="true">play_circle</span>
           See It Working
         </div>
         <h3 className="font-display text-lg font-bold text-white">
@@ -156,7 +156,7 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
             className="mt-1 inline-flex items-center gap-1 self-start font-body text-xs font-bold uppercase tracking-wider text-white hover:underline"
           >
             See the full portfolio
-            <span className="material-symbols-outlined text-sm">chevron_right</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">chevron_right</span>
           </button>
         )}
       </div>

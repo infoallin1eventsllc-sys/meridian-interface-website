@@ -48,7 +48,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
       {/* Header Banner */}
       <section className="mb-12 max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
-          <span className="material-symbols-outlined text-sm">palette</span>
+          <span className="material-symbols-outlined text-sm" aria-hidden="true">palette</span>
           MERIDIAN Creative Services
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-black leading-tight tracking-tight">
@@ -65,6 +65,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           <button
             key={s.id}
             onClick={() => setSelectedServiceId(s.id)}
+            aria-pressed={selectedServiceId === s.id}
             className={`p-5 rounded-xl text-left border transition-all flex flex-col justify-between ${
               selectedServiceId === s.id
                 ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-lg scale-[1.02]'
@@ -75,7 +76,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
               <div className="flex items-center justify-between">
                 <span className={`material-symbols-outlined text-2xl ${
                   selectedServiceId === s.id ? 'text-blue-400' : 'text-slate-700'
-                }`}>
+                }`} aria-hidden="true">
                   {s.icon}
                 </span>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
@@ -95,7 +96,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
         <div className="lg:col-span-7 space-y-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600">
-              <span className="material-symbols-outlined text-base">{currentService.icon}</span>
+              <span className="material-symbols-outlined text-base" aria-hidden="true">{currentService.icon}</span>
               {currentService.categoryName}
             </div>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
@@ -114,7 +115,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {currentService.features.map((feature, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs text-slate-700 font-semibold bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                  <span className="material-symbols-outlined text-blue-600 text-base">check_circle</span>
+                  <span className="material-symbols-outlined text-blue-600 text-base" aria-hidden="true">check_circle</span>
                   {feature}
                 </div>
               ))}
@@ -179,7 +180,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
               onClick={() => onSelectServiceForBooking(currentService.id)}
               className="w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg">event</span>
+              <span className="material-symbols-outlined text-lg" aria-hidden="true">event</span>
               Book Appointment for {currentService.categoryName}
             </button>
 
@@ -266,7 +267,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           ].map((item, index) => (
             <motion.div key={index} variants={m.rise} className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 relative shadow-xs">
               <div className="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
-                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="material-symbols-outlined" aria-hidden="true">{item.icon}</span>
               </div>
               <h3 className="font-display font-bold text-base text-slate-900">{item.title}</h3>
               <p className="font-body text-xs text-slate-600 leading-relaxed">{item.desc}</p>
@@ -328,7 +329,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-blue-300 rounded-full text-xs font-bold uppercase tracking-widest mb-2">
-            <span className="material-symbols-outlined text-sm">tune</span>
+            <span className="material-symbols-outlined text-sm" aria-hidden="true">tune</span>
             Build Your Brief
           </div>
           <h2 className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
@@ -377,7 +378,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                       : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-xl">{s.icon}</span>
+                  <span className="material-symbols-outlined text-xl" aria-hidden="true">{s.icon}</span>
                   <span className="font-body font-bold text-xs">{s.label}</span>
                 </button>
               ))}
@@ -486,7 +487,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center justify-between gap-4">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5 text-xs font-bold text-blue-300 uppercase tracking-wider">
-                <span className="material-symbols-outlined text-base">bolt</span>
+                <span className="material-symbols-outlined text-base" aria-hidden="true">bolt</span>
                 Priority Rush Delivery (2-Week Turnaround)
               </div>
               <p className="text-[11px] text-slate-300">Expedite project review and dedicated daily development sprints.</p>
@@ -508,7 +509,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
         <div className="lg:col-span-4 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6 flex flex-col justify-between h-full">
           <div className="space-y-4">
             <h3 className="font-display font-bold text-lg text-white border-b border-white/10 pb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-blue-400">checklist</span>
+              <span className="material-symbols-outlined text-blue-400" aria-hidden="true">checklist</span>
               What you've asked for
             </h3>
 
@@ -541,7 +542,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
               )}
               className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg">calendar_month</span>
+              <span className="material-symbols-outlined text-lg" aria-hidden="true">calendar_month</span>
               Send This Brief &amp; Book a Call
             </button>
             <p className="text-[10px] text-slate-400 text-center">

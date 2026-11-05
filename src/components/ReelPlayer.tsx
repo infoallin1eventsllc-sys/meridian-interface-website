@@ -120,7 +120,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
               <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
             </span>
             <span className="mx-auto flex min-w-0 max-w-sm flex-1 items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-0.5 font-body text-xs text-slate-500">
-              <span className="material-symbols-outlined shrink-0 text-[13px] leading-none">lock</span>
+              <span className="material-symbols-outlined shrink-0 text-[13px] leading-none" aria-hidden="true">lock</span>
               <span className="truncate">{browserAddress}</span>
             </span>
             <span className="w-[42px] shrink-0" />
@@ -188,7 +188,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({
                 }}
               />
               <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 shadow-lg transition-transform group-hover:scale-105">
-                <span className="material-symbols-outlined text-3xl">play_arrow</span>
+                <span className="material-symbols-outlined text-3xl" aria-hidden="true">play_arrow</span>
               </span>
               <span className="relative font-display text-sm font-bold tracking-wide">
                 {label}
