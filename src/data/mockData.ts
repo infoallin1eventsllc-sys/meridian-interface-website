@@ -298,6 +298,8 @@ export const PORTFOLIO: PortfolioItem[] = [
     year: '2026',
     demo: 'https://meridian-hiring-api.vercel.app/',
     image: '/images/portfolio/meridian-hire.jpg',
+    video: '/video/meridian-hire-demo.mp4',
+    videoSeconds: 97,
     gallery: [
       { src: '/images/portfolio/meridian-hire.jpg', caption: 'The board: every application by stage, with a short guide to try it in two minutes' },
       { src: '/images/portfolio/meridian-hire-candidate.jpg', caption: 'A candidate: details, a move to the next stage, the résumé, and every step on record' },
