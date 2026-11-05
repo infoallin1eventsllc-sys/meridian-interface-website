@@ -23,7 +23,7 @@ export interface ClientExplainer {
   id: string;
   /** Matches how the line reads on the invoice. */
   title: string;
-  category: 'Websites' | 'Brand & Logo' | 'Packages' | 'Ongoing Work';
+  category: 'Websites' | 'Software' | 'Brand & Logo' | 'Packages' | 'Ongoing Work';
   /**
    * Filled in at runtime from the server catalogue, keyed by `id`.
    *
@@ -335,6 +335,147 @@ export const CLIENT_EXPLAINERS: ClientExplainer[] = [
       'Time from someone who knows how the work is really done day to day',
       'Access to the systems it needs to connect to',
       'Decisions at each stage, so the build does not stall waiting on an answer',
+      'A named person who can sign off — the fastest projects have exactly one',
+    ],
+  },
+
+  /* ------------------------------------------------------------ software -- */
+  // The two products Meridian sells as a product rather than a one-off build
+  // (added 5 Nov 2026). Each answer covers every tier of its product; the
+  // tier on the invoice line says which parts apply.
+  {
+    id: 'exp_agent_crm',
+    title: 'Agent CRM Dashboard',
+    category: 'Software',
+    matches: ['agent crm dashboard', 'agent crm', 'agent dashboard'],
+    summary:
+      'A CRM where AI helpers do the busywork — scoring the pipeline, researching accounts and drafting follow-ups — and a person on your team approves every change before it happens.',
+    short:
+      'This is a CRM for your team with AI helpers built in. They keep the pipeline scored, flag what needs attention and draft follow-ups, meetings and tasks, but nothing changes and no email is sent until someone on your team clicks Apply. It is set up in your branding, around how your business sells.',
+    included: [
+      {
+        what: 'Your pipeline, contacts and tasks in one dashboard, in your branding',
+        why:
+          'One place to see every deal, who owns it and what happens next, instead of a spreadsheet, an inbox and someone\'s memory.',
+      },
+      {
+        what: 'Set up from one of seven ready-made layouts, then fitted to how you sell',
+        why:
+          'Sales teams, agencies, event planners, restaurants, salons, online stores and wellness studios each start from stages and wording that already fit, so you are using it in weeks rather than months.',
+      },
+      {
+        what: 'AI helpers that score leads, research accounts and draft follow-ups',
+        why:
+          'The repetitive work gets done every day without anyone having to remember it, and your team spends its time on the conversations that close.',
+      },
+      {
+        what: 'A person approves every change — nothing is sent automatically',
+        why:
+          'The helpers suggest; your team decides. Every suggestion says exactly what will happen before anyone clicks, so nothing goes to a client that you did not see first.',
+      },
+      {
+        what: 'Connected to your team\'s Gmail and Google Calendar',
+        why:
+          'Drafts land in the right inbox and meetings are found in real free time, without copying details between systems. Each person connects their own account.',
+      },
+      {
+        what: 'A playbook the helpers read: your services, tone of voice and rules',
+        why:
+          'Drafted emails sound like your business and follow your rules, rather than sounding like generic AI.',
+      },
+      {
+        what: 'Team logins with editor and view-only roles, plus backup and restore',
+        why:
+          'Everyone sees the same up-to-date records, people only change what they should, and your data can be restored if something goes wrong.',
+      },
+    ],
+    outcome:
+      'Follow-ups stop slipping through the cracks and your team stops doing data entry, while you stay in control of every message that goes out under your name.',
+    excluded: [
+      'AI usage beyond the amount agreed in your monthly care plan',
+      'Connections to systems other than Gmail and Google Calendar, quoted once we have seen them',
+      'Moving your records out of an existing CRM, quoted once we have seen the data',
+      'Company sign-in (single sign-on) and security paperwork, which are part of the Enterprise level',
+      'Ongoing hosting, support and changes after launch, which are covered by the monthly care plan',
+      'Feature work beyond what is agreed at the start — added by written change order so the price never moves without your say-so',
+    ],
+    timeline:
+      'Typically 3 to 5 weeks for a ready-made layout set up in your branding, and 6 to 10 weeks when it is fitted to your process and connected to your email and calendar. You see it working at each stage.',
+    needFromYou: [
+      'Your logo, colours and the name the team will see',
+      'How a deal moves today, from first contact to paid — the stages, and who does what',
+      'Your services, prices and tone of voice for the playbook',
+      'A list of who needs a login, and what each person should be able to change',
+      'A named person who can sign off — the fastest projects have exactly one',
+    ],
+  },
+  {
+    id: 'exp_hiring_api',
+    title: 'Hiring Pipeline API',
+    category: 'Software',
+    matches: ['hiring pipeline api', 'hiring pipeline', 'hiring system', 'meridian hire'],
+    summary:
+      'The engine behind a recruiting firm\'s hiring: jobs, candidates, résumés and every move from Applied to Hired, kept in one secure place and sent to the software your firm already uses.',
+    short:
+      'This is the system underneath your hiring. Jobs are posted, candidates apply with a résumé, and every move from Applied to Hired is saved and sent, signed, to your firm\'s own software. Each company\'s data is walled off by the database itself, and a candidate can be erased on request. It grows into a full hiring system with only the parts your firm needs.',
+    included: [
+      {
+        what: 'Jobs, candidates, résumés and stages kept in one secure place',
+        why:
+          'One accurate record of every candidate and where they stand, instead of spreadsheets and inboxes that disagree with each other.',
+      },
+      {
+        what: 'Rules for how candidates move between stages, with a full history',
+        why:
+          'A candidate cannot skip a step by mistake, and you can see who moved them, when and why.',
+      },
+      {
+        what: 'Automatic, signed updates sent to your other software',
+        why:
+          'Your other systems hear about every change the moment it happens, and they can check each update really came from you.',
+      },
+      {
+        what: 'Each company\'s data walled off by the database itself',
+        why:
+          'It is not just hidden on screen. One client\'s candidates cannot be read through another client\'s access, even by mistake.',
+      },
+      {
+        what: 'Candidates erased on request, résumés included',
+        why:
+          'When someone asks to be removed, they are removed everywhere in one step, which keeps you on the right side of privacy rules.',
+      },
+      {
+        what: 'A record of who did what, and access keys with set permissions',
+        why:
+          'Every change is traceable, and each connected system gets only the access it needs.',
+      },
+      {
+        what: 'Documentation your developers or vendors can build on',
+        why:
+          'Anyone connecting to it can see exactly how it works and try it safely without touching real data.',
+      },
+      {
+        what: 'Optional parts added as you need them: team logins, a careers page, interview scheduling and reports',
+        why:
+          'You pay for the parts your firm will use, and add the rest later without starting again.',
+      },
+    ],
+    outcome:
+      'Your firm runs on one dependable hiring record that its other systems trust, so candidates move faster and nothing is lost between tools.',
+    excluded: [
+      'Third-party service fees — hosting, email delivery, job board postings',
+      'Moving candidates out of an existing applicant tracking system, quoted once we have seen the data',
+      'Optional parts not listed on the invoice, such as the careers page or interview scheduling, each quoted separately',
+      'Company sign-in (single sign-on) and compliance paperwork, which are part of the Enterprise level',
+      'Ongoing hosting, monitoring and changes after launch, which are covered by the monthly care plan',
+      'Feature work beyond what is agreed at the start — added by written change order so the price never moves without your say-so',
+    ],
+    timeline:
+      'Typically 3 to 5 weeks to connect it to the tools you already use, and 8 to 14 weeks for the full hiring system. You see it working at each stage.',
+    needFromYou: [
+      'The stages your candidates move through today, and who can move them',
+      'A list of the systems it has to talk to, and access to test them',
+      'Your rules for keeping and deleting candidate data',
       'A named person who can sign off — the fastest projects have exactly one',
     ],
   },

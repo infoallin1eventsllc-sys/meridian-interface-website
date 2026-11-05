@@ -264,7 +264,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     // nothing anywhere; the shared team workspace and real agent runs need claude.ai.
     id: 'p14',
     title: 'Meridian Agent Dashboard: Agent CRM',
-    explainerId: 'exp_web_app',
+    explainerId: 'exp_agent_crm',
     category: 'dashboards',
     categoryLabel: 'Agent CRM',
     client: 'Meridian Interface',
@@ -350,7 +350,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     id: 'p15',
     slug: 'meridian-hire',
     title: 'Meridian Interface Hire: Hiring Pipeline API',
-    explainerId: 'exp_web_app',
+    explainerId: 'exp_hiring_api',
     category: 'systems',
     categoryLabel: 'Hiring Pipeline API',
     client: 'Meridian Interface',

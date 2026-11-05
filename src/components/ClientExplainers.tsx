@@ -22,7 +22,7 @@ import {
  * and trimmed by hand.
  */
 
-const CATEGORIES = ['All', 'Websites', 'Brand & Logo', 'Packages', 'Ongoing Work'] as const;
+const CATEGORIES = ['All', 'Websites', 'Software', 'Brand & Logo', 'Packages', 'Ongoing Work'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 /**
