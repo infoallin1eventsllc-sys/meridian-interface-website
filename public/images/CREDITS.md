@@ -3,14 +3,23 @@
 Provenance for every image shipped in this repository. Keep this current — a
 studio site is the last place to be unsure whether an asset is cleared.
 
-## Hero: the showcase (7 Oct 2026)
+## Hero: the laptop film (13 Nov 2026)
 
 | | |
 |---|---|
-| Files | `images/hero/showcase-poster.webp`, `video/hero-showcase.webm`, `video/hero-showcase.mp4` |
-| Source | A Higgsfield clip generated on Otis's own account (job 3cdc7ab7, 7 Oct 2026), with screen captures of meridianinterface.com and its hosted demos composited into its three glass faces. Everything outside the glass is the clip as generated |
-| Licence | Otis's Higgsfield output, under his plan's commercial terms; the screens are the studio's own work |
-| Re-render | Backend repo, `system/media/showcase/README.md`. Do it whenever the homepage or a demo changes, since the panes show them |
+| Files | `images/hero/laptop-poster.webp`, `images/hero/laptop-poster-sm.webp`, `video/hero-laptop.webm`, `video/hero-laptop.mp4`, `video/hero-laptop-sm.webm`, `video/hero-laptop-sm.mp4` |
+| Source | Otis's Higgsfield "Monospace Callouts" ad for the Agent Dashboard, generated on his own account (job 168e6e1c, 12 Nov 2026) from a picture of the studio's own Agent Dashboard on a laptop. Reworked for the hero with ffmpeg only: slowed, looped without a cut, its black stage keyed onto this site's navy. No new generation |
+| Sound | The ad's own audio from the same Higgsfield job, slowed to the film's speed and cleaned (pops and clacks removed, a soft lead-in and ring-out added from the sound itself). Nothing else is mixed in |
+| Licence | Otis's Higgsfield output, under his plan's commercial terms; the screen shown is the studio's own work |
+| Re-render | Backend repo, `system/media/hero-laptop/README.md` |
+
+## Hero (removed 13 Nov 2026): the showcase
+
+The glass-pane showcase film (`images/hero/showcase-poster.webp`, `video/hero-showcase.*`,
+a Higgsfield clip from Otis's account, job 3cdc7ab7, 7 Oct 2026) was the hero from
+7 Oct to 13 Nov 2026. Its files were removed when the laptop film replaced it; they
+are in git history, and its recipe is still in the backend repo at
+`system/media/showcase/README.md`.
 
 ## Hero (retired): Earth from orbit
 
@@ -37,19 +46,12 @@ The previous `hero-earth.jpg` was a CG render that arrived with the Google AI
 Studio export. Its provenance was never established, which is why it was
 replaced rather than kept as a fallback.
 
-## Hero — the studio's own work
+## Hero (removed 13 Nov 2026): the three demo captures
 
-| | |
-|---|---|
-| Files | `images/hero/hero-dashboard.webp`, `images/hero/hero-website.webp`, `images/hero/hero-mobile.webp` |
-| Source | Screenshots of this site's own demos: `demos/healthcare/` (CarePulse; was `demos/analytics-hub/` until it was taken off the site, 13 Oct 2026), `demos/frame-shop/` (recaptured 13 Oct 2026 from the version with the video hero), `demos/big-boy-subs/` |
-| Captured | 2026-09-25, headless Chromium. Desktop at 1280x800 (1.5x), phone at 390x844 (2x). The "Built by Meridian Interface" banner is trimmed off because the hero draws its own browser and phone frames. |
-
-These carry whatever the demos carry: any photograph visible in a capture
-(the Big Boy Subs sandwich, the Frame Shop workshop) is the same file the demo
-already ships, so the hero adds no new licensing exposure. If a demo changes
-enough that the hero misrepresents it, re-capture at the sizes above and export
-to WebP at quality 80 (1200px wide for the browsers, 480px for the phone).
+`images/hero/hero-dashboard.webp`, `hero-website.webp` and `hero-mobile.webp` were
+screenshots of this site's own demos, shown as three framed cards in the hero on
+phones and tablets until the laptop film took that place. Removed with the component
+that drew them (`HeroShowcase.tsx`); both are in git history.
 
 ## Everything else
 

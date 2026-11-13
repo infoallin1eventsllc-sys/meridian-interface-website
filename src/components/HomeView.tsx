@@ -3,7 +3,8 @@ import { TabType, ServiceCategory } from '../types';
 import { SERVICES, PORTFOLIO } from '../data/mockData';
 import { useImageOverrides, resolveImage } from '../lib/imageStore';
 import { HeroBackdrop } from './HeroBackdrop';
-import { HeroShowcase } from './HeroShowcase';
+import { HeroLaptopFilm } from './HeroLaptopFilm';
+import { HeroSoundButton } from './HeroSoundButton';
 import { ImageWithFallback } from './ImageWithFallback';
 import { StackPlannerFeature } from './StackPlannerFeature';
 import { Lightbox, type LightboxItem } from './Lightbox';
@@ -27,7 +28,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [concept, setConcept] = useState<typeof PORTFOLIO[number] | null>(null);
   const [autoPlay, setAutoPlay] = useState(false);
   const openConcept = (item: typeof PORTFOLIO[number], play = false) => { setAutoPlay(play); setConcept(item); };
-  // lg and up: the hero video carries the product imagery, so the cards step aside.
+  // lg and up: the laptop film stands on the backdrop; below lg it sits in the page.
   const [wideHero, setWideHero] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches);
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
@@ -80,11 +81,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <main className="pt-16 pb-24 md:pb-16 animate-fadeIn bg-slate-50">
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex flex-col justify-center px-4 md:px-12 py-16 lg:py-20 overflow-hidden bg-[#0f172a] border-b border-slate-800">
-        {/* Full-bleed showcase: Otis's Higgsfield glass panes with the website and
-            every product inside them, playing on wide screens only. */}
+        {/* The navy ground, and on wide screens the laptop film standing on it. */}
         <HeroBackdrop />
 
-        <div className="relative z-10 max-w-[1280px] mx-auto w-full grid gap-14 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] items-center">
+        <div className="relative z-10 max-w-[1280px] mx-auto w-full grid gap-10 lg:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] items-center">
           <div className="hero-stagger space-y-7">
             {/* Eyebrow — thin rule + label. The header already carries the name,
                 so the hero does not say "Meridian Interface" a second time. */}
@@ -96,9 +96,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
 
             {/* The same two lines the studio reel closes on, so the film and the
-                front door say one thing. On wide screens the copy carries a soft dark
-                halo: for a few seconds of each loop the tablet pane passes edge-on
-                behind the line ends, and the halo keeps every letter clear of it. */}
+                front door say one thing. The soft dark halo on wide screens keeps
+                every letter clear if the laptop film ever reaches the line ends. */}
             <h1 className="font-display font-black leading-[1.04] tracking-tight text-white text-[2.5rem] sm:text-5xl lg:text-[3.4rem] xl:text-[4rem] lg:[text-shadow:0_2px_18px_rgba(4,7,14,0.85)]">
               Websites, apps, and AI&nbsp;systems.
               <span className="block mt-1 text-blue-500">We put the future in your&nbsp;hands.</span>
@@ -128,11 +127,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
 
-          {/* Real work, not a stock picture: three of the demos, each opening its
-              concept panel. On wide screens the backdrop shows the products
-              itself, so the cards are not rendered there (nor their images fetched). */}
-          {!wideHero && <HeroShowcase onOpen={(item) => openConcept(item)} />}
+          {/* The laptop film. Wide screens stand it on the backdrop, centred on this
+              grid's right-hand column (HeroBackdrop); smaller ones show it here.
+              The negative margins take up the empty navy the film carries above
+              and below the laptop, so it sits close under the buttons. */}
+          {!wideHero && <HeroLaptopFilm size="small" className="relative mx-auto w-full max-w-[26rem] sm:max-w-[30rem] -mt-14 -mb-10" />}
         </div>
+
+        {/* The film's sound switch, in the hero's lower right corner. */}
+        <HeroSoundButton className="absolute z-20 right-4 bottom-4 md:right-12 lg:bottom-6" />
       </section>
 
       {/* Portfolio Showcase Grid (Selected Works) */}

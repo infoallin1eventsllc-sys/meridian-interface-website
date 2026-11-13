@@ -21,7 +21,7 @@ import React, { useCallback, useRef, useState } from 'react';
  * Every picture here loads lazily. They are all cards and tiles below the first
  * screen, and loading them up front made a phone fetch about 1.5 MB of photos
  * before the visitor scrolled (Lighthouse, 15 Oct). The first screen's pictures
- * are in HeroShowcase and HeroBackdrop, which load eagerly with high priority.
+ * are the hero film's still frames (HeroLaptopFilm), which load eagerly with high priority.
  */
 
 interface ImageWithFallbackProps {
