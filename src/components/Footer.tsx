@@ -47,28 +47,28 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
             tap target, which is fiddly on a phone and under the 24px WCAG 2.2
             minimum. The padding lifts each one to 24px without moving any text. */}
         <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-bold uppercase tracking-wider text-slate-300">
-          <button onClick={() => onTabChange('home')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onTabChange('home')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Home
           </button>
-          <button onClick={() => onTabChange('services')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onTabChange('services')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Services
           </button>
-          <button onClick={() => onTabChange('portfolio')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onTabChange('portfolio')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Portfolio
           </button>
-          <button onClick={() => onTabChange('booking')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onTabChange('booking')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Book Appointment
           </button>
-          <button onClick={() => onTabChange('appointments')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onTabChange('appointments')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             My Appointments
           </button>
           {/* A visitor hands over a name, an email and a phone number on the
               booking form. Where that goes has to be reachable from every page,
               not buried. */}
-          <button onClick={() => onOpenLegal('privacy')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onOpenLegal('privacy')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Privacy
           </button>
-          <button onClick={() => onOpenLegal('terms')} className="py-1 hover:text-white transition-colors">
+          <button onClick={() => onOpenLegal('terms')} className="py-1 hover:text-white transition-colors relative before:absolute before:content-[''] before:-inset-y-1.5 before:-inset-x-2">
             Terms
           </button>
         </nav>

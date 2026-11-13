@@ -37,6 +37,9 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Hanken Grotesk', 'Inter', system-ui, sans-serif;
+    /* Even line lengths, so a headline never leaves one word alone on its last
+       line. Browsers without it ignore the line. */
+    text-wrap: balance;
   }
 
   /* Consistent, accessible keyboard focus across every interactive element (brand blue). */
@@ -44,6 +47,29 @@
     outline: 2px solid #2563eb;
     outline-offset: 2px;
     border-radius: 4px;
+  }
+}
+
+/* iPhone safe areas. index.html asks for `viewport-fit=cover`, so the page runs
+   under the home-swipe bar and (in landscape) beside the notch; these keep the
+   controls clear of both. `max()` keeps the normal padding on every other
+   device, where the insets are zero. Unlayered on purpose: it has to win over
+   the Tailwind padding utilities on the same element. */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom-nav {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    padding-left: max(0.375rem, env(safe-area-inset-left));
+    padding-right: max(0.375rem, env(safe-area-inset-right));
+  }
+  @media (min-width: 400px) {
+    .safe-bottom-nav {
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+  }
+  .safe-x {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 

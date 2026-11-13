@@ -229,7 +229,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           )}
           <div className="text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
             <p className="font-bold">Every project, the same four steps</p>
-            <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 inline-block underline underline-offset-2">See how we work, below</a>
+            <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 py-1.5 -my-1 inline-block underline underline-offset-2">See how we work, below</a>
           </div>
         </div>
       </section>

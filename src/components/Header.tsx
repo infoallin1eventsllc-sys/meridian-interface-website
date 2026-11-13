@@ -19,13 +19,13 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu
 }) => {
   return (
-    <header className="fixed top-0 w-full z-50 bg-[#f8fafc]/90 backdrop-blur-md border-b border-slate-200/80 h-16 transition-all shadow-xs">
+    <header className="fixed top-0 w-full z-50 bg-[#f8fafc]/90 backdrop-blur-md border-b border-slate-200/80 h-16 transition-all shadow-xs safe-x">
       <div className="flex items-center justify-between px-4 md:px-8 h-full w-full max-w-[1440px] mx-auto">
         {/* Left Branding & Mobile Menu */}
         <div className="flex items-center gap-3 md:gap-8">
           <button
             onClick={onOpenMobileMenu}
-            className="md:hidden text-[#0f172a] hover:opacity-70 transition-opacity p-1"
+            className="md:hidden text-[#0f172a] hover:opacity-70 transition-opacity p-1 relative before:absolute before:content-[''] before:-inset-1.5"
             aria-label="Open Navigation Menu"
           >
             <span className="material-symbols-outlined" aria-hidden="true">menu</span>

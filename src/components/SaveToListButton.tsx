@@ -35,13 +35,17 @@ export const SaveToListButton: React.FC<{
   };
 
   if (variant === 'compact') {
+    // The before: layer widens the tap area to 44px without changing the look.
+    // It relies on the caller placing this button with `absolute` (both do).
+    // Do not add `relative` here: it overrides the caller's `absolute` and
+    // drops the button into the card's flow, pushing the picture down 37px.
     return (
       <button
         onClick={click}
         aria-pressed={saved}
         aria-label={saved ? `Remove ${item.title} from your list` : `Save ${item.title} to your list`}
         title={saved ? 'Saved. Click to remove' : 'Save to your list'}
-        className={`w-9 h-9 grid place-items-center rounded-full backdrop-blur transition-colors shadow-sm ${
+        className={`w-9 h-9 grid place-items-center rounded-full backdrop-blur transition-colors shadow-sm before:absolute before:content-[''] before:-inset-1 ${
           saved
             ? 'bg-blue-600 text-white hover:bg-blue-700'
             : 'bg-white/90 text-slate-700 hover:bg-white hover:text-blue-600'

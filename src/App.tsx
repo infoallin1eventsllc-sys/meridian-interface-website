@@ -215,7 +215,7 @@ export default function App() {
 
   return (
     <MotionProvider>
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-body selection:bg-slate-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-body selection:bg-slate-200 safe-x">
       {/* Skip link — first thing in the tab order, invisible until focused.
           Without it, anyone navigating by keyboard has to tab through the whole
           header (logo, five nav items, search, book, menu) on every section

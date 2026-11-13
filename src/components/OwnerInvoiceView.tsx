@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { OwnerInvoice, InvoiceLineItem } from '../types';
 import { ClientExplainers, CopyExplainerButton } from './ClientExplainers';
 import {
@@ -256,6 +256,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   // was never granted. This closes it the instant the server says no.
   useEffect(() => {
     onSessionRejected(() => {
+      takePendingDelete(); // the server said no, so that invoice was not deleted: drop the Undo bar
       setIsUnlocked(false);
       setInvoices([]);
       setCatalogue(EMPTY_CATALOGUE);
@@ -315,6 +316,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   };
 
   const handleLockPortal = () => {
+    // A delete still waiting behind Undo goes to the server first, while the
+    // session that authorises it still exists.
+    finishPendingDelete();
     signOut();
     setIsUnlocked(false);
     setInvoices([]);
@@ -718,15 +722,64 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
     setIsCreatingNew(true);
   };
 
-  const handleDeleteInvoice = (id: string) => {
-    if (confirm(`Delete owner invoice #${id}? This action cannot be undone.`)) {
-      const updated = invoices.filter(i => i.id !== id);
-      setInvoices(updated);
-      void deleteInvoiceRemote(id)
-        .then(({ offline: isOffline }) => setOffline(isOffline))
-        .catch(() => setPinError('Your session expired before that delete reached the server. Enter the passcode and delete it again.'));
-    }
+  /* Delete, with Undo (13 Nov).
+     This used to be a browser confirm() that said "cannot be undone" and then
+     deleted at once. Now the invoice leaves the list straight away and the
+     server delete waits UNDO_MS behind an Undo bar, so a slip is one tap to
+     take back. One undo at a time: deleting a second invoice finishes the
+     first. Leaving the page finishes it too. If the tab closes first, the
+     delete never reaches the server and the invoice is back on the next
+     visit, which is the safe way round. */
+  const UNDO_MS = 8000;
+  const [pendingDelete, setPendingDelete] = useState<{ invoice: OwnerInvoice; index: number } | null>(null);
+  const pendingDeleteRef = useRef<{ invoice: OwnerInvoice; index: number } | null>(null);
+  const deleteTimer = useRef<number | null>(null);
+
+  const takePendingDelete = () => {
+    if (deleteTimer.current !== null) { window.clearTimeout(deleteTimer.current); deleteTimer.current = null; }
+    const pending = pendingDeleteRef.current;
+    pendingDeleteRef.current = null;
+    setPendingDelete(null);
+    return pending;
   };
+
+  const finishPendingDelete = () => {
+    const pending = takePendingDelete();
+    if (!pending) return;
+    void deleteInvoiceRemote(pending.invoice.id)
+      .then(({ offline: isOffline }) => setOffline(isOffline))
+      .catch(() => setPinError('Your session expired before that delete reached the server. Enter the passcode and delete it again.'));
+  };
+
+  const handleDeleteInvoice = (id: string) => {
+    finishPendingDelete();
+    const index = invoices.findIndex(i => i.id === id);
+    if (index < 0) return;
+    const pending = { invoice: invoices[index], index };
+    setInvoices(invoices.filter(i => i.id !== id));
+    pendingDeleteRef.current = pending;
+    setPendingDelete(pending);
+    deleteTimer.current = window.setTimeout(finishPendingDelete, UNDO_MS);
+  };
+
+  const undoDeleteInvoice = () => {
+    const pending = takePendingDelete();
+    if (!pending) return;
+    setInvoices(current => {
+      if (current.some(i => i.id === pending.invoice.id)) return current;
+      const next = [...current];
+      next.splice(Math.min(pending.index, next.length), 0, pending.invoice);
+      return next;
+    });
+  };
+
+  // Leaving the portal with a delete still waiting: finish it.
+  useEffect(() => () => {
+    if (deleteTimer.current !== null) window.clearTimeout(deleteTimer.current);
+    const pending = pendingDeleteRef.current;
+    pendingDeleteRef.current = null;
+    if (pending) void deleteInvoiceRemote(pending.invoice.id).catch(() => { /* still there next visit */ });
+  }, []);
 
   const handleStartNewInvoice = () => {
     setSaveError(null);
@@ -2225,7 +2278,23 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       )}
       </>
       )}
+
+      {pendingDelete && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed left-1/2 -translate-x-1/2 bottom-24 md:bottom-6 z-[90] flex items-center gap-4 rounded-xl bg-slate-900 text-white pl-4 pr-2 py-2 shadow-xl text-sm max-w-[calc(100vw-2rem)]"
+        >
+          <span>Invoice #{pendingDelete.invoice.id} deleted</span>
+          <button
+            type="button"
+            onClick={undoDeleteInvoice}
+            className="min-h-11 px-4 rounded-lg bg-white text-slate-900 font-bold hover:bg-slate-100"
+          >
+            Undo
+          </button>
+        </div>
+      )}
     </main>
   );
 };
-
