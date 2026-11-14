@@ -5,7 +5,7 @@
 > one; with no server, every AI feature uses the app's built-in sample logic
 > and says so (`VITE_AI_SERVER=1` turns the real calls back on for a build
 > that runs the Express server, which is not in this folder). Build with
-> `DEMO_BASE=/demos/healthcare/ npm run build`; see public/demos/README.txt.
+> `DEMO_BASE=/demos/healthcare/ npm run build`; see docs/DEMOS-BUILD-NOTES.txt.
 
 # Doctor-Patient Healthcare Dashboard (CarePulse EHR)
 

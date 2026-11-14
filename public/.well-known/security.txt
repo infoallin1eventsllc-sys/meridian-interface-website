@@ -1,0 +1,5 @@
+# Security contact for meridianinterface.com (RFC 9116)
+Contact: mailto:otis@meridianinterface.com
+Expires: 2027-11-14T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://meridianinterface.com/.well-known/security.txt

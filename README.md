@@ -157,6 +157,6 @@ nothing travels.
 ## Image licensing
 
 Provenance for every shipped image is recorded in
-[`public/images/CREDITS.md`](public/images/CREDITS.md). The hero is a licensed Adobe Stock asset,
+[`docs/IMAGE-CREDITS.md`](docs/IMAGE-CREDITS.md). The hero is a licensed Adobe Stock asset,
 and the video loop is a derived work carrying the same licence — which permits commercial use on
 this site but **not** redistribution as a standalone file.

@@ -35,7 +35,7 @@ described.
   every screen in it is true. The panes keep to the right half. Below lg, `HeroShowcase.tsx`
   layers three demo captures under the buttons, each opening its concept
   panel; on wide screens it is not rendered, since the backdrop shows the
-  products. Provenance and re-render steps: `public/images/CREDITS.md`.
+  products. Provenance and re-render steps: `docs/IMAGE-CREDITS.md`.
 - **Frames**: dark chrome `#0b1220`, neutral dots (not traffic-light colours),
   a real address in the bar. Elevation is a navy-tinted drop shadow, used
   here because the frames genuinely overlap.

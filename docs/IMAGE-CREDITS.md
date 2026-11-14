@@ -1,5 +1,8 @@
 # Image credits and licensing
 
+> Kept in `docs/`, not `public/`: anything under `public/` is served to the world, and
+> these are working notes (moved 14 Nov 2026, when the site check found them online).
+
 Provenance for every image shipped in this repository. Keep this current — a
 studio site is the last place to be unsure whether an asset is cleared.
 

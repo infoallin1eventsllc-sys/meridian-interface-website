@@ -1,6 +1,7 @@
 # Security measures — meridianinterface.com
 
-Last verified against production on 16 September 2026, after the fixes below. Every line below was
+Last verified against production on 14 November 2026 (full diagnostic, section 7). First
+verified 16 September 2026, after the fixes below. Every line below was
 tested, not assumed. Where something is unverified or still open, it says so.
 
 This file describes how the site defends itself and what Otis has to do to keep
@@ -181,3 +182,76 @@ both times so far, and neither was DNS.
 **A key is exposed.** Revoke it at the provider before doing anything else.
 Rotating beats investigating; the investigation can happen after the key is
 dead.
+
+---
+
+## 7. Full diagnostic, 14 November 2026
+
+Otis asked for every code path, function and security feature to be checked. What was
+tested and what it showed. "Outside" means from a machine on the public internet with no
+credentials.
+
+**The live site, from outside**
+
+- HTTP redirects to HTTPS (308). TLS 1.0 and 1.1 refused; 1.2 and 1.3 accepted. Certificate
+  valid, auto-renewed by Vercel.
+- Every header in section 3 present on `/`, a demo, `/card/`, `/unsubscribe` and the 404 page.
+- 19 sensitive paths (`.git`, every `.env`, `package.json`, `vercel.json`, raw source,
+  these markdown files, `node_modules`) return 404.
+- The scanner was itself challenged and then blocked by Vercel's firewall after about
+  forty rapid requests, including a headless browser. An independent fetch a few minutes
+  later loaded the page normally, so visitors were not affected.
+- The JavaScript the site serves contains no server secret, no service-role key, no
+  passcode, and no source maps.
+
+**Every edge function, from outside** (22 deployed)
+
+- The 12 that are not for the public refuse a caller with no token (401), and refuse a
+  made-up token or run secret.
+- `owner` and `leads` refuse a missing or forged session token. No login was attempted.
+- `site-images` and `pay` serve their public read and refuse every write without a token.
+- `pay-webhook` refuses a missing or forged Stripe signature.
+- `intake` refuses non-JSON, an empty object, an array and a bad email address, and
+  returned 429 on the sixth request in the hour. None of the probes created a contact,
+  task or message.
+- `planner` and `lattice-analyst` refuse other origins (403).
+- The database, storage, auth and GraphQL APIs refuse a request with no key. The private
+  bucket is not reachable.
+- 24 hours of function logs: no 5xx. Every non-200 was one of these probes.
+
+**The database, from inside**
+
+- 25 tables, row level security on all, no policies (deny by default). `anon` and
+  `authenticated` hold no privilege on any table, view, sequence or column.
+- New tables created by migrations do not inherit a grant to `anon`.
+- Every function has a fixed `search_path`. 14 triggers enabled, including owner approval.
+- 13 scheduled jobs active, no failure in 7 days. Nightly snapshot ran 13 Nov; 30 kept.
+- No public accounts exist (`auth.users` is empty).
+
+**Fixed during the diagnostic**
+
+| Found | Done |
+|---|---|
+| `public/images/CREDITS.md`, `public/demos/README.txt` and a footage README were being served to the world: working notes with stock asset ids, a Higgsfield job id and backend repo paths. No secret in them | Moved to `docs/`. The pre-launch check now fails if any note, source map or env file is in `dist` |
+| No `/.well-known/security.txt` | Added |
+| `require_sms_consent()` was executable by PUBLIC, unlike every sibling. Not callable through the API (a trigger function) | Revoked. Migration 0046 |
+| `v_channel_performance` ran with its owner's rights. Unreachable by `anon`, so not exploitable | `security_invoker = true`. Migration 0046 |
+
+**Open, and only Otis can close them**
+
+| Item | Risk | What closes it |
+|---|---|---|
+| DMARC is `p=none` | Anyone can send mail that claims to be from `meridianinterface.com` and receivers are told to deliver it | At Squarespace DNS, change `_dmarc` to `v=DMARC1; p=quarantine; rua=mailto:otis@meridianinterface.com`, then `p=reject` after a few weeks of clean reports |
+| `www.meridianinterface.com` has no DNS record | Typing "www" gets nothing | A `www` CNAME at Squarespace and the domain added in Vercel |
+| Four retired functions still deployed as empty tombstones: `keycheck`, `cardspike`, `ipecho-tmp`, `dashboard` | None (each returns 410 and holds no credentials), but they are clutter a reviewer has to re-check | Supabase dashboard, Edge Functions, Delete |
+| The `runner` prompt fence for lead text (13 Nov) is in the repo, not deployed | A lead's message reaches the drafting model unfenced. A database rule already tells the model not to follow it, and nothing sends without approval | A tested `supabase functions deploy runner` |
+| `lattice-analyst` is deployed but its source is not in the backend repo | It would miss a shared fix, as `keycheck` once did. Its live source was read and is sound (origin list, two rate limits, size caps, fails closed) | Commit its source to `system/supabase/functions/` |
+| `xlsx` (SheetJS) in the healthcare and Frame Shop demos has a known high-severity advisory with no npm fix | Low: only the healthcare demo reads a spreadsheet, in the visitor's own browser, from a file they pick themselves | Replace with the patched build from SheetJS's own CDN at the next demo rebuild |
+| No CAA record | Any certificate authority may issue for the domain. Optional hardening | `0 issue "letsencrypt.org"` at Squarespace |
+
+One further item about the studio portal's sign-in was reported to Otis directly and is
+not written here, because this repository is public.
+
+Not tested: anything behind the studio passcode (no login was attempted), Safari, a real
+iPhone, and the Meridian CRM demo's Firebase project beyond confirming that its database
+refuses every unauthenticated read and that its rules allow one named account only.

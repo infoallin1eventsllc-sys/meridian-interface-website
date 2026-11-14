@@ -12,7 +12,7 @@
  * permanent, CDN-backed, and verified to answer ranged requests with a
  * year-long cache header, so seeking and repeat visits both behave. This is
  * deliberate and is NOT the hotlinking mistake recorded in
- * public/demos/README.txt: that host was a temporary third party whose URLs
+ * docs/DEMOS-BUILD-NOTES.txt: that host was a temporary third party whose URLs
  * expire. This bucket is ours. To self-host instead, drop the file into
  * `public/video/` and point the entry below at `/video/<name>.mp4`.
  */
