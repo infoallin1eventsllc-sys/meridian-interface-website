@@ -1,5 +1,7 @@
 # Meridian Interface
 
+[![CI](https://github.com/infoallin1eventsllc-sys/meridian-interface-website/actions/workflows/ci.yml/badge.svg)](https://github.com/infoallin1eventsllc-sys/meridian-interface-website/actions/workflows/ci.yml)
+
 Marketing site and client booking portal for **Meridian Interface** — a digital design &
 development studio (custom web design, mobile app interfaces, analytics & CRM dashboards, and
 brand identity systems).
@@ -25,6 +27,59 @@ No `.env.local` is required — both backend seams have working defaults.
 | `npm run build` | Production build to `dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run lint` | Type-check with `tsc --noEmit` |
+| `npm test` | Unit tests (Vitest) |
+| `npm run test:e2e` | Browser tests against the production build (Playwright; run `npm run build` first) |
+
+## Tests
+
+Every push to `main` and every pull request runs the [CI workflow](.github/workflows/ci.yml):
+dependency audit, type check, unit tests, production build, then browser tests against that
+build. 47 unit tests and 41 browser tests, all passing.
+
+**Unit tests** (`tests/unit/`, Vitest in a simulated browser) cover the site's own logic:
+
+| File | What it proves |
+|------|----------------|
+| `dates.test.ts` | Booking dates are read in the visitor's time zone, not UTC; the default day skips weekends |
+| `bucket.test.ts` | The saved list never duplicates an item, survives damaged browser storage, and never carries a price |
+| `attribution.test.ts` | Leads are credited to the right channel; only the referrer's hostname is stored, never the full address |
+| `leads.test.ts` | A booking is kept on the device and posted to intake; retries once on a server fault, never on a rejected request |
+| `heroSound.test.ts` | The homepage film always starts muted and turns its sound off when the film stops |
+| `demoLink.test.ts` | Demos on this site open in place; apps hosted elsewhere open in a new tab with `rel="noopener"` |
+| `site-rules.test.ts` | Security headers and content security policy in `vercel.json`; a live security contact; every portfolio picture and demo actually ships; no prices in site content |
+
+**Browser tests** (`tests/e2e/`, Playwright at desktop and phone sizes) serve the built site with
+the same security headers Vercel sends in production, so anything the live content security policy
+would block fails the test. The backend is replaced with stand-ins, so no test touches the live
+database or creates a real lead. They check that:
+
+- every page opens with no console errors, no broken images and no sideways scrolling;
+- an empty booking is refused, a filled one is sent with a reference, and a bot that fills the
+  hidden spam trap is ignored;
+- the hero film starts muted, the sound button works, and visitors who ask for less motion get a
+  still picture instead;
+- search, the phone menu and every portfolio window open and close with the keyboard;
+- the main pages and the booking window have no serious accessibility problems (axe-core, WCAG 2.0
+  A and AA).
+
+One phone-only test is skipped at desktop size, which is expected.
+
+Known gap: the newer WCAG 2.1 rule "label in name" flags 11 buttons whose accessible name does not
+include their visible text (it matters for people who use voice control). The scan will move up to
+WCAG 2.1 once those labels are reworded.
+
+To run them yourself:
+
+```bash
+npm ci
+npm test                 # unit tests
+npm run build
+npx playwright install chrome     # once, if Google Chrome is not installed
+npm run test:e2e         # browser tests
+```
+
+Before anything reaches `main`, a longer pre-launch check also runs every page at four screen sizes
+and clicks through every hosted demo.
 
 ## Project structure
 

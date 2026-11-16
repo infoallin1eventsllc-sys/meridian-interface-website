@@ -13,3 +13,7 @@ coverage/
 # genuinely secret must never be added to that file: the VITE_ prefix means
 # published.
 !.env.production
+
+# Test output
+test-results/
+playwright-report/
