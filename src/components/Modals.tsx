@@ -6,7 +6,7 @@ import { useDialogFocus } from '../lib/useDialogFocus';
 import { MeridianLogo } from './MeridianLogo';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
-import { nextBusinessDay, todayISO, TIME_SLOTS } from '../lib/dates';
+import { nextBusinessDay, slotLabel, todayISO, TIME_SLOTS } from '../lib/dates';
 
 interface ModalsProps {
   isConsultationOpen: boolean;
@@ -157,13 +157,13 @@ export const Modals: React.FC<ModalsProps> = ({
                   <span className="material-symbols-outlined text-3xl" aria-hidden="true">check</span>
                 </div>
                 <h3 className="font-display font-bold text-2xl text-slate-900">
-                  {delivered ? 'Appointment Scheduled!' : 'Request Saved on This Device'}
+                  {delivered ? 'Request sent' : 'Saved on this device'}
                 </h3>
                 <p className="font-body text-xs text-slate-600 max-w-sm mx-auto">
                   {delivered ? (
-                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your design appointment for {modalDate} ({modalTime}) has been saved to your portal. We'll reply within one business day to confirm it.</>
+                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your request for {modalDate} ({slotLabel(modalTime)}) is in My Appointments. We'll reply within one business day to confirm it.</>
                   ) : (
-                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your request for {modalDate} ({modalTime}) is saved here, but it hasn't reached the studio yet.</>
+                    <>Thank you, <strong className="text-slate-900">{modalName}</strong>. Your request for {modalDate} ({slotLabel(modalTime)}) is saved here, but it has not reached the studio yet.</>
                   )}
                 </p>
                 {!delivered && (
@@ -177,17 +177,17 @@ export const Modals: React.FC<ModalsProps> = ({
               <div>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">
                   <span className="material-symbols-outlined text-sm" aria-hidden="true">event</span>
-                  Quick Appointment Booking
+                  Book an appointment
                 </div>
                 <h3 className="font-display font-bold text-2xl text-slate-900 mb-4">
-                  Schedule Design Session
+                  Pick a time to talk
                 </h3>
 
                 <form onSubmit={handleModalBookSubmit} className="space-y-4">
                   <SpamTrap />
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                      Required Design Service
+                      What do you need
                     </label>
                     <select
                       aria-label="Required design service"
@@ -205,7 +205,7 @@ export const Modals: React.FC<ModalsProps> = ({
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                        Preferred Date
+                        Date
                       </label>
                       <input
                         type="date"
@@ -219,7 +219,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     </div>
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                        Time Slot
+                        Time
                       </label>
                       <select
                         aria-label="Time slot"
@@ -227,7 +227,7 @@ export const Modals: React.FC<ModalsProps> = ({
                         onChange={(e) => setModalTime(e.target.value)}
                         className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs font-semibold text-slate-800 outline-none"
                       >
-                        {TIME_SLOTS.map((slot) => <option key={slot}>{slot}</option>)}
+                        {TIME_SLOTS.map((slot) => <option key={slot} value={slot}>{slotLabel(slot)}</option>)}
                       </select>
                     </div>
                   </div>
@@ -251,7 +251,7 @@ export const Modals: React.FC<ModalsProps> = ({
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                        Email Address *
+                        Email *
                       </label>
                       <input
                         type="email"
@@ -285,7 +285,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     disabled={sending}
                     className="w-full bg-[#0f172a] text-white py-3.5 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md mt-2 disabled:opacity-60 disabled:cursor-wait"
                   >
-                    {sending ? 'Sending…' : 'Confirm Appointment'}
+                    {sending ? 'Sending…' : 'Request appointment'}
                   </button>
                 </form>
               </div>
@@ -304,7 +304,7 @@ export const Modals: React.FC<ModalsProps> = ({
                 type="search"
                 autoFocus
                 aria-label="Search services, demos and pages"
-                placeholder="Search web design, app interfaces, logo packages..."
+                placeholder="Search services and demos"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full text-sm font-body text-slate-900 outline-none bg-transparent"
@@ -316,7 +316,7 @@ export const Modals: React.FC<ModalsProps> = ({
 
             <div className="mt-4 max-h-80 overflow-y-auto space-y-2">
               <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                {searchQuery ? `Search Results for "${searchQuery}"` : 'Quick Studio Navigation'}
+                {searchQuery ? `Results for "${searchQuery}"` : 'Jump to'}
               </div>
               {(() => {
                 // Built from the same lists the pages use, so a new service or demo shows up here too.
@@ -328,7 +328,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     category: 'Services',
                     go: () => onViewService(service.id),
                   })),
-                  { title: 'Book a 1-on-1 Appointment', desc: 'Pick a time to talk through your project with Otis', category: 'Booking', go: () => onTabChange('booking') },
+                  { title: 'Book an appointment', desc: 'Pick a time to talk through your project with Otis', category: 'Booking', go: () => onTabChange('booking') },
                   { title: 'My Appointments', desc: 'See the sessions you have booked', category: 'Appointments', go: () => onTabChange('appointments') },
                   ...PORTFOLIO.map((piece) => ({
                     title: piece.title,
@@ -336,7 +336,7 @@ export const Modals: React.FC<ModalsProps> = ({
                     category: 'Portfolio',
                     go: () => onOpenProject(projectSlug(piece)),
                   })),
-                  { title: 'Interactive Project Cost Estimator', desc: 'Scope calculator for web, app, dashboard & logo quotes', category: 'Tool', go: () => onTabChange('services') },
+                  { title: 'Build your brief', desc: 'Pick what you need and get a written quote', category: 'Tool', go: () => onTabChange('services') },
                 ];
 
                 const filtered = searchItems.filter(item =>

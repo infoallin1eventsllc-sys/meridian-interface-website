@@ -28,6 +28,21 @@ export function nextBusinessDay(): string {
   return localISODate(d);
 }
 
+/**
+ * What a visitor reads for a time slot: "9 to 10 AM CT", "3:30 to 4:30 PM CT".
+ *
+ * Only the label changes. The value sent to intake stays in the
+ * "09:00 AM - 10:00 AM CT" form, because the live intake function checks
+ * that exact shape and drops a slot it does not recognise.
+ */
+export function slotLabel(slot: string): string {
+  const m = /^(\d{2}):(\d{2}) (AM|PM) - (\d{2}):(\d{2}) (AM|PM) ([A-Z]{2,4})$/.exec(slot);
+  if (!m) return slot;
+  const t = (h: string, min: string) => `${Number(h)}${min === '00' ? '' : `:${min}`}`;
+  const start = t(m[1], m[2]), end = t(m[4], m[5]);
+  return m[3] === m[6] ? `${start} to ${end} ${m[6]} ${m[7]}` : `${start} ${m[3]} to ${end} ${m[6]} ${m[7]}`;
+}
+
 /** The appointment times both booking forms offer, in Houston time. */
 export const TIME_SLOTS = [
   '09:00 AM - 10:00 AM CT',

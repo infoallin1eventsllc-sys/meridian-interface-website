@@ -71,7 +71,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
 
         <H>What we collect</H>
         <P>
-          <strong>When you book an appointment or send an enquiry,</strong> we collect what you type
+          <strong>When you book an appointment or send an inquiry,</strong> we collect what you type
           into the form: your name, email address, phone number, company name if you give one, the
           service you are interested in, your preferred date and time, any budget range you select,
           and your notes.
@@ -100,7 +100,7 @@ export const LegalView: React.FC<LegalViewProps> = ({ doc = 'privacy' }) => {
         <H>What we do with it</H>
         <ul className="list-disc pl-5 mb-3">
           <LI>Reply to you, and arrange the work you asked about.</LI>
-          <LI>Keep a record of the enquiry in our own customer database so nothing gets lost.</LI>
+          <LI>Keep a record of the inquiry in our own customer database so nothing gets lost.</LI>
           <LI>
             Draft a reply. We use an AI assistant (Anthropic's Claude) to help write follow-up
             emails. <strong>Nothing it writes is sent automatically</strong>: a person reads and

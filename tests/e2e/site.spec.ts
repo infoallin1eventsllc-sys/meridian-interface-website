@@ -4,7 +4,7 @@ test.describe('home page', () => {
   test('loads cleanly under the live security policy', async ({ page, backend: _backend, problems }) => {
     await openHome(page);
     await expect(page).toHaveTitle(/Meridian Interface/);
-    await expect(page.locator('h1')).toContainText('Websites, apps, and AI');
+    await expect(page.locator('h1')).toContainText('Websites, apps and AI');
     expect(await sidewaysScroll(page)).toBe(0);
     expect(await brokenImages(page)).toEqual([]);
     expect(problems).toEqual([]);

@@ -85,10 +85,10 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               The Meridian Stack Planner
             </h2>
             <p className="font-body text-sm text-slate-600 leading-relaxed">
-              Before we build a business its AI system, we plan it together in this. It lays out the five layers such a
-              system needs, how a job runs with a person approving anything that matters, and how much time the whole
-              thing would give a team back. You leave with a written proposal. What it costs we go through with you on
-              the call. It depends on what you actually need, and a number quoted before that is a guess.
+              We plan every AI system with the client in this tool before we build it. It lays out the five layers the
+              system needs, shows how each job runs with a person approving anything important, and estimates the hours
+              it gives your team back. You leave with a written proposal. We go over cost together on the call, once we
+              know what you actually need.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export const StackPlannerFeature: React.FC<{ onTabChange: (tab: TabType) => void
               carry their own captions, and a list that repeated them read twice. */}
           <p className="flex items-start gap-2.5 font-body text-xs text-slate-700">
             <span className="material-symbols-outlined text-blue-600 text-base leading-none mt-0.5" aria-hidden="true">check_circle</span>
-            <span>Every figure is yours to change, with the working shown.</span>
+            <span>Change any number and see the math behind it</span>
           </p>
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1">

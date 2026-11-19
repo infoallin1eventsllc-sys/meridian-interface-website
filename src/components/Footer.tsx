@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
             <MeridianLogo size={36} lightText subtext="INTERFACE" />
           </div>
           <p className="text-slate-300 text-xs max-w-sm pt-1">
-            Web design, mobile app interfaces, analytics &amp; CRM dashboards, and brand identity systems.
+            Websites, apps, dashboards and brands for growing businesses
           </p>
           <div className="text-xs text-slate-300 font-semibold pt-1 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
             <a href="https://meridianinterface.com" className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors">

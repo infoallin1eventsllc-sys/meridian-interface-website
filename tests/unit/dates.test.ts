@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { daysFromToday, localISODate, nextBusinessDay, TIME_SLOTS } from '../../src/lib/dates';
+import { daysFromToday, localISODate, nextBusinessDay, slotLabel, TIME_SLOTS } from '../../src/lib/dates';
 
 afterEach(() => vi.useRealTimers());
 
@@ -32,5 +32,13 @@ describe('booking dates', () => {
   it('offers appointment times labelled in Central Time', () => {
     expect(TIME_SLOTS.length).toBeGreaterThan(0);
     for (const slot of TIME_SLOTS) expect(slot).toMatch(/^\d{2}:\d{2} (AM|PM) - \d{2}:\d{2} (AM|PM) CT$/);
+  });
+
+  it('shows visitors a plain time while sending intake the exact format it checks', () => {
+    expect(slotLabel('09:00 AM - 10:00 AM CT')).toBe('9 to 10 AM CT');
+    expect(slotLabel('03:30 PM - 04:30 PM CT')).toBe('3:30 to 4:30 PM CT');
+    expect(slotLabel('11:00 AM - 12:00 PM CT')).toBe('11 AM to 12 PM CT');
+    expect(slotLabel('To be arranged')).toBe('To be arranged');
+    for (const slot of TIME_SLOTS) expect(slotLabel(slot)).not.toContain('-');
   });
 });

@@ -99,14 +99,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 front door say one thing. The soft dark halo on wide screens keeps
                 every letter clear if the laptop film ever reaches the line ends. */}
             <h1 className="font-display font-black leading-[1.04] tracking-tight text-white text-[2.5rem] sm:text-5xl lg:text-[3.4rem] xl:text-[4rem] lg:[text-shadow:0_2px_18px_rgba(4,7,14,0.85)]">
-              Websites, apps, and AI&nbsp;systems.
-              <span className="block mt-1 text-blue-500">We put the future in your&nbsp;hands.</span>
+              Websites, apps and AI&nbsp;systems
+              <span className="block mt-1 text-blue-500">We put the future in your&nbsp;hands</span>
             </h1>
 
             <p className="font-body text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed lg:[text-shadow:0_2px_18px_rgba(4,7,14,0.85)]">
-              One studio, start to finish: your brand, the website customers find, the app they order
-              from, the dashboard you run the business on, and the systems that follow up while you work.
-              Every project starts with a 1-on-1 appointment.
+              Your brand, website, app and dashboard, all from one studio, plus the AI that follows up
+              with customers while you work. Every project starts with a one on one appointment.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
@@ -143,15 +142,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1.5 max-w-xl">
             <p className="font-body text-xs font-bold uppercase tracking-widest text-blue-600">
-              Working demos: open any of them
+              Working demos
             </p>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              See what we build, before you ask for anything
+              See what we build before you ask
             </h2>
             <p className="font-body text-sm text-slate-500 leading-relaxed">
-              Three of our working demos. Every one is real: click in and use it.
-              Yours is built to your brief, at your size, in your colours. Save the
-              ones close to what you need and send them over.
+              Three of our working demos. Each one is real, so click in and try it.
+              Save the ones close to what you need and send them to us. Yours gets
+              built around your business, your size and your colors.
             </p>
           </div>
 
@@ -305,10 +304,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
             <p className="font-body text-xs font-bold uppercase tracking-widest text-slate-500">
-              Core Capabilities
+              What we do
             </p>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              What We Design & Develop
+              What we design and build
             </h2>
           </div>
           <button
@@ -380,8 +379,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="mt-16 px-4 md:px-12 max-w-[1440px] mx-auto">
         <div className="bg-[#0f172a] text-white rounded-2xl px-6 py-6 md:px-10 md:py-7 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
           <p className="font-body text-sm md:text-base text-slate-200 leading-relaxed">
-            <span className="font-display font-bold text-white">Every project runs the same four steps:</span>{' '}
-            an appointment, design you review, build, then launch with support after.
+            <span className="block font-display font-bold text-white">Every project follows four steps</span>
+            We meet, you review the design, we build it, and we launch and stay on for support
           </p>
           <button
             type="button"
@@ -417,7 +416,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           {[
             {
               q: 'How much will my project cost?',
-              a: 'Every project gets a written quote that itemises each line and says what it does and does not include. We write it after we understand what you need, because a price given before that is a guess. Nothing is owed until you have seen the quote and agreed to it.',
+              a: 'Every project gets a written quote that itemizes each line and says what it does and does not include. We write it after we understand what you need, because a price given before that is a guess. Nothing is owed until you have seen the quote and agreed to it.',
             },
             {
               q: 'How long does it take?',
@@ -433,7 +432,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             },
             {
               q: 'What happens after I book?',
-              a: 'Once we confirm a time, we go through your goals and any examples you like on the call, then send a written proposal and quote.',
+              a: 'Once we confirm a time, we go through your goals and any examples you like on the call, then send a written proposal and quote',
             },
           ].map((item) => (
             <details key={item.q} className="group py-5">
@@ -451,10 +450,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="mt-20 px-4 md:px-12 max-w-[1440px] mx-auto text-center space-y-6">
         <div className="max-w-2xl mx-auto space-y-3">
           <h2 className="font-display font-black text-3xl md:text-4xl text-slate-900">
-            Ready to build your web, app, or logo?
+            Ready to build your website, app or logo?
           </h2>
           <p className="font-body text-slate-600 text-sm md:text-base">
-            Book an appointment today. We'll go through your goals and any examples you like, then send a written proposal. We reply to every booking within one business day.
+            Book an appointment and we'll talk through your goals and any examples you like. Then we send a written proposal. We answer every booking within one business day.
           </p>
         </div>
 
@@ -463,7 +462,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           className="inline-flex items-center gap-2 px-8 py-4 bg-[#0f172a] text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-lg active:scale-95"
         >
           <span className="material-symbols-outlined text-lg" aria-hidden="true">event</span>
-          Schedule Design Appointment
+          Book an appointment
         </button>
       </section>
     </main>

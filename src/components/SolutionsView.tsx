@@ -49,13 +49,13 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
       <section className="mb-12 max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
           <span className="material-symbols-outlined text-sm" aria-hidden="true">palette</span>
-          MERIDIAN Creative Services
+          Meridian services
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-black leading-tight tracking-tight">
-          Web Design, App UI/UX, Dashboards & Logo Identity
+          Websites, apps, dashboards and logos
         </h1>
         <p className="font-body text-base md:text-lg text-slate-600 leading-relaxed">
-          Select a service below to explore features, deliverables, and custom solutions. Book a 1-on-1 appointment directly to start your project.
+          Pick a service to see what you get. When you are ready, book a one on one appointment.
         </p>
       </section>
 
@@ -110,7 +110,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
 
           <div className="space-y-3">
             <h3 className="font-display font-bold text-sm uppercase tracking-wider text-slate-900">
-              Key Deliverables & Included Features:
+              What you get
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {currentService.features.map((feature, i) => (
@@ -151,8 +151,8 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 })}
               </div>
               <p className="font-body text-xs text-slate-500 mt-2">
-                Not sure? Pick the closest. We settle the exact size in the conversation,
-                and nothing is priced until then.
+                Not sure? Pick the closest one and we'll settle the size on the call.
+                Nothing is priced until then.
               </p>
             </div>
           ) : null}
@@ -181,7 +181,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
               className="w-full sm:w-auto px-8 py-4 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg" aria-hidden="true">event</span>
-              Book Appointment for {currentService.categoryName}
+              Book an appointment for {currentService.categoryName}
             </button>
 
             {/* Only on the tech stack service, and only once the planner has an
@@ -193,7 +193,7 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
                 className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 font-body font-bold text-xs uppercase tracking-widest rounded-lg border border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_outward</span>
-                Plan your stack first (free)
+                Plan your stack first for free
               </a>
             )}
           </div>
@@ -228,8 +228,8 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
             />
           )}
           <div className="text-white p-3 bg-slate-900 rounded-lg border border-slate-700 text-xs">
-            <p className="font-bold">Every project, the same four steps</p>
-            <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 py-1.5 -my-1 inline-block underline underline-offset-2">See how we work, below</a>
+            <p className="font-bold">Every project follows four steps</p>
+            <a href="#process" className="text-blue-300 hover:text-white text-[11px] mt-0.5 py-1.5 -my-1 inline-block underline underline-offset-2">See how we work</a>
           </div>
         </div>
       </section>
@@ -241,9 +241,9 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           home page and the sidebar above link here instead of restating it. */}
       <section id="process" className="space-y-8 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">How It Works</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">How it works</p>
           <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-            Our 4-Step Design & Development Process
+            Our four step process
           </h2>
         </div>
 
@@ -260,10 +260,10 @@ export const SolutionsView: React.FC<ServicesViewProps> = ({
           {...m.reveal}
         >
           {[
-            { step: '01', title: 'Appointment Booking', icon: 'calendar_today', desc: 'Schedule a 1-on-1 discovery session to share your goals, brand reference, and features.' },
-            { step: '02', title: 'Design & Wireframing', icon: 'draw', desc: 'We craft high-fidelity Figma designs, logo vector concepts, or app UX flows for you to review and change before a line of code is written.' },
-            { step: '03', title: 'Development & Build', icon: 'code', desc: 'Our engineers transform designs into clean, responsive web code or cross-platform mobile apps.' },
-            { step: '04', title: 'Launch & Handover', icon: 'rocket_launch', desc: 'We deploy your website, submit your mobile app to stores, and deliver vector logo master files, then stay on after launch to make sure it lands cleanly.' }
+            { step: '01', title: 'Appointment', icon: 'calendar_today', desc: 'We meet one on one to talk through your goals, your brand and the features you need' },
+            { step: '02', title: 'Design', icon: 'draw', desc: 'You see the designs first and ask for changes before any code gets written' },
+            { step: '03', title: 'Build', icon: 'code', desc: 'We build your website, app or dashboard so it works on every screen' },
+            { step: '04', title: 'Launch and support', icon: 'rocket_launch', desc: 'We put it live, publish your app to the app stores and hand over every file, then stay on to support you' }
           ].map((item, index) => (
             <motion.div key={index} variants={m.rise} className="bg-white border border-slate-200 p-6 rounded-xl space-y-3 relative shadow-xs">
               <div className="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
@@ -330,15 +330,14 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-blue-300 rounded-full text-xs font-bold uppercase tracking-widest mb-2">
             <span className="material-symbols-outlined text-sm" aria-hidden="true">tune</span>
-            Build Your Brief
+            Build your brief
           </div>
           <h2 className="font-display font-black text-2xl md:text-3xl text-white tracking-tight">
-            Tell us what you need, and we'll price it properly
+            Tell us what you need and we'll price it properly
           </h2>
           <p className="text-xs text-slate-300 max-w-xl mt-1 leading-relaxed">
-            Pick the scope and the pieces that matter to you. We'll come back with a written quote
-            that itemises exactly what each part costs. No guessing, and no number invented before
-            we understand the job.
+            Pick the size and the pieces that matter to you. We'll send a written quote that
+            itemizes what each part costs, once we understand the job.
           </p>
         </div>
 
@@ -359,7 +358,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           {/* Step 1: Service Category */}
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
-              1. Choose Service Type
+              Choose a service
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {[
@@ -388,13 +387,13 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           {/* Step 2: Scope Size */}
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
-              2. Select Project Scope Size
+              Choose the size
             </label>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { id: 'small', label: 'Starter Scope', desc: calcService === 'logo_brand' ? '2 Vector Logo Concepts' : '1-4 Pages / Views' },
-                { id: 'medium', label: 'Standard Growth', desc: calcService === 'logo_brand' ? '4 Concepts + Brand Kit' : '5-10 Pages / Views' },
-                { id: 'enterprise', label: 'Enterprise Custom', desc: calcService === 'logo_brand' ? 'Full Brand Identity Suite' : '11+ Pages / Complex UX' }
+                { id: 'small', label: 'Starter', desc: calcService === 'logo_brand' ? '2 logo ideas' : '1 to 4 pages or screens' },
+                { id: 'medium', label: 'Standard', desc: calcService === 'logo_brand' ? '4 logo ideas and a brand kit' : '5 to 10 pages or screens' },
+                { id: 'enterprise', label: 'Large', desc: calcService === 'logo_brand' ? 'A full brand identity' : '11 or more pages' }
               ].map((sc) => (
                 <button
                   key={sc.id}
@@ -418,7 +417,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
           {/* Step 3: Add-on Capabilities */}
           <div className="space-y-3 pt-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
-              3. Custom Add-ons & Integration Modules
+              Add extras
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
@@ -430,8 +429,8 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     className="w-4 h-4 accent-blue-500 rounded"
                   />
                   <div>
-                    <span className="font-body font-bold text-xs text-white">Interactive Animations</span>
-                    <span className="block text-[10px] text-slate-400">Framer motion & micro-interactions</span>
+                    <span className="font-body font-bold text-xs text-white">Animations</span>
+                    <span className="block text-[10px] text-slate-400">Motion that makes it feel alive</span>
                   </div>
                 </div>
               </label>
@@ -445,8 +444,8 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     className="w-4 h-4 accent-blue-500 rounded"
                   />
                   <div>
-                    <span className="font-body font-bold text-xs text-white">CMS Content Engine</span>
-                    <span className="block text-[10px] text-slate-400">Blog, team, services dynamic management</span>
+                    <span className="font-body font-bold text-xs text-white">Edit it yourself</span>
+                    <span className="block text-[10px] text-slate-400">Update your blog, team and services without code</span>
                   </div>
                 </div>
               </label>
@@ -460,8 +459,8 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     className="w-4 h-4 accent-blue-500 rounded"
                   />
                   <div>
-                    <span className="font-body font-bold text-xs text-white">E-Commerce & Checkout</span>
-                    <span className="block text-[10px] text-slate-400">Stripe/Payment gateway integration</span>
+                    <span className="font-body font-bold text-xs text-white">Online store and checkout</span>
+                    <span className="block text-[10px] text-slate-400">Take card payments with Stripe</span>
                   </div>
                 </div>
               </label>
@@ -475,8 +474,8 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
                     className="w-4 h-4 accent-blue-500 rounded"
                   />
                   <div>
-                    <span className="font-body font-bold text-xs text-white">Full Technical SEO</span>
-                    <span className="block text-[10px] text-slate-400">Meta tags, OpenGraph, sitemap setup</span>
+                    <span className="font-body font-bold text-xs text-white">Search engine setup</span>
+                    <span className="block text-[10px] text-slate-400">So Google and shared links show you properly</span>
                   </div>
                 </div>
               </label>
@@ -488,9 +487,9 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5 text-xs font-bold text-blue-300 uppercase tracking-wider">
                 <span className="material-symbols-outlined text-base" aria-hidden="true">bolt</span>
-                Priority Rush Delivery (2-Week Turnaround)
+                Rush delivery in 2 weeks
               </div>
-              <p className="text-[11px] text-slate-300">Expedite project review and dedicated daily development sprints.</p>
+              <p className="text-[11px] text-slate-300">We put your project first and work on it every day</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -516,7 +515,7 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-blue-400 text-sm mt-0.5" aria-hidden="true">check</span>
-                <span><span className="text-white font-semibold">{scopeLabel} scope</span>. We'll confirm exactly what that covers before quoting.</span>
+                <span><span className="text-white font-semibold">{scopeLabel} size</span>, confirmed with you before we quote</span>
               </div>
               {chosenExtras.map((extra) => (
                 <div key={extra} className="flex items-start gap-2">
@@ -527,9 +526,9 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
             </div>
 
             <div className="pt-4 border-t border-white/10 text-xs text-slate-300 leading-relaxed">
-              <span className="text-white font-semibold">What happens next.</span> Book a short call
-              and we'll go through this properly. You'll get a written quote that itemises every
-              line and says what it excludes, so nothing arrives as a surprise.
+              <span className="block text-white font-semibold">What happens next</span> Book a short call
+              and we'll go through it together. You get a written quote that lists every line and
+              what it leaves out, so there are no surprises.
             </div>
           </div>
 
@@ -543,10 +542,10 @@ const ProjectScopeCalculator: React.FC<CalculatorProps> = ({ onSelectServiceForB
               className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-body font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-lg" aria-hidden="true">calendar_month</span>
-              Send This Brief &amp; Book a Call
+              Send this brief and book a call
             </button>
             <p className="text-[10px] text-slate-400 text-center">
-              Nothing to pay to book. We'll price it after the call, in writing.
+              Booking is free, and we send the price in writing after the call
             </p>
           </div>
         </div>

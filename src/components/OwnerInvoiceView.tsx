@@ -37,7 +37,9 @@ const money = (n: number) => (n || 0).toLocaleString('en-US', { minimumFractionD
  */
 function answerFor(description: string): ClientExplainer | undefined {
   const declared =
-    [...PORTFOLIO, ...SERVICES].find((p) => p.title === description)?.explainerId ??
+    // Portfolio titles lost their subtitles on 19 Nov 2026 ("Haven: AI Home
+    // Integration System" became "Haven"); older bookings still carry the long form.
+    [...PORTFOLIO, ...SERVICES].find((p) => p.title === description || description.startsWith(`${p.title}:`))?.explainerId ??
     // A service saved at a size reads "Custom Web Design & Development (One page)";
     // the size, not the service, says which answer applies.
     SERVICES.flatMap((s) => (s.sizes ?? []).map((z) => ({ title: `${s.title} (${z.label})`, id: z.explainerId })))

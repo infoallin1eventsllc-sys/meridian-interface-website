@@ -121,7 +121,7 @@ export const ConceptModal: React.FC<{
               )}
 
               <div className="flex justify-between items-center text-xs text-slate-500 font-bold border-b border-slate-100 pb-3">
-                <span>Sector: {item.client}</span>
+                <span>{item.client}</span>
                 <span>{item.year}</span>
               </div>
 
@@ -136,7 +136,7 @@ export const ConceptModal: React.FC<{
 
               <div className="space-y-2">
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-slate-900">
-                  What it gives you:
+                  What it does
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {item.highlights.map((h, idx) => (

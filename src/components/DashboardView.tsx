@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Appointment } from '../types';
 import { INITIAL_APPOINTMENTS } from '../data/mockData';
 import { getAppointments } from '../lib/leads';
+import { slotLabel } from '../lib/dates';
 
 interface DashboardViewProps {
   onOpenBookModal: () => void;
@@ -73,13 +74,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs font-bold uppercase tracking-widest">
             <span className="material-symbols-outlined text-sm" aria-hidden="true">assignment_ind</span>
-            Client Appointment Portal
+            Your appointments
           </div>
           <h1 className="font-display text-3xl sm:text-4xl text-slate-900 font-black tracking-tight">
             My Appointments
           </h1>
           <p className="font-body text-sm text-slate-600">
-            Review your web design, app interface, and logo branding appointments. To change one, email otis@meridianinterface.com or call 281-882-9198.
+            See what you have booked. To change an appointment, email otis@meridianinterface.com or call 281-882-9198.
           </p>
 
           {showingExamples && (
@@ -88,7 +89,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                 info
               </span>
               <p className="font-body text-[12px] text-amber-900 leading-relaxed">
-                <span className="font-bold">Sample data.</span>{' '}
+                <span className="block font-bold">Sample data</span>
                 {realCount > 0
                   ? 'The rows marked "Example" are here to show how this page works. They are not real clients. Your own bookings appear alongside them.'
                   : 'The rows below are examples showing how this page works once you book. They are not real clients, and nobody else can see your appointments here.'}
@@ -102,7 +103,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
           className="px-6 py-3 bg-[#0f172a] text-white font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-base" aria-hidden="true">add_circle</span>
-          Book New Appointment
+          Book an appointment
         </button>
       </section>
 
@@ -213,7 +214,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                     <td className="p-4 font-semibold text-slate-800">{apt.serviceTitle}</td>
                     <td className="p-4">
                       <div className="font-bold text-slate-900">{apt.preferredDate}</div>
-                      <div className="text-[11px] text-slate-500">{apt.preferredTimeSlot}</div>
+                      <div className="text-[11px] text-slate-500">{slotLabel(apt.preferredTimeSlot)}</div>
                     </td>
                     <td className="p-4 text-slate-700 font-medium">{apt.budgetRange}</td>
                     <td className="p-4">
@@ -287,7 +288,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenBookModal })
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-medium">Date & Time:</span>
-                  <span className="font-bold text-slate-900">{activeAppointment.preferredDate} ({activeAppointment.preferredTimeSlot})</span>
+                  <span className="font-bold text-slate-900">{activeAppointment.preferredDate} ({slotLabel(activeAppointment.preferredTimeSlot)})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-medium">Budget Scope:</span>

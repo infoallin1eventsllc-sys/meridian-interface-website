@@ -64,17 +64,17 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           Working Demos
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-extrabold leading-tight tracking-tight">
-          Web, app, system &amp; brand work
+          Websites, apps, systems and brands
         </h1>
         <p className="font-body text-base md:text-lg text-slate-600 leading-relaxed">
-          Working demos across websites, mobile apps, business systems, dashboards and brand identity, built by the studio to show what each kind of project becomes. Open one and try it.
+          Working demos we built to show what each kind of project becomes. Open one and try it.
         </p>
       </section>
 
       {/* Filter Category Bar */}
       <section className="flex flex-wrap gap-2 mb-8">
         {[
-          { id: 'all', label: 'All Projects', icon: 'apps' },
+          { id: 'all', label: 'All projects', icon: 'apps' },
           { id: 'web_design', label: 'Web Design', icon: 'language' },
           { id: 'app_design', label: 'Mobile Apps', icon: 'phone_iphone' },
           { id: 'systems', label: 'Business Systems', icon: 'account_tree' },
@@ -216,14 +216,14 @@ export const ImpactView: React.FC<ImpactViewProps> = ({ onTabChange, onOpenBookM
           Start with a conversation, not a price tag
         </h2>
         <p className="text-slate-300 text-sm max-w-xl mx-auto">
-          Book a one-to-one call and we'll turn your web, app, dashboard, or brand goals into a
-          written quote that itemises every line, once we understand what the work actually is.
+          Book a call and we'll turn your goals into a written quote that lists every line,
+          once we understand the work
         </p>
         <button
           onClick={() => onTabChange('booking')}
           className="px-8 py-3.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-blue-500 transition-all shadow-md"
         >
-          Book a Design Appointment
+          Book an appointment
         </button>
       </section>
 

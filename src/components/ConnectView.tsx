@@ -3,7 +3,7 @@ import { TabType, ServiceCategory, Appointment } from '../types';
 import { SERVICES } from '../data/mockData';
 import { submitAppointment, newAppointmentId, NOT_DISCUSSED } from '../lib/leads';
 import { SpamTrap, caughtBySpamTrap } from './SpamTrap';
-import { nextBusinessDay, todayISO, TIME_SLOTS } from '../lib/dates';
+import { nextBusinessDay, slotLabel, todayISO, TIME_SLOTS } from '../lib/dates';
 
 interface AppointmentBookingViewProps {
   onTabChange?: (tab: TabType) => void;
@@ -101,13 +101,13 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
       <section className="mb-10 max-w-3xl space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0f172a] text-white rounded-full text-xs font-bold uppercase tracking-widest">
           <span className="material-symbols-outlined text-sm" aria-hidden="true">calendar_add_on</span>
-          MERIDIAN Appointment Desk
+          Book with Meridian
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl text-slate-900 font-black leading-tight tracking-tight">
-          Schedule Your Design Appointment
+          Book your appointment
         </h1>
         <p className="font-body text-base md:text-lg text-slate-600 leading-relaxed">
-          Book a 1-on-1 appointment for your website, mobile app, dashboard, or logo project.
+          Talk one on one about your website, app, dashboard or logo
         </p>
       </section>
 
@@ -123,11 +123,11 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               Appointment Reference #{createdAppointment.id}
             </span>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900">
-              {delivered ? 'Appointment Successfully Booked!' : 'Request Saved on This Device'}
+              {delivered ? 'Request sent' : 'Saved on this device'}
             </h2>
             <p className="text-slate-600 text-sm max-w-md mx-auto">
               Thank you, <strong className="text-slate-900">{createdAppointment.clientName}</strong>.{' '}
-              {delivered ? 'Your appointment is booked.' : "It hasn't reached the studio yet; see below."}
+              {delivered ? 'We have your request.' : 'It has not reached the studio yet, see below.'}
             </p>
           </div>
 
@@ -140,7 +140,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
           <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-left space-y-3 text-xs text-slate-700">
             <div className="flex justify-between border-b border-slate-200 pb-2">
-              <span className="text-slate-500 font-semibold">Selected Service:</span>
+              <span className="text-slate-500 font-semibold">Service</span>
               <span className="font-bold text-slate-900">{createdAppointment.serviceTitle}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-2">
@@ -181,7 +181,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
               We'll reply within one business day to confirm the details. Once we understand exactly what you need,
-              you'll get a written quote that itemises every line and says plainly what it does and
+              you'll get a written quote that itemizes every line and says plainly what it does and
               doesn't include. Nothing is owed until you've seen that and agreed to it.
             </p>
           </div>
@@ -198,7 +198,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               onClick={handleReset}
               className="px-6 py-3.5 bg-slate-100 text-slate-700 font-body font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-slate-200 transition-all"
             >
-              Book Another Session
+              Book another appointment
             </button>
           </div>
 
@@ -214,7 +214,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
                   <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">1</span>
-                  Select Design Service
+                  What do you need
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -252,13 +252,13 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               <div className="space-y-3 pt-2">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
                   <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">2</span>
-                  Preferred Date & Time Slot
+                  Pick a day and time
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                      Appointment Date
+                      Date
                     </label>
                     <input
                       type="date"
@@ -273,7 +273,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                      Preferred Time Slot
+                      Time
                     </label>
                     <select
                       aria-label="Preferred time slot"
@@ -281,7 +281,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                       onChange={(e) => setPreferredTimeSlot(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-slate-900 transition-colors"
                     >
-                      {TIME_SLOTS.map((slot) => <option key={slot}>{slot}</option>)}
+                      {TIME_SLOTS.map((slot) => <option key={slot} value={slot}>{slotLabel(slot)}</option>)}
                     </select>
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               <div className="space-y-3 pt-2">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
                   <span className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">3</span>
-                  Your Contact & Project Details
+                  Your details
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -313,7 +313,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                      Email Address *
+                      Email *
                     </label>
                     <input
                       type="email"
@@ -329,7 +329,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                      Phone Number
+                      Phone
                     </label>
                     <input
                       type="tel"
@@ -344,7 +344,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                      Company / Brand Name
+                      Business name
                     </label>
                     <input
                       type="text"
@@ -360,12 +360,12 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
                 <div className="pt-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
-                    Project Goals / Description / References
+                    Tell us about your project
                   </label>
                   <textarea
                     rows={3}
                     aria-label="Project goals, description, or references"
-                    placeholder="Tell us briefly about your web design, app interface, dashboard, or logo requirements..."
+                    placeholder="A few words about your website, app, dashboard or logo"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className="w-full border border-slate-200 bg-slate-50 rounded-lg p-3 text-sm outline-none focus:border-slate-900 transition-colors resize-none"
@@ -379,7 +379,7 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
                 className="w-full bg-[#0f172a] text-white py-4 font-body font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 mt-4 disabled:opacity-60 disabled:cursor-wait"
               >
                 <span className="material-symbols-outlined text-lg" aria-hidden="true">event_available</span>
-                {sending ? 'Sending…' : 'Confirm & Schedule Appointment'}
+                {sending ? 'Sending…' : 'Request appointment'}
               </button>
             </form>
           </div>
@@ -390,18 +390,18 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
               <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                 <span className="material-symbols-outlined text-3xl text-blue-400" aria-hidden="true">verified</span>
                 <div>
-                  <h3 className="font-display font-bold text-lg">Appointment Summary</h3>
-                  <p className="text-slate-400 text-xs">Direct 1-on-1 Studio Session</p>
+                  <h3 className="font-display font-bold text-lg">Your appointment</h3>
+                  <p className="text-slate-400 text-xs">One on one with Otis</p>
                 </div>
               </div>
 
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between text-slate-300">
-                  <span>Selected Service:</span>
+                  <span>Service</span>
                   <span className="font-bold text-white text-right">{activeServiceObj.title}</span>
                 </div>
                 <div className="flex justify-between text-slate-300">
-                  <span>Category:</span>
+                  <span>Type</span>
                   <span className="font-bold text-white">{activeServiceObj.categoryName}</span>
                 </div>
               </div>
@@ -417,9 +417,9 @@ export const ConnectView: React.FC<AppointmentBookingViewProps> = ({
 
             {/* Studio Contact Info */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-              <h4 className="font-display font-bold text-sm text-slate-900">Direct Studio Line</h4>
+              <h4 className="font-display font-bold text-sm text-slate-900">Call the studio</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Need immediate assistance or custom enterprise agreements? Contact our studio directly.
+                Need help now or have a bigger project in mind? Call or email us
               </p>
               <div className="space-y-1.5 pt-1 text-xs font-semibold text-slate-800">
                 <div className="flex items-center gap-2">

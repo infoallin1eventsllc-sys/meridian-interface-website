@@ -147,8 +147,8 @@ export const StudioReelCard: React.FC<StudioReelCardProps> = ({ onTabChange }) =
           Thirty seconds of what we build
         </h3>
         <p className="font-body text-xs leading-relaxed text-slate-300">
-          A restaurant ordering site, a revenue dashboard and the Stack Planner: three
-          real products, built here, shown running. Narrated; press sound on.
+          A restaurant ordering site, a revenue dashboard and our Stack Planner, all
+          built here and shown running. Turn the sound on to hear the narration.
         </p>
         {onTabChange && (
           <button
