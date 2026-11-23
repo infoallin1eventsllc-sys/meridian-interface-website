@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
               <span className="material-symbols-outlined text-sm" aria-hidden="true">mail</span>
               otis@meridianinterface.com
             </a>
-            {/* The Meridian Interface Facebook Page. Inline icon: the Material Symbols
+            {/* The Meridian Interface Facebook Page and Instagram. Inline icons: the Material Symbols
                 subset has no brand logos, and an inline SVG needs no new CSP source. */}
             <a
               href="https://www.facebook.com/profile.php?id=61596523703192"
@@ -53,6 +53,20 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenBookModal, on
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
               </svg>
               Facebook
+            </a>
+            <a
+              href="https://www.instagram.com/meridianinterface/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Meridian Interface on Instagram (opens in a new tab)"
+              className="inline-flex items-center gap-1.5 py-1 hover:text-white transition-colors"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4z" />
+                <path d="M17.5 6.5h.01" />
+              </svg>
+              Instagram
             </a>
           </div>
         </div>
