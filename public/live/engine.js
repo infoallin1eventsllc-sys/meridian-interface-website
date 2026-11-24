@@ -586,10 +586,12 @@ function init(phone){
     if(T.video){const mk=`linear-gradient(to bottom,transparent 0,#000 ${T.feather||0}%)`;vid.style.webkitMaskImage=mk;vid.style.maskImage=mk;if(vid.getAttribute('src')!==T.video)vid.src=T.video;try{vid.currentTime=0}catch(e){}if(!reduce){const pr=vid.play();if(pr)pr.catch(()=>{})}}else vid.pause();
     if(T.start)T.start();ripples=[];flares=[];img.style.transform='none';glow.style.background='none';if(reduce)requestAnimationFrame(frame)}
   /** background: {type:'scene',id} | {type:'image'|'video',url,fit:'fill'|'band',bg,sound} */
-  function setBackground(b){b=b||{};
-    if((b.type==='image'||b.type==='video')&&b.url){const fill=b.fit!=='band',isV=b.type==='video';
-      Object.assign(THEME.custom,{fill,scrim:fill,feather:fill?0:14,bg:b.bg||'#000000',sound:b.sound,video:isV?b.url:undefined,image:isV?undefined:b.url});set('custom')}
-    else set(b.id)}
+  // Second check behind the card view's own: an address may hold no quotes, brackets, backslashes or spaces (it is placed inside a CSS url()), and a colour must be a plain hex colour.
+  const safeUrl=u=>typeof u==='string'&&u.length<=400&&/^(blob:|https:\/\/|\/(?!\/))[^"'()\\\s<>]+$/.test(u)?u:'',safeCol=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c:'#000000';
+  function setBackground(b){b=b||{};const url=safeUrl(b.url);
+    if((b.type==='image'||b.type==='video')&&url){const fill=b.fit!=='band',isV=b.type==='video';
+      Object.assign(THEME.custom,{fill,scrim:fill,feather:fill?0:14,bg:safeCol(b.bg),sound:b.sound!==false,video:isV?url:undefined,image:isV?undefined:url});set('custom')}
+    else set(THEMES.some(t=>t.id===b.id)?b.id:'')}
   return {glOK,scenes:THEMES.map(t=>({id:t.id,name:t.name,col:t.col,hint:t.hint})),setBackground,get mode(){return mode}};
 }
 window.LiveCard={init};

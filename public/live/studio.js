@@ -11,7 +11,7 @@ const state=m=>{$('state').textContent=m};
 // ---------- preview and saving
 function viewData(){const d=JSON.parse(JSON.stringify(draft.data));if(draft.bgBlob)d.background.url=blobUrl('bg',draft.bgBlob);if(draft.logoBlob)d.logo.url=blobUrl('logo',draft.logoBlob);return d}
 let lastBg='';function paint(){const d=viewData(),bgKey=JSON.stringify(d.background);V.render(phone,d,{engine:bgKey===lastBg?null:engine});lastBg=bgKey}
-let saveT;function changed(){paint();clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await A.local.set('draft',draft);state(draft.published?'Saved here. Publish again to update your link.':'Saved on this device')},350)}
+let saveT;function changed(){if(draft.published){draft.dirty=true;dirtyView()}paint();clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await A.local.set('draft',draft);state(draft.published?'Saved here. On the Share tab, tap Update my live card.':'Saved on this device')},350)}
 // ---------- form
 function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(draft.data,el.dataset.k);if(el.type==='checkbox')el.checked=!!v;else el.value=v||''});
   $('logo-clear').hidden=!(draft.logoBlob||draft.data.logo.url);const own=draft.data.background.type!=='scene';$('own-opts').hidden=!own;
@@ -32,7 +32,8 @@ for(const [id,v] of [['fit-fill','fill'],['fit-band','band']])$(id).addEventList
 $('f-sound').addEventListener('change',e=>{draft.data.background.sound=e.target.checked;changed()});
 // ---------- share / publish
 const cardLink=()=>(A.config.site||location.origin)+'/c/'+draft.slug;let pendingEmail='';
-function pubView(){const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
+function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d}
+function pubView(){dirtyView();const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
   show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);
   if(user)$('acct-who').textContent='Signed in as '+user.email;$('site-prefix').textContent=(A.config.site||location.origin).replace(/^https?:\/\//,'')+'/c/';
   if(on&&user&&draft.published){$('pub-link').textContent=cardLink();window.QRCode.toCanvas($('pub-qr'),cardLink(),{width:200,margin:1,errorCorrectionLevel:'M'},()=>{});$('pub-share').hidden=!navigator.share}}
@@ -43,17 +44,20 @@ $('pub-code').addEventListener('submit',async e=>{e.preventDefault();const b=e.t
   try{await A.auth.verify(pendingEmail,$('f-code').value);pendingEmail='';$('f-code').value='';await adopt();pubView()}catch(err){toast(err.status===401||err.status===403||err.status===400?'That code did not work. Check it or ask for a new one.':err.message)}busy(b,false)});
 async function adopt(){if(draft.cardId)return;try{const mine=await A.cards.mine();if(mine&&mine[0]){const m=mine[0];draft.cardId=m.id;draft.slug=m.slug;draft.published=m.published;if(!draft.data.name){draft.data=m.data;draft.bgBlob=draft.logoBlob=null}fill();lastBg='';changed()}}catch(e){}}
 $('f-slug').addEventListener('input',e=>{const v=e.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-');if(v!==e.target.value)e.target.value=v;$('slug-note').textContent='Lowercase letters, numbers and dashes.'});
-async function publish(e){e.preventDefault();const b=$('pub-btn'),slug=$('f-slug').value.trim();
+async function publish(e){e.preventDefault();const again=!!(draft.published&&draft.cardId),b=again?$('pub-update'):$('pub-btn'),label=again?'Update my live card':'Publish my card',slug=again?draft.slug:$('f-slug').value.trim();
   if(!SLUG.test(slug)){$('slug-note').textContent='Use 3 to 40 lowercase letters, numbers or dashes, starting and ending with a letter or number.';return}
   if(!draft.data.name.trim()){toast('Add your name on the Details tab first.');return}
   busy(b,true,'Publishing…');
-  try{if(slug!==draft.slug||!draft.cardId){if(!(await A.cards.slugFree(slug))){$('slug-note').textContent='That link is taken. Try another.';busy(b,false,'Publish my card');return}}
-    const stamp=Date.now().toString(36);
-    if(draft.bgBlob){draft.data.background.url=await A.cards.upload(draft.bgBlob,'bg-'+stamp+(draft.data.background.type==='video'?'.mp4':'.jpg'));draft.bgBlob=null;blobUrl('bg',null)}
-    if(draft.logoBlob){draft.data.logo.url=await A.cards.upload(draft.logoBlob,'logo-'+stamp+'.jpg');draft.logoBlob=null;blobUrl('logo',null)}
-    const row=await A.cards.save(draft.cardId,slug,V.normalize(draft.data),true);draft.cardId=row.id;draft.slug=row.slug;draft.published=true;await A.local.set('draft',draft);lastBg='';paint();state('Published');pubView()}
-  catch(err){toast(err.code==='23505'?'That link is taken. Try another.':err.message)}busy(b,false,'Publish my card')}
-$('pub-go').addEventListener('submit',publish);
+  try{if(slug!==draft.slug||!draft.cardId){if(!(await A.cards.slugFree(slug))){$('slug-note').textContent='That link is taken. Try another.';busy(b,false,label);return}}
+    if(draft.bgBlob||draft.logoBlob){let live=[];try{const m=(await A.cards.mine())[0];if(m)live=[m.data.background&&m.data.background.url,m.data.logo&&m.data.logo.url]}catch(e){}await A.cards.tidy(live)} // clear leftovers, keep what the live card uses
+    if(draft.bgBlob){draft.data.background.url=await A.cards.upload(draft.bgBlob,'bg');draft.bgBlob=null;blobUrl('bg',null)}
+    if(draft.logoBlob){draft.data.logo.url=await A.cards.upload(draft.logoBlob,'logo');draft.logoBlob=null;blobUrl('logo',null)}
+    await A.local.set('draft',draft);
+    const row=await A.cards.save(draft.cardId,slug,V.normalize(draft.data),true);draft.cardId=row.id;draft.slug=row.slug;draft.published=true;draft.dirty=false;
+    if(row.data&&typeof row.data==='object')draft.data=row.data; // keep exactly what the service accepted
+    await A.local.set('draft',draft);A.cards.tidy([draft.data.background.url,draft.data.logo.url]);fill();lastBg='';paint();state('Published');pubView()}
+  catch(err){toast(err.code==='23505'?'That link is taken. Try another.':err.message)}busy(b,false,label)}
+$('pub-go').addEventListener('submit',publish);$('pub-update').addEventListener('click',publish);
 $('pub-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(cardLink());toast('Link copied')}catch(e){toast(cardLink())}});
 $('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:'My digital business card',url:cardLink()}).catch(()=>{})});
 $('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await A.local.set('draft',draft);state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});

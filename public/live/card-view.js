@@ -15,16 +15,20 @@ function link(u){u=clean(u,500);if(!u)return'';if(!/^[a-z][a-z0-9+.-]*:/i.test(u
 const phoneNum=p=>{p=clean(p,40);const d=p.replace(/[^\d+]/g,'');return d.replace(/\D/g,'').length>=7?d:''};
 const emailOk=e=>{e=clean(e,200);return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)?e:''};
 const color=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c:'#2563eb';
-function vcard(c){const esc=s=>String(s).replace(/([\;,])/g,'\\$1').replace(/\n/g,'\\n'),parts=c.name.split(' '),last=parts.length>1?parts.pop():'',first=parts.join(' ');
+/** A picture or video may only come from three places: this device (blob:), this site's own sample and brand folders, or a client's own folder in the Live Cards file store. Anything else is dropped. */
+const CFG=window.LIVE_CARDS_CONFIG||{},STORE=((/^https:\/\/[a-z0-9.-]+$/.test(CFG.url||'')?CFG.url:'https://glzodwhyavexpuusbqjy.supabase.co')+'/storage/v1/object/public/'+(/^[a-z0-9-]{3,40}$/.test(CFG.bucket||'')?CFG.bucket:'live-cards')+'/').replace(/[.]/g,'\\.');
+const MEDIA=new RegExp('^'+STORE+'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/(bg|logo)-[a-z0-9]{1,16}\\.(jpg|mp4|mov|webm)$');
+function media(u){if(typeof u!=='string'||u.length>400)return'';if(/^blob:https?:\/\/[\w.:-]+\/[0-9a-f-]{36}$/i.test(u))return u;if(/^\/(brand|live\/samples)\/[\w-]+(\.[\w-]+)*$/.test(u))return u;return MEDIA.test(u)?u:''}
+function vcard(c){const esc=s=>String(s).replace(/[\r\n]+/g,' ').replace(/([\\;,])/g,'\\$1'),parts=c.name.split(' '),last=parts.length>1?parts.pop():'',first=parts.join(' ');
   const L=['BEGIN:VCARD','VERSION:3.0',`N:${esc(last)};${esc(first)};;;`,`FN:${esc(c.name)}`];if(c.company)L.push(`ORG:${esc(c.company)}`);if(c.role)L.push(`TITLE:${esc(c.role)}`);
   if(c.phone)L.push(`TEL;TYPE=CELL,VOICE:${c.phone}`);if(c.email)L.push(`EMAIL;TYPE=INTERNET,WORK:${c.email}`);if(c.website)L.push(`URL:${c.website}`);if(c.cardUrl)L.push(`NOTE:${esc('My card: '+c.cardUrl)}`);L.push('END:VCARD');return L.join('\r\n')}
 /** Normalises anything saved or typed into the shape the card draws from. */
 function normalize(d){d=d||{};const a=d.actions||{},bg=d.background||{},lg=d.logo||{};
   const out={name:clean(d.name,60)||'Your Name',company:clean(d.company,60),role:clean(d.role,60),tagline:clean(d.tagline,90),accent:color(d.accent),
-    logo:{url:(typeof lg.url==='string'&&/^(blob:|\/(brand|live)\/)/.test(lg.url))?lg.url:link(lg.url),mark:!!lg.mark,line1:clean(lg.line1,24),line2:clean(lg.line2,24)},
+    logo:{url:media(lg.url),mark:!!lg.mark,line1:clean(lg.line1,24),line2:clean(lg.line2,24)},
     actions:{phone:phoneNum(a.phone),text:!!a.text,email:emailOk(a.email),booking:link(a.booking),bookingLabel:clean(a.bookingLabel,34)||'Book an appointment',website:link(a.website),
       facebook:link(a.facebook),instagram:link(a.instagram),linkedin:link(a.linkedin),tiktok:link(a.tiktok),youtube:link(a.youtube)},
-    background:{type:['scene','image','video'].includes(bg.type)?bg.type:'scene',id:clean(bg.id,24)||'ocean',url:(typeof bg.url==='string'&&/^blob:/.test(bg.url))?bg.url:link(bg.url),fit:bg.fit==='band'?'band':'fill',bg:color(bg.bg||'#000000'),sound:bg.sound!==false},
+    background:{type:['scene','image','video'].includes(bg.type)&&(bg.type==='scene'||media(bg.url))?bg.type:'scene',id:/^[a-z]{2,12}$/.test(bg.id||'')?bg.id:'ocean',url:media(bg.url),fit:bg.fit==='band'?'band':'fill',bg:/^#[0-9a-f]{6}$/i.test(bg.bg||'')?bg.bg:'#000000',sound:bg.sound!==false},
     showMade:d.showMade!==false};
   return out}
 function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
@@ -50,5 +54,5 @@ function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=
   card.append(head,art);
   if(opts.engine){const b=c.background;opts.engine.setBackground(b.type==='scene'?{type:'scene',id:b.id}:b)}
   return c}
-window.LiveCardView={render,normalize,link,vcard};
+window.LiveCardView={render,normalize,link,media,vcard};
 })();

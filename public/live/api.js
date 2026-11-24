@@ -1,13 +1,14 @@
 /* Meridian Live Cards: the one place that saves and loads. Two homes for a card:
    the device (IndexedDB, always available, private to this phone) and the service (accounts, public links), used only when switched on. */
 (function(){'use strict';
-const C=window.LIVE_CARDS_CONFIG||{},ON=!!(C.enabled&&C.url&&C.key),SKEY='lc_session';
+const C=window.LIVE_CARDS_CONFIG||{},ON=!!(C.enabled&&/^https:\/\/[a-z0-9.-]+$/.test(C.url||'')&&C.key&&/^[a-z0-9-]{3,40}$/.test(C.bucket||'')),SKEY='lc_session';
 // ---------- device storage
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('meridian-live-cards',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function kv(mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction('kv',mode),rq=fn(tx.objectStore('kv'));tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error)})}
 const local={get:k=>kv('readonly',s=>s.get(k)).catch(()=>undefined),set:(k,v)=>kv('readwrite',s=>s.put(v,k)).catch(()=>undefined),del:k=>kv('readwrite',s=>s.delete(k)).catch(()=>undefined)};
 // ---------- account (email code)
 let session=null;try{session=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){}
+if(session&&!(typeof session.access_token==='string'&&typeof session.refresh_token==='string'&&session.user&&/^[0-9a-f-]{36}$/.test(session.user.id||'')))session=null;
 const saveSession=s=>{session=s;try{s?localStorage.setItem(SKEY,JSON.stringify(s)):localStorage.removeItem(SKEY)}catch(e){}};
 class ApiError extends Error{constructor(msg,status,code){super(msg);this.status=status;this.code=code}}
 async function call(path,{method='GET',body,auth,headers={},raw}={}){
@@ -21,28 +22,46 @@ async function token(){if(!session)return null;if(session.expires_at-60>Date.now
   try{const j=await call('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:session.refresh_token}});keep(j);return session.access_token}catch(e){if(e.status>=400&&e.status<500)saveSession(null);return null}}
 function keep(j){saveSession({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:Math.floor(Date.now()/1000)+(j.expires_in||3600),user:{id:j.user.id,email:j.user.email}})}
 const auth={get user(){return session&&session.user},
-  sendCode:email=>call('/auth/v1/otp',{method:'POST',body:{email,create_user:true}}),
-  async verify(email,code){keep(await call('/auth/v1/verify',{method:'POST',body:{type:'email',email,token:String(code).trim()}}));return session.user},
+  sendCode(email,humanCheck){email=String(email||'').trim().toLowerCase();if(!/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(email))return Promise.reject(new ApiError('Enter a valid email address.',0,'email'));
+    const body={email,create_user:true};if(humanCheck)body.gotrue_meta_security={captcha_token:humanCheck};return call('/auth/v1/otp',{method:'POST',body})},
+  async verify(email,code){code=String(code).replace(/\D/g,'');if(code.length<6||code.length>10)throw new ApiError('That code did not work.',400,'code');
+    keep(await call('/auth/v1/verify',{method:'POST',body:{type:'email',email:String(email).trim().toLowerCase(),token:code}}));return session.user},
   async signOut(){try{await call('/auth/v1/logout',{method:'POST',auth:true})}catch(e){}saveSession(null)},
   async deleteAccount(){const u=session&&session.user;if(!u)return;
     try{const files=await call('/storage/v1/object/list/'+C.bucket,{method:'POST',auth:true,body:{prefix:u.id+'/',limit:200}});if(files&&files.length)await call('/storage/v1/object/'+C.bucket,{method:'DELETE',auth:true,body:{prefixes:files.map(f=>u.id+'/'+f.name)}})}catch(e){}
     await call('/rest/v1/rpc/lc_delete_account',{method:'POST',auth:true,body:{}});saveSession(null)}};
 // ---------- cards on the service
 const cards={
-  async bySlug(slug){const j=await call('/rest/v1/lc_cards?select=slug,data&slug=eq.'+encodeURIComponent(slug)+'&limit=1');return j&&j[0]||null},
+  /** One published card by its exact link name. The service has no way to list cards. */
+  async bySlug(slug){const d=await call('/rest/v1/rpc/lc_get_card',{method:'POST',body:{p_slug:String(slug)}});return d&&typeof d==='object'?{slug,data:d}:null},
   async mine(){return call('/rest/v1/lc_cards?select=id,slug,data,published,updated_at&order=updated_at.desc',{auth:true})},
   async slugFree(slug){const j=await call('/rest/v1/rpc/lc_slug_available',{method:'POST',body:{p_slug:slug}});return j===true},
   async save(id,slug,data,published){const row={slug,data,published};
     const j=id?await call('/rest/v1/lc_cards?id=eq.'+id,{method:'PATCH',auth:true,body:row,headers:{Prefer:'return=representation'}}):await call('/rest/v1/lc_cards',{method:'POST',auth:true,body:row,headers:{Prefer:'return=representation'}});return j&&j[0]},
-  async upload(blob,name){const u=session.user.id,path=u+'/'+name;await call('/storage/v1/object/'+C.bucket+'/'+path,{method:'POST',auth:true,raw:true,body:blob,headers:{'Content-Type':blob.type||'application/octet-stream','x-upsert':'true','cache-control':'max-age=31536000'}});
+  /** kind is 'bg' or 'logo'. The service only accepts <account>/(bg|logo)-<letters and numbers>.(jpg|mp4|mov|webm), up to 8 files an account. */
+  async upload(blob,kind){const ext=EXT[blob.type];if(!ext||(kind==='logo'&&ext!=='jpg'))throw new ApiError('That file type cannot be used. Use a JPG or PNG picture, or an MP4, MOV or WebM video.',0,'type');
+    const u=session.user.id,name=(kind==='logo'?'logo':'bg')+'-'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36)+'.'+ext,path=u+'/'+name;
+    await call('/storage/v1/object/'+C.bucket+'/'+path,{method:'POST',auth:true,raw:true,body:blob,headers:{'Content-Type':blob.type,'cache-control':'max-age=31536000'}});
     return C.url+'/storage/v1/object/public/'+C.bucket+'/'+path},
-  report:(slug,reason)=>call('/rest/v1/lc_reports',{method:'POST',body:{slug,reason:String(reason).slice(0,500)}})};
+  /** Deletes this account's uploaded files that are not in keep (a list of file addresses). Keeps the account under the file limit. */
+  async tidy(keep){const u=session&&session.user;if(!u)return;const pre=C.url+'/storage/v1/object/public/'+C.bucket+'/'+u.id+'/',want=new Set((keep||[]).filter(k=>typeof k==='string'&&k.startsWith(pre)).map(k=>k.slice(pre.length)));
+    try{const files=await call('/storage/v1/object/list/'+C.bucket,{method:'POST',auth:true,body:{prefix:u.id+'/',limit:100}}),old=(files||[]).map(f=>f.name).filter(n=>n&&!want.has(n));
+      if(old.length)await call('/storage/v1/object/'+C.bucket,{method:'DELETE',auth:true,body:{prefixes:old.map(n=>u.id+'/'+n)}})}catch(e){}},
+  report:(slug,reason)=>call('/rest/v1/rpc/lc_report',{method:'POST',body:{p_slug:String(slug),p_reason:String(reason).slice(0,500)}})};
+const EXT={'image/jpeg':'jpg','video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm'};
 // ---------- media helpers (run on the device before anything is saved)
 function shrinkImage(file){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const m=C.maxImagePx||1800,k=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');
     c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('Could not read that picture.')),'image/jpeg',.86)};
   im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Could not read that picture. Try a JPG or PNG.'))};im.src=u})}
-function checkVideo(file){return new Promise((res,rej)=>{if(file.size>(C.maxVideoMB||25)*1048576)return rej(new Error('That video is larger than '+(C.maxVideoMB||25)+' MB. Trim it in your Photos app and try again.'));
+function checkVideo(file){return new Promise((res,rej)=>{if(!EXT[file.type]||file.type==='image/jpeg')return rej(new Error('That video type cannot be used. Use an MP4, MOV or WebM video.'));if(file.size>(C.maxVideoMB||25)*1048576)return rej(new Error('That video is larger than '+(C.maxVideoMB||25)+' MB. Trim it in your Photos app and try again.'));
   const v=document.createElement('video'),u=URL.createObjectURL(file);v.preload='metadata';v.onloadedmetadata=()=>{const d=v.duration;URL.revokeObjectURL(u);d>(C.maxVideoSeconds||30)+.5?rej(new Error('That video is longer than '+(C.maxVideoSeconds||30)+' seconds. Trim it and try again.')):res(file)};
   v.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('This phone cannot play that video file. Try an MP4.'))};v.src=u})}
-window.LiveCardsAPI={enabled:ON,config:C,local,auth,cards,shrinkImage,checkVideo,ApiError};
+// ---------- plans (off until config.billing is true). Card details are only ever typed on Stripe's own page; this just asks the service for that page's address.
+const billing={enabled:ON&&C.billing===true,
+  async plan(){const j=await call('/rest/v1/lc_accounts?select=plan&limit=1',{auth:true});return j&&j[0]&&j[0].plan==='pro'?'pro':'free'},
+  /** action is 'checkout' or 'portal'. Returns an address only if it is really Stripe's. */
+  async open(action){if(!billing.enabled)throw new ApiError('Plans are not available yet.',0,'off');
+    const j=await call('/functions/v1/lc-billing',{method:'POST',auth:true,body:{action:action==='portal'?'portal':'checkout'}}),u=j&&j.url;
+    if(typeof u!=='string'||!/^https:\/\/(checkout|billing)\.stripe\.com\//.test(u))throw new ApiError('The payment page could not be opened.',0,'billing');return u}};
+window.LiveCardsAPI={enabled:ON,config:C,local,auth,cards,billing,shrinkImage,checkVideo,ApiError};
 })();
