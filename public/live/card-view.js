@@ -1,0 +1,54 @@
+/* Meridian Live Cards: builds a card's content from its saved details and hands the background to the engine.
+   Every value is written as text or passed through a strict link check; nothing from a card is ever treated as HTML. */
+(function(){'use strict';
+const ICON={call:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+ email:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',book:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ text:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',web:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',
+ save:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
+ facebook:'<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',instagram:'<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4z"/><path d="M17.5 6.5h.01"/>',
+ linkedin:'<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+ tiktok:'<path d="M9 12a4 4 0 1 0 4 4V3a5 5 0 0 0 5 5"/>',youtube:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>'};
+const svg=n=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+const clean=(s,max)=>String(s==null?'':s).replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max);
+/** Only http and https links are allowed; a bare domain gets https. Anything else (javascript:, data:) is dropped. */
+function link(u){u=clean(u,500);if(!u)return'';if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;try{const x=new URL(u);return x.protocol==='https:'||x.protocol==='http:'?x.href:''}catch(e){return''}}
+const phoneNum=p=>{p=clean(p,40);const d=p.replace(/[^\d+]/g,'');return d.replace(/\D/g,'').length>=7?d:''};
+const emailOk=e=>{e=clean(e,200);return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)?e:''};
+const color=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c:'#2563eb';
+function vcard(c){const esc=s=>String(s).replace(/([\;,])/g,'\\$1').replace(/\n/g,'\\n'),parts=c.name.split(' '),last=parts.length>1?parts.pop():'',first=parts.join(' ');
+  const L=['BEGIN:VCARD','VERSION:3.0',`N:${esc(last)};${esc(first)};;;`,`FN:${esc(c.name)}`];if(c.company)L.push(`ORG:${esc(c.company)}`);if(c.role)L.push(`TITLE:${esc(c.role)}`);
+  if(c.phone)L.push(`TEL;TYPE=CELL,VOICE:${c.phone}`);if(c.email)L.push(`EMAIL;TYPE=INTERNET,WORK:${c.email}`);if(c.website)L.push(`URL:${c.website}`);if(c.cardUrl)L.push(`NOTE:${esc('My card: '+c.cardUrl)}`);L.push('END:VCARD');return L.join('\r\n')}
+/** Normalises anything saved or typed into the shape the card draws from. */
+function normalize(d){d=d||{};const a=d.actions||{},bg=d.background||{},lg=d.logo||{};
+  const out={name:clean(d.name,60)||'Your Name',company:clean(d.company,60),role:clean(d.role,60),tagline:clean(d.tagline,90),accent:color(d.accent),
+    logo:{url:(typeof lg.url==='string'&&/^(blob:|\/(brand|live)\/)/.test(lg.url))?lg.url:link(lg.url),mark:!!lg.mark,line1:clean(lg.line1,24),line2:clean(lg.line2,24)},
+    actions:{phone:phoneNum(a.phone),text:!!a.text,email:emailOk(a.email),booking:link(a.booking),bookingLabel:clean(a.bookingLabel,34)||'Book an appointment',website:link(a.website),
+      facebook:link(a.facebook),instagram:link(a.instagram),linkedin:link(a.linkedin),tiktok:link(a.tiktok),youtube:link(a.youtube)},
+    background:{type:['scene','image','video'].includes(bg.type)?bg.type:'scene',id:clean(bg.id,24)||'ocean',url:(typeof bg.url==='string'&&/^blob:/.test(bg.url))?bg.url:link(bg.url),fit:bg.fit==='band'?'band':'fill',bg:color(bg.bg||'#000000'),sound:bg.sound!==false},
+    showMade:d.showMade!==false};
+  return out}
+function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
+  phone.style.setProperty('--lc-acc',c.accent);card.textContent='';
+  const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+  const head=E('header','lc-content'),logo=E('div','lc-logo');
+  if(c.logo.url){const im=E('img',c.logo.mark?'mark':'');im.src=c.logo.url;im.alt=c.company?c.company+' logo':'';logo.appendChild(im)}
+  if(c.logo.line1){const wm=E('div');wm.append(E('b','',c.logo.line1));if(c.logo.line2)wm.append(E('span','',c.logo.line2));logo.appendChild(wm)}
+  head.append(logo,E('h1','lc-name',c.name));if(c.role)head.append(E('div','lc-role',c.role));if(c.tagline)head.append(E('div','lc-tag',c.tagline));
+  const pills=E('nav','lc-pills');pills.setAttribute('aria-label','Contact '+c.name);
+  const pill=(href,icon,label,cls)=>{const a=E('a','lc-pill'+(cls?' '+cls:''));a.href=href;a.innerHTML=svg(icon);a.append(label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}pills.appendChild(a)};
+  if(c.actions.phone)pill('tel:'+c.actions.phone,'call','Call');if(c.actions.email)pill('mailto:'+c.actions.email,'email','Email');if(c.actions.booking)pill(c.actions.booking,'book',c.actions.bookingLabel,'book');
+  if(pills.children.length)head.appendChild(pills);
+  const art=E('div','lc-art'),dots=E('div','lc-dots');
+  const dot=(href,icon,label)=>{const a=E('a','lc-dot');a.href=href;a.innerHTML=svg(icon);a.setAttribute('aria-label',label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}dots.appendChild(a)};
+  if(c.actions.phone&&c.actions.text)dot('sms:'+c.actions.phone,'text','Text '+c.name);if(c.actions.website)dot(c.actions.website,'web','Website');
+  if(c.actions.phone||c.actions.email){const b=E('button','lc-dot');b.type='button';b.innerHTML=svg('save');b.setAttribute('aria-label','Save to contacts');
+    b.addEventListener('click',()=>{const blob=new Blob([vcard({name:c.name,company:c.company,role:c.role,phone:c.actions.phone,email:c.actions.email,website:c.actions.website,cardUrl:opts.cardUrl})],{type:'text/vcard'}),u=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=u;a.download=c.name.replace(/[^\w -]/g,'')+'.vcf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)});dots.appendChild(b)}
+  for(const k of ['facebook','instagram','linkedin','tiktok','youtube'])if(c.actions[k])dot(c.actions[k],k,(c.company||c.name)+' on '+k[0].toUpperCase()+k.slice(1));
+  art.appendChild(dots);
+  if(c.showMade&&opts.madeLink){const m=E('div','lc-made'),a=E('a','','Made with Meridian Live Cards');a.href=opts.madeLink;m.appendChild(a);art.appendChild(m)}
+  card.append(head,art);
+  if(opts.engine){const b=c.background;opts.engine.setBackground(b.type==='scene'?{type:'scene',id:b.id}:b)}
+  return c}
+window.LiveCardView={render,normalize,link,vcard};
+})();

@@ -1,0 +1,2 @@
+{"name":"Meridian Live Cards","short_name":"Live Cards","description":"Make a digital business card with a live background and share it with one link.","start_url":"/studio/","scope":"/studio/","display":"standalone","orientation":"portrait","background_color":"#070d24","theme_color":"#070d24",
+"icons":[{"src":"/studio/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"/studio/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}

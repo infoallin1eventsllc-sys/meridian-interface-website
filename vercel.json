@@ -2,6 +2,24 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
+      "source": "/studio/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/studio/manifest.webmanifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    },
+    {
       "source": "/card/otis-williams.vcf",
       "headers": [
         {
@@ -115,6 +133,10 @@
     {
       "source": "/unsubscribe",
       "destination": "/index.html"
+    },
+    {
+      "source": "/c/:slug",
+      "destination": "/c/index.html"
     }
   ],
   "redirects": [
@@ -246,6 +268,21 @@
     {
       "source": "/watch/mendocino-grasslands",
       "destination": "/watch/mendocino-grasslands/",
+      "permanent": true
+    },
+    {
+      "source": "/studio",
+      "destination": "/studio/",
+      "permanent": true
+    },
+    {
+      "source": "/live-cards",
+      "destination": "/live-cards/",
+      "permanent": true
+    },
+    {
+      "source": "/c",
+      "destination": "/c/",
       "permanent": true
     }
   ]

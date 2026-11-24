@@ -17,3 +17,9 @@ coverage/
 # Test output
 test-results/
 playwright-report/
+
+# Live Cards store-app build output
+mobile/www/
+mobile/node_modules/
+mobile/ios/
+mobile/android/

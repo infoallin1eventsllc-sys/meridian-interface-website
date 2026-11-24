@@ -1,0 +1,43 @@
+/* Meridian Live Cards: the card itself. Shared by the public card page and the Studio preview. */
+@font-face{font-family:"Hanken Grotesk";src:url(/fonts/hanken-grotesk-var-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Inter";src:url(/fonts/inter-var-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+.lc-phone{--lc-acc:#2563eb;--lc-ink:#141a52;--lc-display:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;--lc-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  position:relative;overflow:hidden;background:#003cb5;color:#fff;font-family:var(--lc-body);-webkit-font-smoothing:antialiased;container-type:inline-size}
+.lc-phone *{box-sizing:border-box}
+.lc-phone [hidden]{display:none!important}
+.lc-layer{position:absolute;inset:0;width:100%;height:100%}
+.lc-vid{position:absolute;left:0;bottom:0;width:100%;height:auto;display:block}
+.lc-vid.fill{top:0;height:100%;object-fit:cover}
+.lc-photo{overflow:hidden}
+.lc-img{position:absolute;inset:-4%;will-change:transform}
+.lc-glow{position:absolute;inset:0;mix-blend-mode:screen;pointer-events:none}
+.lc-scrim{pointer-events:none;background:linear-gradient(to bottom,rgba(4,8,26,.72) 0,rgba(4,8,26,.5) 38%,rgba(4,8,26,.12) 70%,rgba(4,8,26,.3) 100%)}
+.lc-snd{position:absolute;z-index:3;top:max(12px,env(safe-area-inset-top,0px));right:12px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:grid;place-items:center;cursor:pointer;padding:0}
+.lc-snd svg{width:20px;height:20px;stroke:#fff}
+.lc-snd[aria-pressed="true"]{background:#fff}.lc-snd[aria-pressed="true"] svg{stroke:var(--lc-ink)}
+.lc-phone svg{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+.lc-card{position:relative;height:100%;display:flex;flex-direction:column;pointer-events:none}
+.lc-card a,.lc-card button{pointer-events:auto}
+.lc-content{padding:max(30px,env(safe-area-inset-top,0px)) 4.6cqw 0;display:grid;justify-items:center;text-align:center}
+.lc-logo{display:flex;flex-direction:column;align-items:center;gap:10px;min-height:20px}
+.lc-logo img{max-width:46cqw;max-height:90px;width:auto;height:auto;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+.lc-logo img.mark{width:18cqw;max-width:78px}
+.lc-logo b{display:block;font:800 clamp(15px,4.9cqw,21px)/1 var(--lc-display);letter-spacing:.2em;padding-left:.2em}
+.lc-logo span{display:block;margin-top:5px;font:700 clamp(9px,2.7cqw,11.5px)/1 var(--lc-body);letter-spacing:.28em;padding-left:.28em;color:#cbd5e1}
+.lc-logo b,.lc-logo span,.lc-name,.lc-role,.lc-tag{text-shadow:0 2px 14px rgba(0,0,0,.55)}
+.lc-name{margin:clamp(14px,6cqw,26px) 0 0;font:800 clamp(24px,8.6cqw,36px)/1.05 var(--lc-display);overflow-wrap:anywhere}
+.lc-role{margin-top:8px;font:700 clamp(14px,4.1cqw,17px) var(--lc-body)}
+.lc-tag{margin-top:6px;font:400 clamp(12.5px,3.5cqw,14.5px)/1.45 var(--lc-body);color:#dbe5f5;max-width:80cqw}
+.lc-pills{width:100%;display:grid;gap:clamp(10px,3.2cqw,14px);margin-top:clamp(16px,5.4cqw,24px)}
+.lc-pill{position:relative;display:flex;align-items:center;justify-content:center;min-height:clamp(46px,12.6cqw,52px);padding:0 44px;border-radius:999px;background:#fff;color:var(--lc-ink);text-decoration:none;
+  font:600 clamp(15px,4.2cqw,17px) var(--lc-body);box-shadow:0 10px 24px -10px rgba(0,0,0,.55);border:0;cursor:pointer;width:100%}
+.lc-pill svg{position:absolute;left:20px;width:20px;height:20px;stroke:var(--lc-ink)}
+.lc-pill.book{background:var(--lc-acc);color:#fff}.lc-pill.book svg{stroke:#fff}
+.lc-art{flex:1;position:relative;min-height:120px}
+.lc-dots{position:absolute;left:0;right:0;top:16%;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(10px,4.2cqw,20px);padding:0 3cqw}
+.lc-dot{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.35);border:0;cursor:pointer;padding:0}
+.lc-dot svg{width:21px;height:21px;stroke:var(--lc-ink)}
+.lc-phone a:focus-visible,.lc-phone button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.lc-made{position:absolute;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom,0px));text-align:center;font:500 11px/1 var(--lc-body);pointer-events:none}
+.lc-made a{pointer-events:auto;color:rgba(255,255,255,.82);text-decoration:none;background:rgba(0,0,0,.32);padding:6px 10px;border-radius:999px}

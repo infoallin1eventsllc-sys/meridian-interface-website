@@ -1,0 +1,7 @@
+{
+  "appId": "com.meridianinterface.livecards",
+  "appName": "Live Cards",
+  "webDir": "www",
+  "ios": { "contentInset": "always" },
+  "server": { "allowNavigation": ["meridianinterface.com", "glzodwhyavexpuusbqjy.supabase.co"] }
+}
