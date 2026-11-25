@@ -14,7 +14,7 @@ Shared pieces: `engine.js` (all backgrounds, one card per page), `card-view.js` 
 All scripts are separate files because the site's security policy forbids inline scripts.
 
 ## What a card can hold (added 25 Nov 2026: headshot, more buttons, link preview)
-- **Top:** logo or wordmark, a headshot (cut to a 640 px square on the device, shown in a circle; the logo steps back to one small row), name, title, one line, hours.
+- **Top:** logo (or, with no logo, the business name set as a wordmark), a headshot (cut to a 640 px square on the device, shown in a circle; the logo steps back to one small row), name, title, one line, hours.
 - **Main buttons:** Call, Email, Book. **Round buttons:** Text, Website, Directions (from an address, opens the map), Save to contacts, five social sites.
 - **Labelled buttons:** Leave a review (any review link), and Pay with Cash App, Venmo, Zelle. Zelle has no payment link, so its button shows where to send and copies it.
 - **Save to contacts** now carries the address and, on the public card, the headshot.
@@ -22,7 +22,7 @@ All scripts are separate files because the site's security policy forbids inline
 
 ## Link preview
 When a link is texted or posted, the phone or site reads the page's title and picture without running scripts, so every card link used to look the same.
-- The Studio draws a 1200 x 630 picture from the card (background, headshot, name, title, line) on the device, shows it on the Share tab, and at publish saves it beside the card as `og-<id>.jpg`.
+- The Studio draws a 1200 x 630 picture from the card (background, headshot, name, title, line; the business name is in the link's title beneath it) on the device, shows it on the Share tab, and at publish saves it beside the card as `og-<id>.jpg`.
 - `api/lc-card.js` (a Vercel Function in plain JavaScript, so the site's TypeScript settings cannot break its build; `vercel.json` sends `/c/:slug` to it) returns the same card page with that card's title, line and picture written into the top. It reads `public/live/config.js` for the switch, asks the service the one public question `lc_get_card`, holds no secret and writes nothing. Service off, slow, broken, card missing or taken down: it returns exactly `public/c/index.html`.
 - The function repeats the page and the security headers; `tools/live-cards-preview-test.cjs` fails if either drifts from `public/c/index.html` or `vercel.json`.
 - `public/live/og-default.jpg` is the picture for a link with no card behind it.
@@ -51,7 +51,7 @@ The Studio portal has a Live Cards tab (`src/components/OwnerLiveCards.tsx`): re
 ## Tests (all in `tools/`, all against stand-ins; nothing real is contacted)
 Build, serve on port 4799 (`npx vite preview --port 4799`), then:
 - `live-cards-security-test.cjs`: the whole client journey under the real headers, 36 checks.
-- `live-cards-preview-test.cjs`: the link page function against hostile and broken answers (no browser), then headshot, new buttons, link preview, contact file and file limit in a browser, 62 checks.
+- `live-cards-preview-test.cjs`: the link page function against hostile and broken answers (no browser), then headshot, new buttons, link preview, contact file, file limit and the "say it once" rules in a browser, 70 checks.
 - `lc-test-kit.cjs` is shared by those two: the service stand-in (it mirrors the database rules; change both together) and the real page function.
 - `live-cards-plans-test.cjs`: plans, the human check, the own-address switch, 19 checks.
 - `live-cards-owner-test.cjs`: the owner desk on desktop and phone, 24 checks.

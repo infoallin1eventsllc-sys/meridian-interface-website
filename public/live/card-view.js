@@ -19,6 +19,8 @@ const emailOk=e=>{e=clean(e,200);return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)?e:'
 const color=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c:'#2563eb';
 /** A payment name: letters, numbers, dash and underscore only. A pasted profile link, a leading $ or @ are trimmed off first. */
 const handle=(v,re)=>{v=clean(v,120).replace(/^https?:\/\/(?:www\.|account\.)?(?:venmo\.com\/(?:u\/)?|cash\.app\/)/i,'').replace(/^[@$]/,'').replace(/[\/?#].*$/,'');return re.test(v)?v:''};
+/** With no logo, the business name stands in for it, set on one or two balanced lines. */
+function wordmark(name){const w=name.split(/\s+/).filter(Boolean);if(w.length<2)return[name,''];let best=1,gap=1e9;for(let i=1;i<w.length;i++){const g=Math.abs(w.slice(0,i).join(' ').length-w.slice(i).join(' ').length);if(g<gap){gap=g;best=i}}return[w.slice(0,best).join(' '),w.slice(best).join(' ')]}
 const mapLink=a=>'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a);
 /** A picture or video may only come from three places: this device (blob:), this site's own sample and brand folders, or a client's own folder in the Live Cards file store. Anything else is dropped. */
 const CFG=window.LIVE_CARDS_CONFIG||{},STORE=((/^https:\/\/[a-z0-9.-]+$/.test(CFG.url||'')?CFG.url:'https://glzodwhyavexpuusbqjy.supabase.co')+'/storage/v1/object/public/'+(/^[a-z0-9-]{3,40}$/.test(CFG.bucket||'')?CFG.bucket:'live-cards')+'/').replace(/[.]/g,'\\.');
@@ -48,7 +50,7 @@ function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=
   const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
   const head=E('header','lc-content'),logo=E('div','lc-logo');
   if(c.logo.url){const im=E('img',c.logo.mark?'mark':'');im.src=c.logo.url;im.alt=c.company?c.company+' logo':'';logo.appendChild(im)}
-  if(c.logo.line1){const wm=E('div');wm.append(E('b','',c.logo.line1));if(c.logo.line2)wm.append(E('span','',c.logo.line2));logo.appendChild(wm)}
+  {const [l1,l2]=c.logo.line1?[c.logo.line1,c.logo.line2]:c.logo.url?['','']:wordmark(c.company);if(l1){const wm=E('div');wm.append(E('b','',l1));if(l2)wm.append(E('span','',l2));if(Math.max(l1.length,l2.length)>16)logo.classList.add('long');logo.appendChild(wm)}}
   head.append(logo);if(c.photo.url){const f=E('img','lc-face');f.src=c.photo.url;f.alt='Photo of '+c.name;f.width=f.height=112;head.classList.add('has-face');head.append(f)}
   head.append(E('h1','lc-name',c.name));if(c.role)head.append(E('div','lc-role',c.role));if(c.tagline)head.append(E('div','lc-tag',c.tagline));
   if(c.hours){const h=E('div','lc-hours');h.innerHTML=svg('clock');h.append(c.hours);head.append(h)}

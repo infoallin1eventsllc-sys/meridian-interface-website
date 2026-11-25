@@ -543,20 +543,20 @@ function init(phone){
     GL.uniform3f(glU.uPtr,P.x,P.y,P.on);GL.uniform3fv(glU.uTap,taps);GL.drawArrays(GL.TRIANGLES,0,3)}
   // Theme list for the picker
   const THEMES=[
-    ...(glOK?[{col:'Signature',id:'ocean',name:'Ocean sunrise',gl:1,draw:(t,n)=>drawOcean(t,n),start:()=>{oceanStart=performance.now()},tap:n=>{if(P.ty<.795)glFlare=n},hint:'This one is computed pixel by pixel on your device: real-looking water, clouds and light. The sun rises over the sea in about 20 seconds. Move your finger to look around; tap the water for ripples or the sky for a flash of sunlight.'}]:[]),
-    {col:'Nature and outdoors',id:'sunrise',name:'Sunrise',canvas:1,draw:(t,n)=>drawSunrise(t,n),start:()=>{sunStart=performance.now()},hint:'The sun rises over misty mountains and a lake. Move your finger and the scene shifts; tap the sky for a burst of sunlight or the water for a ripple. Tap Sunrise to watch it again.'},
-    {col:'Nature and outdoors',id:'bike',name:'Mountain bike',canvas:1,draw:(t,n)=>drawBike(t,n),hint:'A rider pedals a ridge trail against a huge setting sun, kicking up dust. Tap the background to make them jump.'},
-    {col:'Water',id:'sail',name:'Sailing',canvas:1,draw:(t,n)=>drawSail(t,n),hint:'A sailboat rides the swell at golden hour while the sun sparkles on the water. Move your finger and the waves lift toward it; tap the sea for a ripple.'},
-    {col:'Water',id:'ski',name:'Jet ski',canvas:1,draw:(t,n)=>drawSki(t,n),hint:'A jet ski skims a turquoise bay past a palm island, throwing spray. The waves lift toward your finger; tap to make it jump.'},
-    {col:'Sky and space',id:'rocket',name:'Rocket launch',canvas:1,draw:(t,n)=>drawRocket(t,n),start:rocketStart,tap:rocketTap,hint:'Steam builds on the pad, the engines light, and the rocket climbs right through the card. It repeats on its own. Tap the background to launch early.'},
-    {col:'Sky and space',id:'jets',name:'Jets',canvas:1,draw:(t,n)=>drawJets(t,n),start:()=>{jetT0=performance.now()-600;jetExtra=-1e9},tap:n=>{jetExtra=n},hint:'A formation of jets climbs across the sky leaving white trails. Tap to call a second pass from the other side.'},
-    {col:'Motorsport',id:'drag',name:'Drag race',canvas:1,draw:(t,n)=>drawDrag(t,n),start:dragStart,tap:dragTap,hint:'The lights count down, then two cars launch off the line in a cloud of tire smoke. It repeats on its own. Tap to drop the green light early.'},
-    {col:'Motorsport',id:'ride',name:'Night ride',canvas:1,draw:(t,n)=>drawRide(t,n),hint:'A motorcycle leans through a winding road at dusk. Move your finger left or right and the rider leans with you.'},
-    {col:'Snow and mountain',id:'snow',name:'Snowboarding',canvas:1,draw:(t,n)=>drawSnow(t,n),hint:'A snowboarder carves down a sunny slope with powder spraying and snow falling. Tap to make them jump and spin.'},
-    {col:'Spirit',id:'aurora',name:'Aurora',canvas:1,draw:(t,n)=>drawAurora(t,n),hint:'Northern lights drift over the mountains while a seated figure breathes with a slow glow. The lights brighten near your finger; tap to send out a ring of light.'},
-    {col:'Fun and party',id:'dance',name:'Dance party',canvas:1,draw:(t,n)=>drawDance(t,n),hint:'Stage lights sweep to the beat over a glowing floor and a crowd with their hands up. The lights lean toward your finger; tap for a confetti burst.'},
-    {col:'Fun and party',id:'fire',name:'Fireworks',canvas:1,draw:(t,n)=>drawFire(t,n),hint:'Fireworks rise and burst over a city skyline. Tap anywhere to set one off right under your finger.'},
-    {col:'Classic',id:'ribbon',name:'Blue ribbon',canvas:1,draw:t=>drawRibbon(t),hint:'The waves drift on their own. Move your mouse or finger over the card and they rise toward you; tap the background to send a ripple.'}];
+    ...(glOK?[{col:'Signature',id:'ocean',name:'Ocean sunrise',gl:1,draw:(t,n)=>drawOcean(t,n),start:()=>{oceanStart=performance.now()},tap:n=>{if(P.ty<.795)glFlare=n},hint:'Move your finger to look around. Tap the water for ripples.'}]:[]),
+    {col:'Nature and outdoors',id:'sunrise',name:'Sunrise',canvas:1,draw:(t,n)=>drawSunrise(t,n),start:()=>{sunStart=performance.now()},hint:'Tap the sky for a burst of sunlight, or the water for a ripple.'},
+    {col:'Nature and outdoors',id:'bike',name:'Mountain bike',canvas:1,draw:(t,n)=>drawBike(t,n),hint:'Tap the background to make the rider jump.'},
+    {col:'Water',id:'sail',name:'Sailing',canvas:1,draw:(t,n)=>drawSail(t,n),hint:'The waves lift toward your finger. Tap the sea for a ripple.'},
+    {col:'Water',id:'ski',name:'Jet ski',canvas:1,draw:(t,n)=>drawSki(t,n),hint:'The waves lift toward your finger. Tap to make the jet ski jump.'},
+    {col:'Sky and space',id:'rocket',name:'Rocket launch',canvas:1,draw:(t,n)=>drawRocket(t,n),start:rocketStart,tap:rocketTap,hint:'Tap the background to launch the rocket early.'},
+    {col:'Sky and space',id:'jets',name:'Jets',canvas:1,draw:(t,n)=>drawJets(t,n),start:()=>{jetT0=performance.now()-600;jetExtra=-1e9},tap:n=>{jetExtra=n},hint:'Tap to call a second pass of jets.'},
+    {col:'Motorsport',id:'drag',name:'Drag race',canvas:1,draw:(t,n)=>drawDrag(t,n),start:dragStart,tap:dragTap,hint:'Tap to drop the green light early.'},
+    {col:'Motorsport',id:'ride',name:'Night ride',canvas:1,draw:(t,n)=>drawRide(t,n),hint:'Move your finger left or right and the rider leans with you.'},
+    {col:'Snow and mountain',id:'snow',name:'Snowboarding',canvas:1,draw:(t,n)=>drawSnow(t,n),hint:'Tap to make the snowboarder jump and spin.'},
+    {col:'Spirit',id:'aurora',name:'Aurora',canvas:1,draw:(t,n)=>drawAurora(t,n),hint:'The lights brighten near your finger. Tap to send out a ring of light.'},
+    {col:'Fun and party',id:'dance',name:'Dance party',canvas:1,draw:(t,n)=>drawDance(t,n),hint:'The lights lean toward your finger. Tap for confetti.'},
+    {col:'Fun and party',id:'fire',name:'Fireworks',canvas:1,draw:(t,n)=>drawFire(t,n),hint:'Tap anywhere to set off a firework.'},
+    {col:'Classic',id:'ribbon',name:'Blue ribbon',canvas:1,draw:t=>drawRibbon(t),hint:'Move over the card and the waves rise. Tap to send a ripple.'}];
   const THEME=Object.fromEntries(THEMES.map(x=>[x.id,x]));
   // Living photo: today's owned ribbon picture, with depth that follows the finger and a slow light passing along the lines.
   function drawPhoto(t){

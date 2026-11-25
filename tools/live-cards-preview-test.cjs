@@ -49,6 +49,18 @@ const ctx=await b.newContext({viewport:{width:390,height:844},acceptDownloads:tr
 const S=await standIn(ctx),{files}=S;
 const errs=[];const page=async(url)=>{const p=await ctx.newPage();p.on('pageerror',e=>errs.push(url+' pageerror '+e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))errs.push(url+' console '+m.text().slice(0,260))});await p.goto(B+url);await p.waitForTimeout(1300);return p};
 const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
+// nothing said twice, nothing left to guess
+{const p=await page('/studio/');await p.click('#t-publish');await p.waitForTimeout(400);
+  T(await p.$eval('#todo',e=>!e.hidden)&&(await p.$$eval('#ready li',l=>l.map(x=>x.textContent))).join('|')==='Add your name|Add at least one way to reach you','an empty card is told exactly what is missing before sharing');
+  await p.click('#ready li button');T(await p.$eval('#p-details',e=>!e.hidden),'tapping a missing item opens the tab where it is fixed');
+  await p.fill('#f-name','Jordan Rivers');await p.fill('#f-company','Rivers Realty');await p.waitForTimeout(400);
+  T((await p.$eval('#lc .lc-logo',e=>[...e.querySelectorAll('b,span')].map(x=>x.textContent).join('/')))==='Rivers/Realty'&&!(await p.$('#f-l1')),'with no logo the business name stands in for it, typed once');
+  await p.fill('#f-company','Katy Family Dental Care');await p.waitForTimeout(300);T((await p.$eval('#lc .lc-logo',e=>[...e.querySelectorAll('b,span')].map(x=>x.textContent).join('/')))==='Katy Family/Dental Care','a longer business name is set on two balanced lines');
+  await p.setInputFiles('#f-logo',PHOTO);await p.waitForTimeout(800);T(await p.$eval('#lc .lc-logo',e=>!!e.querySelector('img')&&!e.querySelector('b')),'an uploaded logo replaces the business name on the card');
+  await p.click('#logo-clear');await p.fill('#f-company','Rivers Realty');await p.click('#t-buttons');await p.fill('#f-phone','281-555-0142');await p.click('#t-publish');await p.waitForTimeout(400);
+  T(await p.$eval('#todo',e=>e.hidden),'once nothing is missing the list is gone');
+  T(await p.$eval('#install',e=>e.hidden),'home screen steps are hidden on a computer (they show only the steps for the phone in hand)');
+  T(await p.$$eval('#swatches button',b=>b.length===6)&&await p.$eval('#swatches',e=>!!e.closest('#p-buttons')),'the button color sits with the booking button it colors');await p.close()}
 {const p=await page('/studio/');await p.fill('#f-name','Jordan Rivers');await p.fill('#f-company','Rivers Realty');await p.fill('#f-role','Realtor');await p.fill('#f-tagline','Homes in Katy and West Houston');
   T(await p.$eval('#lc',e=>!e.querySelector('.lc-face')),'no photo: the card has no empty photo circle');
   await p.setInputFiles('#f-photo',PHOTO);await p.waitForTimeout(900);

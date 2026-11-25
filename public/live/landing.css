@@ -53,6 +53,7 @@
   .steps li{grid-template-columns:1fr}.steps li::before{grid-row:auto;margin-bottom:10px}.steps b{padding-top:0}
   .points{grid-template-columns:1fr 1fr;gap:0 56px}
   .points div:nth-child(2){border-top:0;padding-top:0}
+  .points.three{grid-template-columns:repeat(3,1fr);gap:0 40px}.points.three div{border-top:0;padding-top:0}
   .close{padding:72px 24px}
 }
 

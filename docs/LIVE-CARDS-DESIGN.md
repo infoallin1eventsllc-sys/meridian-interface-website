@@ -61,6 +61,15 @@ Order, top to bottom: logo, headshot, name, title, line, hours; the three main p
 - **No brand logos are drawn** for payment apps; the chips use the app's name in text.
 - Every button is at least 44 px tall. Six round buttons fit one row at phone width.
 
+## Say it once (Otis, 25 Nov 2026: "no redundant information... nothing confusing")
+- **One fact, one place.** The business name is typed once; with no logo it stands in for the logo on the card (the two "logo text" boxes are gone). The button color sits with the booking button it colors.
+- **Show only what needs doing.** The Share tab lists what is missing and nothing else; when nothing is missing the list is gone. Home screen steps show only for the phone in hand.
+- **A note earns its line.** One sentence, and only where the box alone would leave someone guessing.
+- **Hints say what to do,** not what the picture is ("Tap the background to launch the rocket early.").
+- **Two different photos get two different names:** "Photo of you" (the headshot) and "Your own background".
+- **Landing page:** each selling point appears once. The first screen says what it is; three steps say how; three points say why; four short lines cover trust.
+- **Link preview:** the picture carries the face, name, title and line. The business name is in the link's title right under it, so it is not drawn into the picture as well.
+
 ## Rules that came from the brand skill
 The mark is the real file beside live text. The lockup file is never placed on a dark ground. The accent blue never touches the mark. Fonts are self-hosted.
 

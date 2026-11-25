@@ -43,9 +43,11 @@ $('f-sound').addEventListener('change',e=>{draft.data.background.sound=e.target.
 const filesOf=d=>d?[d.background&&d.background.url,d.logo&&d.logo.url,d.photo&&d.photo.url,d.preview&&d.preview.url]:[];
 const cardLink=()=>(A.config.site||location.origin)+'/c/'+draft.slug;let pendingEmail='';
 function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d}
+// Only what is still missing is listed. Nothing missing, nothing shown.
 function readyView(){const d=draft.data,a=d.actions||{},ul=$('ready');ul.textContent='';
-  const rows=[[!!(d.name||'').trim(),'Your name','t-details'],[!!(a.phone||a.email||a.booking||a.website),'At least one way to reach you','t-buttons'],[!!(draft.photoBlob||(d.photo||{}).url),'Your photo (optional)','t-details'],[!!(draft.logoBlob||d.logo.url||(d.logo.line1||'').trim()),'A logo or business name (optional)','t-details']];
-  for(const [ok,label,tab] of rows){const li=document.createElement('li'),b=document.createElement('button');li.dataset.ok=String(ok);b.type='button';b.textContent=label;b.addEventListener('click',()=>$(tab).click());li.appendChild(b);ul.appendChild(li)}}
+  const rows=[[!!(d.name||'').trim(),'Add your name','t-details'],[!!(a.phone||a.email||a.booking||a.website),'Add at least one way to reach you','t-buttons']].filter(r=>!r[0]);
+  for(const [,label,tab] of rows){const li=document.createElement('li'),b=document.createElement('button');li.dataset.ok='false';b.type='button';b.textContent=label;b.addEventListener('click',()=>$(tab).click());li.appendChild(b);ul.appendChild(li)}
+  $('todo').hidden=!rows.length}
 // ---------- link preview: the picture and title people see when the card's link is texted or posted.
 // Drawn here, on the device, from the same details as the card, and saved next to the card when it is published.
 const loadImg=src=>new Promise(res=>{if(!src)return res(null);const im=new Image();if(/^https:/.test(src))im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src});
@@ -62,12 +64,11 @@ let pvRun=0;async function drawPreview(cv,solo){const run=solo?0:++pvRun,c=V.nor
   let g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'rgba(6,11,30,.9)');g.addColorStop(.62,'rgba(6,11,30,.62)');g.addColorStop(1,'rgba(6,11,30,.3)');x.fillStyle=g;x.fillRect(0,0,W,H);
   let left=84;if(face){const r=128,cx=left+r,cy=H/2;x.save();x.beginPath();x.arc(cx,cy,r+6,0,7);x.fillStyle='#fff';x.shadowColor='rgba(0,0,0,.5)';x.shadowBlur=40;x.shadowOffsetY=14;x.fill();x.restore();
     x.save();x.beginPath();x.arc(cx,cy,r,0,7);x.clip();cover(x,face,cx-r,cy-r,r*2,r*2);x.restore();left+=r*2+60}
-  const max=W-left-84,eyebrow=(c.company||[c.logo.line1,c.logo.line2].filter(Boolean).join(' ')).toUpperCase();
+  const max=W-left-84;
   let size=88;x.font='800 '+size+'px '+D;while(size>56&&x.measureText(c.name).width>max){size-=4;x.font='800 '+size+'px '+D}const nameL=lines(x,c.name,max,2);
   x.font='400 30px '+B;const tagL=c.tagline?lines(x,c.tagline,max,2):[];
-  const hgt=(eyebrow?46:0)+nameL.length*size*1.06+(c.role?54:0)+tagL.length*40+(tagL.length?10:0);let y=Math.round((H-hgt)/2);
+  const hgt=nameL.length*size*1.06+(c.role?54:0)+tagL.length*40+(tagL.length?10:0);let y=Math.round((H-hgt)/2);
   x.textBaseline='top';x.fillStyle=c.accent;x.fillRect(left,y-30,72,8);
-  if(eyebrow){x.font='700 24px '+B;try{x.letterSpacing='4px'}catch(e){}x.fillStyle='#cbd5e1';x.fillText(lines(x,eyebrow,max,1)[0],left,y);try{x.letterSpacing='0px'}catch(e){}y+=46}
   x.fillStyle='#fff';x.font='800 '+size+'px '+D;for(const l of nameL){x.fillText(l,left,y);y+=size*1.06}
   if(c.role){x.font='600 34px '+B;x.fillText(lines(x,c.role,max,1)[0],left,y+10);y+=54}
   if(tagL.length){y+=10;x.font='400 30px '+B;x.fillStyle='#dbe5f5';for(const l of tagL){x.fillText(l,left,y);y+=40}}
@@ -125,10 +126,12 @@ if(humanOn){$('human').hidden=false;const s=document.createElement('script');s.s
   s.onload=()=>{try{humanId=window.turnstile.render($('human'),{sitekey:A.config.humanCheck,callback:t=>{humanToken=t},'expired-callback':()=>{humanToken=''},'error-callback':()=>{humanToken=''}})}catch(e){$('human').textContent='The human check could not start. Reload the page.'}};
   s.onerror=()=>{$('human').textContent='The human check could not load. Check your connection and reload.'};document.head.appendChild(s)}
 // ---------- install
-let installEvt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('install-btn').hidden=false;$('install-how').hidden=true});
+let installEvt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('install').hidden=false;$('install-btn').hidden=false;$('install-how').hidden=true});
 $('install-btn').addEventListener('click',async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice.catch(()=>{});installEvt=null;$('install-btn').hidden=true});
-if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true;
+{const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),android=/Android/.test(ua);
+  $('install-how').textContent=ios?'Tap the Share button in your browser, then "Add to Home Screen".':android?'Open the browser menu, then tap "Install app".':'';
+  if((!ios&&!android)||window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/studio/sw.js').catch(()=>{});
 // ---------- start
-A.local.get('draft').then(async d=>{if(d&&d.data){draft=Object.assign(draft,d);draft.data.logo=draft.data.logo||{};draft.data.actions=draft.data.actions||{};draft.data.background=draft.data.background||{type:'scene',id:'ocean'};draft.data.photo=draft.data.photo||{url:''};draft.data.preview=draft.data.preview||{url:''}}fill();paint();if(A.enabled&&A.auth.user)await adopt()});
+A.local.get('draft').then(async d=>{if(d&&d.data){draft=Object.assign(draft,d);draft.data.logo=draft.data.logo||{};draft.data.actions=draft.data.actions||{};draft.data.background=draft.data.background||{type:'scene',id:'ocean'};draft.data.photo=draft.data.photo||{url:''};draft.data.preview=draft.data.preview||{url:''};{const l=draft.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!draft.data.company)draft.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}}}fill();paint();if(A.enabled&&A.auth.user)await adopt()});
 })();
