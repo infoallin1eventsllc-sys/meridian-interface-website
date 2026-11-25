@@ -24,6 +24,10 @@
       <label>Business name<input type="text" id="f-company" data-k="company" maxlength="60" autocomplete="organization" placeholder="Rivers Realty"></label>
       <label>Title<input type="text" id="f-role" data-k="role" maxlength="60" autocomplete="organization-title" placeholder="Realtor"></label>
       <label>One line about what you do<input type="text" id="f-tagline" data-k="tagline" maxlength="90" placeholder="Homes in Katy and West Houston"></label>
+      <fieldset><legend>Your photo</legend>
+        <div class="row face-row"><img class="face-pv" id="face-pv" alt="" width="64" height="64" hidden><label class="ghost" for="f-photo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg><span id="photo-word">Add your photo</span><input class="vh" type="file" id="f-photo" accept="image/*"></label><button type="button" class="ghost" id="photo-clear" aria-label="Remove photo" hidden>Remove</button></div>
+        <p class="note">People remember a face. Pick a clear photo with your face near the middle; it shows in a circle.</p>
+      </fieldset>
       <fieldset><legend>Logo</legend>
         <div class="row"><label class="ghost" for="f-logo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg>Upload a logo<input class="vh" type="file" id="f-logo" accept="image/*"></label><button type="button" class="ghost" id="logo-clear" hidden>Remove logo</button></div>
         <p class="note">Or type your business name below and it is set as a wordmark.</p>
@@ -42,6 +46,11 @@
       <label>Booking link<input type="url" id="f-booking" data-k="actions.booking" maxlength="500" placeholder="https://calendly.com/you"></label>
       <label>Booking button words<input type="text" id="f-blabel" data-k="actions.bookingLabel" maxlength="34" placeholder="Book an appointment"></label>
       </fieldset>
+      <fieldset><legend>Location and hours</legend>
+      <label>Address<input type="text" id="f-addr" data-k="actions.address" maxlength="140" autocomplete="street-address" placeholder="123 Main St, Katy, TX 77494"></label>
+      <p class="note">Adds a Directions button that opens the map.</p>
+      <label>Hours<input type="text" id="f-hours" data-k="hours" maxlength="60" placeholder="Mon to Fri, 9 am to 5 pm"></label>
+      </fieldset>
       <fieldset><legend>Website and social</legend>
       <label>Website<input type="url" id="f-web" data-k="actions.website" maxlength="500" placeholder="yourbusiness.com"></label>
       <label>Facebook<input type="url" id="f-fb" data-k="actions.facebook" maxlength="500" placeholder="facebook.com/yourpage"></label>
@@ -49,6 +58,16 @@
       <label>LinkedIn<input type="url" id="f-li" data-k="actions.linkedin" maxlength="500" placeholder="linkedin.com/in/yourname"></label>
       <label>TikTok<input type="url" id="f-tt" data-k="actions.tiktok" maxlength="500" placeholder="tiktok.com/@yourname"></label>
       <label>YouTube<input type="url" id="f-yt" data-k="actions.youtube" maxlength="500" placeholder="youtube.com/@yourchannel"></label>
+      </fieldset>
+      <fieldset><legend>Reviews</legend>
+      <label>Review link<input type="url" id="f-review" data-k="actions.review" maxlength="500" placeholder="g.page/r/yourbusiness/review"></label>
+      <p class="note">Paste the link where customers leave you a review, such as your Google review link. It adds a "Leave a review" button.</p>
+      </fieldset>
+      <fieldset><legend>Get paid</legend>
+      <label>Cash App name<input type="text" id="f-cash" data-k="actions.cashapp" maxlength="60" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="$yourname"></label>
+      <label>Venmo name<input type="text" id="f-venmo" data-k="actions.venmo" maxlength="60" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="@yourname"></label>
+      <label>Zelle phone or email<input type="text" id="f-zelle" data-k="actions.zelle" maxlength="200" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="you@yourbusiness.com"></label>
+      <p class="note">Each one adds a "Pay with" button. The payment happens in that app, never on your card.</p>
       </fieldset>
     </div>
     <div class="pane" role="tabpanel" id="p-bg" aria-labelledby="t-bg" hidden>
@@ -63,6 +82,8 @@
     <div class="pane" role="tabpanel" id="p-publish" aria-labelledby="t-publish" hidden>
       <div class="pane-h"><h2>Share</h2><p>Publish your card and send it with one link or a QR code.</p></div>
       <ul class="ready" id="ready" aria-label="Before you share"></ul>
+      <figure class="linkpv" id="linkpv"><figcaption>How your link looks in a text or a post</figcaption>
+        <div class="bubble"><canvas id="pv-img" width="1200" height="630" role="img" aria-label="The picture people see with your link"></canvas><div class="meta"><b id="pv-title"></b><span id="pv-site"></span></div></div></figure>
       <div id="pub-off" class="callout" hidden><h3>Sharing is being set up</h3><p>Your card is saved on this device and you can keep editing it. Public links switch on when Live Cards launches.</p></div>
       <form id="pub-email" hidden><h3>Sign in to share your card</h3><label>Email<input type="email" id="f-acct" autocomplete="email" required placeholder="you@yourbusiness.com"></label><div id="human" hidden></div><button class="btn" type="submit">Email me a sign-in code</button></form>
       <form id="pub-code" hidden><h3>Enter the code we emailed you</h3><label>6-digit code<input type="text" id="f-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></label><div class="row"><button class="btn" type="submit">Sign in</button><button type="button" class="ghost" id="code-back">Use a different email</button></div></form>

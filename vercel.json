@@ -153,7 +153,7 @@
     },
     {
       "source": "/c/:slug",
-      "destination": "/c/index.html"
+      "destination": "/api/lc-card?slug=:slug"
     }
   ],
   "redirects": [

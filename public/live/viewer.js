@@ -7,7 +7,7 @@ const SAMPLE={name:'Otis Williams',company:'Meridian Interface',role:'AI Archite
   actions:{phone:'+12818829198',text:true,email:'otis@meridianinterface.com',booking:'https://meridianinterface.com/?book=web_design',bookingLabel:'Book a 1-on-1 appointment',website:'https://meridianinterface.com/',facebook:'https://www.facebook.com/profile.php?id=61596523703192',instagram:'https://www.instagram.com/meridianinterface/'},background:{type:'scene',id:'ocean'}};
 async function load(){
   if(q.get('preview')){const d=await A.local.get('draft');if(!d)return say('No draft on this device','Open the Studio to start your card.');
-    const data=JSON.parse(JSON.stringify(d.data));for(const k of ['bgBlob','logoBlob'])if(d[k]){const u=URL.createObjectURL(d[k]);if(k==='bgBlob')data.background.url=u;else data.logo.url=u}return data}
+    const data=JSON.parse(JSON.stringify(d.data));for(const k of ['bgBlob','logoBlob','photoBlob'])if(d[k]){const u=URL.createObjectURL(d[k]);if(k==='bgBlob')data.background.url=u;else if(k==='logoBlob')data.logo.url=u;else data.photo={url:u}}return data}
   if(!slug||slug==='sample')return SAMPLE;
   if(!A.enabled)return say('This card is not available yet','Live Cards links are being set up. Please check back soon.');
   try{const row=await A.cards.bySlug(slug);if(!row)return say('Card not found','Check the link, or ask the owner for a new one.');return row.data}

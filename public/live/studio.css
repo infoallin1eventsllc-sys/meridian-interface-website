@@ -111,3 +111,13 @@ form label{width:100%}
   #scenes{grid-template-columns:repeat(4,minmax(0,1fr))}
   .toast{bottom:28px}
 }
+/* headshot row, and the link preview on the Share tab */
+.face-row{align-items:center}
+.face-pv{width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--line-strong)}
+.linkpv{margin:0 0 28px}
+.linkpv figcaption{font:600 13px/1.3 var(--body,inherit);color:var(--muted);margin-bottom:10px}
+.linkpv .bubble{max-width:340px;border-radius:18px;overflow:hidden;background:var(--sunk);border:1px solid var(--line)}
+.linkpv canvas{display:block;width:100%;height:auto;aspect-ratio:1200/630;background:#0f172a}
+.linkpv .meta{display:grid;gap:2px;padding:10px 14px 12px}
+.linkpv .meta b{font-weight:600;font-size:14.5px;line-height:1.3;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linkpv .meta span{font-size:12.5px;color:var(--faint)}

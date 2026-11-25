@@ -42,9 +42,10 @@ const cards={
   async slugFree(slug){const j=await call('/rest/v1/rpc/lc_slug_available',{method:'POST',body:{p_slug:slug}});return j===true},
   async save(id,slug,data,published){const row={slug,data,published};
     const j=id?await call('/rest/v1/lc_cards?id=eq.'+id,{method:'PATCH',auth:true,body:row,headers:{Prefer:'return=representation'}}):await call('/rest/v1/lc_cards',{method:'POST',auth:true,body:row,headers:{Prefer:'return=representation'}});return j&&j[0]},
-  /** kind is 'bg' or 'logo'. The service only accepts <account>/(bg|logo)-<letters and numbers>.(jpg|mp4|mov|webm), up to 8 files an account. */
-  async upload(blob,kind){const ext=EXT[blob.type];if(!ext||(kind==='logo'&&ext!=='jpg'))throw new ApiError('That file type cannot be used. Use a JPG or PNG picture, or an MP4, MOV or WebM video.',0,'type');
-    const u=session.user.id,name=(kind==='logo'?'logo':'bg')+'-'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36)+'.'+ext,path=u+'/'+name;
+  /** kind is 'bg' (background), 'logo', 'photo' (headshot) or 'og' (the link preview picture). The service only accepts
+      <account>/(bg|logo|photo|og)-<letters and numbers>.(jpg|mp4|mov|webm), up to 12 files an account. Only a background may be a video. */
+  async upload(blob,kind){const ext=EXT[blob.type];kind=['logo','photo','og'].includes(kind)?kind:'bg';if(!ext||(kind!=='bg'&&ext!=='jpg'))throw new ApiError('That file type cannot be used. Use a JPG or PNG picture, or an MP4, MOV or WebM video.',0,'type');
+    const u=session.user.id,name=kind+'-'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36)+'.'+ext,path=u+'/'+name;
     await call('/storage/v1/object/'+C.bucket+'/'+path,{method:'POST',auth:true,raw:true,body:blob,headers:{'Content-Type':blob.type,'cache-control':'max-age=31536000'}});
     return C.url+'/storage/v1/object/public/'+C.bucket+'/'+path},
   /** Deletes this account's uploaded files that are not in keep (a list of file addresses). Keeps the account under the file limit. */
@@ -54,8 +55,10 @@ const cards={
   report:(slug,reason)=>call('/rest/v1/rpc/lc_report',{method:'POST',body:{p_slug:String(slug),p_reason:String(reason).slice(0,500)}})};
 const EXT={'image/jpeg':'jpg','video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm'};
 // ---------- media helpers (run on the device before anything is saved)
-function shrinkImage(file){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const m=C.maxImagePx||1800,k=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');
-    c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('Could not read that picture.')),'image/jpeg',.86)};
+/** square: a side length in pixels. The picture is then cut to a square that size (for a headshot), taken from the middle, or a little above the middle of a tall photo, where a face usually is. */
+function shrinkImage(file,square){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight,c=document.createElement('canvas');
+    if(square){const s=Math.min(w,h),side=Math.min(square,s);c.width=c.height=side;c.getContext('2d').drawImage(im,(w-s)/2,h>w?(h-s)*.3:0,s,s,0,0,side,side)}
+    else{const m=C.maxImagePx||1800,k=Math.min(1,m/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height)}URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('Could not read that picture.')),'image/jpeg',.86)};
   im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Could not read that picture. Try a JPG or PNG.'))};im.src=u})}
 function checkVideo(file){return new Promise((res,rej)=>{if(!EXT[file.type]||file.type==='image/jpeg')return rej(new Error('That video type cannot be used. Use an MP4, MOV or WebM video.'));if(file.size>(C.maxVideoMB||25)*1048576)return rej(new Error('That video is larger than '+(C.maxVideoMB||25)+' MB. Trim it in your Photos app and try again.'));
   const v=document.createElement('video'),u=URL.createObjectURL(file);v.preload='metadata';v.onloadedmetadata=()=>{const d=v.duration;URL.revokeObjectURL(u);d>(C.maxVideoSeconds||30)+.5?rej(new Error('That video is longer than '+(C.maxVideoSeconds||30)+' seconds. Trim it and try again.')):res(file)};

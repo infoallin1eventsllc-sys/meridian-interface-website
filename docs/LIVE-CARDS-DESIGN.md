@@ -51,9 +51,18 @@ Light is the default because the brand's surface is light and the real logo need
 - `.drop` upload tile. Background gallery: 4:5 thumbnails in `public/live/thumbs/`, three across on phones, four on computers.
 - `.ready` checklist on the Share tab; each line jumps to where it is fixed.
 - `.callout` for "not available yet" messages.
+- `.linkpv` on the Share tab: the link as it will look in a text or post (drawn picture, title, site), so the client sees what people receive before they publish.
+- `.face-row`: headshot thumbnail with Change and Remove.
+
+## The card (`public/live/card.css`)
+Order, top to bottom: logo, headshot, name, title, line, hours; the three main pills; round icon buttons; labelled glass chips.
+- **Three weights of button.** White pills are the main actions (Call, Email, Book). Round white buttons are actions an icon alone explains (text, website, directions, save, social). Dark glass chips carry a word because an icon alone would not be clear (Leave a review, Pay with Cash App / Venmo / Zelle). Chips stay quieter than the pills on purpose.
+- **Headshot:** 28% of the card width (88 to 116 px), white 3 px ring. With a headshot the logo becomes one compact row above it; without one the card is exactly as before.
+- **No brand logos are drawn** for payment apps; the chips use the app's name in text.
+- Every button is at least 44 px tall. Six round buttons fit one row at phone width.
 
 ## Rules that came from the brand skill
 The mark is the real file beside live text. The lockup file is never placed on a dark ground. The accent blue never touches the mark. Fonts are self-hosted.
 
 ## Not done yet
-A design pass on the owner desk tab, illustrations for empty states, and real-phone checks of the tab bar with the on-screen keyboard open.
+A design pass on the owner desk tab, illustrations for empty states, real-phone checks of the tab bar with the on-screen keyboard open, and a hint in the Studio preview that a full card scrolls.
