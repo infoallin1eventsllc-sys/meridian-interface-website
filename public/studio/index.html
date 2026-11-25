@@ -1,69 +1,80 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Live Cards Studio | Meridian Interface</title><meta name="description" content="Make your own digital business card with a live background, then share it with one link.">
-<meta name="theme-color" content="#070d24"><link rel="manifest" href="/studio/manifest.webmanifest"><link rel="icon" href="/brand/meridian-mark.png"><link rel="apple-touch-icon" href="/studio/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111a2e" media="(prefers-color-scheme: dark)"><link rel="manifest" href="/studio/manifest.webmanifest"><link rel="icon" href="/brand/meridian-mark.png"><link rel="apple-touch-icon" href="/studio/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Live Cards">
-<link rel="stylesheet" href="/live/card.css"><link rel="stylesheet" href="/live/studio.css"></head>
+<link rel="stylesheet" href="/live/ui.css"><link rel="stylesheet" href="/live/card.css"><link rel="stylesheet" href="/live/studio.css"></head>
 <body>
-<header class="top"><a class="brand" href="/live-cards/"><img src="/brand/meridian-mark.png" alt="" width="342" height="333"><span><b>LIVE CARDS</b><i>STUDIO</i></span></a><span class="state" id="state" role="status">Saved on this device</span></header>
+<header class="top"><a class="brand" href="/live-cards/" aria-label="Live Cards home"><img src="/brand/meridian-mark.png" alt="" width="342" height="333"><span aria-hidden="true"><b>LIVE CARDS</b><i>STUDIO</i></span></a><span class="state" id="state" role="status" data-s="saved">Saved on this device</span></header>
 <main class="app">
   <section class="preview" aria-label="Your card">
     <div class="pv" id="pv"><div class="lc-phone" id="lc"></div></div>
-    <a class="ghost" id="full" href="/c/?preview=1" target="_blank" rel="noopener">Open full screen</a>
+    <a class="ghost small" id="full" href="/c/?preview=1" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg><span>Open full screen</span></a>
   </section>
   <section class="panel">
     <div class="tabs" role="tablist" aria-label="Edit your card">
-      <button role="tab" id="t-details" aria-controls="p-details" aria-selected="true">Details</button>
-      <button role="tab" id="t-buttons" aria-controls="p-buttons" aria-selected="false">Buttons</button>
-      <button role="tab" id="t-bg" aria-controls="p-bg" aria-selected="false">Background</button>
-      <button role="tab" id="t-publish" aria-controls="p-publish" aria-selected="false">Share</button>
+      <button role="tab" id="t-details" aria-controls="p-details" aria-selected="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Details</span></button>
+      <button role="tab" id="t-buttons" aria-controls="p-buttons" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="6" rx="3"/><rect x="3" y="14" width="18" height="6" rx="3"/></svg><span>Buttons</span></button>
+      <button role="tab" id="t-bg" aria-controls="p-bg" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><span>Background</span></button>
+      <button role="tab" id="t-publish" aria-controls="p-publish" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg><span>Share</span></button>
     </div>
     <div class="pane" role="tabpanel" id="p-details" aria-labelledby="t-details">
+      <div class="pane-h"><h2>Details</h2><p>Who you are. This is the top of your card.</p></div>
       <label>Your name<input type="text" id="f-name" data-k="name" maxlength="60" autocomplete="name" placeholder="Jordan Rivers"></label>
       <label>Business name<input type="text" id="f-company" data-k="company" maxlength="60" autocomplete="organization" placeholder="Rivers Realty"></label>
       <label>Title<input type="text" id="f-role" data-k="role" maxlength="60" autocomplete="organization-title" placeholder="Realtor"></label>
       <label>One line about what you do<input type="text" id="f-tagline" data-k="tagline" maxlength="90" placeholder="Homes in Katy and West Houston"></label>
       <fieldset><legend>Logo</legend>
-        <div class="row"><label class="btn" for="f-logo">Choose a logo picture<input class="vh" type="file" id="f-logo" accept="image/*"></label><button type="button" class="ghost" id="logo-clear" hidden>Remove logo</button></div>
+        <div class="row"><label class="ghost" for="f-logo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg>Upload a logo<input class="vh" type="file" id="f-logo" accept="image/*"></label><button type="button" class="ghost" id="logo-clear" hidden>Remove logo</button></div>
+        <p class="note">Or type your business name below and it is set as a wordmark.</p>
         <div class="row two"><label>Logo text, line 1<input type="text" id="f-l1" data-k="logo.line1" maxlength="24" placeholder="RIVERS"></label><label>Line 2<input type="text" id="f-l2" data-k="logo.line2" maxlength="24" placeholder="REALTY"></label></div>
       </fieldset>
-      <fieldset><legend>Button color</legend><div class="swatches" id="swatches"></div></fieldset>
+      <fieldset><legend>Button color</legend><div class="swatches" id="swatches"></div><p class="note">Colors your booking button.</p></fieldset>
     </div>
     <div class="pane" role="tabpanel" id="p-buttons" aria-labelledby="t-buttons" hidden>
+      <div class="pane-h"><h2>Buttons</h2><p>How people reach you. Leave a box empty and that button stays off your card.</p></div>
+      <fieldset><legend>Call, text and email</legend>
       <label>Phone<input type="tel" id="f-phone" data-k="actions.phone" maxlength="40" autocomplete="tel" placeholder="281-555-0142"></label>
-      <label class="check"><input type="checkbox" id="f-text" data-k="actions.text"> Also show a Text button</label>
+      <label class="check switch"><input type="checkbox" id="f-text" data-k="actions.text"> Also show a Text button</label>
       <label>Email<input type="email" id="f-email" data-k="actions.email" maxlength="200" autocomplete="email" placeholder="you@yourbusiness.com"></label>
+      </fieldset>
+      <fieldset><legend>Booking</legend>
       <label>Booking link<input type="url" id="f-booking" data-k="actions.booking" maxlength="500" placeholder="https://calendly.com/you"></label>
       <label>Booking button words<input type="text" id="f-blabel" data-k="actions.bookingLabel" maxlength="34" placeholder="Book an appointment"></label>
+      </fieldset>
+      <fieldset><legend>Website and social</legend>
       <label>Website<input type="url" id="f-web" data-k="actions.website" maxlength="500" placeholder="yourbusiness.com"></label>
       <label>Facebook<input type="url" id="f-fb" data-k="actions.facebook" maxlength="500" placeholder="facebook.com/yourpage"></label>
       <label>Instagram<input type="url" id="f-ig" data-k="actions.instagram" maxlength="500" placeholder="instagram.com/yourname"></label>
       <label>LinkedIn<input type="url" id="f-li" data-k="actions.linkedin" maxlength="500" placeholder="linkedin.com/in/yourname"></label>
       <label>TikTok<input type="url" id="f-tt" data-k="actions.tiktok" maxlength="500" placeholder="tiktok.com/@yourname"></label>
       <label>YouTube<input type="url" id="f-yt" data-k="actions.youtube" maxlength="500" placeholder="youtube.com/@yourchannel"></label>
-      <p class="note">Leave a box empty and that button stays off your card.</p>
+      </fieldset>
     </div>
     <div class="pane" role="tabpanel" id="p-bg" aria-labelledby="t-bg" hidden>
+      <div class="pane-h"><h2>Background</h2><p>What moves behind your card. Tap one to try it.</p></div>
       <fieldset><legend>Your own photo or video</legend>
-        <div class="row"><label class="btn" for="f-bg">Choose from your library<input class="vh" type="file" id="f-bg" accept="image/*,video/*"></label></div>
-        <div class="seg" id="own-opts" hidden><button type="button" id="fit-fill" aria-pressed="true">Fill the card</button><button type="button" id="fit-band" aria-pressed="false">Bottom of the card</button><label class="check"><input type="checkbox" id="f-sound" checked> Sound button</label></div>
-        <p class="note" id="bg-note">Photos are resized on your device. Videos can be up to 30 seconds and 25 MB.</p>
+        <label class="drop" for="f-bg"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg><b>Choose from your library</b><span>A photo, or a video up to 30 seconds and 25 MB</span><input class="vh" type="file" id="f-bg" accept="image/*,video/*"></label>
+        <div class="seg" id="own-opts" hidden><button type="button" id="fit-fill" aria-pressed="true">Fill the card</button><button type="button" id="fit-band" aria-pressed="false">Bottom of the card</button><label class="check switch"><input type="checkbox" id="f-sound" checked> Sound button</label></div>
+        <p class="note" id="bg-note" aria-live="polite">Photos are resized on your device before anything is saved.</p>
       </fieldset>
       <fieldset><legend>Live backgrounds</legend><div id="scenes"></div></fieldset>
     </div>
     <div class="pane" role="tabpanel" id="p-publish" aria-labelledby="t-publish" hidden>
-      <div id="pub-off" hidden><h2>Sharing is being set up</h2><p>Your card is saved on this device and you can keep editing it. Public links switch on when Live Cards launches.</p></div>
-      <form id="pub-email" hidden><h2>Sign in to share your card</h2><label>Email<input type="email" id="f-acct" autocomplete="email" required placeholder="you@yourbusiness.com"></label><div id="human" hidden></div><button class="btn" type="submit">Email me a sign-in code</button></form>
-      <form id="pub-code" hidden><h2>Enter the code we emailed you</h2><label>6-digit code<input type="text" id="f-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></label><button class="btn" type="submit">Sign in</button><button type="button" class="ghost" id="code-back">Use a different email</button></form>
-      <form id="pub-go" hidden><h2>Your card's link</h2><label><span id="site-prefix">meridianinterface.com/c/</span><input type="text" id="f-slug" maxlength="40" autocapitalize="none" autocomplete="off" spellcheck="false" required placeholder="jordan-rivers"></label>
+      <div class="pane-h"><h2>Share</h2><p>Publish your card and send it with one link or a QR code.</p></div>
+      <ul class="ready" id="ready" aria-label="Before you share"></ul>
+      <div id="pub-off" class="callout" hidden><h3>Sharing is being set up</h3><p>Your card is saved on this device and you can keep editing it. Public links switch on when Live Cards launches.</p></div>
+      <form id="pub-email" hidden><h3>Sign in to share your card</h3><label>Email<input type="email" id="f-acct" autocomplete="email" required placeholder="you@yourbusiness.com"></label><div id="human" hidden></div><button class="btn" type="submit">Email me a sign-in code</button></form>
+      <form id="pub-code" hidden><h3>Enter the code we emailed you</h3><label>6-digit code<input type="text" id="f-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></label><div class="row"><button class="btn" type="submit">Sign in</button><button type="button" class="ghost" id="code-back">Use a different email</button></div></form>
+      <form id="pub-go" hidden><h3>Your card's link</h3><label><span id="site-prefix">meridianinterface.com/c/</span><input type="text" id="f-slug" maxlength="40" autocapitalize="none" autocomplete="off" spellcheck="false" required placeholder="jordan-rivers"></label>
         <p class="note" id="slug-note">Lowercase letters, numbers and dashes.</p><label class="check"><input type="checkbox" id="f-rights" required> These are my own photos and videos, or I have the right to use them.</label>
         <button class="btn" type="submit" id="pub-btn">Publish my card</button></form>
-      <div id="pub-done" hidden><h2>Your card is live</h2><p class="note" id="pub-dirty" hidden>You have changes that are not on your live card yet.</p><button type="button" class="btn" id="pub-update" hidden>Update my live card</button><p class="link" id="pub-link"></p><div class="row"><button type="button" class="btn" id="pub-copy">Copy link</button><button type="button" class="ghost" id="pub-share" hidden>Share</button></div>
+      <div id="pub-done" hidden><h3>Your card is live</h3><p class="note" id="pub-dirty" hidden>You have changes that are not on your live card yet.</p><button type="button" class="btn" id="pub-update" hidden>Update my live card</button><p class="link" id="pub-link"></p><div class="row"><button type="button" class="ghost" id="pub-copy">Copy link</button><button type="button" class="ghost" id="pub-share" hidden>Share</button></div>
         <canvas id="pub-qr" width="220" height="220" aria-label="QR code for your card"></canvas><p class="note">Print or show this code. Scanning it opens your card.</p><button type="button" class="ghost" id="pub-unpub">Take my card offline</button></div>
-      <div id="plan" hidden><h2>Your plan</h2><p class="note" id="plan-note"></p><label class="check" id="plan-made" hidden><input type="checkbox" id="f-made"> Hide the "Made with Meridian Live Cards" line on my card</label>
-        <div class="row"><button type="button" class="btn" id="plan-up" hidden>Upgrade my plan</button><button type="button" class="ghost" id="plan-manage" hidden>Manage my plan</button></div></div>
+      <div id="plan" hidden><h3>Your plan</h3><p class="note" id="plan-note"></p><label class="check" id="plan-made" hidden><input type="checkbox" id="f-made"> Hide the "Made with Meridian Live Cards" line on my card</label>
+        <div class="row"><button type="button" class="ghost" id="plan-up" hidden>Upgrade my plan</button><button type="button" class="ghost" id="plan-manage" hidden>Manage my plan</button></div></div>
       <div id="acct" hidden><p class="note" id="acct-who"></p><div class="row"><button type="button" class="ghost" id="acct-out">Sign out</button><button type="button" class="ghost danger" id="acct-del">Delete my account and card</button></div></div>
-      <div class="install" id="install"><h2>Put it on your home screen</h2><p id="install-how">On iPhone: tap the Share button, then "Add to Home Screen". On Android: open the browser menu, then "Install app".</p><button type="button" class="btn" id="install-btn" hidden>Install the app</button></div>
+      <div class="install" id="install"><h3>Put it on your home screen</h3><p id="install-how">On iPhone: tap the Share button, then "Add to Home Screen". On Android: open the browser menu, then "Install app".</p><button type="button" class="ghost" id="install-btn" hidden>Install the app</button></div>
       <p class="note legal"><a href="/live-cards/terms/">Terms</a> and <a href="/live-cards/privacy/">Privacy</a></p>
     </div>
   </section>

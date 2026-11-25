@@ -6,7 +6,7 @@ let draft={data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{ur
 const urls={};const blobUrl=(k,b)=>{if(!b){if(urls[k]){URL.revokeObjectURL(urls[k].u);delete urls[k]}return''}if(!urls[k]||urls[k].b!==b){if(urls[k])URL.revokeObjectURL(urls[k].u);urls[k]={b,u:URL.createObjectURL(b)}}return urls[k].u};
 const get=(o,path)=>path.split('.').reduce((x,k)=>x==null?x:x[k],o),put=(o,path,v)=>{const ks=path.split('.'),last=ks.pop();ks.reduce((x,k)=>x[k]||(x[k]={}),o)[last]=v};
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},5200)}
-const state=m=>{$('state').textContent=m};
+const state=m=>{const e=$('state');e.textContent=m;e.dataset.s=/^Saving/.test(m)?'saving':'saved'};
 let plan='',planBusy=false; // paid or free, asked from the service
 const humanOn=/^[0-9A-Za-z_-]{10,60}$/.test(A.config.humanCheck||'')&&A.enabled;let humanToken='',humanId; // human check on sign-in
 {const pv=$('pv'),fit=()=>{phone.style.transform='scale('+(pv.clientWidth/360)+')'};new ResizeObserver(fit).observe(pv);fit()}
@@ -21,10 +21,14 @@ function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(d
   document.querySelectorAll('#scenes button').forEach(b=>b.setAttribute('aria-pressed',String(!own&&b.dataset.id===draft.data.background.id)));
   document.querySelectorAll('#swatches button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===draft.data.accent)));$('f-slug').value=draft.slug||''}
 document.querySelectorAll('[data-k]').forEach(el=>el.addEventListener(el.type==='checkbox'?'change':'input',()=>{put(draft.data,el.dataset.k,el.type==='checkbox'?el.checked:el.value);changed()}));
-for(const c of ACCENTS){const b=document.createElement('button');b.type='button';b.dataset.c=c;b.style.background=c;b.setAttribute('aria-label','Button color '+c);b.addEventListener('click',()=>{draft.data.accent=c;fill();changed()});$('swatches').appendChild(b)}
+const ACCENT_NAMES=['Blue','Teal','Amber','Rose','Violet','Graphite'];
+for(const [n,c] of ACCENTS.entries()){const b=document.createElement('button');b.type='button';b.dataset.c=c;b.style.background=c;b.title=ACCENT_NAMES[n];b.setAttribute('aria-label',ACCENT_NAMES[n]);b.addEventListener('click',()=>{draft.data.accent=c;fill();changed()});$('swatches').appendChild(b)}
 {let col='',grp;for(const s of engine.scenes){if(s.col!==col){col=s.col;grp=document.createElement('div');grp.className='grp';const l=document.createElement('div');l.className='col';l.textContent=col;grp.appendChild(l);$('scenes').appendChild(grp)}
-  const b=document.createElement('button');b.type='button';b.dataset.id=s.id;b.textContent=s.name;b.addEventListener('click',()=>{draft.data.background=Object.assign({},draft.data.background,{type:'scene',id:s.id,url:''});draft.bgBlob=null;blobUrl('bg',null);$('bg-note').textContent=s.hint||'';fill();changed()});grp.appendChild(b)}}
-document.querySelectorAll('.tabs button').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>{const on=x===t;x.setAttribute('aria-selected',String(on));$(x.getAttribute('aria-controls')).hidden=!on});if(t.id==='t-publish')pubView()}));
+  const b=document.createElement('button'),im=document.createElement('img');b.type='button';b.dataset.id=s.id;im.src='/live/thumbs/'+s.id+'.jpg';im.alt='';im.width=120;im.height=150;im.loading='lazy';im.decoding='async';b.append(im,s.name);b.addEventListener('click',()=>{draft.data.background=Object.assign({},draft.data.background,{type:'scene',id:s.id,url:''});draft.bgBlob=null;blobUrl('bg',null);$('bg-note').textContent=s.hint||'';fill();changed()});grp.appendChild(b)}}
+const TABS=[...document.querySelectorAll('.tabs button')];
+TABS.forEach((t,n)=>{t.addEventListener('click',()=>{TABS.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',String(on));x.tabIndex=on?0:-1;$(x.getAttribute('aria-controls')).hidden=!on});if(t.id==='t-publish')pubView();
+    const top=document.querySelector('.panel').getBoundingClientRect().top+scrollY-(document.querySelector('.preview').offsetHeight+document.querySelector('.top').offsetHeight);if(scrollY>top&&matchMedia('(max-width:899px)').matches)scrollTo(0,Math.max(0,top))});
+  t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;t.addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();const nx=TABS[(n+d+TABS.length)%TABS.length];nx.focus();nx.click()})});
 $('f-logo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{draft.logoBlob=await A.shrinkImage(f);draft.data.logo.url='';fill();changed()}catch(err){toast(err.message)}});
 $('logo-clear').addEventListener('click',()=>{draft.logoBlob=null;blobUrl('logo',null);draft.data.logo.url='';fill();changed()});
 $('f-bg').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -35,7 +39,10 @@ $('f-sound').addEventListener('change',e=>{draft.data.background.sound=e.target.
 // ---------- share / publish
 const cardLink=()=>(A.config.site||location.origin)+'/c/'+draft.slug;let pendingEmail='';
 function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d}
-function pubView(){dirtyView();const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
+function readyView(){const d=draft.data,a=d.actions||{},ul=$('ready');ul.textContent='';
+  const rows=[[!!(d.name||'').trim(),'Your name','t-details'],[!!(a.phone||a.email||a.booking||a.website),'At least one way to reach you','t-buttons'],[!!(draft.logoBlob||d.logo.url||(d.logo.line1||'').trim()),'A logo or business name (optional)','t-details']];
+  for(const [ok,label,tab] of rows){const li=document.createElement('li'),b=document.createElement('button');li.dataset.ok=String(ok);b.type='button';b.textContent=label;b.addEventListener('click',()=>$(tab).click());li.appendChild(b);ul.appendChild(li)}}
+function pubView(){readyView();dirtyView();const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
   show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);planView();
   if(user)$('acct-who').textContent='Signed in as '+user.email;$('site-prefix').textContent=(A.config.site||location.origin).replace(/^https?:\/\//,'')+'/c/';
   if(on&&user&&draft.published){$('pub-link').textContent=cardLink();window.QRCode.toCanvas($('pub-qr'),cardLink(),{width:200,margin:1,errorCorrectionLevel:'M'},()=>{});$('pub-share').hidden=!navigator.share}}

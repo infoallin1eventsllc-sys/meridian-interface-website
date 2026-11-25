@@ -1,7 +1,16 @@
-html,body{margin:0;height:100%;background:#070d24}
+/* The public card page. Experience: the client's card fills the screen; the page itself stays out of the way. */
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:#0f172a}
 .stage{min-height:100vh;min-height:100svh;display:flex;justify-content:center;align-items:stretch}
 #lc{width:100%;max-width:460px;min-height:100vh;min-height:100svh}
-@media (min-width:520px){.stage{align-items:center;padding:24px 0}#lc{min-height:0;height:min(92svh,930px);aspect-ratio:390/844;width:auto;border-radius:34px;box-shadow:0 0 0 10px #0b1130,0 0 0 11px #26305a,0 40px 80px rgba(0,0,0,.55)}}
-.msg{align-self:center;max-width:26rem;padding:24px;text-align:center;color:#eef2fb;font-family:"Inter",system-ui,sans-serif}
-.msg h1{font:800 26px/1.15 "Hanken Grotesk",system-ui,sans-serif;margin:0 0 10px}.msg p{margin:0 0 18px;color:#9fb0cf;line-height:1.5}.msg a{color:#7fb0ff}
-.report{position:fixed;right:4px;bottom:2px;background:none;border:0;color:rgba(255,255,255,.45);font:500 11px "Inter",system-ui,sans-serif;padding:6px 10px;cursor:pointer}
+@media (min-width:520px){.stage{align-items:center;padding:24px 0}
+  #lc{min-height:0;height:min(92svh,930px);aspect-ratio:390/844;width:auto;border-radius:36px;box-shadow:0 0 0 9px #1e293b,0 0 0 10px #334155,0 40px 80px -30px rgba(0,0,0,.8)}}
+.msg{align-self:center;max-width:26rem;margin:auto;padding:32px 24px;text-align:center;display:grid;justify-items:center;gap:0}
+.msg::before{content:"";width:44px;height:43px;margin-bottom:22px;background:url(/brand/meridian-mark.png) center/contain no-repeat}
+.msg h1{font:800 28px/1.15 "Hanken Grotesk",system-ui,sans-serif;letter-spacing:-.02em;margin:0 0 10px;color:#fff}
+.msg p{margin:0 0 24px;color:#cbd5e1;font:400 16px/1.55 "Inter",system-ui,sans-serif}
+.msg a{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:12px;border:1px solid #475569;color:#fff;text-decoration:none;font:600 15px "Inter",system-ui,sans-serif}
+.msg a:hover{border-color:#94a3b8}
+.msg a:focus-visible,.report:focus-visible{outline:2px solid #8ab4ff;outline-offset:2px}
+.report{position:fixed;right:6px;bottom:max(4px,env(safe-area-inset-bottom,0px));background:none;border:0;color:rgba(255,255,255,.55);font:500 11.5px "Inter",system-ui,sans-serif;padding:8px 10px;cursor:pointer;border-radius:8px}
+.report:hover{color:#fff}

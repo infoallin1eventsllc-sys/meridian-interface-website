@@ -26,7 +26,7 @@
 .lc-logo b{display:block;font:800 clamp(15px,4.9cqw,21px)/1 var(--lc-display);letter-spacing:.2em;padding-left:.2em}
 .lc-logo span{display:block;margin-top:5px;font:700 clamp(9px,2.7cqw,11.5px)/1 var(--lc-body);letter-spacing:.28em;padding-left:.28em;color:#cbd5e1}
 .lc-logo b,.lc-logo span,.lc-name,.lc-role,.lc-tag{text-shadow:0 2px 14px rgba(0,0,0,.55)}
-.lc-name{margin:clamp(14px,6cqw,26px) 0 0;font:800 clamp(24px,8.6cqw,36px)/1.05 var(--lc-display);overflow-wrap:anywhere}
+.lc-name{margin:clamp(14px,6cqw,26px) 0 0;font:800 clamp(24px,8.6cqw,36px)/1.05 var(--lc-display);overflow-wrap:anywhere;color:#fff;letter-spacing:-.01em;text-wrap:balance}
 .lc-role{margin-top:8px;font:700 clamp(14px,4.1cqw,17px) var(--lc-body)}
 .lc-tag{margin-top:6px;font:400 clamp(12.5px,3.5cqw,14.5px)/1.45 var(--lc-body);color:#dbe5f5;max-width:80cqw}
 .lc-pills{width:100%;display:grid;gap:clamp(10px,3.2cqw,14px);margin-top:clamp(16px,5.4cqw,24px)}

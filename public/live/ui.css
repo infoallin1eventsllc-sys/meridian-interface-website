@@ -1,0 +1,50 @@
+/* Meridian Live Cards UI. One set of tokens and parts for the landing page, the Studio and the small pages around a card.
+   Brand rules (meridian-brand): ink #0f172a, surface #f7f9fd, accent #2563eb used sparingly, Hanken Grotesk 800 for display, Inter for text.
+   The chrome stays quiet so the live card is the only loud thing on screen. One primary (blue) action per view. */
+@font-face{font-family:"Hanken Grotesk";src:url(/fonts/hanken-grotesk-var-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Inter";src:url(/fonts/inter-var-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{
+  --bg:#f7f9fd;--panel:#ffffff;--sunk:#eef2f8;--ink:#0f172a;--text:#191c1f;--muted:#475569;--faint:#64748b;
+  --line:#e2e8f0;--line-strong:#cbd5e1;--accent:#2563eb;--accent-press:#1d4ed8;--accent-soft:#eaf1ff;--link:#1d4ed8;
+  --ok:#047857;--danger:#b91c1c;--danger-line:#fecaca;--on-accent:#ffffff;--ring:rgba(37,99,235,.28);
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px -12px rgba(15,23,42,.18);--device:0 1px 2px rgba(15,23,42,.08),0 30px 60px -28px rgba(15,23,42,.45);
+  --display:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r-s:10px;--r-m:14px;--r-l:20px;--ease:cubic-bezier(.2,.7,.2,1);color-scheme:light}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b1120;--panel:#111a2e;--sunk:#0e1627;--ink:#f1f5f9;--text:#e2e8f0;--muted:#a3b2cc;--faint:#8b9ab5;
+  --line:#22304f;--line-strong:#33456e;--accent:#2563eb;--accent-press:#3b74f0;--accent-soft:#16264d;--link:#8ab4ff;
+  --ok:#34d399;--danger:#fca5a5;--danger-line:#5b2530;--ring:rgba(138,180,255,.4);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -14px rgba(0,0,0,.7);--device:0 1px 2px rgba(0,0,0,.5),0 30px 60px -28px rgba(0,0,0,.9);color-scheme:dark}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+[hidden]{display:none!important}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+h1,h2,h3{font-family:var(--display);font-weight:800;color:var(--ink);letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0}a{color:var(--link)}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* brand: the real mark beside live text, so the words can follow the theme */
+.brand{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.brand img{width:32px;height:auto;display:block}
+.brand b{display:block;font:800 13px/1 var(--display);letter-spacing:.2em}
+.brand i,.brand span span{display:block;margin-top:4px;font:600 9px/1 var(--body);letter-spacing:.28em;color:var(--muted);font-style:normal}
+
+/* buttons: .btn is the one primary action; .ghost is everything else */
+.btn,.ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;font:600 15px/1 var(--body);
+  text-decoration:none;cursor:pointer;border:1px solid transparent;transition:background-color .16s var(--ease),border-color .16s var(--ease),transform .12s var(--ease),box-shadow .16s var(--ease);-webkit-tap-highlight-color:transparent}
+.btn{background:var(--accent);color:var(--on-accent)}
+.btn:hover{background:var(--accent-press)}
+.ghost{background:var(--panel);color:var(--ink);border-color:var(--line-strong)}
+.ghost:hover{border-color:var(--faint)}
+.btn:active,.ghost:active{transform:scale(.98)}
+.btn[disabled],.ghost[disabled]{opacity:.55;cursor:default;transform:none}
+.ghost.danger{color:var(--danger);border-color:var(--danger-line)}
+.btn.small,.ghost.small{min-height:38px;padding:0 14px;font-size:14px;border-radius:10px}
+:where(a,button,input,label,[tabindex]):focus-visible,.btn:focus-within,.ghost:focus-within,.drop:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-color-scheme:dark){:where(a,button,input,label,[tabindex]):focus-visible,.btn:focus-within,.ghost:focus-within,.drop:focus-within{outline-color:var(--link)}}
+
+.note{font:400 13.5px/1.5 var(--body);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.two{display:grid;grid-template-columns:1fr 1fr;align-items:end}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}

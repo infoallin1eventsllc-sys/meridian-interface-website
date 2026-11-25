@@ -8,8 +8,8 @@ const VIDEOS=[{id:'v-ad',name:'Animated ad',col:'Your own video',hint:'This back
 const sig=engine.scenes.filter(s=>s.col==='Signature'),rest=engine.scenes.filter(s=>s.col!=='Signature'),list=[...sig,...VIDEOS,...rest];
 function pick(item,scroll){window.LiveCardView.render(phone,Object.assign({},SAMPLE,{background:item.bg||{type:'scene',id:item.id}}),{engine});hint.textContent=item.hint||'';
   seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===item.id)));
-  if(scroll){const r=phone.getBoundingClientRect();if(r.top<-40||r.bottom>innerHeight+40)phone.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
-let col='',grp;for(const it of list){if(it.col!==col){col=it.col;grp=document.createElement('div');grp.className='grp';const l=document.createElement('div');l.className='col';l.textContent=col;grp.appendChild(l);seg.appendChild(grp)}
-  const b=document.createElement('button');b.type='button';b.dataset.id=it.id;b.textContent=it.name;b.addEventListener('click',()=>pick(it,true));grp.appendChild(b)}
+  if(scroll){const r=phone.getBoundingClientRect();if(r.top<-240||r.bottom>innerHeight+240)phone.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
+for(const it of list){const b=document.createElement('button'),im=document.createElement('img');b.type='button';b.dataset.id=it.id;b.title=it.col;
+  im.src='/live/thumbs/'+it.id+'.jpg';im.alt='';im.width=76;im.height=96;im.loading='lazy';im.decoding='async';b.append(im,it.name);b.addEventListener('click',()=>pick(it,true));seg.appendChild(b)}
 pick(list.find(x=>x.id===(engine.glOK?'ocean':'sunrise'))||list[0],false);
 })();
