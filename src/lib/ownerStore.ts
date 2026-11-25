@@ -420,6 +420,42 @@ async function securityCall<T>(payload: Record<string, unknown>): Promise<T> {
   }
 }
 
+/* --------------------------------------------------------- live cards ---- */
+
+/**
+ * The Live Cards desk talks to its own function (`lc-admin`), which checks the
+ * same owner session as everything else here. It never runs for a visitor or
+ * for a Live Cards client: without a valid owner token the server answers 401.
+ */
+const LIVE_CARDS_ENDPOINT = OWNER_ENDPOINT.replace(/\/owner\/?$/, '/lc-admin');
+
+export type LiveCardRow = {
+  id: string; slug: string; name: string; company: string; published: boolean; blocked: boolean; updated_at: string;
+  account: { id: string; email: string | null; plan: 'free' | 'pro'; pays_through_stripe: boolean };
+};
+export type LiveCardReport = { id: number; slug: string; reason: string; handled: boolean; created_at: string; card: LiveCardRow | null };
+export type LiveCardsOverview = { cards: number; published: number; blocked_accounts: number; paid_accounts: number; open_reports: number };
+
+export async function liveCardsAdmin<T>(payload: Record<string, unknown>): Promise<T> {
+  const token = getToken();
+  const res = await fetch(LIVE_CARDS_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify(payload),
+  });
+  const body = await res.json().catch(() => null);
+  if (res.status === 401) {
+    setToken(null);
+    clearLocal();
+    onRejected?.();
+    throw new UnauthorizedError();
+  }
+  // No such function on the server yet: Live Cards has not been switched on.
+  if (res.status === 404 || body === null || typeof body.ok !== 'boolean') throw new NotDeployedError();
+  if (!res.ok || !body.ok) throw new Error(body.error || `HTTP ${res.status}`);
+  return body as T;
+}
+
 export function securityStatus(): Promise<SecurityStatus> {
   return securityCall<SecurityStatus>({ action: 'security_status' });
 }

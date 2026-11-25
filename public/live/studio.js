@@ -7,6 +7,8 @@ const urls={};const blobUrl=(k,b)=>{if(!b){if(urls[k]){URL.revokeObjectURL(urls[
 const get=(o,path)=>path.split('.').reduce((x,k)=>x==null?x:x[k],o),put=(o,path,v)=>{const ks=path.split('.'),last=ks.pop();ks.reduce((x,k)=>x[k]||(x[k]={}),o)[last]=v};
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},5200)}
 const state=m=>{$('state').textContent=m};
+let plan='',planBusy=false; // paid or free, asked from the service
+const humanOn=/^[0-9A-Za-z_-]{10,60}$/.test(A.config.humanCheck||'')&&A.enabled;let humanToken='',humanId; // human check on sign-in
 {const pv=$('pv'),fit=()=>{phone.style.transform='scale('+(pv.clientWidth/360)+')'};new ResizeObserver(fit).observe(pv);fit()}
 // ---------- preview and saving
 function viewData(){const d=JSON.parse(JSON.stringify(draft.data));if(draft.bgBlob)d.background.url=blobUrl('bg',draft.bgBlob);if(draft.logoBlob)d.logo.url=blobUrl('logo',draft.logoBlob);return d}
@@ -34,11 +36,11 @@ $('f-sound').addEventListener('change',e=>{draft.data.background.sound=e.target.
 const cardLink=()=>(A.config.site||location.origin)+'/c/'+draft.slug;let pendingEmail='';
 function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d}
 function pubView(){dirtyView();const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
-  show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);
+  show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);planView();
   if(user)$('acct-who').textContent='Signed in as '+user.email;$('site-prefix').textContent=(A.config.site||location.origin).replace(/^https?:\/\//,'')+'/c/';
   if(on&&user&&draft.published){$('pub-link').textContent=cardLink();window.QRCode.toCanvas($('pub-qr'),cardLink(),{width:200,margin:1,errorCorrectionLevel:'M'},()=>{});$('pub-share').hidden=!navigator.share}}
 const busy=(btn,on,label)=>{btn.disabled=on;if(label)btn.textContent=label};
-$('pub-email').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button'),em=$('f-acct').value.trim();busy(b,true);try{await A.auth.sendCode(em);pendingEmail=em;pubView();$('f-code').focus()}catch(err){toast(err.status===429?'Too many tries. Wait a minute and try again.':err.message)}busy(b,false)});
+$('pub-email').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button'),em=$('f-acct').value.trim();busy(b,true);try{if(humanOn&&!humanToken){toast('Please complete the check above the button first.');busy(b,false);return}await A.auth.sendCode(em,humanToken);humanToken='';if(humanOn&&window.turnstile)try{window.turnstile.reset(humanId)}catch(_){}pendingEmail=em;pubView();$('f-code').focus()}catch(err){toast(err.status===429?'Too many tries. Wait a minute and try again.':err.message)}busy(b,false)});
 $('code-back').addEventListener('click',()=>{pendingEmail='';pubView()});
 $('pub-code').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button');busy(b,true);
   try{await A.auth.verify(pendingEmail,$('f-code').value);pendingEmail='';$('f-code').value='';await adopt();pubView()}catch(err){toast(err.status===401||err.status===403||err.status===400?'That code did not work. Check it or ask for a new one.':err.message)}busy(b,false)});
@@ -61,9 +63,25 @@ $('pub-go').addEventListener('submit',publish);$('pub-update').addEventListener(
 $('pub-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(cardLink());toast('Link copied')}catch(e){toast(cardLink())}});
 $('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:'My digital business card',url:cardLink()}).catch(()=>{})});
 $('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await A.local.set('draft',draft);state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});
-$('acct-out').addEventListener('click',async()=>{await A.auth.signOut();pubView()});
+$('acct-out').addEventListener('click',async()=>{await A.auth.signOut();plan='';pubView()});
 let delArmed=0;$('acct-del').addEventListener('click',async e=>{if(Date.now()-delArmed>6000){delArmed=Date.now();e.target.textContent='Tap again to delete everything';setTimeout(()=>{e.target.textContent='Delete my account and card'},6000);return}
-  try{await A.auth.deleteAccount();draft.cardId=null;draft.slug='';draft.published=false;await A.local.set('draft',draft);pubView();toast('Your account and public card were deleted.')}catch(err){toast(err.message)}});
+  try{await A.auth.deleteAccount();plan='';draft.cardId=null;draft.slug='';draft.published=false;await A.local.set('draft',draft);pubView();toast('Your account and public card were deleted.')}catch(err){toast(err.message)}});
+// ---------- plan (only when plans are switched on). The price is shown on Stripe's page, never here.
+async function planView(){const on=A.billing.enabled&&!!A.auth.user;$('plan').hidden=!on;if(!on)return;
+  if(!plan&&!planBusy){planBusy=true;try{plan=await A.billing.plan()}catch(e){plan=''}planBusy=false}
+  const pro=plan==='pro';$('plan-note').textContent=!plan?'Your plan could not be checked just now.':pro?'You are on the paid plan.':'You are on the free plan. Your card shows a small "Made with Meridian Live Cards" line.';
+  $('plan-up').hidden=!plan||pro;$('plan-manage').hidden=!pro;$('plan-made').hidden=!pro;$('f-made').checked=draft.data.showMade===false}
+async function planOpen(action,btn){busy(btn,true);try{location.assign(await A.billing.open(action))}catch(err){toast(err.status===409?'This account already has the paid plan.':err.message);busy(btn,false)}}
+$('plan-up').addEventListener('click',e=>planOpen('checkout',e.currentTarget));$('plan-manage').addEventListener('click',e=>planOpen('portal',e.currentTarget));
+$('f-made').addEventListener('change',e=>{draft.data.showMade=!e.target.checked;changed()});
+{const q=new URLSearchParams(location.search),back=q.get('plan');if(back==='thanks'||back==='cancelled'){history.replaceState(null,'',location.pathname);
+  // Arriving back here proves nothing: the plan only changes when the payment service confirms it to the server. So ask the server, a few times.
+  if(back==='cancelled')setTimeout(()=>toast('No payment was taken.'),600);
+  else{setTimeout(()=>toast('Thank you. Your plan updates here within a minute.'),600);let tries=0;const again=async()=>{plan='';await planView();if(plan!=='pro'&&++tries<8)setTimeout(again,5000)};setTimeout(again,2500)}}}
+// ---------- human check on sign-in (only when a key is set in config)
+if(humanOn){$('human').hidden=false;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;
+  s.onload=()=>{try{humanId=window.turnstile.render($('human'),{sitekey:A.config.humanCheck,callback:t=>{humanToken=t},'expired-callback':()=>{humanToken=''},'error-callback':()=>{humanToken=''}})}catch(e){$('human').textContent='The human check could not start. Reload the page.'}};
+  s.onerror=()=>{$('human').textContent='The human check could not load. Check your connection and reload.'};document.head.appendChild(s)}
 // ---------- install
 let installEvt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('install-btn').hidden=false;$('install-how').hidden=true});
 $('install-btn').addEventListener('click',async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice.catch(()=>{});installEvt=null;$('install-btn').hidden=true});

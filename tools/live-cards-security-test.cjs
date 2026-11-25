@@ -1,10 +1,10 @@
 // End-to-end run of Live Cards under the exact headers in vercel.json, with a stand-in for the service that enforces the same rules as the database.
-// Run: build the site, serve it on port 4799 (npx vite preview --port 4799), then: node tools/live-cards-security-test.cjs   (needs Playwright). Nothing real is contacted; the service is a stand-in inside the test.
+// Run: build the site, serve it on port 4799 (npx vite preview --port 4799), then: node tools/live-cards-security-test.cjs   (needs Playwright; if its own browser is missing, set CHROMIUM_PATH to a Chromium binary). Nothing real is contacted; the service is a stand-in inside the test.
 const {chromium}=require('playwright');const fs=require('fs'),path=require('path');
 const SITE=require('path').resolve(__dirname,'..'),B='http://localhost:4799',SB='https://glzodwhyavexpuusbqjy.supabase.co';
 const V=JSON.parse(fs.readFileSync(SITE+'/vercel.json','utf8'));const rules=V.headers.map(h=>({re:new RegExp('^'+h.source+'$'),headers:h.headers}));
 const out=[];const T=(ok,name,extra)=>{out.push((ok?'PASS ':'FAIL ')+name+(extra&&!ok?' :: '+extra:''));};
-(async()=>{const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+(async()=>{const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
 const ctx=await b.newContext({viewport:{width:390,height:844}});
 const UID='11111111-2222-4333-8444-555555555555',files=new Map(),reports=[];let card=null,otpSent=0,calls=[];
 const tok='t.'+Buffer.from(JSON.stringify({sub:UID})).toString('base64')+'.s';

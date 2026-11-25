@@ -1,7 +1,11 @@
 /* Meridian Live Cards: the one place that saves and loads. Two homes for a card:
    the device (IndexedDB, always available, private to this phone) and the service (accounts, public links), used only when switched on. */
 (function(){'use strict';
-const C=window.LIVE_CARDS_CONFIG||{},ON=!!(C.enabled&&/^https:\/\/[a-z0-9.-]+$/.test(C.url||'')&&C.key&&/^[a-z0-9-]{3,40}$/.test(C.bucket||'')),SKEY='lc_session';
+const C=window.LIVE_CARDS_CONFIG||{};
+// When the app has its own address, it runs only there. Anywhere else: drop any sign-in kept here and go to the right place.
+if(/^https:\/\/[a-z0-9.-]+$/.test(C.appOrigin||'')&&/^https?:$/.test(location.protocol)&&location.origin!==C.appOrigin&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
+  try{localStorage.removeItem('lc_session')}catch(e){}location.replace(C.appOrigin+location.pathname+location.search);throw new Error('Live Cards runs at '+C.appOrigin)}
+const ON=!!(C.enabled&&/^https:\/\/[a-z0-9.-]+$/.test(C.url||'')&&C.key&&/^[a-z0-9-]{3,40}$/.test(C.bucket||'')),SKEY='lc_session';
 // ---------- device storage
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('meridian-live-cards',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function kv(mode,fn){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction('kv',mode),rq=fn(tx.objectStore('kv'));tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error)})}

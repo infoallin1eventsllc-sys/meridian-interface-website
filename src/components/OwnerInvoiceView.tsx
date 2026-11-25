@@ -135,6 +135,7 @@ const ANSWER_GROUPS = CLIENT_EXPLAINERS.reduce<{ category: string; items: Client
 import { OwnerPhotoControl } from './OwnerPhotoControl';
 import { ErrorBoundary } from './ErrorBoundary';
 import { SecurityPanel } from './SecurityPanel';
+import { OwnerLiveCards } from './OwnerLiveCards';
 import { daysFromToday, todayISO } from '../lib/dates';
 import {
   portalStatus,
@@ -170,7 +171,7 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
   const [offline, setOffline] = useState(false);
 
   // Which area of the portal is showing: invoices/pricing or photo control.
-  const [portalTab, setPortalTab] = useState<'invoices' | 'picks' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos' | 'security'>('invoices');
+  const [portalTab, setPortalTab] = useState<'invoices' | 'picks' | 'marketing' | 'answers' | 'links' | 'health' | 'stack' | 'photos' | 'security' | 'livecards'>('invoices');
 
   // Pricing Reference Sub-Tab State
   const [pricingTab, setPricingTab] = useState<'bundles' | 'logo' | 'web' | 'presets'>('bundles');
@@ -1074,7 +1075,9 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
           { id: 'stack', label: 'Tech Stack', icon: 'account_tree' },
           { id: 'photos', label: 'Photo Control', icon: 'photo_camera' },
           // "shield" checked against the subset font's ligature table (30 Sep).
-          { id: 'security', label: 'Security', icon: 'shield' }
+          { id: 'security', label: 'Security', icon: 'shield' },
+          // "badge" checked against the subset font's ligature table (24 Nov).
+          { id: 'livecards', label: 'Live Cards', icon: 'badge' }
         ] as const).map((t) => (
           <button
             key={t.id}
@@ -1159,6 +1162,11 @@ export const OwnerInvoiceView: React.FC<OwnerInvoiceViewProps> = () => {
       {portalTab === 'security' && (
         <ErrorBoundary label="Security">
           <SecurityPanel />
+        </ErrorBoundary>
+      )}
+      {portalTab === 'livecards' && (
+        <ErrorBoundary label="Live Cards">
+          <OwnerLiveCards />
         </ErrorBoundary>
       )}
 

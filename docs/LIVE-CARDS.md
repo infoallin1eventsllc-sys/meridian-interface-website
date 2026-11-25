@@ -22,18 +22,29 @@ The browser is never trusted; the rules live in the database and in two payment 
 - `card-view.js` and `engine.js` accept a picture or video only from this device, the site's own sample and brand folders, or a client's own folder in the file store.
 - `tools/live-cards-security-test.cjs` runs the whole journey under that policy against a stand-in service: 36 checks, all passing on 24 Nov 2026.
 
-## Going live (in order; none of this has been done)
-1. Decide the app's address. Recommended: its own, such as cards.meridianinterface.com, so the app's sign-in is walled off from the demo pages.
-2. Database: apply `system/supabase/migrations/0047_live_cards.sql` from the all-in-1-events-2 repo. It was attack-tested on 24 Nov 2026 inside a thrown-away transaction (53 checks passed, nothing left behind). Then run the service's security advisor.
-3. Sign-in emails (Supabase dashboard, Authentication): email sign-in on; the template must show the 6-digit code (`{{ .Token }}`); ten-minute expiry; a real email sender; a human check on sign-up.
-4. `config.js`: paste the project's publishable key into `key` and set `enabled:true`. Leave `billing:false`.
-5. Run meridian-prelaunch-qa and the security test, then merge.
-6. Test on real phones: sign up, add a photo and a video, publish, edit and update, open the link on another phone, report the card, delete the account.
-7. Moderation: read `lc_reports`; to take a card down set `lc_cards.blocked = true` (owner tools only).
-8. Plans: `lc_accounts.plan` is `free` (1 card) or `pro` (5 cards). The app cannot change it. Payment functions `lc-billing` and `lc-billing-webhook` are written and tested (31 checks) but not deployed; they need a Stripe price, a webhook signing secret, and a test-mode rehearsal. Pricing is Otis's decision. Then `billing:true` and a button in the Studio.
+## Switches in `public/live/config.js` (all off)
+| Switch | What it does |
+|---|---|
+| `enabled` | Accounts, publishing and public links. Off: the Studio saves on the device only. |
+| `billing` | Shows "Your plan" in the Studio (Upgrade, Manage, hide the Made-with line). Needs the two payment functions deployed. No price is ever shown here; Stripe's page shows it. |
+| `appOrigin` | The app's own address. When set, the Studio and card pages refuse to run anywhere else and move the visitor there. |
+| `humanCheck` | A Cloudflare Turnstile site key. When set, asking for a sign-in code needs a passed check. Also needs one agreed line in the Live Cards policy. |
+
+## Owner desk
+The Studio portal has a Live Cards tab (`src/components/OwnerLiveCards.tsx`): reports from visitors, find a card, take it down, put it back, set a plan by hand, remove a blocked account's files. It talks to the `lc-admin` function, which checks the owner session. Until that function is deployed the tab says Live Cards is not switched on.
+
+## Tests (all in `tools/`, all against stand-ins; nothing real is contacted)
+Build, serve on port 4799 (`npx vite preview --port 4799`), then:
+- `live-cards-security-test.cjs`: the whole client journey under the real headers, 36 checks.
+- `live-cards-plans-test.cjs`: plans, the human check, the own-address switch, 19 checks.
+- `live-cards-owner-test.cjs`: the owner desk on desktop and phone, 24 checks.
+If Playwright's own browser is missing, set `CHROMIUM_PATH`.
+
+## Going live
+Nothing has been done. The steps, in order, are in `system/products/live-cards/launch/RUNBOOK.md` in the all-in-1-events-2 repo, and what is still open is in `WHATS-LEFT.md` beside it.
 
 ## Not built yet
-An upgrade button in the Studio, an owner screen for reports and plans, sign-in with Apple or Google, video trimming inside the app (the app asks people to trim in Photos), per-card visit counts.
+Managing more than one card in the Studio, sign-in with Apple or Google, video trimming inside the app (the app asks people to trim in Photos), per-card visit counts.
 
 ## Store apps
 See `mobile/README.md`.
