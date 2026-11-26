@@ -114,6 +114,14 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   const d=S.card&&S.card.data;T(!!d&&d.photo.url.endsWith('/'+names[1])&&d.preview.url.endsWith('/'+names[0])&&d.hours==='Mon to Fri, 9 am to 5 pm'&&d.actions.address==='123 Main St, Katy, TX 77494'&&d.actions.cashapp==='RiversRealty'&&d.actions.venmo==='rivers-realty'&&d.actions.zelle==='pay@riversrealty.example'&&d.actions.review==='https://g.page/r/riversrealty/review','the saved card holds the new details exactly as the service accepted them',JSON.stringify(d&&d.actions));
   const og=files.get(UID+'/'+names[0]),buf=og&&og.buf;let dim=null;if(buf){for(let i=2;i<buf.length-9;){if(buf[i]!==0xFF)break;const mk=buf[i+1],len=buf.readUInt16BE(i+2);if(mk>=0xC0&&mk<=0xC3){dim=[buf.readUInt16BE(i+7),buf.readUInt16BE(i+5)];break}i+=2+len}}
   T(!!og&&og.type==='image/jpeg'&&!!dim&&dim[0]===1200&&dim[1]===630&&buf.length>15000&&buf.length<600000,'the link preview picture is a 1200 by 630 JPEG of a sensible size',JSON.stringify({dim,bytes:buf&&buf.length}));
+  // take it with you: files made on the device
+  const grab=async sel=>{const [dl]=await Promise.all([p.waitForEvent('download',{timeout:15000}),p.click(sel)]);return {name:dl.suggestedFilename(),buf:fs.readFileSync(await dl.path())}};
+  const qr=await grab('#dl-qr');T(qr.name==='jordan-rivers-qr.png'&&qr.buf.slice(1,4).toString()==='PNG'&&qr.buf.readUInt32BE(16)>=1500&&qr.buf.readUInt32BE(16)===qr.buf.readUInt32BE(20),'the print QR code downloads as a large square PNG',qr.name+' '+qr.buf.readUInt32BE(16));
+  const lk=await grab('#dl-lock');let ld=null;for(let i=2;i<lk.buf.length-9;){if(lk.buf[i]!==0xFF)break;const mk=lk.buf[i+1],len=lk.buf.readUInt16BE(i+2);if(mk>=0xC0&&mk<=0xC3){ld=[lk.buf.readUInt16BE(i+7),lk.buf.readUInt16BE(i+5)];break}i+=2+len}
+  T(lk.name==='jordan-rivers-lock-screen.jpg'&&!!ld&&ld[0]===1290&&ld[1]===2796,'the lock screen picture downloads at phone size',lk.name+' '+ld);
+  await p.click('#dl-sig');await p.waitForTimeout(500);const sig=await p.evaluate(async()=>{try{const it=(await navigator.clipboard.read())[0];return {html:await (await it.getType('text/html')).text(),text:await (await it.getType('text/plain')).text()}}catch(e){return {err:String(e)}}});
+  T(sig.err?/Copied/.test(await p.$eval('#dl-note',e=>e.textContent)):(sig.html.includes('href="https://meridianinterface.com/c/jordan-rivers"')&&sig.html.includes('Jordan Rivers')&&!/<script|onerror/i.test(sig.html)&&/My digital card: https:\/\/meridianinterface\.com\/c\/jordan-rivers/.test(sig.text)),'the email signature is copied with the name and the card link',JSON.stringify(sig).slice(0,200));
+  T(await p.$eval('#dl-nfc',e=>e.hidden),'the tap card button stays hidden on a device that cannot write one');
   await p.close()}
 // the public link: served by the real function, with this card's own title and picture
 {const p=await page('/c/jordan-rivers');const html=(S.pages.find(x=>x.path==='/c/jordan-rivers')||{}).html||'';

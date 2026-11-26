@@ -127,6 +127,33 @@ async function publish(e){e.preventDefault();const again=!!(draft.published&&dra
     await A.local.set('draft',draft);A.cards.tidy(filesOf(draft.data));fill();lastBg='';paint();state('Published');pubView()}
   catch(err){toast(err.code==='23505'?'That link is taken. Try another.':err.message)}busy(b,false,label)}
 $('pub-go').addEventListener('submit',publish);$('pub-update').addEventListener('click',publish);
+// ---------- take it with you: files made on this device from the card and its link
+const saveFile=(blob,name)=>{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)};
+const qrCanvas=size=>new Promise((res,rej)=>{const c=document.createElement('canvas');window.QRCode.toCanvas(c,cardLink(),{width:size,margin:2,errorCorrectionLevel:'M'},e=>e?rej(e):res(c))});
+const said=m=>{$('dl-note').textContent=m},blobOf=(c,type,q)=>new Promise(r=>c.toBlob(r,type,q)),html=s=>String(s).replace(/[&<>"']/g,ch=>'&#'+ch.charCodeAt(0)+';');
+/** A phone lock-screen picture: the card's background with its QR code. The top third is left clear for the clock and the bottom for the phone's own buttons. */
+async function lockScreen(){const W=1290,H=2796,cv=document.createElement('canvas'),x=cv.getContext('2d'),c=V.normalize(viewData()),b=c.background,D='"Hanken Grotesk","Helvetica Neue",Arial,sans-serif',B='"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';cv.width=W;cv.height=H;
+  try{await Promise.all([document.fonts.load('800 80px "Hanken Grotesk"'),document.fonts.load('600 30px "Inter"')])}catch(e){}
+  const back=b.type==='scene'?await loadImg('/live/thumbs/'+b.id+'.jpg'):b.type==='image'?await loadImg(b.url):await videoFrame(b.url),qr=await qrCanvas(640);
+  x.fillStyle='#0f172a';x.fillRect(0,0,W,H);if(back){x.save();if(b.type==='scene'&&'filter' in x)x.filter='blur(6px)';cover(x,back,-30,-30,W+60,H+60);x.restore()}
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(6,11,30,.45)');g.addColorStop(1,'rgba(6,11,30,.7)');x.fillStyle=g;x.fillRect(0,0,W,H);
+  const cw=840,ch=1040,cx=(W-cw)/2,cy=1170;x.save();x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=60;x.shadowOffsetY=24;x.fillStyle='#fff';x.beginPath();if(x.roundRect)x.roundRect(cx,cy,cw,ch,64);else x.rect(cx,cy,cw,ch);x.fill();x.restore();
+  x.drawImage(qr,cx+(cw-640)/2,cy+70,640,640);x.textAlign='center';x.textBaseline='top';x.fillStyle='#0f172a';
+  let size=68;x.font='800 '+size+'px '+D;while(size>40&&x.measureText(c.name).width>cw-100){size-=4;x.font='800 '+size+'px '+D}x.fillText(lines(x,c.name,cw-100,1)[0],W/2,cy+740);
+  const sub=[c.role,c.company].filter(Boolean).join(', ');if(sub){x.font='500 36px '+B;x.fillStyle='#475569';x.fillText(lines(x,sub,cw-100,1)[0],W/2,cy+830)}
+  x.font='600 36px '+B;x.fillStyle=c.accent;x.fillText('Scan to open my card',W/2,cy+925);return cv}
+function signature(){const c=V.normalize(draft.data),a=c.actions,sub=[c.role,c.company].filter(Boolean).join(', '),rows=[a.phone,a.email].filter(Boolean);
+  // Old-style attributes instead of style="": every email app understands them, and the page's own security policy forbids inline styles.
+  const F='<font face="Arial,Helvetica,sans-serif" ';
+  return {html:'<table cellpadding="0" cellspacing="0" border="0"><tr><td>'+F+'color="#0f172a" size="3"><b>'+html(c.name)+'</b></font>'+(sub?'<br>'+F+'color="#475569" size="2">'+html(sub)+'</font>':'')+'</td><td width="14"></td><td width="3" bgcolor="'+c.accent+'"></td><td width="14"></td>'
+      +'<td>'+F+'color="#0f172a" size="2">'+rows.map(r=>html(r)+'<br>').join('')+'<a href="'+html(cardLink())+'">'+F+'color="'+c.accent+'"><b>Open my digital card</b></font></a></font></td></tr></table>',
+    text:[c.name,sub].concat(rows,['My digital card: '+cardLink()]).filter(Boolean).join('\n')}}
+$('dl-qr').addEventListener('click',async()=>{try{saveFile(await blobOf(await qrCanvas(1600),'image/png'),draft.slug+'-qr.png');said('Saved. This size prints sharp on flyers, signs and paper cards.')}catch(e){said('The QR code could not be made. Try again.')}});
+$('dl-lock').addEventListener('click',async()=>{try{saveFile(await blobOf(await lockScreen(),'image/jpeg',.9),draft.slug+'-lock-screen.jpg');said('Saved. Set it as your lock screen in your phone\'s wallpaper settings, then just show your phone.')}catch(e){said('The picture could not be made. Try again.')}});
+$('dl-sig').addEventListener('click',async()=>{const s=signature();try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([s.html],{type:'text/html'}),'text/plain':new Blob([s.text],{type:'text/plain'})})]);said('Copied. Paste it into the signature box in your email settings.')}
+  catch(e){try{await navigator.clipboard.writeText(s.text);said('Copied as plain text. Paste it into the signature box in your email settings.')}catch(e2){said(s.text)}}});
+// A tap card (NFC): a blank card or sticker that opens this link when touched to a phone. Only some phones can write one, so the button only shows there.
+if('NDEFReader' in window){$('dl-nfc').hidden=false;$('dl-nfc').addEventListener('click',async()=>{said('Hold a blank tap card or sticker to the back of your phone.');try{await new window.NDEFReader().write({records:[{recordType:'url',data:cardLink()}]});said('Done. Touch that card to any phone and yours opens.')}catch(e){said('The tap card was not written. Check that NFC is on, then try again.')}})}
 $('pub-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(cardLink());toast('Link copied')}catch(e){toast(cardLink())}});
 $('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:'My digital business card',url:cardLink()}).catch(()=>{})});
 $('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await A.local.set('draft',draft);state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});

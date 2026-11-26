@@ -130,3 +130,4 @@ form label{width:100%}
 .face-adj{display:grid;gap:8px;max-width:320px}
 .face-adj input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--accent)}
 #starts button{min-height:44px}
+.downloads{display:grid;gap:12px;justify-items:start;width:100%;border-top:1px solid var(--line);padding-top:18px}
