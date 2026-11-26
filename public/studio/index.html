@@ -20,13 +20,15 @@
     </div>
     <div class="pane" role="tabpanel" id="p-details" aria-labelledby="t-details">
       <div class="pane-h"><h2>Details</h2><p>Who you are. This is the top of your card.</p></div>
+      <div class="lab" role="group" aria-labelledby="st-l"><span id="st-l">Start with your trade (optional)</span><div class="seg" id="starts"></div><p class="note" id="st-note">Fills in a title, a line, a booking button and a background. Change anything after.</p></div>
       <label>Your name<input type="text" id="f-name" data-k="name" maxlength="60" autocomplete="name" placeholder="Jordan Rivers"></label>
       <label>Business name<input type="text" id="f-company" data-k="company" maxlength="60" autocomplete="organization" placeholder="Rivers Realty"></label>
       <label>Title<input type="text" id="f-role" data-k="role" maxlength="60" autocomplete="organization-title" placeholder="Realtor"></label>
       <label>One line about what you do<input type="text" id="f-tagline" data-k="tagline" maxlength="90" placeholder="Homes in Katy and West Houston"></label>
       <fieldset><legend>Photo of you</legend>
         <div class="row face-row"><img class="face-pv" id="face-pv" alt="" width="64" height="64" hidden><label class="ghost" for="f-photo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg><span id="photo-word">Add your photo</span><input class="vh" type="file" id="f-photo" accept="image/*"></label><button type="button" class="ghost" id="photo-clear" aria-label="Remove photo" hidden>Remove</button></div>
-        <p class="note">A clear photo of your face. It shows in a circle.</p>
+        <div class="face-adj" id="face-adj" hidden><label>Zoom<input type="range" id="f-zoom" min="1" max="3" step="0.05" value="1"></label><p class="note">Drag the photo to move it.</p></div>
+        <p class="note" id="face-note">A clear photo of your face. It shows in a circle.</p>
       </fieldset>
       <fieldset><legend>Logo</legend>
         <div class="row"><label class="ghost" for="f-logo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3M16 8l-4-4-4 4M12 4v12"/></svg>Upload a logo<input class="vh" type="file" id="f-logo" accept="image/*"></label><button type="button" class="ghost" id="logo-clear" hidden>Remove logo</button></div>

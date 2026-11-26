@@ -24,7 +24,7 @@ function wordmark(name){const w=name.split(/\s+/).filter(Boolean);if(w.length<2)
 const mapLink=a=>'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(a);
 /** A picture or video may only come from three places: this device (blob:), this site's own sample and brand folders, or a client's own folder in the Live Cards file store. Anything else is dropped. */
 const CFG=window.LIVE_CARDS_CONFIG||{},STORE=((/^https:\/\/[a-z0-9.-]+$/.test(CFG.url||'')?CFG.url:'https://glzodwhyavexpuusbqjy.supabase.co')+'/storage/v1/object/public/'+(/^[a-z0-9-]{3,40}$/.test(CFG.bucket||'')?CFG.bucket:'live-cards')+'/').replace(/[.]/g,'\\.');
-const MEDIA=new RegExp('^'+STORE+'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/(bg|logo|photo|og)-[a-z0-9]{1,16}\\.(jpg|mp4|mov|webm)$');
+const MEDIA=new RegExp('^'+STORE+'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/((bg|logo|photo|og)-[a-z0-9]{1,16}\\.(jpg|mp4|mov|webm)|logo-[a-z0-9]{1,16}\\.png)$');
 function media(u){if(typeof u!=='string'||u.length>400)return'';if(/^blob:https?:\/\/[\w.:-]+\/[0-9a-f-]{36}$/i.test(u))return u;if(/^\/(brand|live\/samples)\/[\w-]+(\.[\w-]+)*$/.test(u))return u;return MEDIA.test(u)?u:''}
 function vcard(c){const esc=s=>String(s).replace(/[\r\n]+/g,' ').replace(/([\\;,])/g,'\\$1'),parts=c.name.split(' '),last=parts.length>1?parts.pop():'',first=parts.join(' ');
   const L=['BEGIN:VCARD','VERSION:3.0',`N:${esc(last)};${esc(first)};;;`,`FN:${esc(c.name)}`];if(c.company)L.push(`ORG:${esc(c.company)}`);if(c.role)L.push(`TITLE:${esc(c.role)}`);

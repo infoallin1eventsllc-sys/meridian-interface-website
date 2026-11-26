@@ -53,10 +53,22 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
 {const p=await page('/studio/');await p.click('#t-publish');await p.waitForTimeout(400);
   T(await p.$eval('#todo',e=>!e.hidden)&&(await p.$$eval('#ready li',l=>l.map(x=>x.textContent))).join('|')==='Add your name|Add at least one way to reach you','an empty card is told exactly what is missing before sharing');
   await p.click('#ready li button');T(await p.$eval('#p-details',e=>!e.hidden),'tapping a missing item opens the tab where it is fixed');
+  // starting points by trade
+  await p.click('#starts button[data-id=barber]');await p.waitForTimeout(500);
+  const st=()=>p.evaluate(()=>({role:document.getElementById('f-role').value,tag:document.getElementById('f-tagline').value,book:document.getElementById('f-blabel').value,scene:(document.querySelector('#scenes button[aria-pressed=true]')||{dataset:{}}).dataset.id,accent:(document.querySelector('#swatches button[aria-pressed=true]')||{dataset:{}}).dataset.c,on:[...document.querySelectorAll('#starts button[aria-pressed=true]')].map(b=>b.dataset.id).join()}));
+  let v=await st();T(v.role==='Barber'&&v.tag==='Fresh cuts and sharp fades'&&v.book==='Book a cut'&&v.scene==='ribbon'&&v.accent==='#111827'&&v.on==='barber','a starting point fills the title, line, booking words, background and color',JSON.stringify(v));
+  await p.fill('#f-tagline','Best fades in Katy');await p.click('#starts button[data-id=restaurant]');await p.waitForTimeout(500);v=await st();
+  T(v.role==='Restaurant'&&v.tag==='Best fades in Katy'&&v.book==='Reserve a table'&&v.scene==='fire'&&v.on==='restaurant','switching starting points never overwrites what the client typed',JSON.stringify(v));
+  await p.fill('#f-role','');await p.fill('#f-tagline','');
   await p.fill('#f-name','Jordan Rivers');await p.fill('#f-company','Rivers Realty');await p.waitForTimeout(400);
   T((await p.$eval('#lc .lc-logo',e=>[...e.querySelectorAll('b,span')].map(x=>x.textContent).join('/')))==='Rivers/Realty'&&!(await p.$('#f-l1')),'with no logo the business name stands in for it, typed once');
   await p.fill('#f-company','Katy Family Dental Care');await p.waitForTimeout(300);T((await p.$eval('#lc .lc-logo',e=>[...e.querySelectorAll('b,span')].map(x=>x.textContent).join('/')))==='Katy Family/Dental Care','a longer business name is set on two balanced lines');
   await p.setInputFiles('#f-logo',PHOTO);await p.waitForTimeout(800);T(await p.$eval('#lc .lc-logo',e=>!!e.querySelector('img')&&!e.querySelector('b')),'an uploaded logo replaces the business name on the card');
+  // a see-through logo stays see-through (saved as PNG); a solid one is saved as JPG
+  const kinds=await p.evaluate(async()=>{const A=window.LiveCardsAPI,mk=(clear)=>new Promise(r=>{const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d');if(!clear){x.fillStyle='#fff';x.fillRect(0,0,200,200)}x.fillStyle='#c00';x.beginPath();x.arc(100,100,60,0,7);x.fill();c.toBlob(r,'image/png')});
+    const a=await A.shrinkImage(await mk(true),{max:800,alpha:true}),b=await A.shrinkImage(await mk(false),{max:800,alpha:true}),c=await A.shrinkImage(await mk(true),{max:800});
+    const im=await createImageBitmap(a),cv=document.createElement('canvas');cv.width=cv.height=200;const x=cv.getContext('2d');x.drawImage(im,0,0);return {a:a.type,b:b.type,c:c.type,corner:x.getImageData(2,2,1,1).data[3]}});
+  T(kinds.a==='image/png'&&kinds.corner===0&&kinds.b==='image/jpeg'&&kinds.c==='image/jpeg','a see-through logo keeps its see-through background; everything else is saved as JPG',JSON.stringify(kinds));
   await p.click('#logo-clear');await p.fill('#f-company','Rivers Realty');await p.click('#t-buttons');await p.fill('#f-phone','281-555-0142');await p.click('#t-publish');await p.waitForTimeout(400);
   T(await p.$eval('#todo',e=>e.hidden),'once nothing is missing the list is gone');
   T(await p.$eval('#install',e=>e.hidden),'home screen steps are hidden on a computer (they show only the steps for the phone in hand)');
@@ -67,6 +79,13 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   const face=await p.$eval('#lc .lc-face',async im=>{await im.decode().catch(()=>{});return {w:im.naturalWidth,h:im.naturalHeight,src:im.src.slice(0,5),alt:im.alt,round:getComputedStyle(im).borderRadius}}).catch(()=>null);
   T(!!face&&face.w===face.h&&face.w>0&&face.w<=640&&face.src==='blob:'&&face.alt==='Photo of Jordan Rivers'&&face.round==='50%','a headshot is cut to a square on the device and shown in a circle with a description',JSON.stringify(face));
   T(await p.$eval('#photo-clear',e=>!e.hidden)&&await p.$eval('#face-pv',e=>!e.hidden),'the Details tab shows the photo with a way to remove it');
+  // move and zoom the photo inside its circle
+  const avg=()=>p.$eval('#lc .lc-face',async im=>{await im.decode().catch(()=>{});const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');x.drawImage(im,0,0,32,32);const d=x.getImageData(0,0,32,32).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]*3+d[i+1]*5+d[i+2]*7;return s});
+  T(await p.$eval('#face-adj',e=>!e.hidden)&&await p.$eval('#face-pv',e=>e.classList.contains('drag')&&e.tabIndex===0),'a new photo can be moved and zoomed');
+  await p.$eval('#face-pv',e=>{const r=e.getBoundingClientRect();scrollBy(0,r.top-innerHeight*.78)});await p.waitForTimeout(200);const a0=await avg(),box=await (await p.$('#face-pv')).boundingBox();await p.mouse.move(box.x+box.width/2,box.y+box.height/2);await p.mouse.down();await p.mouse.move(box.x+box.width/2-50,box.y+box.height/2-50,{steps:4});await p.mouse.up();await p.waitForTimeout(500);const a1=await avg();
+  T(a1!==a0,'dragging the photo moves it inside the circle',a0+' '+a1);
+  await p.$eval('#f-zoom',e=>{e.value='2';e.dispatchEvent(new Event('input',{bubbles:true}))});await p.waitForTimeout(500);const a2=await avg();T(a2!==a1&&await p.$eval('#lc .lc-face',im=>im.naturalWidth===im.naturalHeight),'zooming changes the cut and keeps it square',a1+' '+a2);
+  await p.focus('#face-pv');await p.keyboard.press('ArrowLeft');await p.keyboard.press('ArrowDown');await p.waitForTimeout(400);T((await avg())!==a2,'arrow keys move the photo too (no mouse or finger needed)');
   // hostile values in the new boxes never become buttons
   await p.click('#t-buttons');await p.fill('#f-phone','281-555-0142');await p.fill('#f-email','jordan@riversrealty.example');
   await p.fill('#f-review','javascript:alert(1)');await p.fill('#f-cash','bad name"><script>');await p.fill('#f-venmo','x');await p.fill('#f-zelle','<script>alert(1)</script>');await p.fill('#f-addr','');await p.waitForTimeout(500);
@@ -121,6 +140,8 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
 // the file limit: a full store still refuses the next upload (stand-in mirrors the 12 file rule)
 {const p=await page('/studio/');const r=await p.evaluate(async()=>{const A=window.LiveCardsAPI,blob=new Blob([new Uint8Array(2000)],{type:'image/jpeg'});let ok=0,err='';for(let i=0;i<14;i++){try{await A.cards.upload(blob,'bg');ok++}catch(e){err=e.message}}
     let vid='';try{await A.cards.upload(new Blob([new Uint8Array(10)],{type:'video/mp4'}),'photo')}catch(e){vid=e.code}return {ok,err,vid}});
-  T(r.ok===11&&/row-level security/.test(r.err),'the account file limit holds (12 files)',JSON.stringify(r));T(r.vid==='type','a video is refused as a headshot before it is sent');await p.close()}
+  T(r.ok===11&&/row-level security/.test(r.err),'the account file limit holds (12 files)',JSON.stringify(r));T(r.vid==='type','a video is refused as a headshot before it is sent');
+  const png=await p.evaluate(async()=>{const A=window.LiveCardsAPI,b=new Blob([new Uint8Array(10)],{type:'image/png'}),o={};for(const k of ['bg','photo','og']){try{await A.cards.upload(b,k);o[k]='sent'}catch(e){o[k]=e.code}}return o});
+  T(png.bg==='type'&&png.photo==='type'&&png.og==='type','a PNG is refused everywhere except as a logo',JSON.stringify(png));await p.close()}
 T(errs.length===0,'no page errors and nothing blocked by the policy during normal use',errs.slice(0,6).join(' | '));
 console.log(out.join('\n'));console.log(out.filter(x=>x.startsWith('FAIL')).length+' FAIL of '+out.length);await b.close()})().catch(e=>{console.log(out.join('\n'));console.error('CRASH',e.stack);process.exit(1)});

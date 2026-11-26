@@ -2,7 +2,7 @@
 (function(){'use strict';
 const A=window.LiveCardsAPI,V=window.LiveCardView,$=id=>document.getElementById(id),phone=$('lc'),engine=window.LiveCard.init(phone);
 const ACCENTS=['#2563eb','#0f766e','#b45309','#be123c','#6d28d9','#111827'],SLUG=/^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-let draft={data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,cardId:null,slug:'',published:false};
+let draft={data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,photoSrc:null,photoPos:{x:.5,y:.5,z:1},cardId:null,slug:'',published:false};
 const urls={};const blobUrl=(k,b)=>{if(!b){if(urls[k]){URL.revokeObjectURL(urls[k].u);delete urls[k]}return''}if(!urls[k]||urls[k].b!==b){if(urls[k])URL.revokeObjectURL(urls[k].u);urls[k]={b,u:URL.createObjectURL(b)}}return urls[k].u};
 const get=(o,path)=>path.split('.').reduce((x,k)=>x==null?x:x[k],o),put=(o,path,v)=>{const ks=path.split('.'),last=ks.pop();ks.reduce((x,k)=>x[k]||(x[k]={}),o)[last]=v};
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},5200)}
@@ -16,12 +16,25 @@ let lastBg='';function paint(){const d=viewData(),bgKey=JSON.stringify(d.backgro
 let saveT;let linkT;function changed(){if(draft.published){draft.dirty=true;dirtyView()}paint();if(!$('p-publish').hidden){clearTimeout(linkT);linkT=setTimeout(linkView,500)}clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await A.local.set('draft',draft);state(draft.published?'Saved here. On the Share tab, tap Update my live card.':'Saved on this device')},350)}
 // ---------- form
 function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(draft.data,el.dataset.k);if(el.type==='checkbox')el.checked=!!v;else el.value=v||''});
-  $('logo-clear').hidden=!(draft.logoBlob||draft.data.logo.url);{const u=draft.photoBlob?blobUrl('photo',draft.photoBlob):V.media((draft.data.photo||{}).url),im=$('face-pv');im.hidden=!u;if(u&&im.getAttribute('src')!==u)im.src=u;$('photo-clear').hidden=!u;$('photo-word').textContent=u?'Change':'Add your photo'}
+  $('logo-clear').hidden=!(draft.logoBlob||draft.data.logo.url);{const u=draft.photoBlob?blobUrl('photo',draft.photoBlob):V.media((draft.data.photo||{}).url),im=$('face-pv');im.hidden=!u;if(u&&im.getAttribute('src')!==u)im.src=u;$('photo-clear').hidden=!u;$('photo-word').textContent=u?'Change':'Add your photo';const adj=!!(u&&draft.photoSrc);$('face-adj').hidden=!adj;$('face-note').hidden=adj;im.classList.toggle('drag',adj);im.tabIndex=adj?0:-1;if(adj){im.setAttribute('aria-label','Your photo. Drag, or use the arrow keys, to move it.');$('f-zoom').value=draft.photoPos.z}else im.removeAttribute('aria-label')}
  const own=draft.data.background.type!=='scene';$('own-opts').hidden=!own;
   $('fit-fill').setAttribute('aria-pressed',String(draft.data.background.fit!=='band'));$('fit-band').setAttribute('aria-pressed',String(draft.data.background.fit==='band'));$('f-sound').checked=draft.data.background.sound!==false;
   document.querySelectorAll('#scenes button').forEach(b=>b.setAttribute('aria-pressed',String(!own&&b.dataset.id===draft.data.background.id)));
+  document.querySelectorAll('#starts button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===draft.start)));
   document.querySelectorAll('#swatches button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===draft.data.accent)));$('f-slug').value=draft.slug||''}
 document.querySelectorAll('[data-k]').forEach(el=>el.addEventListener(el.type==='checkbox'?'change':'input',()=>{put(draft.data,el.dataset.k,el.type==='checkbox'?el.checked:el.value);changed()}));
+// ---------- starting points by trade: fills only what is still empty, or what an earlier starting point filled, so nothing typed is ever overwritten
+const FIRST_SCENE=engine.glOK?'ocean':'sunrise',STARTS=[
+  {id:'realtor',name:'Real estate',role:'Realtor',tagline:'Helping you buy and sell with confidence',book:'Book a showing',scene:'sunrise',accent:'#2563eb'},
+  {id:'barber',name:'Barber or salon',role:'Barber',tagline:'Fresh cuts and sharp fades',book:'Book a cut',scene:'ribbon',accent:'#111827'},
+  {id:'contractor',name:'Contractor',role:'General Contractor',tagline:'Remodels, repairs and new builds',book:'Request an estimate',scene:'sail',accent:'#b45309'},
+  {id:'restaurant',name:'Restaurant',role:'Restaurant',tagline:'Dine in, takeout and catering',book:'Reserve a table',scene:'fire',accent:'#be123c'},
+  {id:'consultant',name:'Consultant',role:'Consultant',tagline:'Clear advice for growing businesses',book:'Book a consultation',scene:'aurora',accent:'#0f766e'}];
+function startWith(t){const d=draft.data,old=STARTS.find(x=>x.id===draft.start)||{},mine=(cur,was)=>!cur||cur===was;d.actions=d.actions||{};
+  if(mine(d.role,old.role))d.role=t.role;if(mine(d.tagline,old.tagline))d.tagline=t.tagline;if(mine(d.actions.bookingLabel,old.book))d.actions.bookingLabel=t.book;
+  if(d.accent===(old.accent||'#2563eb'))d.accent=t.accent;if(d.background.type==='scene'&&d.background.id===(old.scene||FIRST_SCENE))d.background=Object.assign({},d.background,{id:t.scene});
+  draft.start=t.id;fill();lastBg='';changed()}
+for(const t of STARTS){const b=document.createElement('button');b.type='button';b.dataset.id=t.id;b.textContent=t.name;b.addEventListener('click',()=>startWith(t));$('starts').appendChild(b)}
 const ACCENT_NAMES=['Blue','Teal','Amber','Rose','Violet','Graphite'];
 for(const [n,c] of ACCENTS.entries()){const b=document.createElement('button');b.type='button';b.dataset.c=c;b.style.background=c;b.title=ACCENT_NAMES[n];b.setAttribute('aria-label',ACCENT_NAMES[n]);b.addEventListener('click',()=>{draft.data.accent=c;fill();changed()});$('swatches').appendChild(b)}
 {let col='',grp;for(const s of engine.scenes){if(s.col!==col){col=s.col;grp=document.createElement('div');grp.className='grp';const l=document.createElement('div');l.className='col';l.textContent=col;grp.appendChild(l);$('scenes').appendChild(grp)}
@@ -30,10 +43,21 @@ const TABS=[...document.querySelectorAll('.tabs button')];
 TABS.forEach((t,n)=>{t.addEventListener('click',()=>{TABS.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',String(on));x.tabIndex=on?0:-1;$(x.getAttribute('aria-controls')).hidden=!on});if(t.id==='t-publish')pubView();
     const top=document.querySelector('.panel').getBoundingClientRect().top+scrollY-(document.querySelector('.preview').offsetHeight+document.querySelector('.top').offsetHeight);if(scrollY>top&&matchMedia('(max-width:899px)').matches)scrollTo(0,Math.max(0,top))});
   t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;t.addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();const nx=TABS[(n+d+TABS.length)%TABS.length];nx.focus();nx.click()})});
-$('f-logo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{draft.logoBlob=await A.shrinkImage(f);draft.data.logo.url='';fill();changed()}catch(err){toast(err.message)}});
+$('f-logo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{draft.logoBlob=await A.shrinkImage(f,{max:800,alpha:true});draft.data.logo.url='';fill();changed()}catch(err){toast(err.message)}});
 $('logo-clear').addEventListener('click',()=>{draft.logoBlob=null;blobUrl('logo',null);draft.data.logo.url='';fill();changed()});
-$('f-photo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{if(!f.type.startsWith('image/'))throw new Error('Please choose a photo.');draft.photoBlob=await A.shrinkImage(f,640);draft.data.photo={url:''};fill();changed()}catch(err){toast(err.message)}});
-$('photo-clear').addEventListener('click',()=>{draft.photoBlob=null;blobUrl('photo',null);draft.data.photo={url:''};fill();changed()});
+// ---------- headshot: the chosen photo is kept on this device so it can be moved and zoomed inside the circle; only the cut square is ever uploaded
+let faceIm=null,faceOf=null,faceBusy=false,faceAgain=false;
+async function cutFace(){if(faceBusy){faceAgain=true;return}faceBusy=true;try{const src=draft.photoSrc;if(src){if(faceOf!==src){faceIm=await loadImg(blobUrl('psrc',src));faceOf=src}const im=faceIm;if(im){const w=im.naturalWidth,h=im.naturalHeight,p=draft.photoPos,side=Math.min(w,h)/p.z,c=document.createElement('canvas');c.width=c.height=Math.max(1,Math.min(640,Math.round(side)));
+      c.getContext('2d').drawImage(im,(w-side)*p.x,(h-side)*p.y,side,side,0,0,c.width,c.height);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.88));if(b&&draft.photoSrc===src){draft.photoBlob=b;draft.data.photo={url:''};fill();changed()}}}}finally{faceBusy=false;if(faceAgain){faceAgain=false;cutFace()}}}
+const nudge=(dx,dy)=>{const p=draft.photoPos,im=faceIm;if(!im||!draft.photoSrc)return;const w=im.naturalWidth,h=im.naturalHeight,side=Math.min(w,h)/p.z,cl=v=>Math.max(0,Math.min(1,v));if(w-side>1)p.x=cl(p.x-dx*side/(w-side));if(h-side>1)p.y=cl(p.y-dy*side/(h-side));cutFace()}; // dx, dy as a share of the circle's width
+$('f-photo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{if(!f.type.startsWith('image/'))throw new Error('Please choose a photo.');const src=await A.shrinkImage(f,{max:1600}),im=await loadImg(blobUrl('psrc',src));if(!im)throw new Error('Could not read that picture. Try a JPG or PNG.');
+    draft.photoSrc=src;faceIm=im;faceOf=src;draft.photoPos={x:.5,y:im.naturalHeight>im.naturalWidth?.3:.5,z:1};await cutFace()}catch(err){toast(err.message)}});
+$('photo-clear').addEventListener('click',()=>{draft.photoBlob=draft.photoSrc=null;faceIm=faceOf=null;blobUrl('photo',null);blobUrl('psrc',null);draft.data.photo={url:''};fill();changed()});
+{const im=$('face-pv');let at=null;im.addEventListener('pointerdown',e=>{if(!draft.photoSrc)return;at=[e.clientX,e.clientY];im.setPointerCapture(e.pointerId);e.preventDefault()});
+  im.addEventListener('pointermove',e=>{if(!at)return;const d=im.clientWidth||104;nudge((e.clientX-at[0])/d,(e.clientY-at[1])/d);at=[e.clientX,e.clientY]});
+  for(const ev of ['pointerup','pointercancel'])im.addEventListener(ev,()=>{at=null});im.addEventListener('dragstart',e=>e.preventDefault());
+  im.addEventListener('keydown',e=>{const k={ArrowLeft:[.06,0],ArrowRight:[-.06,0],ArrowUp:[0,.06],ArrowDown:[0,-.06]}[e.key];if(!k||!draft.photoSrc)return;e.preventDefault();nudge(k[0],k[1])});
+  $('f-zoom').addEventListener('input',e=>{if(!draft.photoSrc)return;draft.photoPos.z=Math.max(1,Math.min(3,+e.target.value||1));cutFace()})}
 $('f-bg').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const isV=f.type.startsWith('video/');if(!isV&&!f.type.startsWith('image/'))throw new Error('Please choose a photo or a video.');
     draft.bgBlob=isV?await A.checkVideo(f):await A.shrinkImage(f);draft.data.background=Object.assign({},draft.data.background,{type:isV?'video':'image',url:''});$('bg-note').textContent=(isV?'Video':'Photo')+' added. It stays on this device until you publish.';fill();changed()}catch(err){toast(err.message)}});
@@ -84,7 +108,7 @@ $('pub-email').addEventListener('submit',async e=>{e.preventDefault();const b=e.
 $('code-back').addEventListener('click',()=>{pendingEmail='';pubView()});
 $('pub-code').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button');busy(b,true);
   try{await A.auth.verify(pendingEmail,$('f-code').value);pendingEmail='';$('f-code').value='';await adopt();pubView()}catch(err){toast(err.status===401||err.status===403||err.status===400?'That code did not work. Check it or ask for a new one.':err.message)}busy(b,false)});
-async function adopt(){if(draft.cardId)return;try{const mine=await A.cards.mine();if(mine&&mine[0]){const m=mine[0];draft.cardId=m.id;draft.slug=m.slug;draft.published=m.published;if(!draft.data.name){draft.data=m.data;draft.bgBlob=draft.logoBlob=draft.photoBlob=null}fill();lastBg='';changed()}}catch(e){}}
+async function adopt(){if(draft.cardId)return;try{const mine=await A.cards.mine();if(mine&&mine[0]){const m=mine[0];draft.cardId=m.id;draft.slug=m.slug;draft.published=m.published;if(!draft.data.name){draft.data=m.data;draft.bgBlob=draft.logoBlob=draft.photoBlob=draft.photoSrc=null}fill();lastBg='';changed()}}catch(e){}}
 $('f-slug').addEventListener('input',e=>{const v=e.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-');if(v!==e.target.value)e.target.value=v;$('slug-note').textContent='Lowercase letters, numbers and dashes.'});
 async function publish(e){e.preventDefault();const again=!!(draft.published&&draft.cardId),b=again?$('pub-update'):$('pub-btn'),label=again?'Update my live card':'Publish my card',slug=again?draft.slug:$('f-slug').value.trim();
   if(!SLUG.test(slug)){$('slug-note').textContent='Use 3 to 40 lowercase letters, numbers or dashes, starting and ending with a letter or number.';return}
@@ -133,5 +157,5 @@ $('install-btn').addEventListener('click',async()=>{if(!installEvt)return;instal
   if((!ios&&!android)||window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/studio/sw.js').catch(()=>{});
 // ---------- start
-A.local.get('draft').then(async d=>{if(d&&d.data){draft=Object.assign(draft,d);draft.data.logo=draft.data.logo||{};draft.data.actions=draft.data.actions||{};draft.data.background=draft.data.background||{type:'scene',id:'ocean'};draft.data.photo=draft.data.photo||{url:''};draft.data.preview=draft.data.preview||{url:''};{const l=draft.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!draft.data.company)draft.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}}}fill();paint();if(A.enabled&&A.auth.user)await adopt()});
+A.local.get('draft').then(async d=>{if(d&&d.data){draft=Object.assign(draft,d);draft.data.logo=draft.data.logo||{};draft.data.actions=draft.data.actions||{};draft.data.background=draft.data.background||{type:'scene',id:'ocean'};draft.photoPos=draft.photoPos||{x:.5,y:.5,z:1};draft.data.photo=draft.data.photo||{url:''};draft.data.preview=draft.data.preview||{url:''};{const l=draft.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!draft.data.company)draft.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}}}if(draft.photoSrc)loadImg(blobUrl('psrc',draft.photoSrc)).then(im=>{faceIm=im;faceOf=draft.photoSrc});fill();paint();if(A.enabled&&A.auth.user)await adopt()});
 })();

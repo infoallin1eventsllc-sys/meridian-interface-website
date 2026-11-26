@@ -43,8 +43,9 @@ const cards={
   async save(id,slug,data,published){const row={slug,data,published};
     const j=id?await call('/rest/v1/lc_cards?id=eq.'+id,{method:'PATCH',auth:true,body:row,headers:{Prefer:'return=representation'}}):await call('/rest/v1/lc_cards',{method:'POST',auth:true,body:row,headers:{Prefer:'return=representation'}});return j&&j[0]},
   /** kind is 'bg' (background), 'logo', 'photo' (headshot) or 'og' (the link preview picture). The service only accepts
-      <account>/(bg|logo|photo|og)-<letters and numbers>.(jpg|mp4|mov|webm), up to 12 files an account. Only a background may be a video. */
-  async upload(blob,kind){const ext=EXT[blob.type];kind=['logo','photo','og'].includes(kind)?kind:'bg';if(!ext||(kind!=='bg'&&ext!=='jpg'))throw new ApiError('That file type cannot be used. Use a JPG or PNG picture, or an MP4, MOV or WebM video.',0,'type');
+      <account>/(bg|logo|photo|og)-<letters and numbers>.(jpg|mp4|mov|webm), up to 12 files an account. Only a background may be a video;
+      only a logo may be a PNG (kept when it has a see-through background). */
+  async upload(blob,kind){const ext=EXT[blob.type];kind=['logo','photo','og'].includes(kind)?kind:'bg';if(!ext||(ext==='png'&&kind!=='logo')||(kind!=='bg'&&ext!=='jpg'&&ext!=='png'))throw new ApiError('That file type cannot be used. Use a JPG or PNG picture, or an MP4, MOV or WebM video.',0,'type');
     const u=session.user.id,name=kind+'-'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36)+'.'+ext,path=u+'/'+name;
     await call('/storage/v1/object/'+C.bucket+'/'+path,{method:'POST',auth:true,raw:true,body:blob,headers:{'Content-Type':blob.type,'cache-control':'max-age=31536000'}});
     return C.url+'/storage/v1/object/public/'+C.bucket+'/'+path},
@@ -53,14 +54,15 @@ const cards={
     try{const files=await call('/storage/v1/object/list/'+C.bucket,{method:'POST',auth:true,body:{prefix:u.id+'/',limit:100}}),old=(files||[]).map(f=>f.name).filter(n=>n&&!want.has(n));
       if(old.length)await call('/storage/v1/object/'+C.bucket,{method:'DELETE',auth:true,body:{prefixes:old.map(n=>u.id+'/'+n)}})}catch(e){}},
   report:(slug,reason)=>call('/rest/v1/rpc/lc_report',{method:'POST',body:{p_slug:String(slug),p_reason:String(reason).slice(0,500)}})};
-const EXT={'image/jpeg':'jpg','video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm'};
+const EXT={'image/jpeg':'jpg','image/png':'png','video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm'};
 // ---------- media helpers (run on the device before anything is saved)
-/** square: a side length in pixels. The picture is then cut to a square that size (for a headshot), taken from the middle, or a little above the middle of a tall photo, where a face usually is. */
-function shrinkImage(file,square){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight,c=document.createElement('canvas');
-    if(square){const s=Math.min(w,h),side=Math.min(square,s);c.width=c.height=side;c.getContext('2d').drawImage(im,(w-s)/2,h>w?(h-s)*.3:0,s,s,0,0,side,side)}
-    else{const m=C.maxImagePx||1800,k=Math.min(1,m/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height)}URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('Could not read that picture.')),'image/jpeg',.86)};
+/** Shrinks a picture on the device before anything is saved. o.max: longest side in pixels. o.alpha: keep a see-through background (saved as PNG; used for logos only). */
+function shrinkImage(file,o){o=o||{};return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight,c=document.createElement('canvas'),m=o.max||C.maxImagePx||1800,k=Math.min(1,m/Math.max(w,h)),x=c.getContext('2d');
+    c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);
+    let clear=false;if(o.alpha)try{const d=x.getImageData(0,0,c.width,c.height).data;for(let i=3;i<d.length;i+=28)if(d[i]<250){clear=true;break}}catch(e){}
+    c.toBlob(b=>b?res(b):rej(new Error('Could not read that picture.')),clear?'image/png':'image/jpeg',.86)};
   im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Could not read that picture. Try a JPG or PNG.'))};im.src=u})}
-function checkVideo(file){return new Promise((res,rej)=>{if(!EXT[file.type]||file.type==='image/jpeg')return rej(new Error('That video type cannot be used. Use an MP4, MOV or WebM video.'));if(file.size>(C.maxVideoMB||25)*1048576)return rej(new Error('That video is larger than '+(C.maxVideoMB||25)+' MB. Trim it in your Photos app and try again.'));
+function checkVideo(file){return new Promise((res,rej)=>{if(!EXT[file.type]||file.type.startsWith('image/'))return rej(new Error('That video type cannot be used. Use an MP4, MOV or WebM video.'));if(file.size>(C.maxVideoMB||25)*1048576)return rej(new Error('That video is larger than '+(C.maxVideoMB||25)+' MB. Trim it in your Photos app and try again.'));
   const v=document.createElement('video'),u=URL.createObjectURL(file);v.preload='metadata';v.onloadedmetadata=()=>{const d=v.duration;URL.revokeObjectURL(u);d>(C.maxVideoSeconds||30)+.5?rej(new Error('That video is longer than '+(C.maxVideoSeconds||30)+' seconds. Trim it and try again.')):res(file)};
   v.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('This phone cannot play that video file. Try an MP4.'))};v.src=u})}
 // ---------- plans (off until config.billing is true). Card details are only ever typed on Stripe's own page; this just asks the service for that page's address.

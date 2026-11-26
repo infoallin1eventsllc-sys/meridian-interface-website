@@ -12,7 +12,7 @@ function cardPage(){const out=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'lc
   const mod=require(out);let chain=Promise.resolve();
   return (url,fetchImpl,init)=>{const go=async()=>{const real=globalThis.fetch;globalThis.fetch=fetchImpl;try{return await mod.default.fetch(new Request(url,init))}finally{globalThis.fetch=real}};const r=chain.then(go,go);chain=r.catch(()=>{});return r}}
 // the same cleaning the database does to whatever a client sends
-const fileOK=(u,kind)=>new RegExp('^'+SB.replace(/\./g,'\\.')+'/storage/v1/object/public/live-cards/'+UID+'/'+kind+'-[a-z0-9]{1,16}\\.'+(kind==='bg'?'(jpg|mp4|mov|webm)':'jpg')+'$').test(u||'')?u:'';
+const fileOK=(u,kind)=>new RegExp('^'+SB.replace(/\./g,'\\.')+'/storage/v1/object/public/live-cards/'+UID+'/'+kind+'-[a-z0-9]{1,16}\\.'+(kind==='bg'?'(jpg|mp4|mov|webm)':kind==='logo'?'(jpg|png)':'jpg')+'$').test(u||'')?u:'';
 const linkOK=u=>/^https?:\/\/[^\s<>"'`]{3,}$/.test(u||'')?u:'';
 const txt=(s,n)=>String(s==null?'':s).replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,n);
 const mailOK=e=>/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(e||'')?e:'',telOK=p=>{const d=String(p||'').replace(/[^0-9+]/g,'');return /^\+?[0-9]{7,15}$/.test(d)?d:''};
@@ -45,7 +45,7 @@ async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],ca
     if(pth.startsWith('/storage/v1/object/public/live-cards/')){const n=pth.split('/live-cards/')[1],f=S.files.get(n);return f?r.fulfill({status:200,headers:{...cors,'content-type':f.type},body:f.buf}):r.fulfill({status:404,headers:cors,body:''})}
     if(pth==='/storage/v1/object/live-cards'&&m==='DELETE'){for(const n of body.prefixes)S.files.delete(n);return J(r,[])}
     if(pth.startsWith('/storage/v1/object/live-cards/')&&m==='POST'){const n=pth.split('/live-cards/')[1],type=q.headers()['content-type'];
-      const ok=authed&&new RegExp('^'+UID+'/(bg-[a-z0-9]{1,16}\\.(jpg|mp4|mov|webm)|(logo|photo|og)-[a-z0-9]{1,16}\\.jpg)$').test(n)&&['image/jpeg','video/mp4','video/quicktime','video/webm'].includes(type)&&S.files.size<12;
+      const ok=authed&&new RegExp('^'+UID+'/(bg-[a-z0-9]{1,16}\\.(jpg|mp4|mov|webm)|logo-[a-z0-9]{1,16}\\.(jpg|png)|(photo|og)-[a-z0-9]{1,16}\\.jpg)$').test(n)&&['image/jpeg','image/png','video/mp4','video/quicktime','video/webm'].includes(type)&&S.files.size<12;
       if(!ok)return J(r,{message:'new row violates row-level security policy',statusCode:'403'},403);S.files.set(n,{type,buf:q.postDataBuffer()});return J(r,{Key:'live-cards/'+n})}
     return J(r,{message:'unexpected '+m+' '+pth},500)});
   // the site with the real headers; the service is switched on for the test only. A card's link goes through the real page function.
