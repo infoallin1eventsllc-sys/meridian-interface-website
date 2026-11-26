@@ -28,6 +28,15 @@ When a link is texted or posted, the phone or site reads the page's title and pi
 - `public/live/og-default.jpg` is the picture for a link with no card behind it.
 - Not yet seen on real apps: check a published card's link in iMessage, WhatsApp and Facebook's Sharing Debugger at go-live.
 
+## Built on 26 Nov 2026 (the rest of the front end)
+- **Photo:** the chosen photo stays on the device so it can be dragged and zoomed inside its circle; only the cut 640 px square is uploaded.
+- **Logo:** a logo with a see-through background is saved as PNG and stays see-through. Everything else is JPG.
+- **Starting points by trade** (Details tab): fills a title, a line, the booking button words, a background and a color. It never overwrites what the client typed.
+- **Take it with you** (Share tab, after publishing): a 1600 px QR code PNG for print, a 1290 x 2796 lock-screen picture, an email signature copied to the clipboard, and "Set up a tap card" on phones that can write NFC. All made on the device.
+- **Team cards:** the Studio keeps a book of cards (`book` in IndexedDB; `draft` is the one being edited). On the paid plan the "Editing" picker offers "Add a team member". The business name, logo, colors, background, address, hours, website, social, review and pay buttons are shared; names, photos, phones, emails and links are personal. "Update every card" republishes each card that changed.
+  - Back end still needed for teams: the file limit is 12 per account, which is exactly five cards with nothing to spare during an update; raise it for the paid plan. Members cannot sign in to edit their own card; the account owner edits all of them.
+- **Spanish:** `public/live/i18n.js` holds every line of text in Spanish, keyed by the English. Pages follow the reader (`?lang=es` or `?lang=en`, remembered; else the device language) and are swapped as they appear, including text scripts add later. A card follows the language its owner picks on the Details tab (`lang` in the card's data). New or changed English text needs its Spanish line added there; `tools/live-cards-preview-test.cjs` fails if any page shows English to a Spanish reader. The Spanish terms and privacy are translations of the English drafts and need the same review.
+
 ## Activity, and "Send me your info" (front end built 26 Nov 2026; needs the back end before it is switched on)
 Switch: `activity` in `public/live/config.js`. While it is false there is no Activity tab, no "Send me your info" switch, and the card sends no counts.
 - **Card:** when the owner turns it on, a "Send me your info" button opens a small form (name, phone or email, optional note). The public card also adds one to a count when it is opened and when a button is tapped.
@@ -61,7 +70,7 @@ The Studio portal has a Live Cards tab (`src/components/OwnerLiveCards.tsx`): re
 ## Tests (all in `tools/`, all against stand-ins; nothing real is contacted)
 Build, serve on port 4799 (`npx vite preview --port 4799`), then:
 - `live-cards-security-test.cjs`: the whole client journey under the real headers, 36 checks.
-- `live-cards-preview-test.cjs`: the link page function against hostile and broken answers (no browser), then headshot, new buttons, link preview, contact file, file limit and the "say it once" rules in a browser, 70 checks.
+- `live-cards-preview-test.cjs`: the link page function against hostile and broken answers (no browser), then in a browser: headshot (move and zoom), new buttons, link preview, contact file, file limit, the "say it once" rules, starting points, downloads, "Send me your info", the Activity tab, team cards and Spanish. 132 checks.
 - `lc-test-kit.cjs` is shared by those two: the service stand-in (it mirrors the database rules; change both together) and the real page function.
 - `live-cards-plans-test.cjs`: plans, the human check, the own-address switch, 19 checks.
 - `live-cards-owner-test.cjs`: the owner desk on desktop and phone, 24 checks.
@@ -71,7 +80,7 @@ If Playwright's own browser is missing, set `CHROMIUM_PATH`.
 Nothing has been done. The steps, in order, are in `system/products/live-cards/launch/RUNBOOK.md` in the all-in-1-events-2 repo, and what is still open is in `WHATS-LEFT.md` beside it.
 
 ## Not built yet
-Managing more than one card in the Studio, sign-in with Apple or Google, video trimming inside the app (the app asks people to trim in Photos), per-card visit counts, moving the headshot inside its circle, and logos with a see-through background (uploads are saved as JPG, so a see-through logo gets a solid box behind it).
+Sign-in with Apple or Google, video trimming inside the app (the app asks people to trim in Photos), team members signing in to edit their own card, and Apple or Google Wallet (needs Apple's paid developer account and a signing server before any button can exist).
 
 ## Store apps
 See `mobile/README.md`.

@@ -70,6 +70,14 @@ Order, top to bottom: logo, headshot, name, title, line, hours; the three main p
 - **Landing page:** each selling point appears once. The first screen says what it is; three steps say how; three points say why; four short lines cover trust.
 - **Link preview:** the picture carries the face, name, title and line. The business name is in the link's title right under it, so it is not drawn into the picture as well.
 
+## Parts added 26 Nov 2026
+- **Fifth tab, Activity** (only when switched on): one big number, then one plain row per button that was tapped, most tapped first, each with a thin bar. No chart library. Below it, the people who sent their info: name, a tappable phone or email, their note, the date, Remove.
+- **"Send me your info"** on the card is a glass chip beside "Leave a review". Its form opens as a white window near the top of the screen so the keyboard never covers it.
+- **Starting points** are plain chips at the top of Details, marked optional.
+- **Team:** an "Editing" picker under the top bar, shown only to teams; team settings sit on the Share tab.
+- **"Report this card"** sits under the card on the public page, never on top of it.
+- **Spanish** runs about a fifth longer than English: buttons and tabs were checked at phone width in both.
+
 ## Rules that came from the brand skill
 The mark is the real file beside live text. The lockup file is never placed on a dark ground. The accent blue never touches the mark. Fonts are self-hosted.
 

@@ -2,7 +2,8 @@
 (function(){'use strict';
 const A=window.LiveCardsAPI,V=window.LiveCardView,$=id=>document.getElementById(id),phone=$('lc'),engine=window.LiveCard.init(phone);
 const ACCENTS=['#2563eb','#0f766e','#b45309','#be123c','#6d28d9','#111827'],SLUG=/^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-const blank=()=>({data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,photoSrc:null,photoPos:{x:.5,y:.5,z:1},cardId:null,slug:'',published:false});
+const TXT=window.LiveCardsText||{lang:'en',T:x=>x,to:()=>x=>x};
+const blank=()=>({data:{lang:TXT.lang,name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,photoSrc:null,photoPos:{x:.5,y:.5,z:1},cardId:null,slug:'',published:false});
 // `draft` is the card being edited. `book` holds every card on this device: one for most people, several for a team.
 let draft=blank(),book={cards:[draft],at:0,same:true},teamPlan='';
 const keep=()=>{book.cards[book.at]=draft;return Promise.all([A.local.set('draft',draft),A.local.set('book',{cards:book.cards,at:book.at,same:book.same})])};
@@ -23,6 +24,7 @@ function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(d
  const own=draft.data.background.type!=='scene';$('own-opts').hidden=!own;
   $('fit-fill').setAttribute('aria-pressed',String(draft.data.background.fit!=='band'));$('fit-band').setAttribute('aria-pressed',String(draft.data.background.fit==='band'));$('f-sound').checked=draft.data.background.sound!==false;
   document.querySelectorAll('#scenes button').forEach(b=>b.setAttribute('aria-pressed',String(!own&&b.dataset.id===draft.data.background.id)));
+  document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===(draft.data.lang==='es'?'es':'en'))));
   document.querySelectorAll('#starts button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===draft.start)));
   document.querySelectorAll('#swatches button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===draft.data.accent)));$('f-slug').value=draft.slug||''}
 document.querySelectorAll('[data-k]').forEach(el=>el.addEventListener(el.type==='checkbox'?'change':'input',()=>{put(draft.data,el.dataset.k,el.type==='checkbox'?el.checked:el.value);changed()}));
@@ -33,11 +35,12 @@ const FIRST_SCENE=engine.glOK?'ocean':'sunrise',STARTS=[
   {id:'contractor',name:'Contractor',role:'General Contractor',tagline:'Remodels, repairs and new builds',book:'Request an estimate',scene:'sail',accent:'#b45309'},
   {id:'restaurant',name:'Restaurant',role:'Restaurant',tagline:'Dine in, takeout and catering',book:'Reserve a table',scene:'fire',accent:'#be123c'},
   {id:'consultant',name:'Consultant',role:'Consultant',tagline:'Clear advice for growing businesses',book:'Book a consultation',scene:'aurora',accent:'#0f766e'}];
-function startWith(t){const d=draft.data,old=STARTS.find(x=>x.id===draft.start)||{},mine=(cur,was)=>!cur||cur===was;d.actions=d.actions||{};
-  if(mine(d.role,old.role))d.role=t.role;if(mine(d.tagline,old.tagline))d.tagline=t.tagline;if(mine(d.actions.bookingLabel,old.book))d.actions.bookingLabel=t.book;
+function startWith(t){const d=draft.data,old=STARTS.find(x=>x.id===draft.start)||{},T=TXT.T,mine=(cur,was)=>!cur||(was&&(cur===was||cur===T(was)));d.actions=d.actions||{};
+  if(mine(d.role,old.role))d.role=T(t.role);if(mine(d.tagline,old.tagline))d.tagline=T(t.tagline);if(mine(d.actions.bookingLabel,old.book))d.actions.bookingLabel=T(t.book);
   if(d.accent===(old.accent||'#2563eb'))d.accent=t.accent;if(d.background.type==='scene'&&d.background.id===(old.scene||FIRST_SCENE))d.background=Object.assign({},d.background,{id:t.scene});
   draft.start=t.id;fill();lastBg='';changed()}
 for(const t of STARTS){const b=document.createElement('button');b.type='button';b.dataset.id=t.id;b.textContent=t.name;b.addEventListener('click',()=>startWith(t));$('starts').appendChild(b)}
+document.querySelectorAll('#langs button').forEach(b=>b.addEventListener('click',()=>{draft.data.lang=b.dataset.l;fill();changed()}));
 const ACCENT_NAMES=['Blue','Teal','Amber','Rose','Violet','Graphite'];
 for(const [n,c] of ACCENTS.entries()){const b=document.createElement('button');b.type='button';b.dataset.c=c;b.style.background=c;b.title=ACCENT_NAMES[n];b.setAttribute('aria-label',ACCENT_NAMES[n]);b.addEventListener('click',()=>{draft.data.accent=c;fill();changed()});$('swatches').appendChild(b)}
 {let col='',grp;for(const s of engine.scenes){if(s.col!==col){col=s.col;grp=document.createElement('div');grp.className='grp';const l=document.createElement('div');l.className='col';l.textContent=col;grp.appendChild(l);$('scenes').appendChild(grp)}
@@ -150,13 +153,13 @@ async function lockScreen(){const W=1290,H=2796,cv=document.createElement('canva
   x.drawImage(qr,cx+(cw-640)/2,cy+70,640,640);x.textAlign='center';x.textBaseline='top';x.fillStyle='#0f172a';
   let size=68;x.font='800 '+size+'px '+D;while(size>40&&x.measureText(c.name).width>cw-100){size-=4;x.font='800 '+size+'px '+D}x.fillText(lines(x,c.name,cw-100,1)[0],W/2,cy+740);
   const sub=[c.role,c.company].filter(Boolean).join(', ');if(sub){x.font='500 36px '+B;x.fillStyle='#475569';x.fillText(lines(x,sub,cw-100,1)[0],W/2,cy+830)}
-  x.font='600 36px '+B;x.fillStyle=c.accent;x.fillText('Scan to open my card',W/2,cy+925);return cv}
-function signature(){const c=V.normalize(draft.data),a=c.actions,sub=[c.role,c.company].filter(Boolean).join(', '),rows=[a.phone,a.email].filter(Boolean);
+  x.font='600 36px '+B;x.fillStyle=c.accent;x.fillText(TXT.to(c.lang)('Scan to open my card'),W/2,cy+925);return cv}
+function signature(){const c=V.normalize(draft.data),L=TXT.to(c.lang),a=c.actions,sub=[c.role,c.company].filter(Boolean).join(', '),rows=[a.phone,a.email].filter(Boolean);
   // Old-style attributes instead of style="": every email app understands them, and the page's own security policy forbids inline styles.
   const F='<font face="Arial,Helvetica,sans-serif" ';
   return {html:'<table cellpadding="0" cellspacing="0" border="0"><tr><td>'+F+'color="#0f172a" size="3"><b>'+html(c.name)+'</b></font>'+(sub?'<br>'+F+'color="#475569" size="2">'+html(sub)+'</font>':'')+'</td><td width="14"></td><td width="3" bgcolor="'+c.accent+'"></td><td width="14"></td>'
-      +'<td>'+F+'color="#0f172a" size="2">'+rows.map(r=>html(r)+'<br>').join('')+'<a href="'+html(cardLink())+'">'+F+'color="'+c.accent+'"><b>Open my digital card</b></font></a></font></td></tr></table>',
-    text:[c.name,sub].concat(rows,['My digital card: '+cardLink()]).filter(Boolean).join('\n')}}
+      +'<td>'+F+'color="#0f172a" size="2">'+rows.map(r=>html(r)+'<br>').join('')+'<a href="'+html(cardLink())+'">'+F+'color="'+c.accent+'"><b>'+html(L('Open my digital card'))+'</b></font></a></font></td></tr></table>',
+    text:[c.name,sub].concat(rows,[L('My digital card: {0}',cardLink())]).filter(Boolean).join('\n')}}
 $('dl-qr').addEventListener('click',async()=>{try{saveFile(await blobOf(await qrCanvas(1600),'image/png'),draft.slug+'-qr.png');said('Saved. This size prints sharp on flyers, signs and paper cards.')}catch(e){said('The QR code could not be made. Try again.')}});
 $('dl-lock').addEventListener('click',async()=>{try{saveFile(await blobOf(await lockScreen(),'image/jpeg',.9),draft.slug+'-lock-screen.jpg');said('Saved. Set it as your lock screen in your phone\'s wallpaper settings, then just show your phone.')}catch(e){said('The picture could not be made. Try again.')}});
 $('dl-sig').addEventListener('click',async()=>{const s=signature();try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([s.html],{type:'text/html'}),'text/plain':new Blob([s.text],{type:'text/plain'})})]);said('Copied. Paste it into the signature box in your email settings.')}
@@ -164,7 +167,7 @@ $('dl-sig').addEventListener('click',async()=>{const s=signature();try{await nav
 // A tap card (NFC): a blank card or sticker that opens this link when touched to a phone. Only some phones can write one, so the button only shows there.
 if('NDEFReader' in window){$('dl-nfc').hidden=false;$('dl-nfc').addEventListener('click',async()=>{said('Hold a blank tap card or sticker to the back of your phone.');try{await new window.NDEFReader().write({records:[{recordType:'url',data:cardLink()}]});said('Done. Touch that card to any phone and yours opens.')}catch(e){said('The tap card was not written. Check that NFC is on, then try again.')}})}
 $('pub-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(cardLink());toast('Link copied')}catch(e){toast(cardLink())}});
-$('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:'My digital business card',url:cardLink()}).catch(()=>{})});
+$('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:TXT.to(draft.data.lang)('My digital business card'),url:cardLink()}).catch(()=>{})});
 $('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await keep();state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});
 $('acct-out').addEventListener('click',async()=>{await A.auth.signOut();plan='';teamPlan='';whoView();pubView()});
 let delArmed=0;$('acct-del').addEventListener('click',async e=>{if(Date.now()-delArmed>6000){delArmed=Date.now();e.target.textContent='Tap again to delete everything';setTimeout(()=>{e.target.textContent='Delete my account and card'},6000);return}
@@ -227,7 +230,7 @@ $('install-btn').addEventListener('click',async()=>{if(!installEvt)return;instal
   if((!ios&&!android)||window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/studio/sw.js').catch(()=>{});
 // ---------- start
-const mend=c=>{c.data=c.data||blank().data;c.data.logo=c.data.logo||{};c.data.actions=c.data.actions||{};c.data.background=c.data.background||{type:'scene',id:'ocean'};c.photoPos=c.photoPos||{x:.5,y:.5,z:1};c.data.photo=c.data.photo||{url:''};c.data.preview=c.data.preview||{url:''};
+const mend=c=>{c.data=c.data||blank().data;c.data.lang=c.data.lang==='es'?'es':c.data.lang==='en'?'en':TXT.lang;c.data.logo=c.data.logo||{};c.data.actions=c.data.actions||{};c.data.background=c.data.background||{type:'scene',id:'ocean'};c.photoPos=c.photoPos||{x:.5,y:.5,z:1};c.data.photo=c.data.photo||{url:''};c.data.preview=c.data.preview||{url:''};
   const l=c.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!c.data.company)c.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}return c}; // an older draft's logo text becomes the business name
 Promise.all([A.local.get('draft'),A.local.get('book')]).then(async([d,bk])=>{
   if(bk&&Array.isArray(bk.cards)&&bk.cards.length){book={cards:bk.cards.slice(0,5).map(c=>mend(Object.assign(blank(),c))),at:0,same:bk.same!==false};book.at=Math.max(0,Math.min(book.cards.length-1,bk.at|0));draft=book.cards[book.at]}

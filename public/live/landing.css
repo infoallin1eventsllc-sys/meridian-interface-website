@@ -67,3 +67,6 @@
 .doc ul{margin:0;padding-left:20px;display:grid;gap:6px}
 .doc b{color:var(--ink);font-weight:600}
 .doc>p:last-child{margin-top:36px}
+.nav-r{display:inline-flex;align-items:center;gap:14px}
+.lang-x{font:600 14px var(--body);color:var(--link);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.lang-x:hover{text-decoration:underline}

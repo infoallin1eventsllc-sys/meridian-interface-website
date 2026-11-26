@@ -17,7 +17,7 @@ const linkOK=u=>/^https?:\/\/[^\s<>"'`]{3,}$/.test(u||'')?u:'';
 const txt=(s,n)=>String(s==null?'':s).replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,n);
 const mailOK=e=>/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(e||'')?e:'',telOK=p=>{const d=String(p||'').replace(/[^0-9+]/g,'');return /^\+?[0-9]{7,15}$/.test(d)?d:''};
 function cleanCard(p){p=p||{};const a=p.actions||{},g=p.background||{},l=p.logo||{},ph=p.photo||{},pv=p.preview||{};let type=['scene','image','video'].includes(g.type)?g.type:'scene';const url=fileOK(g.url,'bg');if(type!=='scene'&&!url)type='scene';
-  return {v:1,name:txt(p.name,60),company:txt(p.company,60),role:txt(p.role,60),tagline:txt(p.tagline,90),accent:/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#2563eb',
+  return {v:1,lang:p.lang==='es'?'es':'en',name:txt(p.name,60),company:txt(p.company,60),role:txt(p.role,60),tagline:txt(p.tagline,90),accent:/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#2563eb',
     logo:{url:fileOK(l.url,'logo'),mark:false,line1:txt(l.line1,24),line2:txt(l.line2,24)},photo:{url:fileOK(ph.url,'photo')},preview:{url:fileOK(pv.url,'og')},hours:txt(p.hours,60),
     actions:{phone:telOK(a.phone),text:a.text===true,email:mailOK(txt(a.email,200)),booking:linkOK(a.booking),bookingLabel:txt(a.bookingLabel,34),website:linkOK(a.website),facebook:linkOK(a.facebook),instagram:linkOK(a.instagram),linkedin:linkOK(a.linkedin),tiktok:linkOK(a.tiktok),youtube:linkOK(a.youtube),
       address:txt(a.address,140),review:linkOK(a.review),cashapp:/^[A-Za-z0-9_]{1,20}$/.test(a.cashapp||'')?a.cashapp:'',venmo:/^[A-Za-z0-9_-]{5,30}$/.test(a.venmo||'')?a.venmo:'',zelle:mailOK(txt(a.zelle,200))||telOK(a.zelle),leads:a.leads===true},

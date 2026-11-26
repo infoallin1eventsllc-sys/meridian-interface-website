@@ -31,78 +31,78 @@ function vcard(c){const esc=s=>String(s).replace(/[\r\n]+/g,' ').replace(/([\\;,
   const L=['BEGIN:VCARD','VERSION:3.0',`N:${esc(last)};${esc(first)};;;`,`FN:${esc(c.name)}`];if(c.company)L.push(`ORG:${esc(c.company)}`);if(c.role)L.push(`TITLE:${esc(c.role)}`);
   if(c.phone)L.push(`TEL;TYPE=CELL,VOICE:${c.phone}`);if(c.email)L.push(`EMAIL;TYPE=INTERNET,WORK:${c.email}`);if(c.website)L.push(`URL:${c.website}`);if(c.address)L.push(`ADR;TYPE=WORK:;;${esc(c.address)};;;;`);
   if(c.photo&&/^[A-Za-z0-9+\/=]+$/.test(c.photo))L.push(('PHOTO;ENCODING=b;TYPE=JPEG:'+c.photo).replace(/(.{74})(?=.)/g,'$1\r\n '));
-  if(c.cardUrl)L.push(`NOTE:${esc('My card: '+c.cardUrl)}`);L.push('END:VCARD');return L.join('\r\n')}
+  if(c.cardUrl)L.push(`NOTE:${esc(c.note||('My card: '+c.cardUrl))}`);L.push('END:VCARD');return L.join('\r\n')}
 /** The headshot as text for the contact file, so the saved contact has a face. Only for a published picture, only when small, and never required. */
 async function photoText(u){if(!/^https:\/\//.test(u))return'';try{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),4000),r=await fetch(u,{signal:ac.signal});clearTimeout(t);if(!r.ok)return'';const b=await r.blob();if(b.type!=='image/jpeg'||b.size>400000)return'';
     const a=new Uint8Array(await b.arrayBuffer());let s='';for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(s)}catch(e){return''}}
 /** "Send me your info": a visitor leaves their own name and a way to reach them. Shown as a small window over the card, near the top of the screen so the keyboard does not cover it.
     opts.sendInfo(details) does the sending; without it (a preview) the window says so and nothing is sent. Everything typed is treated as text. */
-function infoSheet(phone,c,opts,from){const old=phone.querySelector('.lc-sheet');if(old)old.remove();
+function infoSheet(phone,c,opts,from,t){const old=phone.querySelector('.lc-sheet');if(old)old.remove();
   const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e},first=c.name.split(' ')[0]||c.name;
-  const sheet=E('div','lc-sheet'),form=E('form','lc-form'),msg=E('p','lc-form-msg'),send=E('button','lc-pill book','Send'),cancel=E('button','lc-form-x','Cancel');
+  const sheet=E('div','lc-sheet'),form=E('form','lc-form'),msg=E('p','lc-form-msg'),send=E('button','lc-pill book',t('Send')),cancel=E('button','lc-form-x',t('Cancel'));
   const field=(label,attrs)=>{const l=E('label','',label),i=E('input');for(const k in attrs)i.setAttribute(k,attrs[k]);l.appendChild(i);form.appendChild(l);return i};
-  sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label','Send your info to '+c.name);form.noValidate=true;msg.setAttribute('role','status');send.type='submit';cancel.type='button';
-  form.appendChild(E('h2','','Send '+first+' your info'));
-  const name=field('Your name',{type:'text',maxlength:'60',autocomplete:'name',required:''}),contact=field('Your phone or email',{type:'text',maxlength:'200',autocomplete:'tel',inputmode:'email',required:''}),note=field('Note (optional)',{type:'text',maxlength:'200'});
-  form.append(msg,send,cancel,E('p','lc-form-fine','Only '+c.name+' sees this.'));sheet.appendChild(form);
+  sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label',t('Send your info to {0}',c.name));sheet.lang=c.lang;sheet.setAttribute('translate','no');form.noValidate=true;msg.setAttribute('role','status');send.type='submit';cancel.type='button';
+  form.appendChild(E('h2','',t('Send {0} your info',first)));
+  const name=field(t('Your name'),{type:'text',maxlength:'60',autocomplete:'name',required:''}),contact=field(t('Your phone or email'),{type:'text',maxlength:'200',autocomplete:'tel',inputmode:'email',required:''}),note=field(t('Note (optional)'),{type:'text',maxlength:'200'});
+  form.append(msg,send,cancel,E('p','lc-form-fine',t('Only {0} sees this.',c.name)));sheet.appendChild(form);
   const close=()=>{sheet.remove();document.removeEventListener('keydown',esc);if(from&&from.isConnected)from.focus()},esc=e=>{if(e.key==='Escape')close()};
   cancel.addEventListener('click',close);sheet.addEventListener('click',e=>{if(e.target===sheet)close()});document.addEventListener('keydown',esc);
   form.addEventListener('submit',async e=>{e.preventDefault();const n=clean(name.value,60),ct=emailOk(contact.value)||phoneNum(contact.value);
-    if(n.length<2){msg.textContent='Please add your name.';name.focus();return}if(!ct){msg.textContent='Please add a phone number or an email address.';contact.focus();return}
-    if(!opts.sendInfo){msg.textContent='This is a preview. Sending works once the card is published.';return}
-    send.disabled=true;msg.textContent='Sending…';
-    try{await opts.sendInfo({name:n,contact:ct,note:clean(note.value,200)});form.textContent='';const done=E('button','lc-pill','Close');done.type='button';done.addEventListener('click',close);form.append(E('h2','','Sent'),E('p','lc-form-fine',c.name+' has your info.'),done);done.focus()}
-    catch(err){send.disabled=false;msg.textContent=err&&err.status===429?'Too many tries. Please try again later.':'That did not send. Please try again.'}});
+    if(n.length<2){msg.textContent=t('Please add your name.');name.focus();return}if(!ct){msg.textContent=t('Please add a phone number or an email address.');contact.focus();return}
+    if(!opts.sendInfo){msg.textContent=t('This is a preview. Sending works once the card is published.');return}
+    send.disabled=true;msg.textContent=t('Sending…');
+    try{await opts.sendInfo({name:n,contact:ct,note:clean(note.value,200)});form.textContent='';const done=E('button','lc-pill',t('Close'));done.type='button';done.addEventListener('click',close);form.append(E('h2','',t('Sent')),E('p','lc-form-fine',t('{0} has your info.',c.name)),done);done.focus()}
+    catch(err){send.disabled=false;msg.textContent=t(err&&err.status===429?'Too many tries. Please try again later.':'That did not send. Please try again.')}});
   // Cover only the part of the card that is on screen (a full card can be taller than the screen).
   const r=phone.getBoundingClientRect(),k=(r.width/phone.offsetWidth)||1,top=Math.max(0,-r.top)/k,h=(Math.min(window.innerHeight,r.bottom)-Math.max(0,r.top))/k;sheet.style.top=top+'px';sheet.style.height=Math.max(260,h)+'px';
   phone.appendChild(sheet);name.focus()}
 /** Normalises anything saved or typed into the shape the card draws from. */
-function normalize(d){d=d||{};const a=d.actions||{},bg=d.background||{},lg=d.logo||{},ph=d.photo||{},pv=d.preview||{};
-  const out={name:clean(d.name,60)||'Your Name',company:clean(d.company,60),role:clean(d.role,60),tagline:clean(d.tagline,90),accent:color(d.accent),
+function normalize(d){d=d||{};const lang=d.lang==='es'?'es':'en',L=window.LiveCardsText?window.LiveCardsText.to(lang):x=>x;const a=d.actions||{},bg=d.background||{},lg=d.logo||{},ph=d.photo||{},pv=d.preview||{};
+  const out={lang,name:clean(d.name,60)||L('Your Name'),company:clean(d.company,60),role:clean(d.role,60),tagline:clean(d.tagline,90),accent:color(d.accent),
     logo:{url:media(lg.url),mark:!!lg.mark,line1:clean(lg.line1,24),line2:clean(lg.line2,24)},
     photo:{url:media(ph.url)},preview:{url:media(pv.url)},hours:clean(d.hours,60),
-    actions:{phone:phoneNum(a.phone),text:!!a.text,email:emailOk(a.email),booking:link(a.booking),bookingLabel:clean(a.bookingLabel,34)||'Book an appointment',website:link(a.website),
+    actions:{phone:phoneNum(a.phone),text:!!a.text,email:emailOk(a.email),booking:link(a.booking),bookingLabel:clean(a.bookingLabel,34)||L('Book an appointment'),website:link(a.website),
       facebook:link(a.facebook),instagram:link(a.instagram),linkedin:link(a.linkedin),tiktok:link(a.tiktok),youtube:link(a.youtube),
       address:clean(a.address,140),review:link(a.review),cashapp:handle(a.cashapp,/^[A-Za-z0-9_]{1,20}$/),venmo:handle(a.venmo,/^[A-Za-z0-9_-]{5,30}$/),zelle:emailOk(a.zelle)||phoneNum(a.zelle),leads:a.leads===true},
     background:{type:['scene','image','video'].includes(bg.type)&&(bg.type==='scene'||media(bg.url))?bg.type:'scene',id:/^[a-z]{2,12}$/.test(bg.id||'')?bg.id:'ocean',url:media(bg.url),fit:bg.fit==='band'?'band':'fill',bg:/^#[0-9a-f]{6}$/i.test(bg.bg||'')?bg.bg:'#000000',sound:bg.sound!==false},
     showMade:d.showMade!==false};
   return out}
-function render(phone,data,opts){opts=opts||{};const c=normalize(data),tap=(el,kind)=>{if(opts.onTap)el.addEventListener('click',()=>{try{opts.onTap(kind)}catch(e){}});return el};let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
-  phone.style.setProperty('--lc-acc',c.accent);card.textContent='';
+function render(phone,data,opts){opts=opts||{};const c=normalize(data),t=window.LiveCardsText?window.LiveCardsText.to(c.lang):(x,...a)=>x.replace(/\{(\d)\}/g,(m,i)=>a[i]),tap=(el,kind)=>{if(opts.onTap)el.addEventListener('click',()=>{try{opts.onTap(kind)}catch(e){}});return el};let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
+  phone.style.setProperty('--lc-acc',c.accent);card.textContent='';card.lang=c.lang;card.setAttribute('translate','no');
   const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
   const head=E('header','lc-content'),logo=E('div','lc-logo');
-  if(c.logo.url){const im=E('img',c.logo.mark?'mark':'');im.src=c.logo.url;im.alt=c.company?c.company+' logo':'';logo.appendChild(im)}
+  if(c.logo.url){const im=E('img',c.logo.mark?'mark':'');im.src=c.logo.url;im.alt=c.company?t('{0} logo',c.company):'';logo.appendChild(im)}
   {const [l1,l2]=c.logo.line1?[c.logo.line1,c.logo.line2]:c.logo.url?['','']:wordmark(c.company);if(l1){const wm=E('div');wm.append(E('b','',l1));if(l2)wm.append(E('span','',l2));if(Math.max(l1.length,l2.length)>16)logo.classList.add('long');logo.appendChild(wm)}}
-  head.append(logo);if(c.photo.url){const f=E('img','lc-face');f.src=c.photo.url;f.alt='Photo of '+c.name;f.width=f.height=112;head.classList.add('has-face');head.append(f)}
+  head.append(logo);if(c.photo.url){const f=E('img','lc-face');f.src=c.photo.url;f.alt=t('Photo of {0}',c.name);f.width=f.height=112;head.classList.add('has-face');head.append(f)}
   head.append(E('h1','lc-name',c.name));if(c.role)head.append(E('div','lc-role',c.role));if(c.tagline)head.append(E('div','lc-tag',c.tagline));
   if(c.hours){const h=E('div','lc-hours');h.innerHTML=svg('clock');h.append(c.hours);head.append(h)}
-  const pills=E('nav','lc-pills');pills.setAttribute('aria-label','Contact '+c.name);
+  const pills=E('nav','lc-pills');pills.setAttribute('aria-label',t('Contact {0}',c.name));
   const pill=(href,icon,label,cls)=>{const a=E('a','lc-pill'+(cls?' '+cls:''));a.href=href;a.innerHTML=svg(icon);a.append(label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}pills.appendChild(tap(a,icon))};
-  if(c.actions.phone)pill('tel:'+c.actions.phone,'call','Call');if(c.actions.email)pill('mailto:'+c.actions.email,'email','Email');if(c.actions.booking)pill(c.actions.booking,'book',c.actions.bookingLabel,'book');
+  if(c.actions.phone)pill('tel:'+c.actions.phone,'call',t('Call'));if(c.actions.email)pill('mailto:'+c.actions.email,'email',t('Email'));if(c.actions.booking)pill(c.actions.booking,'book',c.actions.bookingLabel,'book');
   if(pills.children.length)head.appendChild(pills);
   const art=E('div','lc-art'),dots=E('div','lc-dots');
   const dot=(href,icon,label)=>{const a=E('a','lc-dot');a.href=href;a.innerHTML=svg(icon);a.setAttribute('aria-label',label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}dots.appendChild(tap(a,icon==='pin'?'map':ICON_KIND[icon]||'social'))};
-  if(c.actions.phone&&c.actions.text)dot('sms:'+c.actions.phone,'text','Text '+c.name);if(c.actions.website)dot(c.actions.website,'web','Website');
-  if(c.actions.address)dot(mapLink(c.actions.address),'pin','Directions to '+c.actions.address);
-  if(c.actions.phone||c.actions.email){const b=E('button','lc-dot');b.type='button';b.innerHTML=svg('save');b.setAttribute('aria-label','Save to contacts');tap(b,'save');
+  if(c.actions.phone&&c.actions.text)dot('sms:'+c.actions.phone,'text',t('Text {0}',c.name));if(c.actions.website)dot(c.actions.website,'web',t('Website'));
+  if(c.actions.address)dot(mapLink(c.actions.address),'pin',t('Directions to {0}',c.actions.address));
+  if(c.actions.phone||c.actions.email){const b=E('button','lc-dot');b.type='button';b.innerHTML=svg('save');b.setAttribute('aria-label',t('Save to contacts'));tap(b,'save');
     let face='';if(opts.cardUrl)photoText(c.photo.url).then(t=>{face=t}); // only on the public card, never while editing
-    b.addEventListener('click',()=>{const blob=new Blob([vcard({name:c.name,company:c.company,role:c.role,phone:c.actions.phone,email:c.actions.email,website:c.actions.website,address:c.actions.address,photo:face,cardUrl:opts.cardUrl})],{type:'text/vcard'}),u=URL.createObjectURL(blob),a=document.createElement('a');
+    b.addEventListener('click',()=>{const blob=new Blob([vcard({name:c.name,company:c.company,role:c.role,phone:c.actions.phone,email:c.actions.email,website:c.actions.website,address:c.actions.address,photo:face,cardUrl:opts.cardUrl,note:opts.cardUrl?t('My card: {0}',opts.cardUrl):''})],{type:'text/vcard'}),u=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=u;a.download=c.name.replace(/[^\w -]/g,'')+'.vcf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)});dots.appendChild(b)}
-  for(const k of ['facebook','instagram','linkedin','tiktok','youtube'])if(c.actions[k])dot(c.actions[k],k,(c.company||c.name)+' on '+k[0].toUpperCase()+k.slice(1));
+  for(const k of ['facebook','instagram','linkedin','tiktok','youtube'])if(c.actions[k])dot(c.actions[k],k,t('{0} on {1}',c.company||c.name,k[0].toUpperCase()+k.slice(1)));
   art.appendChild(dots);
   // labelled buttons: a review link, and ways to pay
   const out=(a)=>{a.target='_blank';a.rel='noopener noreferrer';return a};
   if(c.actions.review||(c.actions.leads&&opts.leads!==false)){const row=E('div','lc-chips');
-    if(c.actions.leads&&opts.leads!==false){const b=E('button','lc-chip');b.type='button';b.innerHTML=svg('send');b.append('Send me your info');b.addEventListener('click',()=>infoSheet(phone,c,opts,b));row.appendChild(b)}
-    if(c.actions.review){const a=out(E('a','lc-chip'));a.href=c.actions.review;a.innerHTML=svg('star');a.append('Leave a review');row.appendChild(tap(a,'review'))}art.appendChild(row)}
-  if(c.actions.cashapp||c.actions.venmo||c.actions.zelle){const row=E('div','lc-chips lc-pay'),note=E('p','lc-note');note.setAttribute('role','status');note.hidden=true;row.setAttribute('role','group');row.setAttribute('aria-label','Pay '+(c.company||c.name));row.append(E('span','lc-pay-l','Pay with'));
+    if(c.actions.leads&&opts.leads!==false){const b=E('button','lc-chip');b.type='button';b.innerHTML=svg('send');b.append(t('Send me your info'));b.addEventListener('click',()=>infoSheet(phone,c,opts,b,t));row.appendChild(b)}
+    if(c.actions.review){const a=out(E('a','lc-chip'));a.href=c.actions.review;a.innerHTML=svg('star');a.append(t('Leave a review'));row.appendChild(tap(a,'review'))}art.appendChild(row)}
+  if(c.actions.cashapp||c.actions.venmo||c.actions.zelle){const row=E('div','lc-chips lc-pay'),note=E('p','lc-note');note.setAttribute('role','status');note.hidden=true;row.setAttribute('role','group');row.setAttribute('aria-label',t('Pay {0}',c.company||c.name));row.append(E('span','lc-pay-l',t('Pay with')));
     if(c.actions.cashapp){const a=out(E('a','lc-chip','Cash App'));a.href='https://cash.app/$'+c.actions.cashapp;row.appendChild(tap(a,'pay'))}
     if(c.actions.venmo){const a=out(E('a','lc-chip','Venmo'));a.href='https://venmo.com/u/'+c.actions.venmo;row.appendChild(tap(a,'pay'))}
-    if(c.actions.zelle){const b=E('button','lc-chip','Zelle');b.type='button';b.setAttribute('aria-label','Zelle: show where to send');tap(b,'pay');
+    if(c.actions.zelle){const b=E('button','lc-chip','Zelle');b.type='button';b.setAttribute('aria-label',t('Zelle: show where to send'));tap(b,'pay');
       // Zelle has no payment link: it is sent from the payer's own bank app to a phone number or email. So show it and copy it.
-      b.addEventListener('click',async()=>{let copied=false;try{await navigator.clipboard.writeText(c.actions.zelle);copied=true}catch(e){}note.textContent='Zelle to '+c.actions.zelle+(copied?' (copied). ':'. ')+'Send it from your bank app.';note.hidden=false});row.appendChild(b)}
+      b.addEventListener('click',async()=>{let copied=false;try{await navigator.clipboard.writeText(c.actions.zelle);copied=true}catch(e){}note.textContent=t(copied?'Zelle to {0} (copied). Send it from your bank app.':'Zelle to {0}. Send it from your bank app.',c.actions.zelle);note.hidden=false});row.appendChild(b)}
     art.append(row,note)}
-  if(c.showMade&&opts.madeLink){const m=E('div','lc-made'),a=E('a','','Made with Meridian Live Cards');a.href=opts.madeLink;m.appendChild(a);art.appendChild(m)}
+  if(c.showMade&&opts.madeLink){const m=E('div','lc-made'),a=E('a','',t('Made with Meridian Live Cards'));a.href=opts.madeLink;m.appendChild(a);art.appendChild(m)}
   card.append(head,art);
   if(opts.engine){const b=c.background;opts.engine.setBackground(b.type==='scene'?{type:'scene',id:b.id}:b)}
   return c}

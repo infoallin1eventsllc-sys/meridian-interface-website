@@ -31,7 +31,7 @@ const REST = `
 <body><main class="stage"><div class="lc-phone" id="lc" hidden></div>
 <div class="msg" id="lc-msg" hidden><h1></h1><p></p><a href="/live-cards/">About Live Cards</a></div></main>
 <button type="button" id="lc-report" class="report" hidden>Report this card</button>
-<script src="/live/config.js"></script><script src="/live/api.js"></script><script src="/live/engine.js"></script><script src="/live/card-view.js"></script><script src="/live/viewer.js"></script></body></html>
+<script src="/live/i18n.js"></script><script src="/live/config.js"></script><script src="/live/api.js"></script><script src="/live/engine.js"></script><script src="/live/card-view.js"></script><script src="/live/viewer.js"></script></body></html>
 `;
 
 const esc = s => String(s ?? '').replace(/[&<>"'`]/g, c => '&#' + c.charCodeAt(0) + ';');
@@ -89,10 +89,10 @@ async function handler(req) {
     if (!d || typeof d !== 'object' || Array.isArray(d)) return html(PLAIN, 60); // no such card, or it is offline or taken down
     const name = text(d.name, 60), company = text(d.company, 60), role = text(d.role, 60), tagline = text(d.tagline, 90);
     if (!name) return html(PLAIN, 60);
-    const title = name + (company ? ' | ' + company : ''), line = [role, tagline].filter(Boolean).join('. ') || 'Digital business card';
+    const title = name + (company ? ' | ' + company : ''), line = [role, tagline].filter(Boolean).join('. ') || (d.lang === 'es' ? 'Tarjeta de presentación digital' : 'Digital business card');
     const site = cfg.site || u.origin, pic = typeof d.preview?.url === 'string' ? d.preview.url : '';
     const mine = new RegExp('^' + (cfg.url + '/storage/v1/object/public/' + cfg.bucket + '/').replace(/[.]/g, '\\.') + '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/og-[a-z0-9]{1,16}\\.jpg$');
-    return html({ title, description: line, ogTitle: title, ogDescription: line + '. Tap to call, text, email or save the contact.', url: site + '/c/' + slug,
+    return html({ title, description: line, ogTitle: title, ogDescription: line + (d.lang === 'es' ? '. Toca para llamar, enviar un mensaje, escribir un correo o guardar el contacto.' : '. Tap to call, text, email or save the contact.'), url: site + '/c/' + slug,
       image: mine.test(pic) ? pic : site + '/live/og-default.jpg', alt: name + (role ? ', ' + role : '') }, 120);
   } catch { return html(PLAIN, 30); }
 }

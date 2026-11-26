@@ -5,6 +5,7 @@ const slug=(q.get('id')||location.pathname.replace(/^\/c\/?/,'').replace(/\/$/,'
 const say=(title,body)=>{msg.hidden=false;msg.querySelector('h1').textContent=title;msg.querySelector('p').textContent=body};
 const SAMPLE={name:'Otis Williams',company:'Meridian Interface',role:'AI Architect',tagline:'Commercial ads and websites for your business',logo:{url:'/brand/meridian-mark.png',mark:true,line1:'MERIDIAN',line2:'INTERFACE'},
   actions:{phone:'+12818829198',text:true,email:'otis@meridianinterface.com',booking:'https://meridianinterface.com/?book=web_design',bookingLabel:'Book a 1-on-1 appointment',website:'https://meridianinterface.com/',facebook:'https://www.facebook.com/profile.php?id=61596523703192',instagram:'https://www.instagram.com/meridianinterface/'},background:{type:'scene',id:'ocean'}};
+if(window.LiveCardsText&&window.LiveCardsText.lang==='es')Object.assign(SAMPLE,{lang:'es',role:'Arquitecto de IA',tagline:'Anuncios comerciales y sitios web para tu negocio',actions:Object.assign({},SAMPLE.actions,{bookingLabel:'Agenda tu cita 1 a 1'})}); // a Spanish reader sees the sample in Spanish
 async function load(){
   if(q.get('preview')){const d=await A.local.get('draft');if(!d)return say('No draft on this device','Open the Studio to start your card.');
     const data=JSON.parse(JSON.stringify(d.data));for(const k of ['bgBlob','logoBlob','photoBlob'])if(d[k]){const u=URL.createObjectURL(d[k]);if(k==='bgBlob')data.background.url=u;else if(k==='logoBlob')data.logo.url=u;else data.photo={url:u}}return data}
@@ -17,5 +18,5 @@ load().then(data=>{if(!data)return;const engine=window.LiveCard.init(phone);
   const c=window.LiveCardView.render(phone,data,{engine,cardUrl:location.origin+'/c/'+slug,madeLink:'/live-cards/',leads:act||!!q.get('preview'),onTap:act?k=>A.activity.hit(slug,k):null,sendInfo:act?d=>A.activity.sendInfo(slug,d):null});
   if(act)A.activity.hit(slug,'open');
   document.title=c.name+(c.company?' | '+c.company:'');phone.hidden=false;
-  const rep=document.getElementById('lc-report');if(rep&&A.enabled&&slug&&slug!=='sample'&&!q.get('preview')){rep.hidden=false;rep.addEventListener('click',async()=>{const why=window.prompt('What is wrong with this card?');if(!why)return;try{await A.cards.report(slug,why);rep.textContent='Thank you. We will review it.'}catch(e){rep.textContent='Could not send. Please try again later.'}})}});
+  const rep=document.getElementById('lc-report');if(rep&&A.enabled&&slug&&slug!=='sample'&&!q.get('preview')){rep.hidden=false;rep.addEventListener('click',async()=>{const why=window.prompt((window.LiveCardsText?window.LiveCardsText.T:x=>x)('What is wrong with this card?'));if(!why)return;try{await A.cards.report(slug,why);rep.textContent='Thank you. We will review it.'}catch(e){rep.textContent='Could not send. Please try again later.'}})}});
 })();
