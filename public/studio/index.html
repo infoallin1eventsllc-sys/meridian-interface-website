@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="/live/ui.css"><link rel="stylesheet" href="/live/card.css"><link rel="stylesheet" href="/live/studio.css"></head>
 <body>
 <header class="top"><a class="brand" href="/live-cards/" aria-label="Live Cards home"><img src="/brand/meridian-mark.png" alt="" width="342" height="333"><span aria-hidden="true"><b>LIVE CARDS</b><i>STUDIO</i></span></a><span class="state" id="state" role="status" data-s="saved">Saved on this device</span></header>
+<div class="who" id="who" hidden><label for="f-who">Editing</label><select id="f-who"></select></div>
 <main class="app">
   <section class="preview" aria-label="Your card">
     <div class="pv" id="pv"><div class="lc-phone" id="lc"></div></div>
@@ -99,6 +100,9 @@
       <div id="pub-done" hidden><h3>Your card is live</h3><p class="note" id="pub-dirty" hidden>You have changes that are not on your live card yet.</p><button type="button" class="btn" id="pub-update" hidden>Update my live card</button><p class="link" id="pub-link"></p><div class="row"><button type="button" class="ghost" id="pub-copy">Copy link</button><button type="button" class="ghost" id="pub-share" hidden>Share</button></div>
         <canvas id="pub-qr" width="220" height="220" aria-label="QR code for your card"></canvas><p class="note">Scanning this opens your card.</p>
         <div class="downloads"><h3>Take it with you</h3><div class="row"><button type="button" class="ghost" id="dl-qr">QR code for print</button><button type="button" class="ghost" id="dl-lock">Lock screen picture</button><button type="button" class="ghost" id="dl-sig">Copy email signature</button><button type="button" class="ghost" id="dl-nfc" hidden>Set up a tap card</button></div><p class="note" id="dl-note" role="status"></p></div><button type="button" class="ghost" id="pub-unpub">Take my card offline</button></div>
+      <div id="team" hidden><h3>Team</h3><label class="check switch"><input type="checkbox" id="f-same"> Keep every card in the same look</label>
+        <p class="note">The business name, logo, colors, background, address, hours, website, social, review and pay buttons follow the card you are editing. Names, photos, phones and emails stay personal.</p>
+        <div class="row"><button type="button" class="btn" id="team-update" hidden>Update every card</button><button type="button" class="ghost danger" id="team-remove">Remove this card</button></div></div>
       <div id="plan" hidden><h3>Your plan</h3><p class="note" id="plan-note"></p><label class="check" id="plan-made" hidden><input type="checkbox" id="f-made"> Hide the "Made with Meridian Live Cards" line on my card</label>
         <div class="row"><button type="button" class="ghost" id="plan-up" hidden>Upgrade my plan</button><button type="button" class="ghost" id="plan-manage" hidden>Manage my plan</button></div></div>
       <div id="acct" hidden><p class="note" id="acct-who"></p><div class="row"><button type="button" class="ghost" id="acct-out">Sign out</button><button type="button" class="ghost danger" id="acct-del">Delete my account and card</button></div></div>

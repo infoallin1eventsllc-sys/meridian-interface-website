@@ -2,7 +2,10 @@
 (function(){'use strict';
 const A=window.LiveCardsAPI,V=window.LiveCardView,$=id=>document.getElementById(id),phone=$('lc'),engine=window.LiveCard.init(phone);
 const ACCENTS=['#2563eb','#0f766e','#b45309','#be123c','#6d28d9','#111827'],SLUG=/^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-let draft={data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,photoSrc:null,photoPos:{x:.5,y:.5,z:1},cardId:null,slug:'',published:false};
+const blank=()=>({data:{name:'',company:'',role:'',tagline:'',accent:'#2563eb',logo:{url:'',line1:'',line2:''},photo:{url:''},preview:{url:''},hours:'',actions:{},background:{type:'scene',id:engine.glOK?'ocean':'sunrise',fit:'fill',sound:true}},bgBlob:null,logoBlob:null,photoBlob:null,photoSrc:null,photoPos:{x:.5,y:.5,z:1},cardId:null,slug:'',published:false});
+// `draft` is the card being edited. `book` holds every card on this device: one for most people, several for a team.
+let draft=blank(),book={cards:[draft],at:0,same:true},teamPlan='';
+const keep=()=>{book.cards[book.at]=draft;return Promise.all([A.local.set('draft',draft),A.local.set('book',{cards:book.cards,at:book.at,same:book.same})])};
 const urls={};const blobUrl=(k,b)=>{if(!b){if(urls[k]){URL.revokeObjectURL(urls[k].u);delete urls[k]}return''}if(!urls[k]||urls[k].b!==b){if(urls[k])URL.revokeObjectURL(urls[k].u);urls[k]={b,u:URL.createObjectURL(b)}}return urls[k].u};
 const get=(o,path)=>path.split('.').reduce((x,k)=>x==null?x:x[k],o),put=(o,path,v)=>{const ks=path.split('.'),last=ks.pop();ks.reduce((x,k)=>x[k]||(x[k]={}),o)[last]=v};
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},5200)}
@@ -13,7 +16,7 @@ const humanOn=/^[0-9A-Za-z_-]{10,60}$/.test(A.config.humanCheck||'')&&A.enabled;
 // ---------- preview and saving
 function viewData(){const d=JSON.parse(JSON.stringify(draft.data));if(draft.bgBlob)d.background.url=blobUrl('bg',draft.bgBlob);if(draft.logoBlob)d.logo.url=blobUrl('logo',draft.logoBlob);d.photo=d.photo||{};if(draft.photoBlob)d.photo.url=blobUrl('photo',draft.photoBlob);return d}
 let lastBg='';function paint(){const d=viewData(),bgKey=JSON.stringify(d.background);V.render(phone,d,{engine:bgKey===lastBg?null:engine});lastBg=bgKey}
-let saveT;let linkT;function changed(){if(draft.published){draft.dirty=true;dirtyView()}paint();if(!$('p-publish').hidden){clearTimeout(linkT);linkT=setTimeout(linkView,500)}clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await A.local.set('draft',draft);state(draft.published?'Saved here. On the Share tab, tap Update my live card.':'Saved on this device')},350)}
+let saveT;let linkT;function changed(){if(draft.published){draft.dirty=true}if(book.same&&book.cards.length>1)spread();dirtyView();if(book.cards.length>1)whoView();paint();if(!$('p-publish').hidden){clearTimeout(linkT);linkT=setTimeout(linkView,500)}clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await keep();state(draft.published?'Saved here. On the Share tab, tap Update my live card.':'Saved on this device')},350)}
 // ---------- form
 function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(draft.data,el.dataset.k);if(el.type==='checkbox')el.checked=!!v;else el.value=v||''});
   $('logo-clear').hidden=!(draft.logoBlob||draft.data.logo.url);{const u=draft.photoBlob?blobUrl('photo',draft.photoBlob):V.media((draft.data.photo||{}).url),im=$('face-pv');im.hidden=!u;if(u&&im.getAttribute('src')!==u)im.src=u;$('photo-clear').hidden=!u;$('photo-word').textContent=u?'Change':'Add your photo';const adj=!!(u&&draft.photoSrc);$('face-adj').hidden=!adj;$('face-note').hidden=adj;im.classList.toggle('drag',adj);im.tabIndex=adj?0:-1;if(adj){im.setAttribute('aria-label','Your photo. Drag, or use the arrow keys, to move it.');$('f-zoom').value=draft.photoPos.z}else im.removeAttribute('aria-label')}
@@ -65,9 +68,9 @@ $('f-bg').addEventListener('change',async e=>{const f=e.target.files[0];e.target
 for(const [id,v] of [['fit-fill','fill'],['fit-band','band']])$(id).addEventListener('click',()=>{draft.data.background.fit=v;fill();changed()});
 $('f-sound').addEventListener('change',e=>{draft.data.background.sound=e.target.checked;changed()});
 // ---------- share / publish
-const filesOf=d=>d?[d.background&&d.background.url,d.logo&&d.logo.url,d.photo&&d.photo.url,d.preview&&d.preview.url]:[];
+const filesOf=d=>d?[d.background&&d.background.url,d.logo&&d.logo.url,d.photo&&d.photo.url,d.preview&&d.preview.url]:[],allFiles=()=>book.cards.flatMap(c=>filesOf(c.data));
 const cardLink=()=>(A.config.site||location.origin)+'/c/'+draft.slug;let pendingEmail='';
-function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d}
+function dirtyView(){const d=!!(draft.published&&draft.dirty);$('pub-update').hidden=!d;$('pub-dirty').hidden=!d;const n=book.cards.filter(c=>c.published&&c.dirty&&c.cardId).length;$('team-update').hidden=!(book.cards.length>1&&n>0&&!(n===1&&d));$('team-update').textContent='Update every card ('+n+')'}
 // Only what is still missing is listed. Nothing missing, nothing shown.
 function readyView(){const d=draft.data,a=d.actions||{},ul=$('ready');ul.textContent='';
   const rows=[[!!(d.name||'').trim(),'Add your name','t-details'],[!!(a.phone||a.email||a.booking||a.website),'Add at least one way to reach you','t-buttons']].filter(r=>!r[0]);
@@ -101,7 +104,7 @@ let pvRun=0;async function drawPreview(cv,solo){const run=solo?0:++pvRun,c=V.nor
 const previewBlob=()=>new Promise(async res=>{const cv=document.createElement('canvas');cv.width=1200;cv.height=630;try{if(!(await drawPreview(cv,true)))return res(null);cv.toBlob(b=>res(b),'image/jpeg',.86)}catch(e){res(null)}});
 function linkView(){const c=V.normalize(draft.data);$('pv-title').textContent=c.name+(c.company?' | '+c.company:'');$('pv-site').textContent=(A.config.site||location.origin).replace(/^https?:\/\//,'');drawPreview($('pv-img')).catch(()=>{})}
 function pubView(){readyView();dirtyView();linkView();const on=A.enabled,user=A.auth.user,show=(id,v)=>{$(id).hidden=!v};
-  show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);planView();
+  show('pub-off',!on);show('pub-email',on&&!user&&!pendingEmail);show('pub-code',on&&!user&&!!pendingEmail);show('pub-go',on&&!!user&&!draft.published);show('pub-done',on&&!!user&&draft.published);show('acct',on&&!!user);show('team',book.cards.length>1);$('f-same').checked=book.same;planView();
   if(user)$('acct-who').textContent='Signed in as '+user.email;$('site-prefix').textContent=(A.config.site||location.origin).replace(/^https?:\/\//,'')+'/c/';
   if(on&&user&&draft.published){$('pub-link').textContent=cardLink();window.QRCode.toCanvas($('pub-qr'),cardLink(),{width:200,margin:1,errorCorrectionLevel:'M'},()=>{});$('pub-share').hidden=!navigator.share}}
 const busy=(btn,on,label)=>{btn.disabled=on;if(label)btn.textContent=label};
@@ -109,23 +112,28 @@ $('pub-email').addEventListener('submit',async e=>{e.preventDefault();const b=e.
 $('code-back').addEventListener('click',()=>{pendingEmail='';pubView()});
 $('pub-code').addEventListener('submit',async e=>{e.preventDefault();const b=e.target.querySelector('button');busy(b,true);
   try{await A.auth.verify(pendingEmail,$('f-code').value);pendingEmail='';$('f-code').value='';await adopt();pubView()}catch(err){toast(err.status===401||err.status===403||err.status===400?'That code did not work. Check it or ask for a new one.':err.message)}busy(b,false)});
-async function adopt(){if(draft.cardId)return;try{const mine=await A.cards.mine();if(mine&&mine[0]){const m=mine[0];draft.cardId=m.id;draft.slug=m.slug;draft.published=m.published;if(!draft.data.name){draft.data=m.data;draft.bgBlob=draft.logoBlob=draft.photoBlob=draft.photoSrc=null}fill();lastBg='';changed()}}catch(e){}}
+// After sign-in: bring in every card this account has. A card started on this device before signing in takes the place of the account's first card, as before.
+async function adopt(){try{const mine=await A.cards.mine()||[];let grew=false;for(const m of mine){if(book.cards.some(c=>c.cardId===m.id))continue;grew=true;
+      const loose=book.cards.find(c=>!c.cardId);if(loose){loose.cardId=m.id;loose.slug=m.slug;loose.published=m.published;if(!(loose.data.name||'').trim()){loose.data=m.data;loose.bgBlob=loose.logoBlob=loose.photoBlob=loose.photoSrc=null}}
+      else{const c=blank();c.data=m.data;c.cardId=m.id;c.slug=m.slug;c.published=m.published;book.cards.push(c)}}
+    draft=book.cards[book.at]||book.cards[0];if(grew){fill();lastBg='';changed()}}catch(e){}
+  try{teamPlan=A.auth.user?await A.billing.plan():''}catch(e){teamPlan=''}whoView()}
 $('f-slug').addEventListener('input',e=>{const v=e.target.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-');if(v!==e.target.value)e.target.value=v;$('slug-note').textContent='Lowercase letters, numbers and dashes.'});
 async function publish(e){e.preventDefault();const again=!!(draft.published&&draft.cardId),b=again?$('pub-update'):$('pub-btn'),label=again?'Update my live card':'Publish my card',slug=again?draft.slug:$('f-slug').value.trim();
   if(!SLUG.test(slug)){$('slug-note').textContent='Use 3 to 40 lowercase letters, numbers or dashes, starting and ending with a letter or number.';return}
   if(!draft.data.name.trim()){toast('Add your name on the Details tab first.');return}
   busy(b,true,'Publishing…');
   try{if(slug!==draft.slug||!draft.cardId){if(!(await A.cards.slugFree(slug))){$('slug-note').textContent='That link is taken. Try another.';busy(b,false,label);return}}
-    {let live=[];try{const m=(await A.cards.mine())[0];if(m)live=filesOf(m.data)}catch(e){}await A.cards.tidy(live)} // clear leftovers, keep what the live card uses
+    {let live=[];try{live=(await A.cards.mine()||[]).flatMap(m=>filesOf(m.data))}catch(e){}await A.cards.tidy(live.concat(allFiles()))} // clear leftovers, keep what any card uses
     const shot=await previewBlob(); // drawn before the uploads, while the pictures are still on this device
-    if(draft.bgBlob){draft.data.background.url=await A.cards.upload(draft.bgBlob,'bg');draft.bgBlob=null;blobUrl('bg',null)}
-    if(draft.logoBlob){draft.data.logo.url=await A.cards.upload(draft.logoBlob,'logo');draft.logoBlob=null;blobUrl('logo',null)}
+    if(draft.bgBlob){const was=draft.bgBlob,u=await A.cards.upload(was,'bg');for(const c of book.cards)if(c.bgBlob===was){c.data.background.url=u;c.bgBlob=null}blobUrl('bg',null)}
+    if(draft.logoBlob){const was=draft.logoBlob,u=await A.cards.upload(was,'logo');for(const c of book.cards)if(c.logoBlob===was){c.data.logo.url=u;c.logoBlob=null}blobUrl('logo',null)}
     if(draft.photoBlob){draft.data.photo={url:await A.cards.upload(draft.photoBlob,'photo')};draft.photoBlob=null;blobUrl('photo',null)}
     if(shot)try{draft.data.preview={url:await A.cards.upload(shot,'og')}}catch(e){} // the card still publishes if the preview picture cannot be saved
-    await A.local.set('draft',draft);
+    await keep();
     const row=await A.cards.save(draft.cardId,slug,V.normalize(draft.data),true);draft.cardId=row.id;draft.slug=row.slug;draft.published=true;draft.dirty=false;
     if(row.data&&typeof row.data==='object')draft.data=row.data; // keep exactly what the service accepted
-    await A.local.set('draft',draft);A.cards.tidy(filesOf(draft.data));fill();lastBg='';paint();state('Published');pubView()}
+    await keep();A.cards.tidy(allFiles());fill();lastBg='';paint();state('Published');whoView();pubView()}
   catch(err){toast(err.code==='23505'?'That link is taken. Try another.':err.message)}busy(b,false,label)}
 $('pub-go').addEventListener('submit',publish);$('pub-update').addEventListener('click',publish);
 // ---------- take it with you: files made on this device from the card and its link
@@ -157,10 +165,26 @@ $('dl-sig').addEventListener('click',async()=>{const s=signature();try{await nav
 if('NDEFReader' in window){$('dl-nfc').hidden=false;$('dl-nfc').addEventListener('click',async()=>{said('Hold a blank tap card or sticker to the back of your phone.');try{await new window.NDEFReader().write({records:[{recordType:'url',data:cardLink()}]});said('Done. Touch that card to any phone and yours opens.')}catch(e){said('The tap card was not written. Check that NFC is on, then try again.')}})}
 $('pub-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(cardLink());toast('Link copied')}catch(e){toast(cardLink())}});
 $('pub-share').addEventListener('click',()=>{navigator.share({title:draft.data.name,text:'My digital business card',url:cardLink()}).catch(()=>{})});
-$('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await A.local.set('draft',draft);state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});
-$('acct-out').addEventListener('click',async()=>{await A.auth.signOut();plan='';pubView()});
+$('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.cardId,draft.slug,V.normalize(draft.data),false);draft.published=false;await keep();state('Saved on this device');pubView();toast('Your card is offline. Publish again any time.')}catch(err){toast(err.message)}});
+$('acct-out').addEventListener('click',async()=>{await A.auth.signOut();plan='';teamPlan='';whoView();pubView()});
 let delArmed=0;$('acct-del').addEventListener('click',async e=>{if(Date.now()-delArmed>6000){delArmed=Date.now();e.target.textContent='Tap again to delete everything';setTimeout(()=>{e.target.textContent='Delete my account and card'},6000);return}
-  try{await A.auth.deleteAccount();plan='';draft.cardId=null;draft.slug='';draft.published=false;await A.local.set('draft',draft);pubView();toast('Your account and public card were deleted.')}catch(err){toast(err.message)}});
+  try{await A.auth.deleteAccount();plan='';teamPlan='';draft.cardId=null;draft.slug='';draft.published=false;book.cards=[draft];book.at=0;await keep();whoView();pubView();toast('Your account and public card were deleted.')}catch(err){toast(err.message)}});
+// ---------- team: several cards in one account that share one look
+const BRAND=['company','accent','hours','actions.address','actions.website','actions.facebook','actions.instagram','actions.linkedin','actions.tiktok','actions.youtube','actions.review','actions.cashapp','actions.venmo','actions.zelle'];
+const look=c=>JSON.stringify([BRAND.map(k=>get(c.data,k)||''),c.data.logo,c.data.background]);
+function wear(c,src){for(const k of BRAND)put(c.data,k,get(src.data,k)||'');c.data.logo=JSON.parse(JSON.stringify(src.data.logo||{}));c.data.background=JSON.parse(JSON.stringify(src.data.background));c.logoBlob=src.logoBlob;c.bgBlob=src.bgBlob}
+/** Copies the shared look from the card being edited to the others. A published card that changed is marked as needing an update. */
+function spread(){for(const c of book.cards){if(c===draft)continue;const was=look(c),l=c.logoBlob,g=c.bgBlob;wear(c,draft);if(c.published&&(was!==look(c)||l!==c.logoBlob||g!==c.bgBlob))c.dirty=true}}
+function whoView(){const can=A.enabled&&!!A.auth.user&&teamPlan==='pro'&&book.cards.length<5,sel=$('f-who');$('who').hidden=!(book.cards.length>1||can);sel.textContent='';
+  book.cards.forEach((c,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=((c.data.name||'').trim()||'New card')+(c.published?(c.dirty?' (changes not live)':''):' (not published)');sel.appendChild(o)});
+  if(can){const o=document.createElement('option');o.value='add';o.textContent='Add a team member';sel.appendChild(o)}sel.value=String(book.at)}
+function openCard(i){clearTimeout(saveT);book.cards[book.at]=draft;book.at=Math.max(0,Math.min(book.cards.length-1,i));draft=book.cards[book.at];faceIm=faceOf=null;if(draft.photoSrc){const src=draft.photoSrc;loadImg(blobUrl('psrc',src)).then(im=>{if(draft.photoSrc===src){faceIm=im;faceOf=src}})}
+  fill();lastBg='';paint();keep();whoView();state(draft.published?'Published':'Saved on this device');if(!$('p-publish').hidden)pubView();if(!$('p-activity').hidden)actView()}
+$('f-who').addEventListener('change',e=>{if(e.target.value==='add'){book.cards[book.at]=draft;const c=blank();wear(c,draft);book.cards.push(c);openCard(book.cards.length-1);$('t-details').click();$('f-name').focus();toast('New card added. Add their name, photo, phone and email.')}else openCard(+e.target.value||0)});
+$('f-same').addEventListener('change',e=>{book.same=e.target.checked;if(book.same)spread();dirtyView();whoView();keep()});
+let rmArmed=0;$('team-remove').addEventListener('click',async e=>{const btn=e.currentTarget;if(book.cards.length<2)return;if(Date.now()-rmArmed>6000){rmArmed=Date.now();btn.textContent='Tap again to remove this card';setTimeout(()=>{btn.textContent='Remove this card'},6000);return}
+  rmArmed=0;btn.textContent='Remove this card';try{if(draft.cardId&&A.enabled)await A.cards.remove(draft.cardId);book.cards.splice(book.at,1);draft=book.cards[0];book.at=0;openCard(0);if(A.enabled&&A.auth.user)A.cards.tidy(allFiles());toast('That card was removed.')}catch(err){toast(err.message)}});
+$('team-update').addEventListener('click',async e=>{const btn=e.currentTarget,back=book.at;busy(btn,true);for(let i=0;i<book.cards.length;i++){const c=book.cards[i];if(c.published&&c.dirty&&c.cardId){openCard(i);await publish({preventDefault(){}})}}openCard(back);busy(btn,false);pubView()});
 // ---------- activity (only when switched on): counts of opens and taps, and the people who sent their info
 const TAP_NAMES={call:'Tapped Call',text:'Tapped Text',email:'Tapped Email',book:'Tapped your booking button',web:'Opened your website',map:'Got directions',save:'Saved your contact',review:'Opened your review link',pay:'Tapped a pay button',social:'Opened a social link',info:'Sent you their info'};
 async function actView(){const ready=A.activity.enabled&&!!A.auth.user&&draft.published;$('act-off').hidden=ready;$('act-stats').hidden=$('act-people').hidden=!ready;if(!ready)return;
@@ -203,5 +227,10 @@ $('install-btn').addEventListener('click',async()=>{if(!installEvt)return;instal
   if((!ios&&!android)||window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true}
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('/studio/sw.js').catch(()=>{});
 // ---------- start
-A.local.get('draft').then(async d=>{if(d&&d.data){draft=Object.assign(draft,d);draft.data.logo=draft.data.logo||{};draft.data.actions=draft.data.actions||{};draft.data.background=draft.data.background||{type:'scene',id:'ocean'};draft.photoPos=draft.photoPos||{x:.5,y:.5,z:1};draft.data.photo=draft.data.photo||{url:''};draft.data.preview=draft.data.preview||{url:''};{const l=draft.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!draft.data.company)draft.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}}}if(draft.photoSrc)loadImg(blobUrl('psrc',draft.photoSrc)).then(im=>{faceIm=im;faceOf=draft.photoSrc});fill();paint();if(A.enabled&&A.auth.user)await adopt()});
+const mend=c=>{c.data=c.data||blank().data;c.data.logo=c.data.logo||{};c.data.actions=c.data.actions||{};c.data.background=c.data.background||{type:'scene',id:'ocean'};c.photoPos=c.photoPos||{x:.5,y:.5,z:1};c.data.photo=c.data.photo||{url:''};c.data.preview=c.data.preview||{url:''};
+  const l=c.data.logo;if(!l.mark&&(l.line1||l.line2)){if(!c.data.company)c.data.company=[l.line1,l.line2].filter(Boolean).join(' ');l.line1=l.line2=''}return c}; // an older draft's logo text becomes the business name
+Promise.all([A.local.get('draft'),A.local.get('book')]).then(async([d,bk])=>{
+  if(bk&&Array.isArray(bk.cards)&&bk.cards.length){book={cards:bk.cards.slice(0,5).map(c=>mend(Object.assign(blank(),c))),at:0,same:bk.same!==false};book.at=Math.max(0,Math.min(book.cards.length-1,bk.at|0));draft=book.cards[book.at]}
+  else if(d&&d.data){draft=mend(Object.assign(draft,d));book.cards=[draft]}
+  whoView();if(draft.photoSrc)loadImg(blobUrl('psrc',draft.photoSrc)).then(im=>{faceIm=im;faceOf=draft.photoSrc});fill();paint();if(A.enabled&&A.auth.user)await adopt()});
 })();

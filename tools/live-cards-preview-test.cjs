@@ -150,7 +150,7 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   const ph=(vcf.match(/\r\nPHOTO;ENCODING=b;TYPE=JPEG:([\s\S]*?)\r\n(?! )/)||[])[1]||'',bytes=Buffer.from(ph.replace(/\r\n /g,''),'base64');
   T(bytes.length>2000&&bytes[0]===0xFF&&bytes[1]===0xD8&&vcf.split('\r\n').every(l=>l.length<=76)&&bytes.equals(files.get(S.card.data.photo.url.split('/live-cards/')[1]).buf),'the saved contact includes the headshot, byte for byte, in folded lines',bytes.length);
   const hrefs=await p.$$eval('.lc-card a',as=>as.map(a=>a.getAttribute('href')));T(hrefs.every(h=>/^(tel:|mailto:|sms:|https:\/\/|\/live-cards\/)/.test(h)),'every button on the public card is a safe link',hrefs.join(' '));
-  T(S.hits.save===1&&S.hits.pay===1&&S.hits.info===1&&S.hits.open===1,'taps are counted by kind, once each',JSON.stringify(S.hits));
+  await p.waitForTimeout(700);T(S.hits.save===1&&S.hits.pay===1&&S.hits.info===1&&S.hits.open===1,'taps are counted by kind, once each',JSON.stringify(S.hits));
   // on a phone the page itself grows, so nothing is cut off
   const fit=await p.evaluate(()=>{const last=[...document.querySelectorAll('.lc-chip,.lc-made a')].map(e=>e.getBoundingClientRect().bottom+scrollY);return {doc:document.documentElement.scrollHeight,last:Math.max(...last),sideways:document.documentElement.scrollWidth>innerWidth+1}});
   T(fit.last<=fit.doc+1&&!fit.sideways,'on a phone the whole card can be reached and nothing scrolls sideways',JSON.stringify(fit));await p.close()}
@@ -167,6 +167,33 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   await p.click('#photo-clear');await p.waitForTimeout(500);T(await p.$eval('#lc',e=>!e.querySelector('.lc-face'))&&await p.$eval('#photo-word',e=>e.textContent)==='Add your photo','Remove takes the photo off the card');
   await p.click('#t-publish');await p.waitForTimeout(600);await p.click('#pub-update');await p.waitForTimeout(3000);const after=[...files.keys()];
   T(after.length===1&&/\/og-/.test(after[0])&&!before.includes(after[0])&&S.card.data.photo.url===''&&S.card.data.preview.url.endsWith(after[0].split('/')[1]),'updating without the photo deletes it from the store and redraws the link preview',after.join());await p.close()}
+// team cards: several cards in one account that share one look (paid plan)
+{let p=await page('/studio/');T(await p.$eval('#who',e=>e.hidden),'on the free plan there is one card and no card picker');await p.close();
+  S.plan='pro';p=await page('/studio/');await p.waitForTimeout(600);
+  const opts=()=>p.$$eval('#f-who option',o=>o.map(x=>x.textContent));
+  T(await p.$eval('#who',e=>!e.hidden)&&(await opts()).join('|')==='Jordan Rivers|Add a team member','on the paid plan the card picker offers to add a team member',(await opts()).join('|'));
+  await p.selectOption('#f-who','add');await p.waitForTimeout(600);
+  const now=()=>p.evaluate(()=>({name:document.getElementById('f-name').value,company:document.getElementById('f-company').value,role:document.getElementById('f-role').value,phone:document.getElementById('f-phone').value,addr:document.getElementById('f-addr').value,cash:document.getElementById('f-cash').value,face:!!document.querySelector('#lc .lc-face'),who:document.getElementById('f-who').value}));
+  let v=await now();T(v.name===''&&v.company==='Rivers Realty'&&v.addr==='123 Main St, Katy, TX 77494'&&v.cash==='RiversRealty'&&v.phone===''&&!v.face&&v.who==='1','a new team card starts with the shared look and none of the first person\'s details',JSON.stringify(v));
+  await p.fill('#f-name','Alex Kim');await p.fill('#f-role','Buyer Agent');await p.click('#t-buttons');await p.fill('#f-phone','832-555-0147');await p.click('#t-publish');await p.waitForTimeout(600);
+  await p.fill('#f-slug','alex-kim');await p.$eval('#f-rights',e=>e.checked=true);await p.click('#pub-btn');await p.waitForTimeout(3000);
+  T(S.cards.length===2&&S.cards[1].slug==='alex-kim'&&S.cards[1].data.name==='Alex Kim'&&S.cards[1].data.company==='Rivers Realty'&&S.cards[1].data.actions.phone==='8325550147'&&S.cards[0].data.name==='Jordan Rivers','the second card is published with its own name, phone and link',JSON.stringify(S.cards.map(c=>[c.slug,c.data.name])));
+  T(await p.$eval('#team',e=>!e.hidden)&&await p.$eval('#f-same',e=>e.checked),'the Share tab shows the Team settings, with the same look switched on');
+  // change a shared detail on the first card: it reaches the second, personal details do not
+  await p.selectOption('#f-who','0');await p.waitForTimeout(500);await p.click('#t-buttons');await p.fill('#f-addr','900 Grand Pkwy, Katy, TX 77494');await p.fill('#f-phone','281-555-0142');await p.waitForTimeout(600);
+  await p.click('#t-publish');await p.waitForTimeout(500);T(await p.$eval('#team-update',e=>!e.hidden&&/\(2\)/.test(e.textContent)),'after a shared change the Studio offers to update every card');
+  await p.click('#team-update');await p.waitForTimeout(7000);
+  T(S.cards.every(c=>c.data.actions.address==='900 Grand Pkwy, Katy, TX 77494')&&S.cards[0].data.name==='Jordan Rivers'&&S.cards[1].data.name==='Alex Kim'&&S.cards[1].data.actions.phone==='8325550147'&&S.cards[0].data.actions.phone==='2815550142','Update every card sends the shared change to both; names and phones stay personal',JSON.stringify(S.cards.map(c=>[c.data.name,c.data.actions.address,c.data.actions.phone])));
+  T(await p.$eval('#team-update',e=>e.hidden)&&(await opts()).slice(0,2).join('|')==='Jordan Rivers|Alex Kim','afterwards nothing is waiting and both cards are in the picker',(await opts()).join('|'));
+  // with the same look switched off, a change stays on its own card
+  await p.uncheck('#f-same');await p.click('#t-buttons');await p.fill('#f-hours','By appointment');await p.waitForTimeout(600);await p.selectOption('#f-who','1');await p.waitForTimeout(500);
+  T(await p.$eval('#f-hours',e=>e.value)==='Mon to Fri, 9 am to 5 pm','with the same look switched off, a change stays on its own card');
+  // the second card's public link
+  const q=await page('/c/alex-kim');T(await q.$eval('.lc-name',e=>e.textContent)==='Alex Kim'&&(S.pages.filter(x=>x.path==='/c/alex-kim').pop()||{html:''}).html.includes('<title>Alex Kim | Rivers Realty</title>'),'the team member\'s own link opens their card with their own title');await q.close();
+  // remove the second card
+  await p.click('#t-publish');await p.waitForTimeout(400);await p.click('#team-remove');await p.waitForTimeout(200);T(S.cards.length===2,'Remove asks for a second tap first');await p.click('#team-remove');await p.waitForTimeout(1500);
+  T(S.cards.length===1&&S.cards[0].slug==='jordan-rivers'&&(await opts()).join('|')==='Jordan Rivers (changes not live)|Add a team member'&&await p.$eval('#f-name',e=>e.value)==='Jordan Rivers','removing a team card deletes it and returns to the first card',(await opts()).join('|'));
+  S.plan='free';await p.close()}
 // the file limit: a full store still refuses the next upload (stand-in mirrors the 12 file rule)
 {const p=await page('/studio/');const r=await p.evaluate(async()=>{const A=window.LiveCardsAPI,blob=new Blob([new Uint8Array(2000)],{type:'image/jpeg'});let ok=0,err='';for(let i=0;i<14;i++){try{await A.cards.upload(blob,'bg');ok++}catch(e){err=e.message}}
     let vid='';try{await A.cards.upload(new Blob([new Uint8Array(10)],{type:'video/mp4'}),'photo')}catch(e){vid=e.code}return {ok,err,vid}});

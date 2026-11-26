@@ -42,6 +42,8 @@ const cards={
   async slugFree(slug){const j=await call('/rest/v1/rpc/lc_slug_available',{method:'POST',body:{p_slug:slug}});return j===true},
   async save(id,slug,data,published){const row={slug,data,published};
     const j=id?await call('/rest/v1/lc_cards?id=eq.'+id,{method:'PATCH',auth:true,body:row,headers:{Prefer:'return=representation'}}):await call('/rest/v1/lc_cards',{method:'POST',auth:true,body:row,headers:{Prefer:'return=representation'}});return j&&j[0]},
+  /** Deletes one of this account's own cards. */
+  remove(id){if(!/^[0-9a-f-]{36}$/.test(id||''))return Promise.reject(new ApiError('Not found.',404,'id'));return call('/rest/v1/lc_cards?id=eq.'+id,{method:'DELETE',auth:true})},
   /** kind is 'bg' (background), 'logo', 'photo' (headshot) or 'og' (the link preview picture). The service only accepts
       <account>/(bg|logo|photo|og)-<letters and numbers>.(jpg|mp4|mov|webm), up to 12 files an account. Only a background may be a video;
       only a logo may be a PNG (kept when it has a see-through background). */

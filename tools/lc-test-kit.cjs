@@ -23,7 +23,9 @@ function cleanCard(p){p=p||{};const a=p.actions||{},g=p.background||{},l=p.logo|
       address:txt(a.address,140),review:linkOK(a.review),cashapp:/^[A-Za-z0-9_]{1,20}$/.test(a.cashapp||'')?a.cashapp:'',venmo:/^[A-Za-z0-9_-]{5,30}$/.test(a.venmo||'')?a.venmo:'',zelle:mailOK(txt(a.zelle,200))||telOK(a.zelle),leads:a.leads===true},
     background:{type,id:/^[a-z]{2,12}$/.test(g.id||'')?g.id:'ocean',url:type==='scene'?'':url,fit:g.fit==='band'?'band':'fill',bg:/^#[0-9a-f]{6}$/i.test(g.bg||'')?g.bg:'#000000',sound:g.sound!==false},showMade:true}}
 /** Wires the stand-in service and the site into a browser context. Returns the state the tests look at. */
-async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],calls:[],card:null,otpSent:0,pages:[],hits:{},leads:[]};
+async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],calls:[],cards:[],plan:'free',otpSent:0,pages:[],hits:{},leads:[]};
+  Object.defineProperty(S,'card',{get(){return S.cards[0]||null},set(v){S.cards=v?[v]:[]}}); // most checks look at the first card
+  const bySlug=sl=>S.cards.find(c=>c.slug===sl&&c.published)||null,limit=()=>S.plan==='pro'?5:1;
   S.tok='t.'+Buffer.from(JSON.stringify({sub:UID})).toString('base64')+'.s';
   const cors={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'GET,POST,PATCH,DELETE'};
   const J=(r,body,status=200)=>r.fulfill({status,headers:{...cors,'content-type':'application/json'},body:JSON.stringify(body)});
@@ -33,20 +35,23 @@ async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],ca
     if(pth==='/auth/v1/otp'){S.otpSent++;return J(r,{})}
     if(pth==='/auth/v1/verify')return body&&body.token==='123456'?J(r,{access_token:S.tok,refresh_token:'r1',expires_in:3600,user:{id:UID,email:body.email}}):J(r,{msg:'Token has expired or is invalid'},403);
     if(pth==='/auth/v1/logout')return J(r,{});
-    if(pth==='/rest/v1/rpc/lc_slug_available')return J(r,!(S.card&&S.card.slug===body.p_slug)&&!['admin','studio'].includes(body.p_slug));
-    if(pth==='/rest/v1/rpc/lc_get_card')return J(r,S.card&&S.card.slug===body.p_slug&&S.card.published?S.card.data:null);
+    if(pth==='/rest/v1/rpc/lc_slug_available')return J(r,!S.cards.some(c=>c.slug===body.p_slug)&&!['admin','studio'].includes(body.p_slug));
+    if(pth==='/rest/v1/lc_accounts')return authed?J(r,[{plan:S.plan}]):J(r,{message:'no'},401);
+    if(pth==='/rest/v1/rpc/lc_get_card'){const c=bySlug(body.p_slug);return J(r,c?c.data:null)}
     // activity: counts by event for a published card; a visitor may leave a name and one phone number or email; only the owner reads or removes them
-    if(pth==='/rest/v1/rpc/lc_hit'){if(S.card&&S.card.published&&S.card.slug===body.p_slug&&/^(open|call|text|email|book|web|map|save|review|pay|social)$/.test(body.p_event))S.hits[body.p_event]=(S.hits[body.p_event]||0)+1;return r.fulfill({status:204,headers:cors})}
-    if(pth==='/rest/v1/rpc/lc_send_info'){const n=txt(body.p_name,60),c=mailOK(txt(body.p_contact,200))||telOK(body.p_contact);if(!(S.card&&S.card.published&&S.card.slug===body.p_slug&&S.card.data.actions.leads)||n.length<2||!c)return J(r,{message:'not accepted'},400);
+    if(pth==='/rest/v1/rpc/lc_hit'){if(bySlug(body.p_slug)&&/^(open|call|text|email|book|web|map|save|review|pay|social)$/.test(body.p_event))S.hits[body.p_event]=(S.hits[body.p_event]||0)+1;return r.fulfill({status:204,headers:cors})}
+    if(pth==='/rest/v1/rpc/lc_send_info'){const n=txt(body.p_name,60),c=mailOK(txt(body.p_contact,200))||telOK(body.p_contact);if(!(bySlug(body.p_slug)&&bySlug(body.p_slug).data.actions.leads)||n.length<2||!c)return J(r,{message:'not accepted'},400);
       if(S.leads.length>=5)return J(r,{message:'too many'},429);S.leads.unshift({id:'d0000000-0000-4000-8000-00000000000'+S.leads.length,name:n,contact:c,note:txt(body.p_note,200),created_at:new Date().toISOString()});S.hits.info=(S.hits.info||0)+1;return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/rpc/lc_card_stats'){if(!authed)return J(r,{message:'no'},401);const {open,...taps}=S.hits;return J(r,{days:30,opens:open||0,taps})}
     if(pth==='/rest/v1/lc_leads'){if(!authed)return J(r,{message:'permission denied for table lc_leads',code:'42501'},401);if(m==='DELETE'){const id=(u.searchParams.get('id')||'').replace('eq.','');S.leads=S.leads.filter(l=>l.id!==id);return r.fulfill({status:204,headers:cors})}return J(r,S.leads)}
     if(pth==='/rest/v1/rpc/lc_report'){S.reports.push(body);return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/rpc/lc_delete_account'){if(!authed)return J(r,{message:'no'},401);S.card=null;return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/lc_cards'){if(m==='GET'&&!authed)return J(r,{message:'permission denied for table lc_cards',code:'42501'},401);
-      if(m==='GET')return J(r,S.card?[S.card]:[]);if(!authed)return J(r,{message:'no'},401);
-      if(m==='POST'){S.card={id:'c0000000-0000-4000-8000-000000000001',slug:body.slug,data:cleanCard(body.data),published:!!body.published,updated_at:new Date().toISOString()};return J(r,[S.card],201)}
-      if(m==='PATCH'){Object.assign(S.card,{slug:body.slug,data:cleanCard(body.data),published:!!body.published});return J(r,[S.card])}}
+      if(m==='GET')return J(r,S.cards);if(!authed)return J(r,{message:'no'},401);const id=(u.searchParams.get('id')||'').replace('eq.','');
+      if(m==='DELETE'){S.cards=S.cards.filter(c=>c.id!==id);return r.fulfill({status:204,headers:cors})}
+      if(m==='POST'){if(S.cards.length>=limit())return J(r,{message:'Your plan allows '+limit()+' card'+(limit()>1?'s':'')+'.',code:'P0001'},400);if(S.cards.some(c=>c.slug===body.slug))return J(r,{message:'duplicate key',code:'23505'},409);
+        const c={id:'c0000000-0000-4000-8000-00000000000'+(S.made=(S.made||0)+1),slug:body.slug,data:cleanCard(body.data),published:!!body.published,updated_at:new Date().toISOString()};S.cards.push(c);return J(r,[c],201)}
+      if(m==='PATCH'){const c=S.cards.find(x=>x.id===id);if(!c)return J(r,[]);Object.assign(c,{slug:body.slug,data:cleanCard(body.data),published:!!body.published});return J(r,[c])}}
     if(pth.startsWith('/storage/v1/object/list/')){return J(r,[...S.files.keys()].map(n=>({name:n.split('/')[1]})))}
     if(pth.startsWith('/storage/v1/object/public/live-cards/')){const n=pth.split('/live-cards/')[1],f=S.files.get(n);return f?r.fulfill({status:200,headers:{...cors,'content-type':f.type},body:f.buf}):r.fulfill({status:404,headers:cors,body:''})}
     if(pth==='/storage/v1/object/live-cards'&&m==='DELETE'){for(const n of body.prefixes)S.files.delete(n);return J(r,[])}
@@ -57,7 +62,7 @@ async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],ca
   // the site with the real headers; the service is switched on for the test only. A card's link goes through the real page function.
   const run=cardPage(),inner=async(url,init)=>{const u=new URL(String(url));
     if(u.origin===B&&u.pathname==='/live/config.js')return new Response(configOn(),{status:200});
-    if(u.origin===SB&&u.pathname==='/rest/v1/rpc/lc_get_card'){const b=JSON.parse(init.body);return new Response(JSON.stringify(S.card&&S.card.slug===b.p_slug&&S.card.published?S.card.data:null),{status:200,headers:{'content-type':'application/json'}})}
+    if(u.origin===SB&&u.pathname==='/rest/v1/rpc/lc_get_card'){const b=JSON.parse(init.body),c=bySlug(b.p_slug);return new Response(JSON.stringify(c?c.data:null),{status:200,headers:{'content-type':'application/json'}})}
     return new Response('unexpected',{status:500})};
   await ctx.route(B+'/**',async r=>{const u=new URL(r.request().url()),p=u.pathname;
     if(p==='/live/config.js')return r.fulfill({status:200,contentType:'text/javascript',body:configOn()});
