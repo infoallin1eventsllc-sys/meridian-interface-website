@@ -43,6 +43,7 @@ async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],ca
     if(pth==='/rest/v1/rpc/lc_send_info'){const n=txt(body.p_name,60),c=mailOK(txt(body.p_contact,200))||telOK(body.p_contact);if(!(bySlug(body.p_slug)&&bySlug(body.p_slug).data.actions.leads)||n.length<2||!c)return J(r,{message:'not accepted'},400);
       if(S.leads.length>=5)return J(r,{message:'too many'},429);S.leads.unshift({id:'d0000000-0000-4000-8000-00000000000'+S.leads.length,name:n,contact:c,note:txt(body.p_note,200),created_at:new Date().toISOString()});S.hits.info=(S.hits.info||0)+1;return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/rpc/lc_card_stats'){if(!authed)return J(r,{message:'no'},401);const {open,...taps}=S.hits;return J(r,{days:30,opens:open||0,taps})}
+    if(pth==='/rest/v1/rpc/lc_card_leads'){if(!authed)return J(r,{message:'no'},401);return J(r,S.leads)}
     if(pth==='/rest/v1/lc_leads'){if(!authed)return J(r,{message:'permission denied for table lc_leads',code:'42501'},401);if(m==='DELETE'){const id=(u.searchParams.get('id')||'').replace('eq.','');S.leads=S.leads.filter(l=>l.id!==id);return r.fulfill({status:204,headers:cors})}return J(r,S.leads)}
     if(pth==='/rest/v1/rpc/lc_report'){S.reports.push(body);return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/rpc/lc_delete_account'){if(!authed)return J(r,{message:'no'},401);S.card=null;return r.fulfill({status:204,headers:cors})}

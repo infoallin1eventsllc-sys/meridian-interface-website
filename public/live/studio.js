@@ -193,12 +193,12 @@ $('team-update').addEventListener('click',async e=>{const btn=e.currentTarget,ba
 // ---------- activity (only when switched on): counts of opens and taps, and the people who sent their info
 const TAP_NAMES={call:'Tapped Call',text:'Tapped Text',email:'Tapped Email',book:'Tapped your booking button',web:'Opened your website',map:'Got directions',save:'Saved your contact',review:'Opened your review link',pay:'Tapped a pay button',social:'Opened a social link',info:'Sent you their info'};
 async function actView(){const ready=A.activity.enabled&&!!A.auth.user&&draft.published;$('act-off').hidden=ready;$('act-stats').hidden=$('act-people').hidden=!ready;if(!ready)return;
-  try{const s=await A.activity.stats()||{},opens=Math.max(0,s.opens|0),rows=Object.keys(TAP_NAMES).map(k=>[k,Math.max(0,(s.taps||{})[k]|0)]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]),top=rows.length?rows[0][1]:1,ul=$('st-bars');
+  try{const s=await A.activity.stats(draft.slug)||{},opens=Math.max(0,s.opens|0),rows=Object.keys(TAP_NAMES).map(k=>[k,Math.max(0,(s.taps||{})[k]|0)]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]),top=rows.length?rows[0][1]:1,ul=$('st-bars');
     $('st-opens').textContent=opens.toLocaleString();$('st-opens-l').textContent=opens===1?'open':'opens';ul.textContent='';
     for(const [k,n] of rows){const li=document.createElement('li'),nm=document.createElement('span'),v=document.createElement('b'),bar=document.createElement('i');nm.textContent=TAP_NAMES[k];v.textContent=n.toLocaleString();bar.style.setProperty('--w',String(Math.round(n/top*100)));li.append(nm,v,bar);ul.appendChild(li)}
     $('st-note').textContent=opens?(rows.length?'':'Nobody has tapped a button yet.'):'No opens yet. Share your link or show your QR code.'}
   catch(e){$('st-note').textContent='The numbers could not load. Check your connection and open this tab again.'}
-  try{const list=await A.activity.people()||[],ul=$('people');ul.textContent='';
+  try{const list=await A.activity.people(draft.slug)||[],ul=$('people');ul.textContent='';
     for(const p of list){const li=document.createElement('li'),nm=document.createElement('b'),who=document.createElement('p'),when=document.createElement('time'),rm=document.createElement('button'),ct=String(p.contact||'');
       // a phone number or an email becomes a link; anything else is shown as plain text
       const href=/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(ct)?'mailto:'+ct:/^\+?[0-9]{7,15}$/.test(ct)?'tel:'+ct:'';

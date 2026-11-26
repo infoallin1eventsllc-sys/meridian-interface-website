@@ -44,8 +44,12 @@ Switch: `activity` in `public/live/config.js`. While it is false there is no Act
 - **What the back end must provide** (the stand-in in `tools/lc-test-kit.cjs` shows the exact shapes and rules):
   - `lc_hit(p_slug, p_event)`: public; adds one to a per-card, per-day, per-event count; accepts only open, call, text, email, book, web, map, save, review, pay, social; must be rate limited; stores no visitor details.
   - `lc_send_info(p_slug, p_name, p_contact, p_note)`: public; only for a published card whose owner turned the button on; cleans the text, requires a phone number or email, is rate limited per card and overall, and adds one to the `info` count.
-  - `lc_card_stats()`: signed-in owner only; returns `{days:30, opens, taps:{...}}` for their own card.
+  - `lc_card_stats(p_slug)`: signed-in owner only; returns `{days:30, opens, taps:{...}}` for one of their own cards.
+  - `lc_card_leads(p_slug)`: signed-in owner only; the people who sent their info to that card, newest first.
   - table `lc_leads(id, card, name, contact, note, created_at)`: the owner can read and delete their own rows; nobody else can read any.
+
+## Demo mode (for trying everything before the service exists)
+`public/live/demo.js`. Open the Studio with `?demo=1` on a test copy (localhost or a *.vercel.app preview); `?demo=0` or the bar's "Leave demo" turns it off. It never starts on meridianinterface.com or while the real service is switched on. Everything stays in that browser: sign in with any email and any 6 digits, publish, open the card, tap its buttons, send your info, see Activity, add team cards (the demo acts as the paid plan), download the QR, lock screen and signature. A card link only opens on the same browser. Your own background video only lasts until the page is closed; pictures last.
 
 ## The switch
 `public/live/config.js` has `enabled:false`. In that state the Studio works fully on the device (drafts in IndexedDB, nothing sent anywhere) and the Share tab says sharing is being set up. Public card links need the service.

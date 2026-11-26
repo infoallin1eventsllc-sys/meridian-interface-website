@@ -48,3 +48,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .row.two{display:grid;grid-template-columns:1fr 1fr;align-items:end}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* demo mode bar */
+.lc-demo{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;padding:8px 14px;background:#fef3c7;color:#713f12;border-bottom:1px solid #f59e0b;font:600 13px/1.35 "Inter",system-ui,sans-serif;text-align:center}
+.lc-demo a{color:#713f12;text-decoration:underline;min-height:32px;display:inline-flex;align-items:center}

@@ -80,8 +80,9 @@ const activity={enabled:ON&&C.activity===true,
   hit(slug,ev){if(!activity.enabled||!slug)return;try{fetch(C.url+'/rest/v1/rpc/lc_hit',{method:'POST',keepalive:true,headers:{apikey:C.key,Authorization:'Bearer '+C.key,'Content-Type':'application/json'},body:JSON.stringify({p_slug:String(slug),p_event:String(ev).slice(0,12)})}).catch(()=>{})}catch(e){}},
   /** A visitor leaves their own name and a way to reach them for the card's owner. */
   sendInfo(slug,d){return call('/rest/v1/rpc/lc_send_info',{method:'POST',body:{p_slug:String(slug),p_name:String(d.name||'').slice(0,60),p_contact:String(d.contact||'').slice(0,200),p_note:String(d.note||'').slice(0,200)}})},
-  stats(){return call('/rest/v1/rpc/lc_card_stats',{method:'POST',auth:true,body:{}})},
-  people(){return call('/rest/v1/lc_leads?select=id,name,contact,note,created_at&order=created_at.desc&limit=100',{auth:true})},
+  /** For one of the signed-in account's own cards, by its link name. */
+  stats(slug){return call('/rest/v1/rpc/lc_card_stats',{method:'POST',auth:true,body:{p_slug:String(slug||'')}})},
+  people(slug){return call('/rest/v1/rpc/lc_card_leads',{method:'POST',auth:true,body:{p_slug:String(slug||'')}})},
   forget(id){if(!/^[0-9a-f-]{36}$/.test(id||''))return Promise.reject(new ApiError('Not found.',404,'id'));return call('/rest/v1/lc_leads?id=eq.'+id,{method:'DELETE',auth:true})}};
 window.LiveCardsAPI={enabled:ON,config:C,local,auth,cards,billing,activity,shrinkImage,checkVideo,ApiError};
 })();

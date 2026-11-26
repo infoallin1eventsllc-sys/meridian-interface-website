@@ -87,7 +87,7 @@ function init(phone){
                 {b:.858,amp:.044,f:3.4,ridged:1,par:9,c1:[96,82,148],c2:[92,128,186]},
                 {b:.882,amp:.03,f:4.6,ridged:0,par:15,c1:[50,50,110],c2:[48,82,140]}];
   const LAKE=.9,PINES_L=[[.03,.085],[.09,.062],[.15,.1],[.21,.05],[.265,.036]],PINES_R=[[.725,.042],[.79,.068],[.86,.105],[.93,.074],[.985,.09]];
-  const scene={W:0,H:0};let texA,texB,grain,cl,clx,stars;
+  const scene={W:-1,H:-1};let texA,texB,grain,cl,clx,stars; // -1 so the first frame always builds the scene, even before the page has a size
   function buildScene(){scene.W=W;scene.H=H;
     if(!texA){texA=cloudTex(7,512,256,.5,.76);texB=cloudTex(23,512,256,.54,.8);
       const gc=document.createElement('canvas');gc.width=gc.height=128;const gx=gc.getContext('2d'),im=gx.createImageData(128,128),r=mulberry(5);
@@ -569,7 +569,7 @@ function init(phone){
     const t=(now-t0)/1000;
     P.x+=(P.tx-P.x)*.08;P.y+=(P.ty-P.y)*.08;P.on+=(P.ton-P.on)*.06;
     ripples=ripples.filter(r=>now-r.t<3500);flares=flares.filter(f=>now-f<1600);
-    const T_=THEME[mode];if(T_.draw)T_.draw(reduce?0:t,now);
+    const T_=THEME[mode];if(T_.draw&&W>0&&H>0)T_.draw(reduce?0:t,now); // nothing to draw on a card with no size yet (a background tab)
     if(!reduce)requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

@@ -15,3 +15,7 @@ html,body{margin:0;height:100%;background:#0f172a}
 /* Under the card, never on top of it. */
 .report{display:block;margin:6px auto max(10px,env(safe-area-inset-bottom,0px));min-height:44px;background:none;border:0;color:rgba(255,255,255,.6);font:500 12.5px "Inter",system-ui,sans-serif;padding:8px 14px;cursor:pointer;border-radius:8px}
 .report:hover{color:#fff}
+
+/* demo mode bar */
+.lc-demo{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;padding:8px 14px;background:#fef3c7;color:#713f12;border-bottom:1px solid #f59e0b;font:600 13px/1.35 "Inter",system-ui,sans-serif;text-align:center}
+.lc-demo a{color:#713f12;text-decoration:underline;min-height:32px;display:inline-flex;align-items:center}
