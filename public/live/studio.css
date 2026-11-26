@@ -19,7 +19,7 @@ body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 .panel{min-width:0;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
 
 /* tab bar */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;display:grid;grid-template-columns:repeat(4,1fr);background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 .tabs button{position:relative;display:grid;justify-items:center;gap:4px;min-height:64px;padding:10px 2px 8px;background:none;border:0;cursor:pointer;color:var(--faint);font:600 11.5px/1 var(--body);-webkit-tap-highlight-color:transparent;transition:color .16s var(--ease)}
 .tabs button svg{width:22px;height:22px}
 .tabs button[aria-selected="true"]{color:var(--accent)}
@@ -131,3 +131,21 @@ form label{width:100%}
 .face-adj input[type=range]{width:100%;height:44px;margin:0;accent-color:var(--accent)}
 #starts button{min-height:44px}
 .downloads{display:grid;gap:12px;justify-items:start;width:100%;border-top:1px solid var(--line);padding-top:18px}
+/* Activity tab: one big number, then one plain row per button, most tapped first */
+.stats{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:18px}
+.big{display:flex;align-items:baseline;gap:10px;margin:0}
+.big b{font:800 44px/1 var(--display);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.big span{color:var(--muted);font-size:16px}
+.bars,.people{list-style:none;margin:0;padding:0;display:grid}
+.bars li{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:10px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink)}
+.bars li:first-child{border-top:0}
+.bars li b{font-weight:600;font-variant-numeric:tabular-nums}
+.bars li i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.bars li i::before{content:"";display:block;height:100%;width:calc(var(--w,0)*1%);border-radius:3px;background:var(--accent)}
+.people li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.people li:first-child{border-top:0}
+.people b{font-weight:600;color:var(--ink)}
+.people a{color:var(--link);font-weight:600;overflow-wrap:anywhere}
+.people p{grid-column:1;margin:0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.people time{grid-column:1;color:var(--faint);font-size:13px}
+.people button{grid-column:2;grid-row:1/span 2;align-self:center}

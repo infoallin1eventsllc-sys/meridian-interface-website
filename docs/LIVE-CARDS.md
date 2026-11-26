@@ -28,6 +28,16 @@ When a link is texted or posted, the phone or site reads the page's title and pi
 - `public/live/og-default.jpg` is the picture for a link with no card behind it.
 - Not yet seen on real apps: check a published card's link in iMessage, WhatsApp and Facebook's Sharing Debugger at go-live.
 
+## Activity, and "Send me your info" (front end built 26 Nov 2026; needs the back end before it is switched on)
+Switch: `activity` in `public/live/config.js`. While it is false there is no Activity tab, no "Send me your info" switch, and the card sends no counts.
+- **Card:** when the owner turns it on, a "Send me your info" button opens a small form (name, phone or email, optional note). The public card also adds one to a count when it is opened and when a button is tapped.
+- **Studio, Activity tab:** opens in the last 30 days, one row per button that was tapped, and the people who sent their info (with Remove).
+- **What the back end must provide** (the stand-in in `tools/lc-test-kit.cjs` shows the exact shapes and rules):
+  - `lc_hit(p_slug, p_event)`: public; adds one to a per-card, per-day, per-event count; accepts only open, call, text, email, book, web, map, save, review, pay, social; must be rate limited; stores no visitor details.
+  - `lc_send_info(p_slug, p_name, p_contact, p_note)`: public; only for a published card whose owner turned the button on; cleans the text, requires a phone number or email, is rate limited per card and overall, and adds one to the `info` count.
+  - `lc_card_stats()`: signed-in owner only; returns `{days:30, opens, taps:{...}}` for their own card.
+  - table `lc_leads(id, card, name, contact, note, created_at)`: the owner can read and delete their own rows; nobody else can read any.
+
 ## The switch
 `public/live/config.js` has `enabled:false`. In that state the Studio works fully on the device (drafts in IndexedDB, nothing sent anywhere) and the Share tab says sharing is being set up. Public card links need the service.
 

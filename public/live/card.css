@@ -69,3 +69,16 @@
 .lc-phone a:focus-visible,.lc-phone button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .lc-made{position:absolute;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom,0px));text-align:center;font:500 11px/1 var(--lc-body);pointer-events:none}
 .lc-made a{pointer-events:auto;color:rgba(255,255,255,.82);text-decoration:none;background:rgba(0,0,0,.32);padding:6px 10px;border-radius:999px}
+/* "Send me your info": a small window over the card */
+.lc-sheet{position:absolute;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 14px 14px;background:rgba(4,8,26,.62);overflow:auto}
+.lc-form{width:100%;max-width:400px;display:grid;gap:12px;padding:20px 18px 16px;border-radius:20px;background:#fff;color:#0f172a;box-shadow:0 24px 60px -20px rgba(0,0,0,.7);text-align:left}
+.lc-form h2{margin:0;font:800 20px/1.2 var(--lc-display);letter-spacing:-.01em;color:#0f172a}
+.lc-form label{display:grid;gap:6px;font:600 13.5px/1.3 var(--lc-body);color:#0f172a}
+.lc-form input{min-height:48px;padding:0 14px;border-radius:12px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font:400 16px var(--lc-body);width:100%}
+.lc-form input:focus-visible{outline:2px solid #2563eb;outline-offset:1px}
+.lc-form .lc-pill{box-shadow:none}.lc-form .lc-pill:not(.book){background:#0f172a;color:#fff}
+.lc-form button:disabled{opacity:.6}
+.lc-form-x{min-height:44px;background:none;border:0;color:#475569;font:600 14.5px var(--lc-body);cursor:pointer;border-radius:10px}
+.lc-form-msg{margin:0;min-height:1.3em;font:500 13.5px/1.3 var(--lc-body);color:#b91c1c}
+.lc-form-fine{margin:0;font:400 13px/1.4 var(--lc-body);color:#475569;text-align:center}
+.lc-form button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}

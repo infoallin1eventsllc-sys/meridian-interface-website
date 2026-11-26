@@ -39,10 +39,11 @@ const ACCENT_NAMES=['Blue','Teal','Amber','Rose','Violet','Graphite'];
 for(const [n,c] of ACCENTS.entries()){const b=document.createElement('button');b.type='button';b.dataset.c=c;b.style.background=c;b.title=ACCENT_NAMES[n];b.setAttribute('aria-label',ACCENT_NAMES[n]);b.addEventListener('click',()=>{draft.data.accent=c;fill();changed()});$('swatches').appendChild(b)}
 {let col='',grp;for(const s of engine.scenes){if(s.col!==col){col=s.col;grp=document.createElement('div');grp.className='grp';const l=document.createElement('div');l.className='col';l.textContent=col;grp.appendChild(l);$('scenes').appendChild(grp)}
   const b=document.createElement('button'),im=document.createElement('img');b.type='button';b.dataset.id=s.id;im.src='/live/thumbs/'+s.id+'.jpg';im.alt='';im.width=120;im.height=150;im.loading='lazy';im.decoding='async';b.append(im,s.name);b.addEventListener('click',()=>{draft.data.background=Object.assign({},draft.data.background,{type:'scene',id:s.id,url:''});draft.bgBlob=null;blobUrl('bg',null);$('bg-note').textContent=s.hint||'';fill();changed()});grp.appendChild(b)}}
+$('t-activity').hidden=$('leads-set').hidden=!A.activity.enabled;
 const TABS=[...document.querySelectorAll('.tabs button')];
-TABS.forEach((t,n)=>{t.addEventListener('click',()=>{TABS.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',String(on));x.tabIndex=on?0:-1;$(x.getAttribute('aria-controls')).hidden=!on});if(t.id==='t-publish')pubView();
+TABS.forEach((t,n)=>{t.addEventListener('click',()=>{TABS.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',String(on));x.tabIndex=on?0:-1;$(x.getAttribute('aria-controls')).hidden=!on});if(t.id==='t-publish')pubView();if(t.id==='t-activity')actView();
     const top=document.querySelector('.panel').getBoundingClientRect().top+scrollY-(document.querySelector('.preview').offsetHeight+document.querySelector('.top').offsetHeight);if(scrollY>top&&matchMedia('(max-width:899px)').matches)scrollTo(0,Math.max(0,top))});
-  t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;t.addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();const nx=TABS[(n+d+TABS.length)%TABS.length];nx.focus();nx.click()})});
+  t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;t.addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();const live=TABS.filter(x=>!x.hidden),nx=live[(live.indexOf(t)+d+live.length)%live.length];nx.focus();nx.click()})});
 $('f-logo').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{draft.logoBlob=await A.shrinkImage(f,{max:800,alpha:true});draft.data.logo.url='';fill();changed()}catch(err){toast(err.message)}});
 $('logo-clear').addEventListener('click',()=>{draft.logoBlob=null;blobUrl('logo',null);draft.data.logo.url='';fill();changed()});
 // ---------- headshot: the chosen photo is kept on this device so it can be moved and zoomed inside the circle; only the cut square is ever uploaded
@@ -160,6 +161,24 @@ $('pub-unpub').addEventListener('click',async()=>{try{await A.cards.save(draft.c
 $('acct-out').addEventListener('click',async()=>{await A.auth.signOut();plan='';pubView()});
 let delArmed=0;$('acct-del').addEventListener('click',async e=>{if(Date.now()-delArmed>6000){delArmed=Date.now();e.target.textContent='Tap again to delete everything';setTimeout(()=>{e.target.textContent='Delete my account and card'},6000);return}
   try{await A.auth.deleteAccount();plan='';draft.cardId=null;draft.slug='';draft.published=false;await A.local.set('draft',draft);pubView();toast('Your account and public card were deleted.')}catch(err){toast(err.message)}});
+// ---------- activity (only when switched on): counts of opens and taps, and the people who sent their info
+const TAP_NAMES={call:'Tapped Call',text:'Tapped Text',email:'Tapped Email',book:'Tapped your booking button',web:'Opened your website',map:'Got directions',save:'Saved your contact',review:'Opened your review link',pay:'Tapped a pay button',social:'Opened a social link',info:'Sent you their info'};
+async function actView(){const ready=A.activity.enabled&&!!A.auth.user&&draft.published;$('act-off').hidden=ready;$('act-stats').hidden=$('act-people').hidden=!ready;if(!ready)return;
+  try{const s=await A.activity.stats()||{},opens=Math.max(0,s.opens|0),rows=Object.keys(TAP_NAMES).map(k=>[k,Math.max(0,(s.taps||{})[k]|0)]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]),top=rows.length?rows[0][1]:1,ul=$('st-bars');
+    $('st-opens').textContent=opens.toLocaleString();$('st-opens-l').textContent=opens===1?'open':'opens';ul.textContent='';
+    for(const [k,n] of rows){const li=document.createElement('li'),nm=document.createElement('span'),v=document.createElement('b'),bar=document.createElement('i');nm.textContent=TAP_NAMES[k];v.textContent=n.toLocaleString();bar.style.setProperty('--w',String(Math.round(n/top*100)));li.append(nm,v,bar);ul.appendChild(li)}
+    $('st-note').textContent=opens?(rows.length?'':'Nobody has tapped a button yet.'):'No opens yet. Share your link or show your QR code.'}
+  catch(e){$('st-note').textContent='The numbers could not load. Check your connection and open this tab again.'}
+  try{const list=await A.activity.people()||[],ul=$('people');ul.textContent='';
+    for(const p of list){const li=document.createElement('li'),nm=document.createElement('b'),who=document.createElement('p'),when=document.createElement('time'),rm=document.createElement('button'),ct=String(p.contact||'');
+      // a phone number or an email becomes a link; anything else is shown as plain text
+      const href=/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(ct)?'mailto:'+ct:/^\+?[0-9]{7,15}$/.test(ct)?'tel:'+ct:'';
+      nm.textContent=String(p.name||'');if(href){const a=document.createElement('a'),m=ct.match(/^(?:\+?1)?(\d{3})(\d{3})(\d{4})$/);a.href=href;a.textContent=m?'('+m[1]+') '+m[2]+'-'+m[3]:ct;who.appendChild(a)}else who.textContent=ct;
+      const d=new Date(p.created_at);when.textContent=isNaN(d)?'':d.toLocaleDateString(undefined,{month:'short',day:'numeric'});rm.type='button';rm.className='ghost small';rm.textContent='Remove';rm.setAttribute('aria-label','Remove '+nm.textContent);
+      rm.addEventListener('click',async()=>{rm.disabled=true;try{await A.activity.forget(p.id);li.remove();if(!ul.children.length)$('people-note').textContent='Nobody yet.'}catch(e){rm.disabled=false;toast('That could not be removed. Try again.')}});
+      li.append(nm,rm,who);if(p.note){const n=document.createElement('p');n.textContent=String(p.note);li.appendChild(n)}li.appendChild(when);ul.appendChild(li)}
+    $('people-note').textContent=list.length?'':draft.data.actions&&draft.data.actions.leads?'Nobody yet. When someone taps "Send me your info" on your card, they show up here.':'Turn on "Send me your info" on the Buttons tab and people can leave you their name and number.'}
+  catch(e){$('people-note').textContent='The list could not load. Check your connection and open this tab again.'}}
 // ---------- plan (only when plans are switched on). The price is shown on Stripe's page, never here.
 async function planView(){const on=A.billing.enabled&&!!A.auth.user;$('plan').hidden=!on;if(!on)return;
   if(!plan&&!planBusy){planBusy=true;try{plan=await A.billing.plan()}catch(e){plan=''}planBusy=false}

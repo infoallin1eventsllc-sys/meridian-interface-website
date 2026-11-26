@@ -29,6 +29,7 @@ async function world(b,{cfg={},csp=x=>x,base=B,signedIn=true}={}){const ctx=awai
 (async()=>{const b=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--host-resolver-rules=MAP wrong.test 127.0.0.1']});
 // 1. plans off (the default): nothing about plans is shown or asked
 {const w=await world(b);const p=await w.open('/studio/');await p.click('#t-publish');await p.waitForTimeout(500);
+  T(await p.$eval('#t-activity',e=>e.hidden)&&await p.$eval('#leads-set',e=>e.hidden)&&await p.evaluate(()=>window.LiveCardsAPI.activity.enabled===false),'with activity switched off there is no Activity tab and no Send me your info switch');
   T(await p.$eval('#plan',e=>e.hidden)&&w.st.billingCalls.length===0,'with plans switched off, the Studio shows nothing about plans');T(w.errs.length===0,'plans off: no errors',w.errs.join(' | '));await w.ctx.close()}
 // 2. plans on, free account
 {const w=await world(b,{cfg:{billing:true}});const p=await w.open('/studio/');await p.fill('#f-name','Jordan Rivers');await p.click('#t-publish');await p.waitForTimeout(900);

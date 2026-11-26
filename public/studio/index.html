@@ -17,6 +17,7 @@
       <button role="tab" id="t-buttons" aria-controls="p-buttons" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="6" rx="3"/><rect x="3" y="14" width="18" height="6" rx="3"/></svg><span>Buttons</span></button>
       <button role="tab" id="t-bg" aria-controls="p-bg" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg><span>Background</span></button>
       <button role="tab" id="t-publish" aria-controls="p-publish" aria-selected="false"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg><span>Share</span></button>
+      <button role="tab" id="t-activity" aria-controls="p-activity" aria-selected="false" hidden><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Activity</span></button>
     </div>
     <div class="pane" role="tabpanel" id="p-details" aria-labelledby="t-details">
       <div class="pane-h"><h2>Details</h2><p>Who you are. This is the top of your card.</p></div>
@@ -64,6 +65,10 @@
       <label>Review link<input type="url" id="f-review" data-k="actions.review" maxlength="500" placeholder="g.page/r/yourbusiness/review"></label>
       <p class="note">Paste the link where customers review you, such as your Google review link.</p>
       </fieldset>
+      <fieldset id="leads-set" hidden><legend>Get their info</legend>
+      <label class="check switch"><input type="checkbox" id="f-leads" data-k="actions.leads"> Add a "Send me your info" button</label>
+      <p class="note">People leave their name and a phone number or email. You see them on the Activity tab.</p>
+      </fieldset>
       <fieldset><legend>Get paid</legend>
       <label>Cash App name<input type="text" id="f-cash" data-k="actions.cashapp" maxlength="60" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="$yourname"></label>
       <label>Venmo name<input type="text" id="f-venmo" data-k="actions.venmo" maxlength="60" autocapitalize="none" autocomplete="off" spellcheck="false" placeholder="@yourname"></label>
@@ -99,6 +104,12 @@
       <div id="acct" hidden><p class="note" id="acct-who"></p><div class="row"><button type="button" class="ghost" id="acct-out">Sign out</button><button type="button" class="ghost danger" id="acct-del">Delete my account and card</button></div></div>
       <div class="install" id="install"><h3>Put it on your home screen</h3><p id="install-how"></p><button type="button" class="ghost" id="install-btn" hidden>Install the app</button></div>
       <p class="note legal"><a href="/live-cards/terms/">Terms</a> and <a href="/live-cards/privacy/">Privacy</a></p>
+    </div>
+    <div class="pane" role="tabpanel" id="p-activity" aria-labelledby="t-activity" hidden>
+      <div class="pane-h"><h2>Activity</h2><p>How your card is doing, and who sent you their info.</p></div>
+      <div id="act-off" class="callout" hidden><h3>Nothing to show yet</h3><p>Publish your card on the Share tab. Then you see here how many people opened it and who sent you their info.</p></div>
+      <section class="stats" id="act-stats" aria-labelledby="st-h" hidden><h3 id="st-h">Last 30 days</h3><p class="big"><b id="st-opens">0</b><span id="st-opens-l">opens</span></p><ul class="bars" id="st-bars"></ul><p class="note" id="st-note"></p></section>
+      <section class="stats" id="act-people" aria-labelledby="pp-h" hidden><h3 id="pp-h">People who sent their info</h3><ul class="people" id="people"></ul><p class="note" id="people-note"></p></section>
     </div>
   </section>
 </main>

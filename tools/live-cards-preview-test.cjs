@@ -72,6 +72,7 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   await p.click('#logo-clear');await p.fill('#f-company','Rivers Realty');await p.click('#t-buttons');await p.fill('#f-phone','281-555-0142');await p.click('#t-publish');await p.waitForTimeout(400);
   T(await p.$eval('#todo',e=>e.hidden),'once nothing is missing the list is gone');
   T(await p.$eval('#install',e=>e.hidden),'home screen steps are hidden on a computer (they show only the steps for the phone in hand)');
+  await p.click('#t-activity');await p.waitForTimeout(400);T(await p.$eval('#act-off',e=>!e.hidden)&&await p.$eval('#act-stats',e=>e.hidden)&&await p.$eval('#act-people',e=>e.hidden),'before publishing, the Activity tab says plainly that there is nothing to show yet');
   T(await p.$$eval('#swatches button',b=>b.length===6)&&await p.$eval('#swatches',e=>!!e.closest('#p-buttons')),'the button color sits with the booking button it colors');await p.close()}
 {const p=await page('/studio/');await p.fill('#f-name','Jordan Rivers');await p.fill('#f-company','Rivers Realty');await p.fill('#f-role','Realtor');await p.fill('#f-tagline','Homes in Katy and West Houston');
   T(await p.$eval('#lc',e=>!e.querySelector('.lc-face')),'no photo: the card has no empty photo circle');
@@ -98,6 +99,10 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   T(await p.$eval('#lc .lc-hours',e=>e.textContent)==='Mon to Fri, 9 am to 5 pm','hours show on the card');
   T(await p.$$eval('#lc .lc-card a[target=_blank]',as=>as.length>0&&as.every(a=>a.rel==='noopener noreferrer')),'every outside button opens safely (noopener)');
   T(await p.$$eval('#lc .lc-card a, #lc .lc-card button',els=>els.every(e=>{const r=e.getBoundingClientRect(),k=e.closest('#lc').getBoundingClientRect().width/360;return r.height/k>=43.5})),'every button on the card is at least 44 pixels tall');
+  // Send me your info: the switch, the button, and the form in the preview (which sends nothing)
+  await p.check('#f-leads');await p.waitForTimeout(500);T(await p.$eval('#lc',e=>[...e.querySelectorAll('.lc-chip')].some(c=>c.textContent==='Send me your info')),'the switch adds a Send me your info button to the card');
+  await p.$eval('#lc .lc-chip',b=>b.click());await p.waitForTimeout(300);await p.$eval('#lc .lc-form',f=>{const i=f.querySelectorAll('input');i[0].value='Sam Carter';i[1].value='281-555-0199';f.requestSubmit()});await p.waitForTimeout(400);
+  T(/preview/.test(await p.$eval('#lc .lc-form-msg',e=>e.textContent))&&S.leads.length===0,'in the Studio preview the form says it is a preview and sends nothing');await p.keyboard.press('Escape');T(!(await p.$('#lc .lc-sheet')),'Escape closes the form');
   // the card is taller than the preview frame: it must scroll inside it, nothing unreachable
   const sc=await p.$eval('#lc .lc-card',c=>{const before=c.scrollTop;c.scrollTop=9999;const moved=c.scrollTop>before,last=[...c.querySelectorAll('.lc-chip')].pop().getBoundingClientRect(),box=c.getBoundingClientRect();return {tall:c.scrollHeight>c.clientHeight,moved,inView:last.bottom<=box.bottom+1}});
   T(!sc.tall||(sc.moved&&sc.inView),'a full card scrolls inside the preview so the last button can be reached',JSON.stringify(sc));
@@ -128,6 +133,14 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   T(meta(html,'og:title')==='Jordan Rivers | Rivers Realty'&&/\/og-[a-z0-9]{1,16}\.jpg$/.test(meta(html,'og:image')||'')&&meta(html,'og:image')===S.card.data.preview.url,'the public link is served with this card\'s own title and preview picture',html.slice(120,420));
   T(await p.title()==='Jordan Rivers | Rivers Realty'&&await p.$eval('.lc-name',e=>e.textContent)==='Jordan Rivers','the card itself opens from that page');
   const face=await p.$eval('.lc-face',async im=>{await im.decode().catch(()=>{});return {ok:im.naturalWidth>0,src:im.src}}).catch(()=>null);T(!!face&&face.ok&&face.src===S.card.data.photo.url,'the published headshot loads from the client folder',JSON.stringify(face));
+  T(S.hits.open===1,'opening the public card adds one to its opens');
+  await p.click('.lc-chip:has-text("Send me your info")');await p.waitForTimeout(300);
+  T(await p.$eval('.lc-sheet',e=>e.getAttribute('role')==='dialog'&&document.activeElement===e.querySelector('input'))&&await p.$eval('.lc-sheet',e=>{const f=e.querySelector('.lc-form').getBoundingClientRect();return f.top>=0&&f.bottom<=innerHeight}),'the form opens on screen with the cursor in the first box');
+  await p.click('.lc-form button[type=submit]');await p.waitForTimeout(200);T(await p.$eval('.lc-form-msg',e=>e.textContent)==='Please add your name.'&&S.leads.length===0,'an empty form asks for the name and sends nothing');
+  await p.fill('.lc-form input >> nth=0','<img src=x onerror="window.__lead=1">');await p.fill('.lc-form input >> nth=1','not a contact');await p.click('.lc-form button[type=submit]');await p.waitForTimeout(200);T(/phone number or an email/.test(await p.$eval('.lc-form-msg',e=>e.textContent))&&S.leads.length===0,'a contact that is neither a phone number nor an email is not sent');
+  await p.fill('.lc-form input >> nth=1','(281) 555-0199');await p.fill('.lc-form input >> nth=2','Looking for a 3 bedroom in Katy');await p.click('.lc-form button[type=submit]');await p.waitForTimeout(700);
+  T(S.leads.length===1&&S.leads[0].contact==='2815550199'&&S.leads[0].note==='Looking for a 3 bedroom in Katy'&&await p.$eval('.lc-form h2',e=>e.textContent)==='Sent','a visitor can send their name, number and a note',JSON.stringify(S.leads));
+  await p.click('.lc-form button');T(!(await p.$('.lc-sheet')),'Close puts the card back');
   // Zelle: no payment link exists, so the card shows and copies where to send
   await p.click('.lc-chip:has-text("Zelle")');await p.waitForTimeout(400);const note=await p.$eval('.lc-note',e=>e.hidden?'':e.textContent);const clip=await p.evaluate(()=>navigator.clipboard.readText()).catch(()=>'(clipboard not readable here)');
   T(/^Zelle to pay@riversrealty\.example/.test(note)&&/bank app/.test(note)&&(clip==='pay@riversrealty.example'||clip==='(clipboard not readable here)'),'Zelle shows where to send and copies it',note+' / '+clip);
@@ -137,9 +150,18 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   const ph=(vcf.match(/\r\nPHOTO;ENCODING=b;TYPE=JPEG:([\s\S]*?)\r\n(?! )/)||[])[1]||'',bytes=Buffer.from(ph.replace(/\r\n /g,''),'base64');
   T(bytes.length>2000&&bytes[0]===0xFF&&bytes[1]===0xD8&&vcf.split('\r\n').every(l=>l.length<=76)&&bytes.equals(files.get(S.card.data.photo.url.split('/live-cards/')[1]).buf),'the saved contact includes the headshot, byte for byte, in folded lines',bytes.length);
   const hrefs=await p.$$eval('.lc-card a',as=>as.map(a=>a.getAttribute('href')));T(hrefs.every(h=>/^(tel:|mailto:|sms:|https:\/\/|\/live-cards\/)/.test(h)),'every button on the public card is a safe link',hrefs.join(' '));
+  T(S.hits.save===1&&S.hits.pay===1&&S.hits.info===1&&S.hits.open===1,'taps are counted by kind, once each',JSON.stringify(S.hits));
   // on a phone the page itself grows, so nothing is cut off
   const fit=await p.evaluate(()=>{const last=[...document.querySelectorAll('.lc-chip,.lc-made a')].map(e=>e.getBoundingClientRect().bottom+scrollY);return {doc:document.documentElement.scrollHeight,last:Math.max(...last),sideways:document.documentElement.scrollWidth>innerWidth+1}});
   T(fit.last<=fit.doc+1&&!fit.sideways,'on a phone the whole card can be reached and nothing scrolls sideways',JSON.stringify(fit));await p.close()}
+// Activity tab: the numbers and the people, all shown as text
+{S.leads.push({id:'d0000000-0000-4000-8000-0000000000ff',name:'<script>window.__lead2=1</script>',contact:'javascript:alert(1)',note:'<b>bold</b>',created_at:'not a date'});
+  const p=await page('/studio/');await p.click('#t-activity');await p.waitForTimeout(900);
+  const rows=await p.$$eval('#st-bars li',l=>l.map(x=>x.querySelector('span').textContent+'='+x.querySelector('b').textContent));
+  T(await p.$eval('#st-opens',e=>e.textContent)==='1'&&await p.$eval('#st-opens-l',e=>e.textContent)==='open'&&rows.includes('Saved your contact=1')&&rows.includes('Tapped a pay button=1')&&rows.includes('Sent you their info=1')&&rows.length===3,'the Activity tab shows opens and only the buttons that were tapped',rows.join());
+  const ppl=await p.$$eval('#people li',l=>l.map(x=>({name:x.querySelector('b').textContent,href:x.querySelector('a')?x.querySelector('a').getAttribute('href'):null,tags:x.querySelectorAll('script,img,p b').length})));
+  T(ppl.length===2&&ppl[0].name.startsWith('<img')&&ppl[0].href==='tel:2815550199'&&ppl[1].href===null&&ppl[0].tags===0&&ppl[1].tags===0&&!(await p.evaluate(()=>window.__lead||window.__lead2)),'people who sent their info are listed as plain text; only a real phone or email becomes a link',JSON.stringify(ppl).slice(0,300));
+  await p.click('#people li button');await p.waitForTimeout(500);T(S.leads.length===1&&(await p.$$('#people li')).length===1,'Remove deletes that person from the list');await p.close()}
 // remove the photo and update: the old files go
 {const p=await page('/studio/');const before=[...files.keys()];T(await p.$eval('#face-pv',e=>!e.hidden&&/\/photo-/.test(e.src)),'the Studio shows the published headshot when reopened');
   await p.click('#photo-clear');await p.waitForTimeout(500);T(await p.$eval('#lc',e=>!e.querySelector('.lc-face'))&&await p.$eval('#photo-word',e=>e.textContent)==='Add your photo','Remove takes the photo off the card');

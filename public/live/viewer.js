@@ -13,7 +13,9 @@ async function load(){
   try{const row=await A.cards.bySlug(slug);if(!row)return say('Card not found','Check the link, or ask the owner for a new one.');return row.data}
   catch(e){return say('The card could not load',e.code==='offline'?'Check your internet connection and try again.':'Please try again in a moment.')}}
 load().then(data=>{if(!data)return;const engine=window.LiveCard.init(phone);
-  const c=window.LiveCardView.render(phone,data,{engine,cardUrl:location.origin+'/c/'+slug,madeLink:'/live-cards/'});
+  const real=A.enabled&&!!slug&&slug!=='sample'&&!q.get('preview'),act=real&&A.activity.enabled; // counts and sending only on a real published card
+  const c=window.LiveCardView.render(phone,data,{engine,cardUrl:location.origin+'/c/'+slug,madeLink:'/live-cards/',leads:act||!!q.get('preview'),onTap:act?k=>A.activity.hit(slug,k):null,sendInfo:act?d=>A.activity.sendInfo(slug,d):null});
+  if(act)A.activity.hit(slug,'open');
   document.title=c.name+(c.company?' | '+c.company:'');phone.hidden=false;
   const rep=document.getElementById('lc-report');if(rep&&A.enabled&&slug&&slug!=='sample'&&!q.get('preview')){rep.hidden=false;rep.addEventListener('click',async()=>{const why=window.prompt('What is wrong with this card?');if(!why)return;try{await A.cards.report(slug,why);rep.textContent='Thank you. We will review it.'}catch(e){rep.textContent='Could not send. Please try again later.'}})}});
 })();

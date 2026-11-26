@@ -5,7 +5,7 @@ const fs=require('fs'),path=require('path'),os=require('os');
 const SITE=path.resolve(__dirname,'..'),B='http://localhost:4799',SB='https://glzodwhyavexpuusbqjy.supabase.co',UID='11111111-2222-4333-8444-555555555555';
 const V=JSON.parse(fs.readFileSync(SITE+'/vercel.json','utf8')),rules=V.headers.map(h=>({re:new RegExp('^'+h.source+'$'),headers:h.headers}));
 const headersFor=p=>{const o={};for(const x of rules)if(x.re.test(p))for(const h of x.headers)o[h.key.toLowerCase()]=h.value;return o};
-const configOn=()=>fs.readFileSync(SITE+'/public/live/config.js','utf8').replace('enabled:false','enabled:true').replace("key:''","key:'test-publishable-key-0123456789'");
+const configOn=()=>fs.readFileSync(SITE+'/public/live/config.js','utf8').replace('enabled:false','enabled:true').replace("key:''","key:'test-publishable-key-0123456789'").replace('activity:false','activity:true');
 /** Bundles api/lc-card.js and returns run(url, fetchImpl): the function's Response for that address, with every outside request answered by fetchImpl. */
 function cardPage(){const out=path.join(fs.mkdtempSync(path.join(os.tmpdir(),'lc-card-')),'lc-card.cjs');
   require(SITE+'/node_modules/esbuild').buildSync({entryPoints:[SITE+'/api/lc-card.js'],bundle:true,format:'cjs',platform:'neutral',target:'es2022',outfile:out,logLevel:'silent'});
@@ -20,10 +20,10 @@ function cleanCard(p){p=p||{};const a=p.actions||{},g=p.background||{},l=p.logo|
   return {v:1,name:txt(p.name,60),company:txt(p.company,60),role:txt(p.role,60),tagline:txt(p.tagline,90),accent:/^#[0-9a-f]{6}$/i.test(p.accent||'')?p.accent:'#2563eb',
     logo:{url:fileOK(l.url,'logo'),mark:false,line1:txt(l.line1,24),line2:txt(l.line2,24)},photo:{url:fileOK(ph.url,'photo')},preview:{url:fileOK(pv.url,'og')},hours:txt(p.hours,60),
     actions:{phone:telOK(a.phone),text:a.text===true,email:mailOK(txt(a.email,200)),booking:linkOK(a.booking),bookingLabel:txt(a.bookingLabel,34),website:linkOK(a.website),facebook:linkOK(a.facebook),instagram:linkOK(a.instagram),linkedin:linkOK(a.linkedin),tiktok:linkOK(a.tiktok),youtube:linkOK(a.youtube),
-      address:txt(a.address,140),review:linkOK(a.review),cashapp:/^[A-Za-z0-9_]{1,20}$/.test(a.cashapp||'')?a.cashapp:'',venmo:/^[A-Za-z0-9_-]{5,30}$/.test(a.venmo||'')?a.venmo:'',zelle:mailOK(txt(a.zelle,200))||telOK(a.zelle)},
+      address:txt(a.address,140),review:linkOK(a.review),cashapp:/^[A-Za-z0-9_]{1,20}$/.test(a.cashapp||'')?a.cashapp:'',venmo:/^[A-Za-z0-9_-]{5,30}$/.test(a.venmo||'')?a.venmo:'',zelle:mailOK(txt(a.zelle,200))||telOK(a.zelle),leads:a.leads===true},
     background:{type,id:/^[a-z]{2,12}$/.test(g.id||'')?g.id:'ocean',url:type==='scene'?'':url,fit:g.fit==='band'?'band':'fill',bg:/^#[0-9a-f]{6}$/i.test(g.bg||'')?g.bg:'#000000',sound:g.sound!==false},showMade:true}}
 /** Wires the stand-in service and the site into a browser context. Returns the state the tests look at. */
-async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],calls:[],card:null,otpSent:0,pages:[]};
+async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],calls:[],card:null,otpSent:0,pages:[],hits:{},leads:[]};
   S.tok='t.'+Buffer.from(JSON.stringify({sub:UID})).toString('base64')+'.s';
   const cors={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'GET,POST,PATCH,DELETE'};
   const J=(r,body,status=200)=>r.fulfill({status,headers:{...cors,'content-type':'application/json'},body:JSON.stringify(body)});
@@ -35,6 +35,12 @@ async function standIn(ctx){const S={UID,B,SB,SITE,files:new Map(),reports:[],ca
     if(pth==='/auth/v1/logout')return J(r,{});
     if(pth==='/rest/v1/rpc/lc_slug_available')return J(r,!(S.card&&S.card.slug===body.p_slug)&&!['admin','studio'].includes(body.p_slug));
     if(pth==='/rest/v1/rpc/lc_get_card')return J(r,S.card&&S.card.slug===body.p_slug&&S.card.published?S.card.data:null);
+    // activity: counts by event for a published card; a visitor may leave a name and one phone number or email; only the owner reads or removes them
+    if(pth==='/rest/v1/rpc/lc_hit'){if(S.card&&S.card.published&&S.card.slug===body.p_slug&&/^(open|call|text|email|book|web|map|save|review|pay|social)$/.test(body.p_event))S.hits[body.p_event]=(S.hits[body.p_event]||0)+1;return r.fulfill({status:204,headers:cors})}
+    if(pth==='/rest/v1/rpc/lc_send_info'){const n=txt(body.p_name,60),c=mailOK(txt(body.p_contact,200))||telOK(body.p_contact);if(!(S.card&&S.card.published&&S.card.slug===body.p_slug&&S.card.data.actions.leads)||n.length<2||!c)return J(r,{message:'not accepted'},400);
+      if(S.leads.length>=5)return J(r,{message:'too many'},429);S.leads.unshift({id:'d0000000-0000-4000-8000-00000000000'+S.leads.length,name:n,contact:c,note:txt(body.p_note,200),created_at:new Date().toISOString()});S.hits.info=(S.hits.info||0)+1;return r.fulfill({status:204,headers:cors})}
+    if(pth==='/rest/v1/rpc/lc_card_stats'){if(!authed)return J(r,{message:'no'},401);const {open,...taps}=S.hits;return J(r,{days:30,opens:open||0,taps})}
+    if(pth==='/rest/v1/lc_leads'){if(!authed)return J(r,{message:'permission denied for table lc_leads',code:'42501'},401);if(m==='DELETE'){const id=(u.searchParams.get('id')||'').replace('eq.','');S.leads=S.leads.filter(l=>l.id!==id);return r.fulfill({status:204,headers:cors})}return J(r,S.leads)}
     if(pth==='/rest/v1/rpc/lc_report'){S.reports.push(body);return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/rpc/lc_delete_account'){if(!authed)return J(r,{message:'no'},401);S.card=null;return r.fulfill({status:204,headers:cors})}
     if(pth==='/rest/v1/lc_cards'){if(m==='GET'&&!authed)return J(r,{message:'permission denied for table lc_cards',code:'42501'},401);

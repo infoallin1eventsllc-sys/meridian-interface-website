@@ -9,7 +9,8 @@ const ICON={call:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19
  linkedin:'<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
  tiktok:'<path d="M9 12a4 4 0 1 0 4 4V3a5 5 0 0 0 5 5"/>',youtube:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>',
  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',star:'<path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5-4.8-4.6 6.6-.9z"/>',
- clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'};
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>'};
+const ICON_KIND={text:'text',web:'web'};
 const svg=n=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const clean=(s,max)=>String(s==null?'':s).replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max);
 /** Only http and https links are allowed; a bare domain gets https. Anything else (javascript:, data:) is dropped. */
@@ -34,6 +35,27 @@ function vcard(c){const esc=s=>String(s).replace(/[\r\n]+/g,' ').replace(/([\\;,
 /** The headshot as text for the contact file, so the saved contact has a face. Only for a published picture, only when small, and never required. */
 async function photoText(u){if(!/^https:\/\//.test(u))return'';try{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),4000),r=await fetch(u,{signal:ac.signal});clearTimeout(t);if(!r.ok)return'';const b=await r.blob();if(b.type!=='image/jpeg'||b.size>400000)return'';
     const a=new Uint8Array(await b.arrayBuffer());let s='';for(let i=0;i<a.length;i+=8192)s+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(s)}catch(e){return''}}
+/** "Send me your info": a visitor leaves their own name and a way to reach them. Shown as a small window over the card, near the top of the screen so the keyboard does not cover it.
+    opts.sendInfo(details) does the sending; without it (a preview) the window says so and nothing is sent. Everything typed is treated as text. */
+function infoSheet(phone,c,opts,from){const old=phone.querySelector('.lc-sheet');if(old)old.remove();
+  const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e},first=c.name.split(' ')[0]||c.name;
+  const sheet=E('div','lc-sheet'),form=E('form','lc-form'),msg=E('p','lc-form-msg'),send=E('button','lc-pill book','Send'),cancel=E('button','lc-form-x','Cancel');
+  const field=(label,attrs)=>{const l=E('label','',label),i=E('input');for(const k in attrs)i.setAttribute(k,attrs[k]);l.appendChild(i);form.appendChild(l);return i};
+  sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label','Send your info to '+c.name);form.noValidate=true;msg.setAttribute('role','status');send.type='submit';cancel.type='button';
+  form.appendChild(E('h2','','Send '+first+' your info'));
+  const name=field('Your name',{type:'text',maxlength:'60',autocomplete:'name',required:''}),contact=field('Your phone or email',{type:'text',maxlength:'200',autocomplete:'tel',inputmode:'email',required:''}),note=field('Note (optional)',{type:'text',maxlength:'200'});
+  form.append(msg,send,cancel,E('p','lc-form-fine','Only '+c.name+' sees this.'));sheet.appendChild(form);
+  const close=()=>{sheet.remove();document.removeEventListener('keydown',esc);if(from&&from.isConnected)from.focus()},esc=e=>{if(e.key==='Escape')close()};
+  cancel.addEventListener('click',close);sheet.addEventListener('click',e=>{if(e.target===sheet)close()});document.addEventListener('keydown',esc);
+  form.addEventListener('submit',async e=>{e.preventDefault();const n=clean(name.value,60),ct=emailOk(contact.value)||phoneNum(contact.value);
+    if(n.length<2){msg.textContent='Please add your name.';name.focus();return}if(!ct){msg.textContent='Please add a phone number or an email address.';contact.focus();return}
+    if(!opts.sendInfo){msg.textContent='This is a preview. Sending works once the card is published.';return}
+    send.disabled=true;msg.textContent='Sending…';
+    try{await opts.sendInfo({name:n,contact:ct,note:clean(note.value,200)});form.textContent='';const done=E('button','lc-pill','Close');done.type='button';done.addEventListener('click',close);form.append(E('h2','','Sent'),E('p','lc-form-fine',c.name+' has your info.'),done);done.focus()}
+    catch(err){send.disabled=false;msg.textContent=err&&err.status===429?'Too many tries. Please try again later.':'That did not send. Please try again.'}});
+  // Cover only the part of the card that is on screen (a full card can be taller than the screen).
+  const r=phone.getBoundingClientRect(),k=(r.width/phone.offsetWidth)||1,top=Math.max(0,-r.top)/k,h=(Math.min(window.innerHeight,r.bottom)-Math.max(0,r.top))/k;sheet.style.top=top+'px';sheet.style.height=Math.max(260,h)+'px';
+  phone.appendChild(sheet);name.focus()}
 /** Normalises anything saved or typed into the shape the card draws from. */
 function normalize(d){d=d||{};const a=d.actions||{},bg=d.background||{},lg=d.logo||{},ph=d.photo||{},pv=d.preview||{};
   const out={name:clean(d.name,60)||'Your Name',company:clean(d.company,60),role:clean(d.role,60),tagline:clean(d.tagline,90),accent:color(d.accent),
@@ -41,11 +63,11 @@ function normalize(d){d=d||{};const a=d.actions||{},bg=d.background||{},lg=d.log
     photo:{url:media(ph.url)},preview:{url:media(pv.url)},hours:clean(d.hours,60),
     actions:{phone:phoneNum(a.phone),text:!!a.text,email:emailOk(a.email),booking:link(a.booking),bookingLabel:clean(a.bookingLabel,34)||'Book an appointment',website:link(a.website),
       facebook:link(a.facebook),instagram:link(a.instagram),linkedin:link(a.linkedin),tiktok:link(a.tiktok),youtube:link(a.youtube),
-      address:clean(a.address,140),review:link(a.review),cashapp:handle(a.cashapp,/^[A-Za-z0-9_]{1,20}$/),venmo:handle(a.venmo,/^[A-Za-z0-9_-]{5,30}$/),zelle:emailOk(a.zelle)||phoneNum(a.zelle)},
+      address:clean(a.address,140),review:link(a.review),cashapp:handle(a.cashapp,/^[A-Za-z0-9_]{1,20}$/),venmo:handle(a.venmo,/^[A-Za-z0-9_-]{5,30}$/),zelle:emailOk(a.zelle)||phoneNum(a.zelle),leads:a.leads===true},
     background:{type:['scene','image','video'].includes(bg.type)&&(bg.type==='scene'||media(bg.url))?bg.type:'scene',id:/^[a-z]{2,12}$/.test(bg.id||'')?bg.id:'ocean',url:media(bg.url),fit:bg.fit==='band'?'band':'fill',bg:/^#[0-9a-f]{6}$/i.test(bg.bg||'')?bg.bg:'#000000',sound:bg.sound!==false},
     showMade:d.showMade!==false};
   return out}
-function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
+function render(phone,data,opts){opts=opts||{};const c=normalize(data),tap=(el,kind)=>{if(opts.onTap)el.addEventListener('click',()=>{try{opts.onTap(kind)}catch(e){}});return el};let card=phone.querySelector('.lc-card');if(!card){card=document.createElement('div');card.className='lc-card';phone.appendChild(card)}
   phone.style.setProperty('--lc-acc',c.accent);card.textContent='';
   const E=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
   const head=E('header','lc-content'),logo=E('div','lc-logo');
@@ -55,14 +77,14 @@ function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=
   head.append(E('h1','lc-name',c.name));if(c.role)head.append(E('div','lc-role',c.role));if(c.tagline)head.append(E('div','lc-tag',c.tagline));
   if(c.hours){const h=E('div','lc-hours');h.innerHTML=svg('clock');h.append(c.hours);head.append(h)}
   const pills=E('nav','lc-pills');pills.setAttribute('aria-label','Contact '+c.name);
-  const pill=(href,icon,label,cls)=>{const a=E('a','lc-pill'+(cls?' '+cls:''));a.href=href;a.innerHTML=svg(icon);a.append(label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}pills.appendChild(a)};
+  const pill=(href,icon,label,cls)=>{const a=E('a','lc-pill'+(cls?' '+cls:''));a.href=href;a.innerHTML=svg(icon);a.append(label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}pills.appendChild(tap(a,icon))};
   if(c.actions.phone)pill('tel:'+c.actions.phone,'call','Call');if(c.actions.email)pill('mailto:'+c.actions.email,'email','Email');if(c.actions.booking)pill(c.actions.booking,'book',c.actions.bookingLabel,'book');
   if(pills.children.length)head.appendChild(pills);
   const art=E('div','lc-art'),dots=E('div','lc-dots');
-  const dot=(href,icon,label)=>{const a=E('a','lc-dot');a.href=href;a.innerHTML=svg(icon);a.setAttribute('aria-label',label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}dots.appendChild(a)};
+  const dot=(href,icon,label)=>{const a=E('a','lc-dot');a.href=href;a.innerHTML=svg(icon);a.setAttribute('aria-label',label);if(/^https?:/.test(href)){a.target='_blank';a.rel='noopener noreferrer'}dots.appendChild(tap(a,icon==='pin'?'map':ICON_KIND[icon]||'social'))};
   if(c.actions.phone&&c.actions.text)dot('sms:'+c.actions.phone,'text','Text '+c.name);if(c.actions.website)dot(c.actions.website,'web','Website');
   if(c.actions.address)dot(mapLink(c.actions.address),'pin','Directions to '+c.actions.address);
-  if(c.actions.phone||c.actions.email){const b=E('button','lc-dot');b.type='button';b.innerHTML=svg('save');b.setAttribute('aria-label','Save to contacts');
+  if(c.actions.phone||c.actions.email){const b=E('button','lc-dot');b.type='button';b.innerHTML=svg('save');b.setAttribute('aria-label','Save to contacts');tap(b,'save');
     let face='';if(opts.cardUrl)photoText(c.photo.url).then(t=>{face=t}); // only on the public card, never while editing
     b.addEventListener('click',()=>{const blob=new Blob([vcard({name:c.name,company:c.company,role:c.role,phone:c.actions.phone,email:c.actions.email,website:c.actions.website,address:c.actions.address,photo:face,cardUrl:opts.cardUrl})],{type:'text/vcard'}),u=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=u;a.download=c.name.replace(/[^\w -]/g,'')+'.vcf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)});dots.appendChild(b)}
@@ -70,11 +92,13 @@ function render(phone,data,opts){opts=opts||{};const c=normalize(data);let card=
   art.appendChild(dots);
   // labelled buttons: a review link, and ways to pay
   const out=(a)=>{a.target='_blank';a.rel='noopener noreferrer';return a};
-  if(c.actions.review){const row=E('div','lc-chips'),a=out(E('a','lc-chip'));a.href=c.actions.review;a.innerHTML=svg('star');a.append('Leave a review');row.appendChild(a);art.appendChild(row)}
+  if(c.actions.review||(c.actions.leads&&opts.leads!==false)){const row=E('div','lc-chips');
+    if(c.actions.leads&&opts.leads!==false){const b=E('button','lc-chip');b.type='button';b.innerHTML=svg('send');b.append('Send me your info');b.addEventListener('click',()=>infoSheet(phone,c,opts,b));row.appendChild(b)}
+    if(c.actions.review){const a=out(E('a','lc-chip'));a.href=c.actions.review;a.innerHTML=svg('star');a.append('Leave a review');row.appendChild(tap(a,'review'))}art.appendChild(row)}
   if(c.actions.cashapp||c.actions.venmo||c.actions.zelle){const row=E('div','lc-chips lc-pay'),note=E('p','lc-note');note.setAttribute('role','status');note.hidden=true;row.setAttribute('role','group');row.setAttribute('aria-label','Pay '+(c.company||c.name));row.append(E('span','lc-pay-l','Pay with'));
-    if(c.actions.cashapp){const a=out(E('a','lc-chip','Cash App'));a.href='https://cash.app/$'+c.actions.cashapp;row.appendChild(a)}
-    if(c.actions.venmo){const a=out(E('a','lc-chip','Venmo'));a.href='https://venmo.com/u/'+c.actions.venmo;row.appendChild(a)}
-    if(c.actions.zelle){const b=E('button','lc-chip','Zelle');b.type='button';b.setAttribute('aria-label','Zelle: show where to send');
+    if(c.actions.cashapp){const a=out(E('a','lc-chip','Cash App'));a.href='https://cash.app/$'+c.actions.cashapp;row.appendChild(tap(a,'pay'))}
+    if(c.actions.venmo){const a=out(E('a','lc-chip','Venmo'));a.href='https://venmo.com/u/'+c.actions.venmo;row.appendChild(tap(a,'pay'))}
+    if(c.actions.zelle){const b=E('button','lc-chip','Zelle');b.type='button';b.setAttribute('aria-label','Zelle: show where to send');tap(b,'pay');
       // Zelle has no payment link: it is sent from the payer's own bank app to a phone number or email. So show it and copy it.
       b.addEventListener('click',async()=>{let copied=false;try{await navigator.clipboard.writeText(c.actions.zelle);copied=true}catch(e){}note.textContent='Zelle to '+c.actions.zelle+(copied?' (copied). ':'. ')+'Send it from your bank app.';note.hidden=false});row.appendChild(b)}
     art.append(row,note)}

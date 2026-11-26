@@ -7,4 +7,7 @@ window.LIVE_CARDS_CONFIG={enabled:false,billing:false,url:'https://glzodwhyavexp
   appOrigin:'',
   // humanCheck: a Cloudflare Turnstile site key. When set, asking for a sign-in code needs a passed check.
   // It also needs the security policy for /studio/ to allow challenges.cloudflare.com (see docs/LIVE-CARDS.md).
-  humanCheck:''};
+  humanCheck:'',
+  // activity: counts of opens and taps, the "Send me your info" button and the Studio's Activity tab.
+  // Leave false until the database has lc_hit, lc_send_info, lc_card_stats and the lc_leads table (see docs/LIVE-CARDS.md).
+  activity:false};
