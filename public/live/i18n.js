@@ -37,7 +37,7 @@ const P=[
 // ---------- Studio: frame
 [`Live Cards home`,`Inicio de Live Cards`],[`Live Cards Studio | Meridian Interface`,`Live Cards Studio | Meridian Interface`],[`Saved on this device`,`Guardada en este dispositivo`],[`Saving…`,`Guardando…`],[`Published`,`Publicada`],
 [`Saved here. On the Share tab, tap Update my live card.`,`Guardada aquí. En Compartir, toca Actualizar mi tarjeta.`],[`Editing`,`Editando`],[`New card`,`Tarjeta nueva`],[`Add a team member`,`Agregar a alguien del equipo`],
-[`Your card`,`Tu tarjeta`],[`Open full screen`,`Ver en pantalla completa`],[`Edit your card`,`Edita tu tarjeta`],[`Details`,`Datos`],[`Buttons`,`Botones`],[`Background`,`Fondo`],[`Share`,`Compartir`],[`Activity`,`Actividad`],
+[`Your card`,`Tu tarjeta`],[`Scroll the card to see the rest`,`Desliza la tarjeta para ver el resto`],[`Open full screen`,`Ver en pantalla completa`],[`Edit your card`,`Edita tu tarjeta`],[`Details`,`Datos`],[`Buttons`,`Botones`],[`Background`,`Fondo`],[`Share`,`Compartir`],[`Activity`,`Actividad`],
 // Details
 [`Who you are. This is the top of your card.`,`Quién eres. Esto va arriba en tu tarjeta.`],[`Start with your trade (optional)`,`Empieza con tu giro (opcional)`],[`Real estate`,`Bienes raíces`],[`Barber or salon`,`Barbería o salón`],[`Contractor`,`Contratista`],[`Restaurant`,`Restaurante`],[`Consultant`,`Consultor`],
 [`Fills in a title, a line, a booking button and a background. Change anything after.`,`Llena un puesto, una frase, un botón para reservar y un fondo. Después puedes cambiar lo que quieras.`],

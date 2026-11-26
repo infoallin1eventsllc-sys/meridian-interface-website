@@ -37,7 +37,7 @@ const btnPlain = `${btn} border-slate-300 text-slate-800 bg-white hover:bg-slate
 const btnDanger = `${btn} border-red-300 text-red-800 bg-red-50 hover:bg-red-100`;
 
 /** One card with its account and the things the owner can do to it. */
-const CardRow: React.FC<{ card: LiveCardRow; busy: boolean; act: (label: string, payload: Record<string, unknown>, done: string) => void }> = ({ card, busy, act }) => {
+const CardRow: React.FC<{ card: LiveCardRow; busy: boolean; act: (label: string, payload: Record<string, unknown>, done: string) => void; first?: React.ReactNode; boxed?: boolean }> = ({ card, busy, act, first, boxed }) => {
   // Taking a card down and removing files are both asked twice.
   const [armed, setArmed] = useState<'' | 'down' | 'files'>('');
   useEffect(() => {
@@ -47,10 +47,10 @@ const CardRow: React.FC<{ card: LiveCardRow; busy: boolean; act: (label: string,
   }, [armed]);
   const paid = card.account.plan === 'pro';
   return (
-    <div className="py-4 border-b border-slate-100 last:border-0">
+    <div className={boxed ? 'mt-3 rounded-xl border border-slate-200 bg-slate-50 p-4' : 'py-4 border-b border-slate-100 last:border-0'}>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-display font-bold text-slate-900 break-all">{card.name || 'No name'}</span>
-        {card.company && <span className="text-sm text-slate-600 break-all">{card.company}</span>}
+        <span className="font-display font-bold text-slate-900 break-words min-w-0">{card.name || 'No name'}</span>
+        {card.company && <span className="text-sm text-slate-600 break-words min-w-0">{card.company}</span>}
         {card.blocked ? <Chip tone="bad">Taken down</Chip> : card.published ? <Chip tone="ok">Live</Chip> : <Chip tone="info">Offline</Chip>}
         <Chip tone={paid ? 'ok' : 'info'}>{paid ? 'Paid plan' : 'Free plan'}</Chip>
       </div>
@@ -58,7 +58,8 @@ const CardRow: React.FC<{ card: LiveCardRow; busy: boolean; act: (label: string,
         <a className="underline" href={`/c/${encodeURIComponent(card.slug)}`} target="_blank" rel="noopener noreferrer">/c/{card.slug}</a>
         {' · '}{card.account.email ?? 'no email on file'}{' · '}changed {when(card.updated_at)}
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {first}
         {card.blocked ? (
           <>
             <button type="button" className={btnPlain} disabled={busy} onClick={() => act('restore', { action: 'restore', card_id: card.id }, 'The card is back and the account can publish again.')}>Put it back</button>
@@ -71,10 +72,12 @@ const CardRow: React.FC<{ card: LiveCardRow; busy: boolean; act: (label: string,
             {armed === 'down' ? 'Tap again to take it down' : 'Take this card down'}
           </button>
         )}
-        <button type="button" className={btnPlain} disabled={busy} onClick={() => act('plan', { action: 'set_plan', user_id: card.account.id, plan: paid ? 'free' : 'pro' }, paid ? 'Set to the free plan.' : 'Set to the paid plan.')}>
+        <button type="button" className={`${btn} border-transparent text-slate-700 underline underline-offset-2 hover:text-slate-900`} disabled={busy} onClick={() => act('plan', { action: 'set_plan', user_id: card.account.id, plan: paid ? 'free' : 'pro' }, paid ? 'Set to the free plan.' : 'Set to the paid plan.')}>
           {paid ? 'Set to free plan' : 'Set to paid plan'}
         </button>
       </div>
+      {armed === 'down' && <p className="mt-2 text-xs text-red-800" role="status">This blocks the whole account: every card on it goes offline and it cannot publish or upload until you put it back.</p>}
+      {armed === 'files' && <p className="mt-2 text-xs text-red-800" role="status">Their pictures and videos are deleted for good. The card itself stays down.</p>}
       {card.account.pays_through_stripe && (
         <p className="mt-2 text-xs text-slate-600">This client pays through Stripe. A plan set here lasts until Stripe next reports on the subscription; cancel or refund in Stripe as well.</p>
       )}
@@ -159,14 +162,14 @@ export const OwnerLiveCards: React.FC = () => {
   }
 
   const tiles: Array<[string, number]> = overview
-    ? [['Cards', overview.cards], ['Live now', overview.published], ['Paid accounts', overview.paid_accounts], ['Open reports', overview.open_reports], ['Blocked accounts', overview.blocked_accounts]]
+    ? [['Open reports', overview.open_reports], ['Live now', overview.published], ['Cards', overview.cards], ['Paid accounts', overview.paid_accounts], ['Blocked accounts', overview.blocked_accounts]]
     : [];
 
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-2 sm:grid-cols-5 gap-3" aria-label="Live Cards at a glance">
         {tiles.map(([label, n]) => (
-          <div key={label} className="bg-white border border-slate-200 rounded-xl p-4">
+          <div key={label} className={`border rounded-xl p-4 ${label === 'Open reports' && n > 0 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200'}`}>
             <div className="text-2xl font-display font-extrabold text-slate-900 tabular-nums">{n}</div>
             <div className="text-xs font-semibold text-slate-600">{label}</div>
           </div>
@@ -187,18 +190,22 @@ export const OwnerLiveCards: React.FC = () => {
             Show handled reports too
           </label>
         </div>
-        {reports.length === 0 && <p className="py-4 text-sm text-slate-600">No {showHandled ? '' : 'open '}reports.</p>}
+        {reports.length === 0 && <p className="py-4 text-sm text-slate-600">{showHandled ? 'No reports yet.' : 'No open reports. Nothing needs you right now.'}</p>}
         {reports.map((r) => (
           <div key={r.id} className="py-4 border-b border-slate-100 last:border-0">
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
               <span>{when(r.created_at)}</span>
               {r.handled ? <Chip tone="info">Handled</Chip> : <Chip tone="warn">Open</Chip>}
             </div>
-            <p className="mt-1 text-sm text-slate-900 break-words">{r.reason}</p>
-            {r.card ? <CardRow card={r.card} busy={busy} act={act} /> : <p className="mt-1 text-xs text-slate-600 break-all">The card /c/{r.slug} no longer exists.</p>}
-            {!r.handled && (
-              <button type="button" className={btnPlain} disabled={busy} onClick={() => act('done', { action: 'report_done', id: r.id }, 'Report marked as handled.')}>Mark as handled</button>
-            )}
+            <p className="mt-2 text-sm text-slate-900 break-words border-l-2 border-slate-300 pl-3"><span className="sr-only">The visitor wrote: </span>{r.reason}</p>
+            {(() => {
+              const done = !r.handled && (
+                <button type="button" className={btnPlain} disabled={busy} onClick={() => act('done', { action: 'report_done', id: r.id }, 'Report marked as handled.')}>Mark as handled</button>
+              );
+              return r.card
+                ? <CardRow card={r.card} busy={busy} act={act} first={done} boxed />
+                : <><p className="mt-2 text-xs text-slate-600 break-all">The card /c/{r.slug} no longer exists.</p>{done && <div className="mt-3">{done}</div>}</>;
+            })()}
           </div>
         ))}
       </section>
@@ -212,7 +219,7 @@ export const OwnerLiveCards: React.FC = () => {
           <button type="submit" className={btnPlain} disabled={busy}>Search</button>
           <button type="button" className={btnPlain} disabled={busy} onClick={() => { setQuery(''); void search(''); }}>Show newest</button>
         </form>
-        {cards && cards.length === 0 && <p className="py-4 text-sm text-slate-600">No card matches that.</p>}
+        {cards && cards.length === 0 && <p className="py-4 text-sm text-slate-600">No card matches that. Try part of a name, or the link without /c/.</p>}
         {cards?.map((c) => <CardRow key={c.id} card={c} busy={busy} act={act} />)}
       </section>
     </div>

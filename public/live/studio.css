@@ -155,3 +155,6 @@ form label{width:100%}
 @media (min-width:900px){.who{padding:8px 32px}}
 .lang-x{margin-left:12px;font-weight:600}
 #langs button{min-height:44px}
+/* a full card scrolls inside the preview: a quiet note at its foot until it has been scrolled */
+.pv{position:relative}
+.pv-more{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);margin:0;padding:6px 12px;border-radius:999px;background:rgba(8,14,34,.78);color:#fff;font:600 12px/1.2 var(--body);white-space:nowrap;pointer-events:none;z-index:4}

@@ -82,4 +82,4 @@ Order, top to bottom: logo, headshot, name, title, line, hours; the three main p
 The mark is the real file beside live text. The lockup file is never placed on a dark ground. The accent blue never touches the mark. Fonts are self-hosted.
 
 ## Not done yet
-A design pass on the owner desk tab, illustrations for empty states, real-phone checks of the tab bar with the on-screen keyboard open, and a hint in the Studio preview that a full card scrolls.
+Real-phone checks of the tab bar with the on-screen keyboard open (waiting on Otis's phone). Done 26 Nov: the owner desk pass and the scroll note. Decided against empty-state illustrations: every empty list already says what it means and what to do next, and a picture would only repeat it.

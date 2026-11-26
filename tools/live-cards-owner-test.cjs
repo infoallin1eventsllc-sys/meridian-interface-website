@@ -39,7 +39,9 @@ T(await p.getByText('Reports from visitors').count()===1&&await p.getByText('Ope
 T(await p.evaluate(()=>!window.__x&&!document.querySelector('main img[src="x"], section script')),tag+' client text is shown as plain text, not run');
 const iconW=await tab.locator('.material-symbols-outlined').first().evaluate(e=>e.getBoundingClientRect().width).catch(()=>0);T(iconW>0&&iconW<=30,tag+' tab icon draws as an icon, not as a word',String(iconW));
 await p.screenshot({path:`${OUT}/owner-${w}.png`,fullPage:true});
+T(await p.evaluate(()=>{const t=[...document.querySelectorAll('section[aria-label="Live Cards at a glance"] > div')].map(d=>d.textContent);return /Open reports/.test(t[0]||'')}),tag+' open reports come first');
 const down=p.getByRole('button',{name:'Take this card down'}).first();await down.click();await p.waitForTimeout(150);T(!calls.some(c=>c.action==='take_down'),tag+' one tap does not take a card down');
+T(await p.getByText('This blocks the whole account').count()===1,tag+' before the second tap it says the whole account is blocked');
 await p.getByRole('button',{name:'Tap again to take it down'}).first().click();await p.waitForTimeout(900);T(calls.some(c=>c.action==='take_down'&&c.card_id===C2)&&await p.getByText('Taken down').count()>=1,tag+' second tap takes it down and the screen shows it');
 await p.getByRole('button',{name:'Put it back'}).first().click();await p.waitForTimeout(900);T(calls.some(c=>c.action==='restore')&&await p.getByText('Taken down').count()===0,tag+' put it back works');
 await p.getByRole('button',{name:'Set to paid plan'}).first().click();await p.waitForTimeout(900);T(calls.some(c=>c.action==='set_plan'&&c.plan==='pro'&&c.user_id===U2)&&await p.getByText('Paid plan').count()>=1,tag+' plan can be set by hand');

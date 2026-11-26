@@ -103,9 +103,13 @@ const PHOTO=SITE+'/public/card/bg/houston-skyline.jpg';
   await p.check('#f-leads');await p.waitForTimeout(500);T(await p.$eval('#lc',e=>[...e.querySelectorAll('.lc-chip')].some(c=>c.textContent==='Send me your info')),'the switch adds a Send me your info button to the card');
   await p.$eval('#lc .lc-chip',b=>b.click());await p.waitForTimeout(300);await p.$eval('#lc .lc-form',f=>{const i=f.querySelectorAll('input');i[0].value='Sam Carter';i[1].value='281-555-0199';f.requestSubmit()});await p.waitForTimeout(400);
   T(/preview/.test(await p.$eval('#lc .lc-form-msg',e=>e.textContent))&&S.leads.length===0,'in the Studio preview the form says it is a preview and sends nothing');await p.keyboard.press('Escape');T(!(await p.$('#lc .lc-sheet')),'Escape closes the form');
+  T(await p.evaluate(()=>{const c=document.querySelector('#lc .lc-card');return document.getElementById('pv-more').hidden===!(c.scrollHeight>c.clientHeight+8)}),'the scroll note shows only when the card is taller than the preview');
+  {const tall=await p.evaluate(()=>{document.getElementById('lc').style.height='520px';window.dispatchEvent(new Event('resize'));return true});await p.fill('#f-hours','Mon to Fri, 9 am to 5 pm ');await p.waitForTimeout(300);
+   T(await p.$eval('#pv-more',e=>!e.hidden),'a card taller than the preview says it scrolls');await p.evaluate(()=>{document.getElementById('lc').style.height=''});await p.fill('#f-hours','Mon to Fri, 9 am to 5 pm');await p.waitForTimeout(300)}
   // the card is taller than the preview frame: it must scroll inside it, nothing unreachable
   const sc=await p.$eval('#lc .lc-card',c=>{const before=c.scrollTop;c.scrollTop=9999;const moved=c.scrollTop>before,last=[...c.querySelectorAll('.lc-chip')].pop().getBoundingClientRect(),box=c.getBoundingClientRect();return {tall:c.scrollHeight>c.clientHeight,moved,inView:last.bottom<=box.bottom+1}});
   T(!sc.tall||(sc.moved&&sc.inView),'a full card scrolls inside the preview so the last button can be reached',JSON.stringify(sc));
+  await p.waitForTimeout(200);T(await p.$eval('#pv-more',e=>e.hidden),'once the card has been scrolled the note goes away');
   // Share tab: link preview drawn on the device
   await p.click('#t-publish');await p.waitForTimeout(1800);
   const pv=await p.evaluate(()=>{const c=document.getElementById('pv-img'),x=c.getContext('2d'),d=x.getImageData(0,0,c.width,c.height).data;let lit=0,white=0;for(let i=0;i<d.length;i+=4*97){if(d[i]+d[i+1]+d[i+2]>60)lit++;if(d[i]>235&&d[i+1]>235&&d[i+2]>235)white++}

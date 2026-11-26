@@ -16,7 +16,9 @@ const humanOn=/^[0-9A-Za-z_-]{10,60}$/.test(A.config.humanCheck||'')&&A.enabled;
 {const pv=$('pv'),fit=()=>{phone.style.transform='scale('+(pv.clientWidth/360)+')'};new ResizeObserver(fit).observe(pv);fit()}
 // ---------- preview and saving
 function viewData(){const d=JSON.parse(JSON.stringify(draft.data));if(draft.bgBlob)d.background.url=blobUrl('bg',draft.bgBlob);if(draft.logoBlob)d.logo.url=blobUrl('logo',draft.logoBlob);d.photo=d.photo||{};if(draft.photoBlob)d.photo.url=blobUrl('photo',draft.photoBlob);return d}
-let lastBg='';function paint(){const d=viewData(),bgKey=JSON.stringify(d.background);V.render(phone,d,{engine:bgKey===lastBg?null:engine});lastBg=bgKey}
+let lastBg='',seenMore=false;function paint(){const d=viewData(),bgKey=JSON.stringify(d.background);V.render(phone,d,{engine:bgKey===lastBg?null:engine});lastBg=bgKey;moreView()}
+function moreView(){const c=phone.querySelector('.lc-card');$('pv-more').hidden=seenMore||!c||c.scrollHeight<=c.clientHeight+8}
+phone.addEventListener('scroll',e=>{if(e.target.classList&&e.target.classList.contains('lc-card')&&e.target.scrollTop>24&&!seenMore){seenMore=true;moreView()}},true);
 let saveT;let linkT;function changed(){if(draft.published){draft.dirty=true}if(book.same&&book.cards.length>1)spread();dirtyView();if(book.cards.length>1)whoView();paint();if(!$('p-publish').hidden){clearTimeout(linkT);linkT=setTimeout(linkView,500)}clearTimeout(saveT);state('Saving…');saveT=setTimeout(async()=>{await keep();state(draft.published?'Saved here. On the Share tab, tap Update my live card.':'Saved on this device')},350)}
 // ---------- form
 function fill(){document.querySelectorAll('[data-k]').forEach(el=>{const v=get(draft.data,el.dataset.k);if(el.type==='checkbox')el.checked=!!v;else el.value=v||''});
